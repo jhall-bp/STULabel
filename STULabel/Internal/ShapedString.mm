@@ -202,9 +202,8 @@ static ScanStatus scanAttributedString(
         // that CoreText assumes the same base writing direction, we fix the paragraph style.
         para.paragraphStyleNeededFix = !isEmpty;
       }
-      const bool isAtLeastIOS10 = NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max;
       baseWritingDirection = detectBaseWritingDirection(attributedString.string, para.stringRange,
-                                                        SkipIsolatedText{isAtLeastIOS10});
+                                                        SkipIsolatedText{true});
       if (baseWritingDirection == NSWritingDirectionNatural) {
         baseWritingDirection = NSWritingDirection(defaultBaseWritingDirection);
         status.defaultBaseWritingDirectionWasUsed = true;
@@ -462,30 +461,22 @@ ShapedString* __nullable
 
 static
 CTTypesetter* createTypesetter(CFAttributedStringRef string, Int32 stringLength) CF_RETURNS_RETAINED {
-#if defined(kCTVersionNumber10_14)
   STU_STATIC_CONST_ONCE(CFDictionaryRef, options, ({
-    CFDictionaryRef options = nullptr;
-    if (@available(iOS 12.0, macOS 10.14, *)) {
-       // Without this option CTTypesetter stops working properly for texts with a UTF-16 length
-       // longer than 4096. If not setting this option is important to protect against denial-of-
-       // service attacks, then we may have to split up the ShapedString into multiple typesetters.
-       // However, currently there is no documentation on what this option does exactly, and just
-       // limiting the paragraph length (as opposed to, say, the grapheme cluster length or bidi
-       // context stack depth) seems incredibly blunt.
-       const void* keys[1] = {kCTTypesetterOptionAllowUnboundedLayout};
-       const void* values[1] = {kCFBooleanTrue};
-       options = CFDictionaryCreate(nil, keys, values, 1,
-                                    &kCFTypeDictionaryKeyCallBacks,
-                                    &kCFTypeDictionaryValueCallBacks);
-    }
-    options;
+    // Without this option CTTypesetter stops working properly for texts with a UTF-16 length
+    // longer than 4096. If not setting this option is important to protect against denial-of-
+    // service attacks, then we may have to split up the ShapedString into multiple typesetters.
+    // However, currently there is no documentation on what this option does exactly, and just
+    // limiting the paragraph length (as opposed to, say, the grapheme cluster length or bidi
+    // context stack depth) seems incredibly blunt.
+    const void* keys[1] = {kCTTypesetterOptionAllowUnboundedLayout};
+    const void* values[1] = {kCFBooleanTrue};
+    CFDictionaryCreate(nil, keys, values, 1,
+                       &kCFTypeDictionaryKeyCallBacks,
+                       &kCFTypeDictionaryValueCallBacks);
   }));
-  if (stringLength > 4096 && options) {
+  if (stringLength > 4096) {
     return CTTypesetterCreateWithAttributedStringAndOptions(string, options);
   }
-#else
-  discard(stringLength);
-#endif
   return CTTypesetterCreateWithAttributedString(string);
 }
 
@@ -569,4 +560,3 @@ ShapedString::~ShapedString() {
 }
 
 } // namespace stu_label
-

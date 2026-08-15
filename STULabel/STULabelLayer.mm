@@ -177,7 +177,7 @@ public:
     super_setContentsGravity(kCAGravityBottomLeft);
 
     params_.setDisplayScale_assumingSizeAndEdgeInsetsAreAlreadyCorrectlyRounded(
-              *DisplayScale::create(stu_mainScreenScale()));
+              DisplayScale::one());
     sizeThatFitsDisplayScale_ = params_.displayScale();
     super_setContentsScale(params_.displayScale());
 
@@ -216,11 +216,9 @@ private:
   }
 
   void updateScreenProperties(UIWindow* __unsafe_unretained window) {
-    if (UIScreen* const screen = window.screen) {
+    if (UIScreen* const screen = window.windowScene.screen) {
       screenScale_ = screen.scale;
-      if (@available(iOS 10, tvOS 10, *)) {
-        screenDisplayGamut_ = static_cast<STUDisplayGamut>(screen.traitCollection.displayGamut);
-      }
+      screenDisplayGamut_ = static_cast<STUDisplayGamut>(screen.traitCollection.displayGamut);
     } else {
       screenScale_ = 0;
       screenDisplayGamut_ = STUDisplayGamutUnspecified;
@@ -669,7 +667,7 @@ public:
   void setContentsScale(CGFloat scale) {
     scale = clampDisplayScaleInput(scale);
     if (!params_.setDisplayScaleAndIfChangedUpdateSizeAndEdgeInsets(
-                   DisplayScale::createOrIfInvalidGetMainSceenScale(scale), size_, contentInsets_))
+                   DisplayScale::createOrIfInvalidUseOne(scale), size_, contentInsets_))
     {
       return;
     }

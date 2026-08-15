@@ -27,7 +27,8 @@ class RootViewController : UITableViewController, UINavigationControllerDelegate
     self.tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
     self.sections = [Section(title: "Tests",
                              items: [Item(title: "UDHR Viewer",      vc: UDHRViewerVC.self),
-                                     Item(title: "Tap to read more", vc: TapToReadMoreVC.self)]),
+                                     Item(title: "Tap to read more", vc: TapToReadMoreVC.self),
+                                     Item(title: "Text selection",   vc: TextSelectionVC.self)]),
                     Section(title: "Performance",
                              items: [Item(title: "UITableView scrolling",
                                           vc: TableViewPerformanceVC.self),

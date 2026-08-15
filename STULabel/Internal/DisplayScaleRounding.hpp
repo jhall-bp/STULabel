@@ -83,7 +83,9 @@ public:
 
   // Defined below after the Optional<DisplayScale> specialization.
   static Optional<DisplayScale> create(CGFloat scale);
-  static DisplayScale createOrIfInvalidGetMainSceenScale(CGFloat scale);
+  [[deprecated("Use DisplayScale::createOrIfInvalidUseScreenScale(...) instead")]]
+  static DisplayScale createOrIfInvalidUseOne(CGFloat scale);
+  static DisplayScale createOrIfInvalidUseScreenScale(CGFloat scale, UIScreen * _Nonnull screen);
 
   STU_CONSTEXPR
   static const DisplayScale& one();
@@ -126,13 +128,7 @@ private:
   Float32 scale_f32_{};
   Float32 inverseScale_f32_{};
 
-  static Once mainScreenDisplayScale_once;
-  static Optional<DisplayScale> mainScreenDisplayScale;
-  static Optional<DisplayScale> mainScreenDisplayScale_initialize(DisplayScale);
-
   static Optional<DisplayScale> create_slowPath(CGFloat scale);
-
-  static DisplayScale createOrIfInvalidGetMainSceenScale_slowPath(CGFloat scale);
 
   friend stu::OptionalValueStorage<DisplayScale>;
   STU_CONSTEXPR DisplayScale() = default;
@@ -176,28 +172,28 @@ constexpr Optional<DisplayScale> DisplayScale::none = {};
 
 STU_INLINE
 Optional<DisplayScale> DisplayScale::create(CGFloat scale) {
-  if (mainScreenDisplayScale_once.isInitialized()) {
-    if (scale == mainScreenDisplayScale.storage().value_) {
-      return mainScreenDisplayScale;
-    }
-  }
   if (scale > 0) {
     return create_slowPath(scale);
   }
   return DisplayScale::none;
 }
 
+[[deprecated("Use DisplayScale::createOrIfInvalidUseScreenScale(...) instead")]]
 STU_INLINE
-DisplayScale DisplayScale::createOrIfInvalidGetMainSceenScale(CGFloat scale) {
-  if (mainScreenDisplayScale_once.isInitialized()) {
-    if (scale == mainScreenDisplayScale.storage().value_
-        || (STU_MAIN_SCREEN_PROPERTIES_ARE_CONSTANT && !(scale > 0)))
-    {
-      mainScreenDisplayScale.assumeNotNone();
-      return *mainScreenDisplayScale;
-    }
+DisplayScale DisplayScale::createOrIfInvalidUseOne(CGFloat scale) {
+  if (const Optional<DisplayScale> displayScale = create(scale); displayScale) {
+    return *displayScale;
   }
-  return createOrIfInvalidGetMainSceenScale_slowPath(scale);
+  return one();
+}
+
+STU_INLINE
+DisplayScale DisplayScale::createOrIfInvalidUseScreenScale(CGFloat scale, UIScreen * _Nonnull screen) {
+  if (const Optional<DisplayScale> displayScale = create(scale); displayScale) {
+    return *displayScale;
+  }
+  DisplayScale result{screen.scale, unchecked};
+  return result;
 }
 
 namespace detail {

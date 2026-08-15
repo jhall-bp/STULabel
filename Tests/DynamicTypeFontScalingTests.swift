@@ -4,7 +4,6 @@ import STULabel.DynamicTypeFontScaling
 
 import XCTest
 
-@available(iOS 10, tvOS 10, *)
 private class LabelWithOverridePreferredContentSizeCategory: UILabel {
   var preferredContentSizeCategory: UIContentSizeCategory = .unspecified {
     didSet {
@@ -24,7 +23,7 @@ private class LabelWithOverridePreferredContentSizeCategory: UILabel {
 
 class DynamicTypeFontScalingTests: XCTestCase {
 
-  func testAdjustedFontForContentSizeCategory() { if #available(iOS 10, tvOS 10, *) {
+  func testAdjustedFontForContentSizeCategory() {
     let fixedFont = UIFont.systemFont(ofSize: 16)
 
     XCTAssertEqual(fixedFont, fixedFont.stu_fontAdjusted(forContentSizeCategory: .extraLarge))
@@ -59,15 +58,10 @@ class DynamicTypeFontScalingTests: XCTestCase {
     label.preferredContentSizeCategory = .extraSmall
     XCTAssertEqual(label.font, preferredFont3.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
 
-    if #available(iOS 12, tvOS 12, *) {
-      XCTAssertNotEqual(label.font, preferredFont3)
-      XCTAssertEqual(label.font, preferredFont2.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
-      label.preferredContentSizeCategory = .large
-      XCTAssertEqual(label.font, preferredFont2)
-    } else {
-      label.preferredContentSizeCategory = .large
-      XCTAssertEqual(label.font, preferredFont3)
-    }
+    XCTAssertNotEqual(label.font, preferredFont3)
+    XCTAssertEqual(label.font, preferredFont2.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
+    label.preferredContentSizeCategory = .large
+    XCTAssertEqual(label.font, preferredFont2)
 
     // UILabel doesn't scale preferred fonts with a changed symbolic trait...
     let italicPreferredFont = UIFont(descriptor: preferredFont2.fontDescriptor
@@ -84,68 +78,66 @@ class DynamicTypeFontScalingTests: XCTestCase {
                                         compatibleWith: UITraitCollection(
                                                           preferredContentSizeCategory: .extraSmall)))
 
-    if #available(iOS 11, tvOS 11, *) {
-      let scaledPreferredFont =
-          UIFontMetrics(forTextStyle: .body)
-          .scaledFont(for: preferredFont2, maximumPointSize: 25,
-                      compatibleWith: UITraitCollection(preferredContentSizeCategory: .extraSmall))
+    let scaledPreferredFont =
+        UIFontMetrics(forTextStyle: .body)
+        .scaledFont(for: preferredFont2, maximumPointSize: 25,
+                    compatibleWith: UITraitCollection(preferredContentSizeCategory: .extraSmall))
 
-      label.preferredContentSizeCategory = .extraSmall
-      label.font = scaledPreferredFont
-      label.preferredContentSizeCategory = .large
-      XCTAssertEqual(label.font, preferredFont2)
-      XCTAssertEqual(preferredFont2, scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large))
-      label.preferredContentSizeCategory = .accessibilityExtraExtraExtraLarge
-      XCTAssertEqual(label.font.pointSize, 25)
-      XCTAssertEqual(label.font,
-                     scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large)
-                                        .stu_fontAdjusted(forContentSizeCategory:
-                                                            .accessibilityExtraExtraExtraLarge))
+    label.preferredContentSizeCategory = .extraSmall
+    label.font = scaledPreferredFont
+    label.preferredContentSizeCategory = .large
+    XCTAssertEqual(label.font, preferredFont2)
+    XCTAssertEqual(preferredFont2, scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large))
+    label.preferredContentSizeCategory = .accessibilityExtraExtraExtraLarge
+    XCTAssertEqual(label.font.pointSize, 25)
+    XCTAssertEqual(label.font,
+                   scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large)
+                                      .stu_fontAdjusted(forContentSizeCategory:
+                                                          .accessibilityExtraExtraExtraLarge))
 
-      label.preferredContentSizeCategory = .large
+    label.preferredContentSizeCategory = .large
       
-      let helvetica = UIFont(name: "HelveticaNeue", size: 20)!
-      let scaledHelvetica = UIFontMetrics(forTextStyle: .headline)
-                            .scaledFont(for: helvetica,
-                                        compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
-      XCTAssertEqual(scaledHelvetica.pointSize, 20)
-      label.font = scaledHelvetica
+    let helvetica = UIFont(name: "HelveticaNeue", size: 20)!
+    let scaledHelvetica = UIFontMetrics(forTextStyle: .headline)
+                          .scaledFont(for: helvetica,
+                                      compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
+    XCTAssertEqual(scaledHelvetica.pointSize, 20)
+    label.font = scaledHelvetica
 
-      label.font = scaledHelvetica
-      label.preferredContentSizeCategory = .extraExtraLarge
-      XCTAssertNotEqual(label.font, scaledHelvetica)
-      XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
-      XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
+    label.font = scaledHelvetica
+    label.preferredContentSizeCategory = .extraExtraLarge
+    XCTAssertNotEqual(label.font, scaledHelvetica)
+    XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
+    XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
 
-      label.preferredContentSizeCategory = .large
+    label.preferredContentSizeCategory = .large
 
-      let scaledHelvetica2 = UIFontMetrics(forTextStyle: .headline)
-                             .scaledFont(for: helvetica, maximumPointSize: 22,
-                                         compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
-      XCTAssertEqual(scaledHelvetica2.pointSize, 20)
+    let scaledHelvetica2 = UIFontMetrics(forTextStyle: .headline)
+                           .scaledFont(for: helvetica, maximumPointSize: 22,
+                                       compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
+    XCTAssertEqual(scaledHelvetica2.pointSize, 20)
 
-      // UIFont isEqual doesn't compare the text style and maximum point size
-      // (which is problematic), but UILabel uses it to optimize invalidation when assigning to the
-      // font property (which is arguably a bug), so we set the font first to some unequal value.
-      label.font = fixedFont;
-      label.font = scaledHelvetica2
-      label.preferredContentSizeCategory = .extraExtraExtraLarge
-      XCTAssertNotEqual(label.font, scaledHelvetica2)
-      XCTAssertEqual(label.font.pointSize, 22)
-      XCTAssertEqual(label.font, scaledHelvetica2.stu_fontAdjusted(forContentSizeCategory: .extraExtraExtraLarge))
-      XCTAssertEqual(label.font, scaledHelvetica2.stu_fontAdjusted(forContentSizeCategory: .extraExtraExtraLarge))
+    // UIFont isEqual doesn't compare the text style and maximum point size
+    // (which is problematic), but UILabel uses it to optimize invalidation when assigning to the
+    // font property (which is arguably a bug), so we set the font first to some unequal value.
+    label.font = fixedFont;
+    label.font = scaledHelvetica2
+    label.preferredContentSizeCategory = .extraExtraExtraLarge
+    XCTAssertNotEqual(label.font, scaledHelvetica2)
+    XCTAssertEqual(label.font.pointSize, 22)
+    XCTAssertEqual(label.font, scaledHelvetica2.stu_fontAdjusted(forContentSizeCategory: .extraExtraExtraLarge))
+    XCTAssertEqual(label.font, scaledHelvetica2.stu_fontAdjusted(forContentSizeCategory: .extraExtraExtraLarge))
 
-      label.preferredContentSizeCategory = .small
-      label.font = fixedFont
-      label.font = scaledHelvetica
-      label.preferredContentSizeCategory = .extraExtraLarge
-      XCTAssertNotEqual(label.font, scaledHelvetica)
-      XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
-      label.font = nil
-    }
-  } }
+    label.preferredContentSizeCategory = .small
+    label.font = fixedFont
+    label.font = scaledHelvetica
+    label.preferredContentSizeCategory = .extraExtraLarge
+    XCTAssertNotEqual(label.font, scaledHelvetica)
+    XCTAssertEqual(label.font, scaledHelvetica.stu_fontAdjusted(forContentSizeCategory: .extraExtraLarge))
+    label.font = nil
+  }
 
-  func testAttributedStringFontAdjustmentForContentSizeCategory() { if #available(iOS 10, tvOS 10, *) {
+  func testAttributedStringFontAdjustmentForContentSizeCategory() {
     let category: UIContentSizeCategory = .extraSmall
     let traitCollection = UITraitCollection(preferredContentSizeCategory: category)
     let font1 = UIFont.preferredFont(forTextStyle: .body)
@@ -192,5 +184,5 @@ class DynamicTypeFontScalingTests: XCTestCase {
     XCTAssertEqual(string.attributes(at: 5, effectiveRange: nil) as NSObject,
                    ([:] as StringAttributes) as NSObject)
 
-  } }
+  }
 }

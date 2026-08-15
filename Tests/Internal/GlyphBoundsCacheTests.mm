@@ -193,22 +193,14 @@ using FontFace = FontFaceGlyphBoundsCache::FontFace;
     UIContentSizeCategoryAccessibilityExtraExtraExtraLarge
   };
 
-  if (@available(iOS 10, tvOS 10, *)) {
-    for (const auto& category : categories) {
-      const auto tc = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:category];
-      for (const auto& textStyle : textStyles) {
-        [self testBoundsOfAllGlyphsOfFont:[UIFont preferredFontForTextStyle:textStyle
-                                              compatibleWithTraitCollection:tc]];
-      }
-      if (@available(iOS 11, *)) {
-        [self testBoundsOfAllGlyphsOfFont:[UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle
-                                              compatibleWithTraitCollection:tc]];
-      }
-    }
-  } else {
+  for (const auto& category : categories) {
+    const auto tc = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:category];
     for (const auto& textStyle : textStyles) {
-      [self testBoundsOfAllGlyphsOfFont:[UIFont preferredFontForTextStyle:textStyle]];
+      [self testBoundsOfAllGlyphsOfFont:[UIFont preferredFontForTextStyle:textStyle
+                                            compatibleWithTraitCollection:tc]];
     }
+    [self testBoundsOfAllGlyphsOfFont:[UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle
+                                          compatibleWithTraitCollection:tc]];
   }
 }
 
@@ -352,4 +344,3 @@ using FontFace = FontFaceGlyphBoundsCache::FontFace;
 }
 
 @end
-

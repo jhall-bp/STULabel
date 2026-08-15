@@ -22,22 +22,13 @@ private let singleLineAttributes: Attributes =
                         p.lineBreakMode = .byTruncatingTail
                         return p.copy() }()]
 
-private func ceilToDisplayScale(_ value: CGFloat) -> CGFloat {
-  let displayScale = stu_mainScreenScale()
+private func ceilToDisplayScale(_ value: CGFloat, displayScale: CGFloat) -> CGFloat {
   return ceil(displayScale*value)/displayScale
 }
 
 private let lineHeight = font.ascender - font.descender
 
 private let lineHeightIncludingSpacing = lineHeight + max(font.leading, lineSpacing)
-
-private let titleTextViewBottomInset: CGFloat = {
-  let rh = ceilToDisplayScale(lineHeight + max(font.leading, lineSpacing/2))
-  let s = rh - lineHeight
-  return max(0, s.nextDown)
-}()
-
-private let extraSpacingAfterTitleUILabel = roundToDisplayScale(lineHeightIncludingSpacing - lineHeight)
 
 let emojis = Array("😀😁😂😃😄😅😆😉😊😋😎😍😘😗😙😚☺️🙂🤗🤔😶🙄😏😣😥😮😯😪😫😴😌😛😜😝😒😓😔😕🙃🤑😲😖😤😢😩😬😱😳😵😇🤓😡😠😷🤒🤕😇🤓💀👻👽🤖💩😺😸😹😻😼😽🙀🐶🐱🐭🐹🐰🐻🐼🐨🐯🦁🐮🐷🐽🐸🐵🙊🙉🙊🐒🐔🐧🐦🐤🐣🐥🐺🐗🐴🦄🐝🐛🐌🐚🐞🐜🕷🕸🐢🐍🦂🦀🐙🐠🐟🐡🐬🐳🐋🐊🐆🐅🐃🐂🐄🐪🐫🐘🐎🐖🐐🐏🐑🐕🐩🐈🐓🦃🕊🐇🐁🐀🐿🐾🐉🐲🌵🎄🌲🌳🌴🌱🌿☘️🍀🎍🎋🍃🍂🍁🍄🌾💐🌷🌹🌻🌼🌸🌺🌎🌍🌏🌕🌖🌗🌘🌑🌒🌓🌔🌚🌝🌞🌛🌜🌙💫⭐️🌟✨⚡️🔥💥☄️☀️🌤🌈☃️⛄️❄️💧💦☔️🚗🚕🚙🚌🚎🏎🚓🚑🚒🚐🚚🚛🚜🚲🏍🚨🚔🚍🚘🚖🚡🚠🚟🚃🚋🚞🚝🚄🚅🚈🚂🚆🚇🚊🚉🚁🛩✈️🛫🛬🚀🛰💺⛵️🛥🚤🛳⛴🚢⚓️🚧⛽️🚏🚦🚥🗺🗿🗽⛲️🗼🏰🏯🏟🎡🎢🎠⛱🏖🏝⛰🏔🗻🌋🏜🏕⛺️🛤🛣🏗🏭🏠🏡🏘🏚🏢🏬🏣🏤🏥🏦🏨🏪🏫🏩💒🏛⛪️🕌🕍🕋⛩🗾🎑🏞🌅🌄🌠🎇🎆🌇🌆🏙🌃🌌🌉🌁⚽️🏀🏈⚾️🎾🏐🏉🏓🏸🏒🏑🏏⛳️🏹🎣⛸🎿⛷🏂🎽🏅🎖🏆🏵🎗🎫🎟🎪🎭🎨🎬🎤🎧🎼🎹🎷🎺🎸🎻🎲🎯🎳🎮🎰")
 
@@ -48,7 +39,7 @@ let chinese = ["此安里包心统妈然得准么", "大水品他体同台也团
 // Extracts from text generated with http://generator.lorem-ipsum.info/
 let hindi = ["भारतीय", "ब्रौशर", "भारत", "हिंदी", "द्वारा", "एकत्रित", "यन्त्रालय", "एछित", "उन्हे", "विश्व", "समूह", "हार्डवेर", "प्रौध्योगिकी", "मुक्त", "आवश्यक", "करेसाथ", "बारे", "भाति", "पुष्टिकर्ता", "माहितीवानीज्य", "शीघ्र", "विश्व", "शारिरिक", "अविरोधता", "भीयह", "प्राप्त", "निर्देश", "समूह", "लेकिन", "विश्लेषण", "व्रुद्धि", "चिदंश", "गएआप", "बाटते", "सकते", "उसीएक्", "असक्षम", "प्रतिबध", "देने", "विभाजन", "प्राथमिक", "तरीके", "स्थिति", "दिनांक", "व्यवहार", "बनाति", "भीयह", "सहायता", "प्रतिबध्दता", "जनित", "सादगि", "प्राप्त", "मुख्यतह", "व्रुद्धि", "ध्वनि", "किया", "है।अभी", "व्याख्या", "बढाता", "।क", "सभीकुछ", "यन्त्रालय", "देखने", "देते", "बनाए", "आवश्यक", "सोफ़तवेर", "ध्वनि", "पहेला", "पुस्तक", "और्४५०", "विभाजन", "रचना", "हमारी", "दारी", "कुशलता", "वास्तव", "सम्पर्क", "सक्षम", "अपनि", "हुएआदि", "बेंगलूर", "विभाग", "ब्रौशर", "मुश्किल", "देते", "जागरुक", "जानकारी", "होने", "बनाति", "रखति", "सदस्य", "तरहथा।", "परिभाषित", "विचरविमर्श", "सुविधा", "अनुवादक", "आंतरकार्यक्षमता", "हैं।", "विवरन", "अथवा", "होसके", "व्याख्या", "प्रौध्योगिकी", "चिदंश", "अनुवादक", "सोफ़तवेर", "व्रुद्धि", "देकर", "जैसी", "बनाने", "एसेएवं", "बीसबतेबोध", "सदस्य", "और्४५०", "निर्माण", "रिती", "दिशामे", "निर्माण", "जानते", "बारे", "सकता", "भारतीय", "संस्थान", "बनाना", "लगती", "मुख्यतह", "सोफ़्टवेर", "ढांचामात्रुभाषा", "समजते", "विकास", "तरहथा।", "लाभान्वित", "बिन्दुओमे", "सुनत", "बनाति", "मेमत", "उपलब्ध", "वर्तमान", "अर्थपुर्ण", "उदेश", "चिदंश", "विनिमय", "तकनिकल", "वार्तालाप", "आधुनिक", "विकसित", "मुश्किल", "बारे", "सदस्य", "परस्पर", "एसेएवं", "बनाना", "वर्ष", "सादगि", "बाधा", "प्राधिकरन", "विभाजनक्षमता", "बिन्दुओ", "गोपनीयता", "बाटते", "भाषा", "भीयह", "हमारी", "मानसिक", "आशाआपस", "मुश्किल"]
 
-private let isPad = UI_USER_INTERFACE_IDIOM() == .pad
+private let isPad = UIDevice.current.userInterfaceIdiom == .pad
 
 private var greyBackgroundColor = UIColor(white: 0.95, alpha: 1)
 
@@ -210,12 +201,7 @@ private struct SocialMediaCellContent {
 
 }
 
-private let isAtLeastIOS10 = NSFoundationVersionNumber > 1299
-private let isAtLeastIOS11 = NSFoundationVersionNumber > 1399
-
-private let rowCount = isAtLeastIOS11 ? 50000 : 5000
-
-private let cellSeparatorHeight = 1/stu_mainScreenScale();
+private let rowCount = 50000
 
 private func setting<Value: UserDefaultsStorable>(_ id: String, _ defaultValue: Value)
           -> Setting<Value>
@@ -227,6 +213,10 @@ private func setting<Value: UserDefaultsStorable>(_ id: String, _ defaultValue: 
 class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefetching,
                                UIPopoverPresentationControllerDelegate, STULabelDelegate
 {
+
+  private var displayScale: CGFloat { traitCollection.displayScale }
+
+  private var cellSeparatorHeight: CGFloat { 1/displayScale }
 
   private class TableView : UITableView {
 
@@ -302,16 +292,11 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
 
     private var contentOffsetY: CGFloat = 0
     private var contentOffsetYRange: ClosedRange<CGFloat> = 0...0
-    private var scrollsDownwards: Bool = true
 
     override func layoutSubviews() {
       let size = self.bounds.size
       cellContentWidth = size.width - cellEdgeInsets.left - cellEdgeInsets.right
       let contentOffsetYBeforeLayout = self.contentOffset.y
-      if contentOffsetYBeforeLayout != contentOffsetY {
-        scrollsDownwards = contentOffsetYBeforeLayout > contentOffsetY
-                        || contentOffsetYBeforeLayout <= 0
-      }
       super.layoutSubviews()
       if let (indexPath, y) = reloadedMiddleCellIndexPathAndYInWindow {
         reloadedMiddleCellIndexPathAndYInWindow = nil
@@ -335,79 +320,6 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
         autoScrollStartOffset += delta
       }
       contentOffsetYRange = (-cellEdgeInsets.top)...(contentSize.height - size.height)
-      if prefetchesOnIOS9 {
-        prefetchCellsOnIOS9()
-      }
-    }
-
-    var prefetchesOnIOS9: Bool = false
-    var prefetchRange: CountableRange<Int> = 0..<0
-
-    private var indexPathArray = [IndexPath]()
-    private var prefetchedIndexPaths = Set<IndexPath>()
-
-    private func prefetchCellsOnIOS9() {
-      if isAtLeastIOS10 { return }
-
-      var minVisibleIndex: Int = .max
-      var maxVisibleIndex: Int = .min
-      for ip in self.indexPathsForVisibleRows ?? [] {
-        let index = ip.row
-        minVisibleIndex = min(minVisibleIndex, index)
-        maxVisibleIndex = max(maxVisibleIndex, index)
-      }
-      if maxVisibleIndex <= minVisibleIndex { return }
-      let d = maxVisibleIndex - minVisibleIndex + 1
-
-      let delegate = self.delegate as! TableViewPerformanceVC
-
-      var lb = max(0, minVisibleIndex - (scrollsDownwards ? d/2 : d))
-      var ub = min(maxVisibleIndex + 1 + (scrollsDownwards ? d : d/2), rowCount)
-      if prefetchRange.contains(lb - 1) {
-        lb = max(prefetchRange.lowerBound, lb - d)
-      }
-      if prefetchRange.contains(ub) {
-        ub = min(prefetchRange.upperBound, ub + d)
-      }
-      let newPrefetchRange = lb..<ub
-
-      let r1 = lb ..< minVisibleIndex
-      let r2 = (maxVisibleIndex + 1) ..< ub
-
-      let kept = newPrefetchRange.clamped(to: prefetchRange)
-      let c1 = prefetchRange.lowerBound..<kept.lowerBound
-      let c2 = kept.upperBound..<prefetchRange.upperBound
-      indexPathArray.append(contentsOf: c1.lazy.map({ IndexPath(row: $0, section: 0) }))
-      indexPathArray.append(contentsOf: c2.lazy.map({ IndexPath(row: $0, section: 0) }))
-      if !indexPathArray.isEmpty {
-        delegate.tableView(self, cancelPrefetchingForRowsAt: indexPathArray)
-        indexPathArray.removeAll(keepingCapacity: true)
-      }
-
-      let r1b = prefetchRange.clamped(to: r1)
-      let r1a = r1.lowerBound..<r1b.lowerBound
-      let r1c = r1b.upperBound..<r1.upperBound
-
-      let r2b = prefetchRange.clamped(to: r2)
-      let r2a = r2.lowerBound..<r2b.lowerBound
-      let r2c = r2b.upperBound..<r2.upperBound
-
-      if scrollsDownwards {
-        indexPathArray.append(contentsOf: r2a.lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r2c.lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r1c.reversed().lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r1a.reversed().lazy.map({ IndexPath(row: $0, section: 0) }))
-      } else  {
-        indexPathArray.append(contentsOf: r2a.lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r2c.lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r1c.reversed().lazy.map({ IndexPath(row: $0, section: 0) }))
-        indexPathArray.append(contentsOf: r1a.reversed().lazy.map({ IndexPath(row: $0, section: 0) }))
-      }
-      if !indexPathArray.isEmpty {
-        delegate.tableView(self, prefetchRowsAt: indexPathArray)
-        indexPathArray.removeAll(keepingCapacity: true)
-      }
-      prefetchRange = newPrefetchRange
     }
 
     private var displayLink: CADisplayLink?
@@ -440,11 +352,7 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
     @objc
     private func nextFrame(_ link: CADisplayLink) {
       let timeStamp: TimeInterval
-      if #available(iOS 10, *) {
-        timeStamp = link.targetTimestamp
-      } else {
-        timeStamp = link.timestamp
-      }
+      timeStamp = link.targetTimestamp
       if autoScrollStartTime == 0 {
         autoScrollStartTime = timeStamp
         layoutIfNeeded()
@@ -484,11 +392,6 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
     tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     tableView.cellLayoutMarginsFollowReadableWidth = true
     tableView.rowHeight = UITableView.automaticDimension
-
-    if #available(iOS 11, tvOS 11, *) {}
-    else {
-      tableView.estimatedRowHeight = 57.5
-    }
 
     for id in ReuseIdentifier.all {
       tableView.register(id.cellType, forCellReuseIdentifier: id.rawValue)
@@ -624,11 +527,7 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
   private func updatePrefetchSource() {
     clearPrefetchItems()
     let shouldPrefetch = usesPrefetchLayout || usesPrefetchRendering
-    if #available(iOS 10, tvOS 10, *) {
-      ourTableView.prefetchDataSource = shouldPrefetch ? self : nil
-    } else {
-      ourTableView.prefetchesOnIOS9 = shouldPrefetch
-    }
+    ourTableView.prefetchDataSource = shouldPrefetch ? self : nil
   }
 
   private let displaysAsynchronouslySetting = setting("displaysAsynchronously", true)
@@ -765,7 +664,9 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
   }
 
   private var labelContentInsets: UIEdgeInsets {
-    let sideInset = testCase == .emojicalypse ? lineSpacing : roundToDisplayScale(lineSpacing/2)
+    let sideInset = testCase == .emojicalypse ? lineSpacing
+                                               : roundToDisplayScale(lineSpacing/2,
+                                                                     displayScale: displayScale)
     return UIEdgeInsets(top: lineSpacing, left: sideInset,
                         bottom: lineSpacing, right: sideInset)
   }
@@ -908,6 +809,10 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
 
   private class Cell : UITableViewCell {
 
+    var displayScale: CGFloat { traitCollection.displayScale }
+
+    var cellSeparatorHeight: CGFloat { 1/displayScale }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
       precondition(reuseIdentifier != nil)
       let reuseIdentifier = reuseIdentifier!
@@ -929,7 +834,9 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
         let newValue = contentInsets
         if newValue == oldValue { return }
         if usesAutoLayout {
-          self.contentView.layoutMargins = contentInsets
+          self.contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+            top: contentInsets.top, leading: contentInsets.left, bottom: contentInsets.bottom,
+            trailing: contentInsets.right)
         } else {
           self.setNeedsLayout()
         }
@@ -1094,11 +1001,27 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
 
     private let negativeSideMargin: CGFloat
 
+    private var titleTextViewBottomInset: CGFloat {
+      let roundedHeight = ceilToDisplayScale(lineHeight + max(UIFont.systemFont(ofSize: 14).leading,
+                                                              lineSpacing/2),
+                                             displayScale: displayScale)
+      return max(0, (roundedHeight - lineHeight).nextDown)
+    }
+
+    private var extraSpacingAfterTitleUILabel: CGFloat {
+      roundToDisplayScale(lineHeightIncludingSpacing - lineHeight, displayScale: displayScale)
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
       let labelIsUITextView = Label.self == UITextView.self
-      negativeSideMargin = labelIsUITextView ? roundToDisplayScale(lineSpacing/2) : 0
+      negativeSideMargin = labelIsUITextView ? lineSpacing/2 : 0
 
       super.init(style: style, reuseIdentifier: reuseIdentifier)
+      registerForTraitChanges([UITraitDisplayScale.self]) { (self: SocialMediaCell<Label>, _) in
+        self.lastLayoutParams = nil
+        self.updateTextViewInsets()
+        self.setNeedsLayout()
+      }
       nameLabel.configureForUseAsLabel()
       nameLabel.maximumNumberOfLines = 1
       timestampLabel.configureForUseAsLabel()
@@ -1107,19 +1030,7 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
       mainTextLabel.maximumNumberOfLines = 0
 
       if labelIsUITextView {
-        let nameLabel = self.nameLabel as! UITextView
-        let timestampLabel = self.timestampLabel as! UITextView
-        let mainTextLabel = self.mainTextLabel as! UITextView
-
-        nameLabel.textContainerInset = UIEdgeInsets(top: lineSpacing, left: negativeSideMargin,
-                                                    bottom: titleTextViewBottomInset, right: 0)
-        timestampLabel.textContainerInset = UIEdgeInsets(top: lineSpacing, left: 0,
-                                                         bottom: titleTextViewBottomInset,
-                                                         right: negativeSideMargin)
-        mainTextLabel.textContainerInset = UIEdgeInsets(top: lineSpacing - titleTextViewBottomInset,
-                                                        left: negativeSideMargin,
-                                                        bottom: lineSpacing,
-                                                        right: negativeSideMargin)
+        updateTextViewInsets()
       }
 
       self.contentView.addSubview(nameLabel)
@@ -1172,6 +1083,26 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
           ].activate()
         }
       }
+    }
+
+    override func didMoveToWindow() {
+      super.didMoveToWindow()
+      updateTextViewInsets()
+    }
+
+    private func updateTextViewInsets() {
+      guard Label.self == UITextView.self else { return }
+      let nameLabel = self.nameLabel as! UITextView
+      let timestampLabel = self.timestampLabel as! UITextView
+      let mainTextLabel = self.mainTextLabel as! UITextView
+      let bottomInset = titleTextViewBottomInset
+      nameLabel.textContainerInset = UIEdgeInsets(top: lineSpacing, left: negativeSideMargin,
+                                                  bottom: bottomInset, right: 0)
+      timestampLabel.textContainerInset = UIEdgeInsets(top: lineSpacing, left: 0,
+                                                       bottom: bottomInset, right: negativeSideMargin)
+      mainTextLabel.textContainerInset = UIEdgeInsets(top: lineSpacing - bottomInset,
+                                                      left: negativeSideMargin, bottom: lineSpacing,
+                                                      right: negativeSideMargin)
     }
 
      public override func systemLayoutSizeFitting(_ targetSize: CGSize,
@@ -1362,9 +1293,9 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
          { [unowned self] (notification) in self.enteredBackground -= 1 }))
 
     testCaseSetting.onChange = { [unowned self] in
-      self.ourTableView.contentOffset.y = -self.topLayoutGuide.length
+      self.ourTableView.contentOffset.y = -self.view.safeAreaInsets.top
       self.reloadCells(preservingPositions: false)
-      self.ourTableView.contentOffset.y = -self.topLayoutGuide.length
+      self.ourTableView.contentOffset.y = -self.view.safeAreaInsets.top
     }
     labelViewTypeSetting.onChange = { [unowned self] in
       if self.labelViewType != .stuLabel {
@@ -1415,6 +1346,11 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    registerForTraitChanges([UITraitDisplayScale.self]) { (self: TableViewPerformanceVC, _) in
+      self.cachedCellHeights = [:]
+      self.heightForRowPrerenderer = nil
+      self.ourTableView.reloadData(preservingVerticalOffset: true)
+    }
     cellReloadContextCounter += 1
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
       self.cellReloadContextCounter -= 1
@@ -1439,4 +1375,3 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
   }
 
 }
-

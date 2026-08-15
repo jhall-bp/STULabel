@@ -6,7 +6,8 @@ import XCTest
 
 // Note: We're using ../Demo/Utils/AutoLayoutUtils.swift here.
 
-let suffix = "@\(Int(stu_mainScreenScale()))"
+let snapshotDisplayScale = UITraitCollection.current.displayScale
+let suffix = "@\(Int(snapshotDisplayScale))"
 
 class AutoLayoutTests: SnapshotTestCase {
   override func setUp() {
@@ -90,14 +91,12 @@ class AutoLayoutTests: SnapshotTestCase {
       c.isActive = false
     }()
 
-    if #available(iOS 10, tvOS 10, *) {
-      let c = NSLayoutConstraint(item: labelA, attribute: .lastBaseline, relatedBy: .equal,
-                                 toItem: labelB, attribute: .firstBaseline,
-                                 multiplier: 1, constant: 0)
-      c.isActive = true
-      checkSnapshot(of: container, suffix: "_last_first" + suffix2)
-      c.isActive = false
-    }
+    let c = NSLayoutConstraint(item: labelA, attribute: .lastBaseline, relatedBy: .equal,
+                               toItem: labelB, attribute: .firstBaseline,
+                               multiplier: 1, constant: 0)
+    c.isActive = true
+    checkSnapshot(of: container, suffix: "_last_first" + suffix2)
+    c.isActive = false
 
     {
       let c = constrain(labelA, .firstBaseline, eq, labelB, .lastBaseline)
@@ -235,11 +234,11 @@ class AutoLayoutTests: SnapshotTestCase {
       let view = newView("overlay")
       container.addSubview(view)
       view.backgroundColor = UIColor.orange.withAlphaComponent(0.25)
-      [constrain(view, .height, eq, 1/stu_mainScreenScale()),
+      [constrain(view, .height, eq, 1/snapshotDisplayScale),
        constrain(view, .leading, eq, labelC, .leading),
        constrain(view, .width, eq, labelC, .width),
        constrain(view, .top, eq, labelB, .lastBaseline,
-                 plusLineHeightMultipliedBy: 1, plus: -1/stu_mainScreenScale())].activate()
+                 plusLineHeightMultipliedBy: 1, plus: -1/snapshotDisplayScale)].activate()
 
       checkSnapshot(of: container, suffix: "_lineHeight_1_overlay" + suffix)
     }())
@@ -268,8 +267,8 @@ class AutoLayoutTests: SnapshotTestCase {
 
     let f = UIFont(name: "Helvetica", size: 16)!
     assert(f.leading == 0)
-    let size1 = (roundToDisplayScale(f.ascender)/f.ascender)*16
-    let size2 = (roundToDisplayScale(f.descender)/f.descender)*16
+    let size1 = (roundToDisplayScale(f.ascender, displayScale: snapshotDisplayScale)/f.ascender)*16
+    let size2 = (roundToDisplayScale(f.descender, displayScale: snapshotDisplayScale)/f.descender)*16
     label.attributedText = NSAttributedString(
                              [("Lj 1\n", [.font: UIFont(name: "Helvetica", size: size1)!]),
                               ("Lj 2", [.font: UIFont(name: "Helvetica", size: size2)!])])
@@ -282,7 +281,7 @@ class AutoLayoutTests: SnapshotTestCase {
     container.addSubview(viewAbove)
     container.addSubview(viewBelow)
 
-    let onePixel = 1/stu_mainScreenScale()
+    let onePixel = 1/snapshotDisplayScale
 
     var cs = [NSLayoutConstraint]()
     constrain(&cs, label, within: container)

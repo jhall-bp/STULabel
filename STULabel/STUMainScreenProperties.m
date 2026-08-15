@@ -27,7 +27,9 @@ static STU_ATOMIC_IF_NOT_CONSTANT(STUDisplayGamut) mainScreenDisplayGamut;
 
 static void updateMainScreenProperties(void) {
   STU_DEBUG_ASSERT(pthread_main_np());
+STU_DISABLE_CLANG_WARNING("-Wdeprecated-declarations")
   UIScreen * const mainScreen = UIScreen.mainScreen;
+STU_REENABLE_CLANG_WARNING
   STU_ASSERT(mainScreen || !STU_MAIN_SCREEN_PROPERTIES_ARE_CONSTANT);
   CGSize portraitSize;
   CGFloat scale;
@@ -35,11 +37,7 @@ static void updateMainScreenProperties(void) {
   if (mainScreen) {
     portraitSize = mainScreen.fixedCoordinateSpace.bounds.size;
     scale = mainScreen.scale;
-    if (@available(iOS 10, tvOS 10, *)) {
-      displayGamut = (STUDisplayGamut)mainScreen.traitCollection.displayGamut;
-    } else { // We don't try to support wide colors on an old iPad Pro running iOS 9.
-      displayGamut = STUDisplayGamutSRGB;
-    }
+    displayGamut = (STUDisplayGamut)mainScreen.traitCollection.displayGamut;
   } else {
     portraitSize = CGSizeZero;
     scale = 1;
@@ -111,6 +109,21 @@ void stu_initializeMainScreenProperties(void) {
 #else
   #define load(var) atomic_load_explicit(&var, memory_order_relaxed)
 #endif
+
+STU_EXPORT
+CGSize stu_screenPortraitSize(UIScreen *screen) {
+  return screen.fixedCoordinateSpace.bounds.size;
+}
+
+STU_EXPORT
+CGFloat stu_displayScaleForTraitCollection(UITraitCollection *traitCollection) {
+  return traitCollection.displayScale;
+}
+
+STU_EXPORT
+STUDisplayGamut stu_displayGamutForTraitCollection(UITraitCollection *traitCollection) {
+  return (STUDisplayGamut)traitCollection.displayGamut;
+}
 
 STU_EXPORT
 CGSize stu_mainScreenPortraitSize(void) {

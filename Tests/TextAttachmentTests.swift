@@ -62,15 +62,9 @@ class TextAttachmentTests: SnapshotTestCase {
     XCTAssert(!attachment2.isAccessibilityElement)
 
     attachment2.isAccessibilityElement = true
-    if #available(iOS 11, tvOS 11, *) {
-      attachment2.accessibilityAttributedLabel = NSAttributedString("label", [.baselineOffset:1])
-      attachment2.accessibilityAttributedHint = NSAttributedString("hint", [.baselineOffset:2])
-      attachment2.accessibilityAttributedValue = NSAttributedString("value", [.baselineOffset:3])
-    } else {
-      attachment2.accessibilityLabel = "label"
-      attachment2.accessibilityHint = "hint"
-      attachment2.accessibilityValue = "value"
-    }
+    attachment2.accessibilityAttributedLabel = NSAttributedString("label", [.baselineOffset:1])
+    attachment2.accessibilityAttributedHint = NSAttributedString("hint", [.baselineOffset:2])
+    attachment2.accessibilityAttributedValue = NSAttributedString("value", [.baselineOffset:3])
     attachment2.accessibilityLanguage = "language"
 
     let data2 = NSKeyedArchiver.archivedData(withRootObject: attachment2)
@@ -79,18 +73,12 @@ class TextAttachmentTests: SnapshotTestCase {
 
     XCTAssertEqual(attachment3.isAccessibilityElement, true)
 
-    if #available(iOS 11, tvOS 11, *) {
-      XCTAssertEqual(attachment3.accessibilityAttributedLabel,
-                     NSAttributedString("label", [.baselineOffset:1]))
-      XCTAssertEqual(attachment3.accessibilityAttributedHint,
-                     NSAttributedString("hint", [.baselineOffset:2]))
-      XCTAssertEqual(attachment3.accessibilityAttributedValue,
-                     NSAttributedString("value", [.baselineOffset:3]))
-    } else {
-      XCTAssertEqual(attachment3.accessibilityLabel, "label")
-      XCTAssertEqual(attachment3.accessibilityHint, "hint")
-      XCTAssertEqual(attachment3.accessibilityValue, "value")
-    }
+    XCTAssertEqual(attachment3.accessibilityAttributedLabel,
+                   NSAttributedString("label", [.baselineOffset:1]))
+    XCTAssertEqual(attachment3.accessibilityAttributedHint,
+                   NSAttributedString("hint", [.baselineOffset:2]))
+    XCTAssertEqual(attachment3.accessibilityAttributedValue,
+                   NSAttributedString("value", [.baselineOffset:3]))
     XCTAssertEqual(attachment3.accessibilityLanguage, "language")
   }
 
@@ -129,11 +117,7 @@ class TextAttachmentTests: SnapshotTestCase {
     XCTAssertEqual(attachment2.leading, 5)
     XCTAssertEqual(attachment2.imageBounds, CGRect(origin: CGPoint(x: 2, y: offset - imageSize.height),
                                                    size: imageSize))
-    if #available(iOS 10, tvOS 10, macOS 10.12, *) {
-      XCTAssertEqual(attachment2.colorInfo, [.usesExtendedColors])
-    } else {
-      XCTAssertEqual(attachment2.colorInfo, [])
-    }
+    XCTAssertEqual(attachment2.colorInfo, [.usesExtendedColors])
     XCTAssertEqual(attachment2.stringRepresentation, "test 2")
     XCTAssertEqual(attachment2.image, extendedRGBImage);
 
@@ -146,11 +130,7 @@ class TextAttachmentTests: SnapshotTestCase {
     XCTAssertEqual(attachment3.leading, 5)
     XCTAssertEqual(attachment3.imageBounds, CGRect(origin: CGPoint(x: 2, y: offset - imageSize.height),
                                                    size: imageSize))
-    if #available(iOS 10, tvOS 10, macOS 10.12, *) {
-      XCTAssertEqual(attachment3.colorInfo, [.usesExtendedColors])
-    } else {
-      XCTAssertEqual(attachment3.colorInfo, [])
-    }
+    XCTAssertEqual(attachment3.colorInfo, [.usesExtendedColors])
     XCTAssertEqual(attachment3.stringRepresentation, "test 2")
     XCTAssertEqual(attachment3.image.pngData(), extendedRGBImage.pngData())
 
@@ -159,9 +139,7 @@ class TextAttachmentTests: SnapshotTestCase {
                           size: CGSize(width: 100, height: 100), displayScale: 0)
     XCTAssertEqual(tf.lines.count, 1)
     XCTAssert(tf.lines[0].nonTokenTextFlags.contains(.hasAttachment))
-    if #available(iOS 10, tvOS 10, macOS 10.12, *) {
-      XCTAssert(tf.flags.contains(.usesExtendedColor))
-    }
+    XCTAssert(tf.flags.contains(.usesExtendedColor))
     XCTAssertEqual(tf.lines[0].rangeInOriginalString, NSRange(0..<1))
     XCTAssertEqual(tf.lines[0].ascent, imageSize.height + 1 - offset)
     XCTAssertEqual(tf.lines[0].descent, 3 + offset)
@@ -172,16 +150,7 @@ class TextAttachmentTests: SnapshotTestCase {
                                           y: offset - imageSize.height
                                              + tf.lines[0].baselineOrigin.y),
                           size: imageSize))
-    let suffix: String
-    if #available(iOS 11, tvOS 11, macOS 10.13, *) {
-      suffix = ""
-    } else if #available(iOS 10, tvOS 10, macOS 10.12, *) {
-      // TODO: Find out why we need a different image for iOS 10.
-      suffix = "_iOS10"
-    } else {
-      suffix = "_iOS9"
-    }
-    checkSnapshotImage(self.image(tf), suffix: suffix);
+    checkSnapshotImage(self.image(tf));
   }
 
   func testAttachmentConversion() {

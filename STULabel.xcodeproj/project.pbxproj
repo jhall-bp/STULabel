@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10000000000000000000011 /* STULabel+UITextInput.h in Headers */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* STULabel+UITextInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A10000000000000000000012 /* STULabel+UITextInput.h in Headers */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* STULabel+UITextInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A10000000000000000000013 /* STULabel+UITextInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* STULabel+UITextInput.mm */; };
+		A10000000000000000000014 /* STULabel+UITextInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* STULabel+UITextInput.mm */; };
+		A10000000000000000000022 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
+		A10000000000000000000023 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
+		A10000000000000000000031 /* TextSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* TextSelectionVC.swift */; };
+		A10000000000000000000041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* SceneDelegate.swift */; };
 		D40702842014EC17004E5C07 /* TextFramePerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */; };
 		D407028D2014FFDF004E5C07 /* STULabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; };
 		D407028E2014FFDF004E5C07 /* STULabel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -683,6 +691,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A10000000000000000000001 /* STULabel+UITextInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STULabel+UITextInput.h"; sourceTree = "<group>"; };
+		A10000000000000000000002 /* STULabel+UITextInput-Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STULabel+UITextInput-Internal.h"; sourceTree = "<group>"; };
+		A10000000000000000000003 /* STULabel+UITextInput.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "STULabel+UITextInput.mm"; sourceTree = "<group>"; };
+		A10000000000000000000021 /* UITextInputTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UITextInputTests.mm; sourceTree = "<group>"; };
+		A10000000000000000000030 /* TextSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSelectionVC.swift; sourceTree = "<group>"; };
+		A10000000000000000000040 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFramePerformanceVC.swift; sourceTree = "<group>"; };
 		D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = STULabel.xcodeproj; sourceTree = "<group>"; };
 		D407F00920E52B6700922204 /* Demo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Demo.xcconfig; sourceTree = "<group>"; };
@@ -1267,6 +1281,7 @@
 				D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */,
 				D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */,
 				D4EA26A62049E3500093522E /* TextFrameTruncationTests.swift */,
+				A10000000000000000000021 /* UITextInputTests.mm */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1342,6 +1357,7 @@
 				D4E33DF923E5CB6500914298 /* Demo.entitlements */,
 				D467A0871F9261E70043C7F0 /* Info.plist */,
 				D47FDD622008B43C00449617 /* AppDelegate.swift */,
+				A10000000000000000000040 /* SceneDelegate.swift */,
 				D46DB172200BADB300E7E773 /* AutoHeightTableViewCell.swift */,
 				D47FDD5F2008B40B00449617 /* Demo-Bridging-Header.h */,
 				D4CEE354202632A200803A45 /* FormCells.swift */,
@@ -1390,6 +1406,7 @@
 			isa = PBXGroup;
 			children = (
 				D48AC8C1205AD53A00EA3FE8 /* TapToReadMoreVC.swift */,
+				A10000000000000000000030 /* TextSelectionVC.swift */,
 				D495DABB2067EC140081606C /* UDHRViewerVC.swift */,
 			);
 			path = Features;
@@ -1464,6 +1481,9 @@
 				D4ED608E1FF594CA00418E2A /* STUCancellationFlag.h */,
 				D4B0AFEF1F925BC600B5B2B9 /* STUDefines.h */,
 				D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */,
+				A10000000000000000000001 /* STULabel+UITextInput.h */,
+				A10000000000000000000002 /* STULabel+UITextInput-Internal.h */,
+				A10000000000000000000003 /* STULabel+UITextInput.mm */,
 				D4B0AFEA1F925B9C00B5B2B9 /* STULabel.mm */,
 				D48694612038FDED0014A034 /* STULabelAlignment.h */,
 				D4B0AECF1F925AF200B5B2B9 /* STULabelDrawingBlock.h */,
@@ -1739,6 +1759,7 @@
 				D468096F1FB1E5A8006AA14D /* NSCoderUtils.hpp in Headers */,
 				D43E66FC1FD464E200BABD1C /* LabelRendering.hpp in Headers */,
 				D423841E1F92AC81000B8A63 /* STULabel.h in Headers */,
+				A10000000000000000000011 /* STULabel+UITextInput.h in Headers */,
 				D44A5EBC1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp in Headers */,
 				D423841F1F92AC81000B8A63 /* stu_mutex.h in Headers */,
 				D43E66DB1FD464E200BABD1C /* StyledStringRangeIteration.hpp in Headers */,
@@ -1875,6 +1896,7 @@
 				D49F0AFA1FCC601A004B0E5C /* STULabelSubrangeView.h in Headers */,
 				D49F0AFF1FCC601A004B0E5C /* UnicodeCodePointProperties.hpp in Headers */,
 				D4B0AEC11F9259E600B5B2B9 /* STULabel.h in Headers */,
+				A10000000000000000000012 /* STULabel+UITextInput.h in Headers */,
 				D4B0B0041F925BE800B5B2B9 /* stu_mutex.h in Headers */,
 				D4E753BE2104A99D00FA59F0 /* STUTruncationScope.h in Headers */,
 				D49F0AA81FCC5FC5004B0E5C /* DrawingContext.hpp in Headers */,
@@ -2403,6 +2425,7 @@
 				D42383F01F92AC81000B8A63 /* STUPlaceholderObjects-no-ARC.m in Sources */,
 				D439844E20A9CCAF0007624B /* STULabelAddToContactsViewController.m in Sources */,
 				D42383F11F92AC81000B8A63 /* STULabel.mm in Sources */,
+				A10000000000000000000013 /* STULabel+UITextInput.mm in Sources */,
 				D42383F21F92AC81000B8A63 /* STUTextFrame.mm in Sources */,
 				D46B09461FAC96CA00375E76 /* Font.mm in Sources */,
 				D4ED60971FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */,
@@ -2478,6 +2501,7 @@
 				D40E5D562060332A00E67689 /* TextFrameHighlightingTests.swift in Sources */,
 				D44F90ED20E64D0000ED750B /* Rand.swift in Sources */,
 				D495DAAF20668A5E0081606C /* TextFrameDrawingTests.swift in Sources */,
+				A10000000000000000000022 /* UITextInputTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2531,6 +2555,7 @@
 				D4494FC72046F5DF0047DD82 /* TestValue.cpp in Sources */,
 				D4B11BDF222C464900352EE3 /* StringExtension.swift in Sources */,
 				D41C92C72083D2A6002AFFF3 /* MutexTests.m in Sources */,
+				A10000000000000000000023 /* UITextInputTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2548,6 +2573,7 @@
 				D45299B42124485E00714A83 /* Setting.swift in Sources */,
 				D4CEE3572026337800803A45 /* UIViewExtension.swift in Sources */,
 				D48AC8C2205AD53A00EA3FE8 /* TapToReadMoreVC.swift in Sources */,
+				A10000000000000000000031 /* TextSelectionVC.swift in Sources */,
 				D48652C02023AEB6006DC1A2 /* AttributedStringUtils.swift in Sources */,
 				D495DAB42067C2810081606C /* UDHR.swift in Sources */,
 				D45299B92126385500714A83 /* UIColorExtension.swift in Sources */,
@@ -2563,6 +2589,7 @@
 				D46DB171200BAD3B00E7E773 /* TableViewPerformanceVC.swift in Sources */,
 				D47FDD652008B7C400449617 /* RootViewController.swift in Sources */,
 				D47FDD632008B43C00449617 /* AppDelegate.swift in Sources */,
+				A10000000000000000000041 /* SceneDelegate.swift in Sources */,
 				D424FD70209B708A00FB50BA /* Fonts.swift in Sources */,
 				D46DB173200BADB300E7E773 /* AutoHeightTableViewCell.swift in Sources */,
 			);
@@ -2618,6 +2645,7 @@
 				D4B0AF1E1F925AF900B5B2B9 /* STUPlaceholderObjects-no-ARC.m in Sources */,
 				D42384C81F9379B9000B8A63 /* ArenaAllocator.cpp in Sources */,
 				D4B0AFED1F925B9D00B5B2B9 /* STULabel.mm in Sources */,
+				A10000000000000000000014 /* STULabel+UITextInput.mm in Sources */,
 				D4ED60961FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */,
 				D4E8DC6820DA9D40009F4735 /* Localized.mm in Sources */,
 				D46B09451FAC96CA00375E76 /* Font.mm in Sources */,
@@ -2798,6 +2826,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2805,6 +2834,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -2854,6 +2884,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D407F00920E52B6700922204 /* Demo.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2861,6 +2892,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D407F00920E52B6700922204 /* Demo.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -2868,7 +2900,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310901F94168400F39C3A /* Debug.xcconfig */;
 			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2876,7 +2908,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310911F94169200F39C3A /* Release.xcconfig */;
 			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -2884,6 +2916,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310921F9416A500F39C3A /* STULabel.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2891,6 +2924,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D41310921F9416A500F39C3A /* STULabel.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -2898,6 +2932,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2905,6 +2940,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};

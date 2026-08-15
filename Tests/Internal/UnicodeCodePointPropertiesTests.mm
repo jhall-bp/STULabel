@@ -49,10 +49,6 @@ using namespace stu_label;
 }
 
 - (void)testIsRegionalIndicator {
-  if (@available(iOS 11, tvOS 11, watchOS 4, *)) {} else {
-    NSLog(@"testIsRegionalIndicator is skipped because it requires a newer system ICU library.");
-    return;
-  }
   for (UChar32 cp = 0; cp < UCHAR_MAX_VALUE + 4; ++cp) {
     XCTAssertEqual(isRegionalIndicator((Char32)cp),
                    u_hasBinaryProperty(cp, UCHAR_REGIONAL_INDICATOR),
@@ -70,8 +66,6 @@ using namespace stu_label;
 
 // This library uses the Unicode 11 data, which corresponds to the data of the system ICU library
 // in iOS 12 (>= beta 3).
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000
-
 - (void)testIsNotIgnorableWithCodePoint:(uint32_t)cp {
   const bool ignorable = u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT)
                       || (u_isISOControl((UChar32)cp) && !u_isUWhiteSpace((UChar32)cp))
@@ -91,10 +85,6 @@ using namespace stu_label;
 }
 
 - (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint {
-  if (@available(iOS 12, tvOS 12, watchOS 5, *)) {} else {
-    NSLog(@"testIsNotIgnorableAndNotWhitespaceWithCodePoint is skipped because it requires a newer system ICU library.");
-    return;
-  }
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testIsNotIgnorableAndNotWhitespaceWithCodePoint:i];
     [self testIsNotIgnorableWithCodePoint:i];
@@ -131,10 +121,6 @@ using namespace stu_label;
  }
 
 - (void)testBidiStrongType {
-  if (@available(iOS 12, tvOS 12, watchOS 5, *)) {} else {
-    NSLog(@"testBidiStrongType is skipped because it requires a newer system ICU library.");
-    return;
-  }
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testBidiStrongTypeOfCodePoint:i];
   }
@@ -151,10 +137,6 @@ static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp);
  }
 
 - (void)testGraphemeClusterCategory {
-  if (@available(iOS 12, tvOS 12, watchOS 5, *)) {} else {
-    NSLog(@"testGraphemeClusterCategory is skipped because it requires a newer system ICU library.");
-    return;
-  }
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testGraphemeClusterCategoryOfCodePoint:i];
   }
@@ -224,7 +206,4 @@ static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp) {
   }
 }
 
-#endif
-
 @end
-

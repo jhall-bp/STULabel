@@ -39,11 +39,6 @@ static void drawRunGlyphs(GlyphSpan glyphSpan, const TextStyle& style,
   CGAffineTransform matrix = glyphSpan.run().textMatrix();
   matrix.tx = context.lineOrigin().x + ctLineXOffset;
   matrix.ty = context.lineOrigin().y;
-  if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max
-      && style.hasBaselineOffset())
-  {
-    matrix.ty += style.baselineOffset();
-  }
   CGContextSetTextMatrix(context.cgContext(), matrix);
   if (!context.needToDrawGlyphsDirectly(style)) {
     glyphSpan.draw(context.cgContext());

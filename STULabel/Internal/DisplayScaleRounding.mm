@@ -2,26 +2,7 @@
 
 #import "DisplayScaleRounding.hpp"
 
-#import "Once.hpp"
-
-#import "STULabel/STUMainScreenProperties.h"
-
 namespace stu_label {
-
-Once DisplayScale::mainScreenDisplayScale_once;
-Optional<DisplayScale> DisplayScale::mainScreenDisplayScale;
-
-STU_NO_INLINE
-DisplayScale DisplayScale::createOrIfInvalidGetMainSceenScale_slowPath(CGFloat scale) {
-  if (STU_MAIN_SCREEN_PROPERTIES_ARE_CONSTANT || scale > 0) {
-    if (const Optional<DisplayScale> displayScale = create_slowPath(scale);
-        STU_LIKELY(displayScale))
-    {
-      return *displayScale;
-    }
-  }
-  return *create(stu_mainScreenScale());
-}
 
 STU_NO_INLINE
 Optional<DisplayScale> DisplayScale::create_slowPath(CGFloat scale) {
@@ -38,20 +19,10 @@ Optional<DisplayScale> DisplayScale::create_slowPath(CGFloat scale) {
       result.inverseScale_f64_ = inverseScale_f64;
       result.scale_f32_        = scale_f32;
       result.inverseScale_f32_ = inverseScale_f32;
-      if (mainScreenDisplayScale_once.isInitialized() || scale != stu_mainScreenScale()) {
-        return result;
-      }
-      return mainScreenDisplayScale_initialize(DisplayScale{result});
+      return result;
     }
   }
   return none;
-}
-STU_NO_INLINE
-Optional<DisplayScale> DisplayScale::mainScreenDisplayScale_initialize(DisplayScale displayScale) {
-  mainScreenDisplayScale_once.initialize(&displayScale, [](void* context) {
-    mainScreenDisplayScale = *static_cast<const DisplayScale*>(context);
-  });
-  return displayScale;
 }
 
 } // stu_label

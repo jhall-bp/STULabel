@@ -286,14 +286,7 @@ static Int lastEndIndexOf(const NSStringRef& string, Range<Int> range, Char32 cp
   XCTAssertEqual(NSStringRef(@"x\u00ad ").indexOfTrailingWhitespaceIn({0, 3}), 2);
 }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000
-
 - (void)testGraphemeClusterBreakFinding {
-  if (@available(iOS 12, tvOS 12, watchOS 5, *)) {} else {
-    NSLog(@"testGraphemeClusterBreakFinding is skipped because it requires a newer system ICU library.");
-    return;
-  }
-
   self.continueAfterFailure = false;
 
   Char32 codePoints[] = {
@@ -447,7 +440,5 @@ static Int lastEndIndexOf(const NSStringRef& string, Range<Int> range, Char32 cp
 
   ubrk_close(iterator);
 }
-
-#endif
 
 @end

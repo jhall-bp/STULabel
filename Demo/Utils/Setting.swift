@@ -286,15 +286,18 @@ extension Optional : UserDefaultsStorable where Wrapped : UserDefaultsStorable {
   }
 }
 
-extension NSSecureCoding {
+extension NSSecureCoding where Self: NSObject {
   func save(to userDefaults: UserDefaults, key: String) {
-    let data = NSKeyedArchiver.archivedData(withRootObject: self)
+    guard let data = try? NSKeyedArchiver.archivedData(withRootObject: self,
+                                                       requiringSecureCoding: true) else {
+      return
+    }
     userDefaults.set(data, forKey: key)
   }
 
   static func load(from userDefaults: UserDefaults, key: String) -> Self? {
-    if let data = userDefaults.object(forKey: key) as? NSData {
-      return NSKeyedUnarchiver.unarchiveObject(with: data as Data) as? Self
+    if let data = userDefaults.object(forKey: key) as? Data {
+      return try? NSKeyedUnarchiver.unarchivedObject(ofClass: Self.self, from: data)
     }
     return nil
   }

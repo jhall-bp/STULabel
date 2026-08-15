@@ -33,12 +33,12 @@ class TextFramePerformanceTestCase {
     let info1 = STUTextFrame(STUShapedString(attributedString1,
                                              defaultBaseWritingDirection: .leftToRight),
                              size: CGSize(width: width ?? 1000, height: height ?? 1000),
-                             displayScale: scale,
+                             displayScale: benchmarkDisplayScale,
                              options: nil).layoutInfo(frameOrigin: .zero)
     let info2 = STUTextFrame(STUShapedString(attributedString2,
                                              defaultBaseWritingDirection: .leftToRight),
                              size: CGSize(width: width ?? 1000, height: height ?? 1000),
-                             displayScale: scale,
+                             displayScale: benchmarkDisplayScale,
                              options: nil).layoutInfo(frameOrigin: .zero)
     self.size = CGSize(width: width ?? ceil(max(info1.layoutBounds.size.width,
                                                 info2.layoutBounds.size.width)),
@@ -48,7 +48,9 @@ class TextFramePerformanceTestCase {
   }
 }
 
-private let scale = stu_mainScreenScale()
+// This benchmark renders into an offscreen bitmap, so its scale is an explicit benchmark input
+// rather than a process-wide screen property.
+private let benchmarkDisplayScale: CGFloat = 1
 
 // To improve the consistency of our measurements we make a single large allocation for the bitmap
 // data and then reuse this allocation for all CGContexts that we create.
@@ -57,7 +59,7 @@ let cachedContext: CGContext = {
   let format = STUCGImageFormat(.rgb)
   let width = 512
   let height = width
-  let intScale = Int(scale)
+  let intScale = Int(benchmarkDisplayScale)
   let context = CGContext(data: nil, width: width*intScale, height: height*intScale,
                           bitsPerComponent: format.bitsPerComponent,
                           bytesPerRow: 0,
@@ -67,8 +69,8 @@ let cachedContext: CGContext = {
 }()
 
 func createContext(_ size: CGSize) -> CGContext {
-  let width = ceil(size.width*scale)
-  let height = ceil(size.height*scale)
+  let width = ceil(size.width*benchmarkDisplayScale)
+  let height = ceil(size.height*benchmarkDisplayScale)
   let bitsPerComponent = cachedContext.bitsPerComponent
   let bitmapInfo = cachedContext.bitmapInfo
   let space = cachedContext.colorSpace!
@@ -78,7 +80,8 @@ func createContext(_ size: CGSize) -> CGContext {
                           bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow,
                           space: space,
                           bitmapInfo: bitmapInfo.rawValue)!
-  context.concatenate(CGAffineTransform(a: scale, b: 0, c: 0, d: -scale, tx: 0, ty: height))
+  context.concatenate(CGAffineTransform(a: benchmarkDisplayScale, b: 0,
+                                         c: 0, d: -benchmarkDisplayScale, tx: 0, ty: height))
   // We want to imitate UIKit and QuartzCore here, so we use the private Core Graphics function
   // CGContextSetBaseCTM. Don't do this in an app submitted to the App Store.
   CGContextSetBaseCTM(context, context.ctm)
@@ -131,17 +134,10 @@ private func timeExecution(_ draw: @convention(c) (NSAttributedString, CGSize, C
       }
     } else if i == warmupIterationCount  {
       warmup = false
-      if #available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *) {
-        // The new os_signpost API in iOS 12 doesn't yet seem to work reliably.
-        kdebug_signpost_start(0, 0, 0, 0, 0);
-      }
       deadline = CACurrentMediaTime() + measurementTime
     }
   }
-  if #available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *) {
-    kdebug_signpost_end(0, 0, 0, 0, 0);
-  }
-  let image = UIImage(cgImage: createContext(contextSize).makeImage()!, scale: scale,
+  let image = UIImage(cgImage: createContext(contextSize).makeImage()!, scale: benchmarkDisplayScale,
                       orientation: .up)
   return (sc.stats, image)
 }
@@ -186,7 +182,7 @@ class TextFramePerformanceVC : UIViewController, UIPopoverPresentationController
     func createImage(_ testCase: TextFramePerformanceTestCase) -> UIImage {
       let size = CGSize(width: testCase.size.width + 2*xInset,
                         height: testCase.size.height + 2*yInset)
-      UIGraphicsBeginImageContextWithOptions(size, false, scale)
+      UIGraphicsBeginImageContextWithOptions(size, false, benchmarkDisplayScale)
       autoreleasepool {
         drawingFunction(testCase.attributedString1, testCase.size, CGPoint(x: xInset, y: yInset))
       }
@@ -261,7 +257,7 @@ class TextFramePerformanceVC : UIViewController, UIPopoverPresentationController
       self.allSampleViews = sampleViews
       self.results = results
       super.init()
-      self.layoutMargins = .zero
+      self.directionalLayoutMargins = .zero
       self.titleLabel.text = testCase.title
       self.button.setTitle("Measure drawing times", for: .normal)
       updateSampleViews()
@@ -448,6 +444,10 @@ class TextFramePerformanceVC : UIViewController, UIPopoverPresentationController
     }
     self.resultViews = views
     super.init(nibName: nil, bundle: nil)
+    registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) {
+      (self: TextFramePerformanceVC, _) in
+      self.updateTimingFontForCurrentTraitCollection()
+    }
 
     for view in views  {
       view.onButtonTap = { [weak self, weak view] in
@@ -548,24 +548,17 @@ class TextFramePerformanceVC : UIViewController, UIPopoverPresentationController
   }
 
 
-  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if #available(iOS 10, tvOS 10, *) {
-      if let timingFont = self.timingFont,
-         let previousTraitCollection = previousTraitCollection,
-         traitCollection.preferredContentSizeCategory
-         != previousTraitCollection.preferredContentSizeCategory
-      {
-        self.timingFont = timingFont.stu_fontAdjusted(forContentSizeCategory:
-                                                       traitCollection.preferredContentSizeCategory)
-        updateMinTimingColumnWidth()
-      }
+  private func updateTimingFontForCurrentTraitCollection() {
+    if let timingFont = self.timingFont {
+      self.timingFont = timingFont.stu_fontAdjusted(forContentSizeCategory:
+                                                     traitCollection.preferredContentSizeCategory)
+      updateMinTimingColumnWidth()
     }
   }
 
   // MARK: - Measurement
 
-  let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: nil, action: nil)
+  let cancelButton = UIBarButtonItem(title: "Cancel", style: .prominent, target: nil, action: nil)
 
   private var measurementCancelled: Bool = false
 

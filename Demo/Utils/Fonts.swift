@@ -6,29 +6,18 @@ func preferredFontWithMonospacedDigits(_ textStyle: UIFont.TextStyle,
                                        _ traitCollection: UITraitCollection? = nil)
   -> UIFont
 {
-  let font: UIFont
-  if #available(iOS 11, *) {
-    let mediumTraitCollection = UITraitCollection(preferredContentSizeCategory: .medium)
-    font = UIFont.preferredFont(
-            forTextStyle: textStyle,
-             compatibleWith: traitCollection == nil ? mediumTraitCollection
-                             : UITraitCollection(traitsFrom: [traitCollection!,
-                                                              mediumTraitCollection]))
-  } else if #available(iOS 10, *) {
-    font = UIFont.preferredFont(forTextStyle: textStyle, compatibleWith: traitCollection)
-  } else {
-    font = UIFont.preferredFont(forTextStyle: textStyle)
-  }
+  let mediumTraitCollection = traitCollection?.replacing(
+    UITraitPreferredContentSizeCategory.self, value: .medium
+  ) ?? UITraitCollection(UITraitPreferredContentSizeCategory.self, value: .medium)
+  let font = UIFont.preferredFont(
+               forTextStyle: textStyle,
+               compatibleWith: mediumTraitCollection)
   let weight = (font.fontDescriptor.fontAttributes[.traits]
                 as! [UIFontDescriptor.TraitKey: Any]?)?[.weight] as! UIFont.Weight?
   let mfont = UIFont.monospacedDigitSystemFont(ofSize: font.pointSize,
                                                weight: weight ?? .regular)
-  if #available(iOS 11, *) {
-    return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: mfont,
-                                                             compatibleWith: traitCollection)
-  } else {
-    return mfont
-  }
+  return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: mfont,
+                                                           compatibleWith: traitCollection)
 }
 
 func styleName(fontName: String) -> String {
@@ -189,4 +178,3 @@ let fontFamilies: [FontFamily] =
                            .sorted(by: fontSortOrder)
                            .map { FontStyle(fontName: $0) })
       }.filter { !$0.styles.isEmpty }
-

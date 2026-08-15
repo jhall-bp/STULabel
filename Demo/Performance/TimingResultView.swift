@@ -16,9 +16,7 @@ class TimingResultView<SampleView : UIView> : UIView {
       label.font = UIFont.preferredFont(forTextStyle: .footnote)
       label.minimumTextScaleFactor = 0.01
       label.verticalAlignment = .center
-      if #available(iOS 10, *) {
-        label.adjustsFontForContentSizeCategory = true
-      }
+      label.adjustsFontForContentSizeCategory = true
     }
 
     fileprivate let layoutGuide = UILayoutGuide()
@@ -42,18 +40,16 @@ class TimingResultView<SampleView : UIView> : UIView {
     init() {
       super.init(frame: .zero)
       self.translatesAutoresizingMaskIntoConstraints = false
-      layoutMargins = .zero
+      directionalLayoutMargins = .zero
       column1Label.maximumNumberOfLines = 0
       column2Label.maximumNumberOfLines = 0
       secondLineLabel.maximumNumberOfLines = 0
       column1Label.font = UIFont.preferredFont(forTextStyle: .body)
       column2Label.font = preferredFontWithMonospacedDigits(.body)
       secondLineLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
-      if #available(iOS 10, *) {
-        column1Label.adjustsFontForContentSizeCategory = true
-        column2Label.adjustsFontForContentSizeCategory = true
-        secondLineLabel.adjustsFontForContentSizeCategory = true
-      }
+      column1Label.adjustsFontForContentSizeCategory = true
+      column2Label.adjustsFontForContentSizeCategory = true
+      secondLineLabel.adjustsFontForContentSizeCategory = true
       column1Label.translatesAutoresizingMaskIntoConstraints = false
       column2Label.translatesAutoresizingMaskIntoConstraints = false
       secondLineLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -166,7 +162,10 @@ class TimingResultView<SampleView : UIView> : UIView {
     self.addSubview(titleLabel)
 
     button.translatesAutoresizingMaskIntoConstraints = false
-    button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+    var buttonConfiguration = UIButton.Configuration.plain()
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5,
+                                                                 trailing: 5)
+    button.configuration = buttonConfiguration
     button.layer.borderWidth = 1
     button.layer.cornerRadius = 5
     button.layer.borderColor = self.tintColor.cgColor
@@ -176,10 +175,8 @@ class TimingResultView<SampleView : UIView> : UIView {
     button.addTarget(self, action: #selector(buttonTouchUpInside), for: .touchUpInside)
     self.addSubview(button)
 
-    if #available(iOS 10, *) {
-      titleLabel.adjustsFontForContentSizeCategory = true
-      button.titleLabel!.adjustsFontForContentSizeCategory = true
-    }
+    titleLabel.adjustsFontForContentSizeCategory = true
+    button.titleLabel!.adjustsFontForContentSizeCategory = true
 
     addLayoutGuide(sampleViewsLayoutGuide)
     addLayoutGuide(sampleViewsColumn1)

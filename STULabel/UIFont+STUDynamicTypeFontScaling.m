@@ -172,9 +172,7 @@ STU_REENABLE_CLANG_WARNING
     nsStringClass = NSString.class;
     weakFontReferenceClass = STUWeakFontReference.class;
     atomic_store_explicit(&canScaleNonPreferredFonts, true, memory_order_relaxed);
-    if (@available(iOS 11, tvOS 11, *)) {
-      fontMetricsIsAvailable = true;
-    }
+    fontMetricsIsAvailable = true;
   });
   dispatch_once(&onces[index], ^{
     traitCollections[index] = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:

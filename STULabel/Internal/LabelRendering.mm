@@ -192,11 +192,8 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame* __unsafe_u
                                 && (   mode == LabelRenderMode::drawInCAContext
                                     || (mode == LabelRenderMode::image && isGrayscale));
 
-  const bool isIOS9 = NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max;
-
   const bool useExtendedColor =
-               !isIOS9
-               && (allowExtendedRGBBitmapFormat && !params.neverUsesExtendedRGBBitmapFormat)
+               (allowExtendedRGBBitmapFormat && !params.neverUsesExtendedRGBBitmapFormat)
                && ((frameFlags & STUTextUsesExtendedColor)
                    || ((params.drawingBlockColorOptions & STULabelDrawingBlockUsesExtendedColors)
                        && params.drawingBlock));
@@ -217,9 +214,6 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame* __unsafe_u
 
   const bool isOpaque = shouldDrawBackgroundColor
                      && (params.backgroundColorFlags() & ColorFlags::isOpaque);
-  if (isIOS9 && !isOpaque) {
-    isGrayscale = false;
-  }
   const auto imageFormat = isGrayscale ? STUPredefinedCGImageFormatGrayscale
                          : !useExtendedColor ? STUPredefinedCGImageFormatRGB
                          : STUPredefinedCGImageFormatExtendedRGB;
@@ -275,4 +269,3 @@ PurgeableImage createLabelTextFrameImage(const STUTextFrame* __unsafe_unretained
 }
 
 } // namespace stu_label
-

@@ -291,7 +291,7 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
     }
     NSAttributedString* label = mutableAttributedSubstring
                                 ?: [params.attributedString attributedSubstringFromRange:stringRange];
-    if (fullRangeLinkValue || NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if (fullRangeLinkValue) {
       NSMutableAttributedString* const mutableLabel = mutableAttributedSubstring
                                                       ?: [label mutableCopy];
       [mutableLabel removeAttribute:NSLinkAttributeName range:NSRange{0, stringRange.length}];
@@ -323,19 +323,11 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
       // simulator to conserve resources in automated UI tests.
       _uiLabel = [[UILabel alloc] init];
       _uiLabel.attributedText = label;
-      if (@available(iOS 11, tvOS 11, *)) {
-        _accessibilityLabelIsAttributed = true;
-        _accessibilityLabel = _uiLabel.accessibilityAttributedLabel;
-      } else {
-        _accessibilityLabel = _uiLabel.accessibilityLabel;
-      }
+      _accessibilityLabelIsAttributed = true;
+      _accessibilityLabel = _uiLabel.accessibilityAttributedLabel;
     } else {
-      if (@available(iOS 11, tvOS 11, *)) {
-        _accessibilityLabelIsAttributed = true;
-        _accessibilityLabel = label;
-      } else {
-        _accessibilityLabel = label.string;
-      }
+      _accessibilityLabelIsAttributed = true;
+      _accessibilityLabel = label;
     }
   } else { // attachment
     UIAccessibilityTraits traits = attachment.accessibilityTraits;
@@ -346,27 +338,15 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
       traits |= UIAccessibilityTraitLink;
     }
     _accessibilityTraits = traits;
-    if (@available(iOS 11, tvOS 11, *)) {
-      if (NSAttributedString* const label = attachment.accessibilityAttributedLabel) {
-        _accessibilityLabelIsAttributed = true;
-        _accessibilityLabel = label;
-      }
-      if (NSAttributedString* const hint = attachment.accessibilityAttributedHint) {
-        self.accessibilityAttributedHint = hint;
-      }
-      if (NSAttributedString* const value = attachment.accessibilityAttributedValue) {
-        self.accessibilityAttributedValue = value;
-      }
-    } else {
-      if (NSString* const label = attachment.accessibilityLabel) {
-        _accessibilityLabel = label;
-      }
-      if (NSString* const hint = attachment.accessibilityHint) {
-        self.accessibilityHint = hint;
-      }
-      if (NSString* const value = attachment.accessibilityValue) {
-        self.accessibilityValue = value;
-      }
+    if (NSAttributedString* const label = attachment.accessibilityAttributedLabel) {
+      _accessibilityLabelIsAttributed = true;
+      _accessibilityLabel = label;
+    }
+    if (NSAttributedString* const hint = attachment.accessibilityAttributedHint) {
+      self.accessibilityAttributedHint = hint;
+    }
+    if (NSAttributedString* const value = attachment.accessibilityAttributedValue) {
+      self.accessibilityAttributedValue = value;
     }
     if (NSString* const language = attachment.accessibilityLanguage
                                    ?: [params.attributedString
@@ -468,17 +448,9 @@ static UIAccessibilityCustomRotor* createLinkRotorForAccessibilityContainer(
                                                                    targetRange:nil];
   };
 
-  if (@available(iOS 11, tvOS 11, *)) {
-    return  [[UIAccessibilityCustomRotor alloc]
-               initWithSystemType:UIAccessibilityCustomSystemRotorTypeLink
-                  itemSearchBlock:searchBlock];
-  } else {
-    auto* const rotor = [[UIAccessibilityCustomRotor alloc]
-                          initWithName:localizedForSystemLocale(@"Links")
-                       itemSearchBlock:searchBlock];
-    rotor.accessibilityLanguage = systemLocalizationLanguage();
-    return rotor;
-  }
+  return [[UIAccessibilityCustomRotor alloc]
+            initWithSystemType:UIAccessibilityCustomSystemRotorTypeLink
+               itemSearchBlock:searchBlock];
 }
 
 
@@ -512,9 +484,6 @@ static UIAccessibilityCustomRotor* createLinkRotorForAccessibilityContainer(
   _representsUntruncatedText = representUntruncatedText;
   _separatesParagraphs = separateParagraphs;
   _separatesLinkElements = separateLinkElements;
-  if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
-    separateLinkElements = true; // There's no way to provide a custom link rotor on iOS 9.
-  }
   if (!textFrame) {
     _elements = @[];
     return self;
@@ -534,10 +503,6 @@ static UIAccessibilityCustomRotor* createLinkRotorForAccessibilityContainer(
   NSAttributedString* __unsafe_unretained const attributedString =
     representUntruncatedText ? tf.originalAttributedString
                              : tf.truncatedAttributedString().unretained;
-  if (@available(iOS 11, *)) {
-  } else {
-    isDraggableLink = nil;
-  }
   const InitParams params = {
     .textFrameAccessibilityElement = self,
     .textFrame = tf,
@@ -664,7 +629,7 @@ static void addElementsForRangeThatMayContainLinks(
     }
   }
 
-  const bool createRotorLinks = NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max;
+  const bool createRotorLinks = true;
 
   const UInt index = array.count;
   NSMutableAttributedString* __block mutableSubtring = nil;
@@ -807,4 +772,3 @@ static void addAccessibilityElementsForRange(
 }
 
 @end
-

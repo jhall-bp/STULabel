@@ -50,12 +50,10 @@ class LabelPerformanceTestCase {
       }
     }
 
-    UIApplication.shared.keyWindow!.addSubview(label)
     label.attributedString = attributedString1
     let size1 = label.sizeThatFits(maxSize)
     label.attributedString = attributedString2
     let size2 = label.sizeThatFits(maxSize)
-    label.removeFromSuperview()
 
     return CGSize(width: min(max(size1.width, size2.width), maxSize.width),
                   height: min(max(size1.height, size2.height), maxSize.height))
@@ -204,15 +202,8 @@ private func timeExecution(_ function: (_ iteration: Int) -> Void,
       }
     } else if i == warmupIterationCount  {
       warmup = false
-      if #available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *) {
-        // The new os_signpost API in iOS 12 doesn't yet seem to work reliably.
-        kdebug_signpost_start(0, 0, 0, 0, 0);
-      }
       deadline = CACurrentMediaTime() + measurementTime
     }
-  }
-  if #available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *) {
-    kdebug_signpost_end(0, 0, 0, 0, 0);
   }
   return sc.stats
 }
@@ -522,7 +513,7 @@ class LabelPerformanceVC : UIViewController, UIPopoverPresentationControllerDele
       self.timingRowsByDisplayer = timingRowsByDisplayer
       self.results = results
       super.init()
-      self.layoutMargins = .zero
+      self.directionalLayoutMargins = .zero
       self.sampleViews = sampleViews
       self.titleLabel.text = testCase.title
       self.button.setTitle("Measure drawing times", for: .normal)
@@ -833,6 +824,10 @@ class LabelPerformanceVC : UIViewController, UIPopoverPresentationControllerDele
     self.resultViews = views
 
     super.init(nibName: nil, bundle: nil)
+    registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) {
+      (self: LabelPerformanceVC, _) in
+      self.updateTimingFontForCurrentTraitCollection()
+    }
     for view in views  {
       view.onButtonTap = { [weak self, weak view] in
         if let view = view {
@@ -931,24 +926,17 @@ class LabelPerformanceVC : UIViewController, UIPopoverPresentationControllerDele
     }
   }
 
-  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if #available(iOS 10, tvOS 10, *) {
-      if let timingFont = self.timingFont,
-         let previousTraitCollection = previousTraitCollection,
-         traitCollection.preferredContentSizeCategory
-         != previousTraitCollection.preferredContentSizeCategory
-      {
-        self.timingFont = timingFont.stu_fontAdjusted(forContentSizeCategory:
-                                                       traitCollection.preferredContentSizeCategory)
-        updateMinTimingColumnWidth()
-      }
+  private func updateTimingFontForCurrentTraitCollection() {
+    if let timingFont = self.timingFont {
+      self.timingFont = timingFont.stu_fontAdjusted(forContentSizeCategory:
+                                                     traitCollection.preferredContentSizeCategory)
+      updateMinTimingColumnWidth()
     }
   }
 
   // MARK: - Measurement
 
-  let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: nil, action: nil)
+  let cancelButton = UIBarButtonItem(title: "Cancel", style: .prominent, target: nil, action: nil)
 
   private var measurementCancelled: Bool = false
 
@@ -1024,7 +1012,7 @@ class LabelPerformanceVC : UIViewController, UIPopoverPresentationControllerDele
     }
     view.results = results
 
-    let measurementWindow = UIWindow(frame: self.view.window!.screen.bounds)
+    let measurementWindow = UIWindow(windowScene: self.view.window!.windowScene!)
     measurementWindow.rootViewController = UIViewController(nibName: nil, bundle: nil)
     measurementWindow.isUserInteractionEnabled = false
     measurementWindow.isHidden = false
@@ -1127,8 +1115,3 @@ class LabelPerformanceVC : UIViewController, UIPopoverPresentationControllerDele
     }
   }
 }
-
-
-
-
-

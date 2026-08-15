@@ -1,6 +1,7 @@
 // Copyright 2017–2018 Stephan Tolksdorf
 
 #import "STULabel.h"
+#import "STULabel+UITextInput-Internal.h"
 #import "STULabelSwiftExtensions.h"
 
 #import "NSAttributedString+STUDynamicTypeFontScaling.h"
@@ -334,7 +335,7 @@ static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide* __unsafe_un
   if (!self->_lineHeightConstraints.isEmpty()
       && (self->_lineHeightInfo != info || self->_screenScale != screenScale))
   {
-    const DisplayScale scale = DisplayScale::createOrIfInvalidGetMainSceenScale(self->_screenScale);
+    const DisplayScale scale = DisplayScale::createOrIfInvalidUseOne(self->_screenScale);
     const FirstAndLastLineHeightInfo lineHeightInfo{info};
     for (SpacingConstraintRef& cr : self->_lineHeightConstraints) {
       SpacingConstraint& c = cr.constraint();
@@ -407,7 +408,7 @@ NSLayoutConstraint* createSpacingConstraint(SpacingConstraint::Type type,
   }
 
   if (const CGFloat spacing = c.spacing(); spacing != 0) {
-    const auto scale = DisplayScale::createOrIfInvalidGetMainSceenScale(guide->_screenScale);
+  const auto scale = DisplayScale::createOrIfInvalidUseOne(guide->_screenScale);
     constraint.constant = c.layoutConstantForSpacing(spacing, scale);
   }
 
@@ -481,7 +482,7 @@ static CGFloat screenScale(const SpacingConstraint& constraint) {
   if (!object) return;
   SpacingConstraint& c = object->impl;
   c.multiplier = multiplier;
-  const auto scale = DisplayScale::createOrIfInvalidGetMainSceenScale(screenScale(c));
+  const auto scale = DisplayScale::createOrIfInvalidUseOne(screenScale(c));
   self.constant = c.layoutConstantForSpacing(c.spacing(), scale);
 }
 
@@ -498,7 +499,7 @@ static CGFloat screenScale(const SpacingConstraint& constraint) {
   if (!object) return;
   SpacingConstraint& c = object->impl;
   c.offset = c.type == SpacingConstraint::Type::defaultSpacingAbove ? -offset : offset;
-  const auto scale = DisplayScale::createOrIfInvalidGetMainSceenScale(screenScale(c));
+  const auto scale = DisplayScale::createOrIfInvalidUseOne(screenScale(c));
   self.constant = c.layoutConstantForSpacing(c.spacing(), scale);
 }
 
@@ -506,7 +507,7 @@ static CGFloat screenScale(const SpacingConstraint& constraint) {
 
 // MARK: - STULabel
 
-API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos)
+API_UNAVAILABLE(tvos)
 @interface STULabelDragInteraction : UIDragInteraction {
 @package
   STULabel* __unsafe_unretained stu_label; // This field is set and cleared by the owning label.
@@ -552,6 +553,7 @@ static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIVi
     bool delegateRespondsToLinkCanBeDragged : 1;
     bool delegateRespondsToDragItemForLink : 1;
     bool dragInteractionEnabled : 1;
+    bool isSelectable : 1;
   } _bits;
   STUTextFrameFlags _textFrameFlags;
   CGFloat _linkTouchAreaExtensionRadius;
@@ -574,8 +576,11 @@ static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIVi
   id _activeLinkOrOverlayLayer;
   CGPoint _activeLinkContentOrigin;
   STULabelDragInteraction* _dragInteraction API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos);
+  STULabelTextInteraction* _textInteraction;
   STULabelGhostingMaskLayer* _ghostingMaskLayer;
   STUTextFrameAccessibilityElement* _textFrameAccessibilityElement;
+  id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
+  id<UITraitChangeRegistration> _userInterfaceDirectionTraitChangeRegistration;
 }
 
 + (Class)layerClass {
@@ -602,9 +607,7 @@ static void initCommon(STULabel* self) {
     stuLabelLayerClass = STULabelLayer.class;
     disabledTextColor = [[UIColor alloc] initWithWhite:CGFloat(0.56) alpha:1];
     defaultLabelOverlayStyle = STULabelOverlayStyle.defaultStyle;
-    if (@available(iOS 11, *)) {
-      dragInteractionIsEnabledByDefault = [UIDragInteraction isEnabledByDefault];
-    }
+    dragInteractionIsEnabledByDefault = [UIDragInteraction isEnabledByDefault];
   });
 
   self->_bits.hasIntrinsicContentWidth = true;
@@ -621,6 +624,8 @@ static void initCommon(STULabel* self) {
   STU_CHECK([self->_layer isKindOfClass:stuLabelLayerClass]);
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = self.tintColor;
+
+  self->_userInterfaceDirectionTraitChangeRegistration = [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(userInterfaceDirectionDidChange:)];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -640,6 +645,9 @@ static void initCommon(STULabel* self) {
 - (void)dealloc {
   if (_dragInteraction) {
     _dragInteraction->stu_label = nil;
+  }
+  if (_textInteraction) {
+    [_textInteraction stu_invalidate];
   }
   if (!_lastLinkObserver) return;
   updateLabelLinkObserversInLabelDealloc(self);
@@ -978,13 +986,17 @@ STU_INLINE UIContentSizeCategory preferredContentSizeCategory(UIView* self) {
 }
 - (void)setAdjustsFontForContentSizeCategory:(BOOL)value {
   if (_bits.adjustsFontForContentSizeCategory == value) return;
-  _bits.adjustsFontForContentSizeCategory = value;
-  if (@available(iOS 10, tvOS 10, *)) {
+  
+    _bits.adjustsFontForContentSizeCategory = value;
     if (value) {
-      _contentSizeCategory = preferredContentSizeCategory(self);
+        _preferredContentSizeCategoryTraitChangeRegistration = [self registerForTraitChanges:@[UITraitPreferredContentSizeCategory.class] withTarget:self action:@selector(preferredContentSizeCategoryDidChange:)];
     } else {
-      _contentSizeCategory = nil;
+        [self unregisterForTraitChanges:_preferredContentSizeCategoryTraitChangeRegistration];
     }
+  if (value) {
+    _contentSizeCategory = preferredContentSizeCategory(self);
+  } else {
+    _contentSizeCategory = nil;
   }
 }
 
@@ -995,13 +1007,7 @@ static UIUserInterfaceLayoutDirection effectiveUILayoutDirection(UIView* __nonnu
   case UISemanticContentAttributeForceRightToLeft: return UIUserInterfaceLayoutDirectionRightToLeft;
   default: break;
   }
-  if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
-  STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
-    return view.effectiveUserInterfaceLayoutDirection;
-  STU_REENABLE_CLANG_WARNING
-  } else {
-    return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:contentAttribute];
-  }
+  return view.effectiveUserInterfaceLayoutDirection;
 }
 
 static_assert((int)UIUserInterfaceLayoutDirectionLeftToRight == (int)STUWritingDirectionLeftToRight);
@@ -1012,11 +1018,11 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
   _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
-  if (!_bits.adjustsFontForContentSizeCategory) return;
-  if (@available(iOS 10, tvOS 10, *)) {
+- (void)userInterfaceDirectionDidChange:(UITraitCollection*)previousTraitCollection {
+    _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
+}
+
+- (void)preferredContentSizeCategoryDidChange:(UITraitCollection*)previousTraitCollection {
     const UIContentSizeCategory newCategory = preferredContentSizeCategory(self);
     if (![newCategory isEqualToString:_contentSizeCategory]) {
       _contentSizeCategory = newCategory;
@@ -1035,7 +1041,6 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
         }
       }
     }
-  }
 }
 
 // MARK: - Tint and disabled colors
@@ -1227,23 +1232,15 @@ static void clearCurrentLabelTouch(STULabel* self) {
 // MARK: - Default link action sheet
 
 static void openURL(NSURL* url) {
-#if !TARGET_OS_MACCATALYST
-  if (@available(iOS 10, *)) {
-#endif
-    [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
-       if (!success) {
-       #if STU_DEBUG
-         NSLog(@"Failed to open URL %@", url);
-       #else
-         NSLog(@"Failed to open URL");
-       #endif
-       }
-     }];
-#if !TARGET_OS_MACCATALYST
-  } else {
-    [UIApplication.sharedApplication openURL:url];
-  }
-#endif
+  [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
+     if (!success) {
+     #if STU_DEBUG
+       NSLog(@"Failed to open URL %@", url);
+     #else
+       NSLog(@"Failed to open URL");
+     #endif
+     }
+   }];
 }
 
 static UIAlertAction* openURLAction(NSString* title, NSURL* url) {
@@ -1431,6 +1428,17 @@ static NSURL* __nullable urlLinkAttribute(STUTextLink* __unsafe_unretained link)
 
 // MARK: - Touch event handling
 
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (BOOL)resignFirstResponder {
+  if (_textInteraction) {
+    self.selectedTextRange = nil;
+  }
+  return [super resignFirstResponder];
+}
+
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   _touchCount += touches.count;
   [super touchesBegan:touches withEvent:event];
@@ -1602,9 +1610,7 @@ void STULabelSetBitsDragInterationEnabled(STULabel* self, bool dragInterationEna
   if (!_dragInteraction) {
     _bits.dragInteractionEnabled = enabled;
     if (enabled && (_textFrameFlags & STUTextFrameHasLink)) {
-      if (@available(iOS 11, *)) {
-        initializeDragInteraction(self);
-      }
+      initializeDragInteraction(self);
     }
   } else {
     _dragInteraction.enabled = enabled; // Will also set _bits.dragInteractionEnabled;
@@ -1949,6 +1955,42 @@ willAnimateCancelWithAnimator:(id<UIDragAnimating>)animator
   [self stu_dragInteractionEnded];
 }
 
+// MARK: - UITextInteraction
+
+static void initializeTextInteraction(STULabel* self) {
+  STU_DEBUG_ASSERT(self->_textInteraction == nil);
+  self->_textInteraction = [[STULabelTextInteraction alloc] initWithLabel:self];
+}
+
+- (UITextInteraction*)textInteraction {
+  return self.stu_textInteraction.stu_interaction;
+}
+
+- (STULabelTextInteraction*)stu_textInteraction {
+  if (!_textInteraction) {
+    initializeTextInteraction(self);
+  }
+  return _textInteraction;
+}
+
+- (BOOL)isSelectable {
+  return _bits.isSelectable;
+}
+
+- (void)setSelectable:(BOOL)selectable {
+  if (_bits.isSelectable == selectable) return;
+  if (selectable) {
+    _bits.isSelectable = true;
+    [self addInteraction:self.textInteraction];
+  } else {
+    if (_textInteraction) {
+      self.selectedTextRange = nil;
+      [self removeInteraction:_textInteraction.stu_interaction];
+    }
+    _bits.isSelectable = false;
+  }
+}
+
 // MARK: - STULabelLayerDelegate methods (except labelLayerTextLayoutWasInvalidated)
 
 - (bool)labelLayer:(STULabelLayer* __unused)labelLayer
@@ -1972,15 +2014,14 @@ didDisplayTextWithFlags:(STUTextFrameFlags)textFrameFlags inRect:(CGRect)content
 {
   _contentBounds = contentBounds;
   _textFrameFlags = textFrameFlags;
+  [_textInteraction stu_textDidDisplay];
   updateLayoutGuides(self);
   if (textFrameFlags & STUTextFrameHasLink) {
     if (!_longPressGestureRecognizer) {
       initializeLongPressGestureRecognizer(self);
     }
     if (!_dragInteraction && _bits.dragInteractionEnabled) {
-      if (@available(iOS 11, *)) {
-        initializeDragInteraction(self);
-      }
+      initializeDragInteraction(self);
     }
   }
   if (_activeLinkOrOverlayLayer || _ghostingMaskLayer) {

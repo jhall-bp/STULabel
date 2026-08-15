@@ -43,7 +43,7 @@ extension STUCGImageFormat {
 ///     The size of the bitmap in pixels is determined by multiplying the width and height of
 ///     this `CGSize` with the absolute value of the specified scale and then rounding the
 ///     resulting values to integers.
-///   - scale:
+///   - scale: Defaults to 1 for context-independent rendering.
 ///     The CTM of the context passed to `drawingBlock` is scaled by the absolute value of this
 ///     argument. If the scale is positive, the context has a top-left origin (as is the UIKit
 ///     convention), otherwise a lower-left origin.
@@ -54,7 +54,7 @@ extension STUCGImageFormat {
 ///   - drawingBlock: This block will be called in order to draw the image.
 ///
 @inlinable
-public func stu_createCGImage(size: CGSize, scale: CGFloat = stu_mainScreenScale(),
+public func stu_createCGImage(size: CGSize, scale: CGFloat = 1,
                               backgroundColor: CGColor? = nil,
                               _ format: STUCGImageFormat = .rgb,
                               _ drawingBlock: (CGContext) -> ())
@@ -72,7 +72,7 @@ public func stu_createCGImage(size: CGSize, scale: CGFloat = stu_mainScreenScale
 ///     The width of the context, in pixels. Will be clamped to a value >= 1.
 ///   - heightInPixels:
 ///     The height of the context, in pixels. Will be clamped to a value >= 1.
-///   - scale:
+///   - scale: Defaults to 1 for context-independent rendering.
 ///     The CTM of the returned context is scaled by the absolute value of this argument.
 ///     If the scale is positive, the context has a top-left origin (as is the UIKit convention),
 ///     otherwise a lower-left origin.
@@ -90,7 +90,7 @@ public func stu_createCGImage(size: CGSize, scale: CGFloat = stu_mainScreenScale
 ///     argument is not null, this value must not be 0.
 @inlinable
 public func stu_createCGBitmapContext(widthInPixels: Int, heightInPixels: Int,
-                                      scale: CGFloat = stu_mainScreenScale(),
+                                      scale: CGFloat = 1,
                                       backgroundColor: CGColor? = nil,
                                       _ format: STUCGImageFormat = .rgb,
                                       data: UnsafeMutableRawPointer? = nil,
@@ -100,4 +100,3 @@ public func stu_createCGBitmapContext(widthInPixels: Int, heightInPixels: Int,
   return __stu_createCGBitmapContext(max(1, widthInPixels), max(1, heightInPixels), scale,
                                      backgroundColor, format, data, bytesPerRow)
 }
-

@@ -14,13 +14,6 @@
   cvc.allowsActions = false;
   if ((self = [super initWithRootViewController:cvc])) {
     cvc.delegate = self;
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
-      // Make the navigation bar transparent.
-      [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
-                                                forBarMetrics:UIBarMetricsDefault];
-      self.navigationBar.shadowImage = [[UIImage alloc] init];
-      self.navigationBar.translucent = true;
-    }
   }
   return self;
 }

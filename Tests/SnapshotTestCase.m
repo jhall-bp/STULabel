@@ -182,6 +182,8 @@ static NSString *escapeFilename(NSString *fileName) {
       if ([view isKindOfClass:UIWindow.class]) {
         window = (UIWindow *)view;
       } else {
+        // TODO: Pass a UIWindowScene from each caller before removing this test-only fallback.
+        // Detached views have no scene from which this helper can safely derive a screen.
         window = UIApplication.sharedApplication.keyWindow;
         if (!window) {
           window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
@@ -210,7 +212,7 @@ static NSString *escapeFilename(NSString *fileName) {
     [view.superview layoutIfNeeded];
 
     const CGRect bounds = view.bounds;
-    const CGFloat scale = contentsScale > 0 ? contentsScale : window.screen.scale;
+    const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
     UIImage * const image = [self stu_drawImageWithSize:bounds.size scale:scale block:^bool(){
       if (self->_shouldUseDrawViewHierarchyInRect) {
         if (![view drawViewHierarchyInRect:bounds afterScreenUpdates:true]) {
@@ -253,6 +255,8 @@ static NSString *escapeFilename(NSString *fileName) {
 
   @autoreleasepool {
     bool needToRemoveLayerFromSuperlayer = false;
+    // TODO: Pass a UIWindowScene from each caller before removing this test-only fallback.
+    // Detached layers have no scene from which this helper can safely derive a screen.
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     if (!window) {
       window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
@@ -274,7 +278,7 @@ static NSString *escapeFilename(NSString *fileName) {
     [layer.superlayer layoutIfNeeded];
 
     const CGRect bounds = layer.bounds;
-    const CGFloat scale = contentsScale > 0 ? contentsScale : window.screen.scale;
+    const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
     UIImage * const image = [self stu_drawImageWithSize:bounds.size scale:scale block:^bool(){
       [layer renderInContext:UIGraphicsGetCurrentContext()];
       return true;

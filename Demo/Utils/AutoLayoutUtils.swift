@@ -2,8 +2,7 @@
 
 import STULabelSwift
 
-func roundToDisplayScale(_ value: CGFloat) -> CGFloat {
-  let displayScale = stu_mainScreenScale()
+func roundToDisplayScale(_ value: CGFloat, displayScale: CGFloat) -> CGFloat {
   return round(displayScale*value)/displayScale
 }
 

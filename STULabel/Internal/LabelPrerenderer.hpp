@@ -174,7 +174,7 @@ public:
     checkNotFrozen();
     scale = clampDisplayScaleInput(scale);
     if (!params_.setDisplayScaleAndIfChangedUpdateSizeAndEdgeInsets(
-                   DisplayScale::createOrIfInvalidGetMainSceenScale(scale), size_, contentInsets_))
+                   DisplayScale::createOrIfInvalidUseOne(scale), size_, contentInsets_))
     {
       return;
     }
@@ -378,4 +378,3 @@ public:
 };
 
 } // stu_label
-

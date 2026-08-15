@@ -7,7 +7,7 @@ enum Link {
   case readLess
 }
 
-let linkColor = UITextView().linkTextAttributes![NSAttributedString.Key.foregroundColor] as! UIColor
+let linkColor = UIColor.link
 
 let readMoreToken = { () -> NSAttributedString in
   let token = NSMutableAttributedString()

@@ -11,10 +11,6 @@ class StaticTableViewController : UITableViewController {
 
   override init(style: UITableView.Style = .plain) {
     super.init(style: style)
-    if #available(iOS 11, tvOS 11, *) {}
-    else {
-      tableView.estimatedRowHeight = 57.5
-    }
   }
 
   @available(*, unavailable)

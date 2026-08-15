@@ -97,6 +97,11 @@ using namespace stu_label;
   prerenderer->setDisplayScale(scale);
 }
 
+- (void)configureForTraitCollection:(UITraitCollection*)traitCollection {
+  self.displayScale = traitCollection.displayScale;
+  self.neverUsesExtendedRGBBitmapFormat = traitCollection.displayGamut == UIDisplayGamutSRGB;
+}
+
 - (STULabelVerticalAlignment)verticalAlignment {
   return prerenderer->params().verticalAlignment;
 }
@@ -314,4 +319,3 @@ using namespace stu_label;
 }
 
 @end
-

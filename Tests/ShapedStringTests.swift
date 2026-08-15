@@ -5,12 +5,9 @@ import STULabelSwift
 import XCTest
 
 private func createTypesetter(_ string: NSAttributedString) -> CTTypesetter {
-  if #available(iOS 12, *) {
-    let ts = CTTypesetterCreateWithAttributedStringAndOptions(
-               string, [kCTTypesetterOptionAllowUnboundedLayout: true] as CFDictionary)
-    return ts!
-  }
-  return CTTypesetterCreateWithAttributedString(string as CFAttributedString)
+  let ts = CTTypesetterCreateWithAttributedStringAndOptions(
+             string, [kCTTypesetterOptionAllowUnboundedLayout: true] as CFDictionary)
+  return ts!
 }
 
 class ShapedStringTests : XCTestCase {
@@ -58,9 +55,6 @@ class ShapedStringTests : XCTestCase {
           let maxWidth = randU01()*1000
           let length = CTTypesetterSuggestLineBreak(typesetter0, index, maxWidth)
           if length < 0 {
-            if CTGetCoreTextVersion() <= kCTVersionNumber10_12 { // CoreText bug
-              continue
-            }
             fatalError()
           }
           let length2 = CTTypesetterSuggestClusterBreak(typesetter0, index, maxWidth)

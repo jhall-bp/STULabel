@@ -283,7 +283,10 @@ underline thickness is calculated based both on the original font and the substi
 
 ### Other limitations
 
-- `STULabel` currently does not support text selection.  (The infrastructure for mapping points to characters already exists, but the selection logic, gesture recognition, etc. still needs to be implemented.)
+- On iOS 13 and later, set `label.selectable = true` to enable non-editable native text selection.
+  Selection and Copy operate on the currently displayed text, including non-link truncation-token
+  content. A link in a truncation token, such as a "more" control, is not selectable. Existing
+  link long-press actions take precedence, so selection must begin outside a link.
 
 - `STULabel` and `STUTextFrame` don't support specifying an exclusion path, in contrast to  `UITextView` and `NSTextContainer`.
 
@@ -292,6 +295,3 @@ underline thickness is calculated based both on the original font and the substi
 - STULabel does not support vertical text.
 
 (This list is not complete.)
-
-
-

@@ -385,25 +385,16 @@ static CGPoint scaledAppleColorEmojiOffset(bool isAppleColorEmojiUI, CGFloat fon
                                            CGFloat effectivePointsPerEM)
 {
   // This is the offset calculated by CoreText's TFont::GetColorBitmapFontTranslate().
-  const auto version = CTGetCoreTextVersion();
-  CGFloat x;
-  if (version > kCTVersionNumber10_12) {
-    const CGFloat track = appleColorEmojiTrackValue(isAppleColorEmojiUI, fontSize);
-    x = narrow_cast<CGFloat>(effectivePointsPerEM*track*0.4);
-    if (x == 0) {
-      x = 0.5;
-    }
-  } else if (version == kCTVersionNumber10_12) {
-    x = isAppleColorEmojiUI || fontSize < 29 ? 0 : 0.5f;
-  } else {
+  const CGFloat track =
+    appleColorEmojiTrackValue(isAppleColorEmojiUI, fontSize);
+
+  CGFloat x =
+    narrow_cast<CGFloat>(effectivePointsPerEM * track * 0.4);
+
+  if (x == 0) {
     x = 0.5;
   }
-  CGFloat y1 = narrow_cast<CGFloat>(-0.075*fontSize);
-  if (version >= kCTVersionNumber10_12) {
-    y1 *= 2;
-  } else {
-    y1 = narrow_cast<CGFloat>(y1*1.7);
-  }
+  const CGFloat y1 = narrow_cast<CGFloat>(-0.15 * fontSize);
   CGFloat y2;
   if (fontSize < 16) {
     y2 = fontSize/4;
@@ -743,4 +734,3 @@ void LocalGlyphBoundsCache::glyphBoundsCacheFor_slowPath(FontRef font) {
 }
 
 } // namespace stu_label
-

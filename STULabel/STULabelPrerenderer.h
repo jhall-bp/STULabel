@@ -108,8 +108,11 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 - (void)setSize:(CGSize)size directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets
         options:(STULabelPrerendererSizeOptions)options;
 
-/// Default value: @c UIScreen.main.scale
+/// Default value: 1. Set this to the target label's @c traitCollection.displayScale before rendering.
 @property (nonatomic) CGFloat displayScale;
+
+/// Configures display-dependent rendering options from the target label's trait collection.
+- (void)configureForTraitCollection:(UITraitCollection *)traitCollection;
 
 @property (nonatomic) STULabelVerticalAlignment verticalAlignment;
 
@@ -181,7 +184,7 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 /// Default value: false
 @property (nonatomic) bool neverUsesGrayscaleBitmapFormat;
 
-/// Default value: `UIScreen.main.traitCollection.displayGamut == UIDisplayGamutSRGB`
+/// Default value: false. Set this according to the target label's @c traitCollection.displayGamut.
 @property (nonatomic) bool neverUsesExtendedRGBBitmapFormat;
 
 /// Default value: false

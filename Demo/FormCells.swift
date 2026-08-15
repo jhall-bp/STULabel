@@ -605,11 +605,9 @@ class SubtableCell : UITableViewCell {
     footerCell.separatorInset = .init(top: 0, left: 4096, bottom: 0, right: 0)
     footerCell.selectionStyle = .none
     footerCell.contentView.preservesSuperviewLayoutMargins = true
-    footerCell.contentView.layoutMargins.top *= 2
+    footerCell.contentView.directionalLayoutMargins.top *= 2
     footerLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
-    if #available(iOS 10, tvOS 10, *) {
-      footerLabel.adjustsFontForContentSizeCategory = true
-    }
+    footerLabel.adjustsFontForContentSizeCategory = true
     footerLabel.numberOfLines = 0
     footerLabel.textColor = .gray
   }
@@ -640,10 +638,6 @@ class SubtableCell : UITableViewCell {
       self.subtableCell = subtableCell
       super.init(style: .plain)
       self.navigationItem.title = subtableCell.title
-      if #available(iOS 11, tvOS 11, *) {}
-      else {
-        tableView.estimatedRowHeight = 57.5
-      }
       self.tableView.tableFooterView = UIView()
     }
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }

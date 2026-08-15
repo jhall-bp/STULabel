@@ -188,13 +188,7 @@ static UInt expectedCTRunMinMallocSize = 0x78 + sizeof(void*);
 
 static UInt ctRunFontFieldOffset;
 static void initializeCTRunFontFieldOffset() {
-  if (@available(iOS 15, *)) {
-    ctRunFontFieldOffset = 0x80;
-  } else if (@available(iOS 12, *)) {
-    ctRunFontFieldOffset = 0x78;
-  } else {
-    ctRunFontFieldOffset = 0x68;
-  }
+  ctRunFontFieldOffset = 0x80;
 }
 
 STU_INLINE

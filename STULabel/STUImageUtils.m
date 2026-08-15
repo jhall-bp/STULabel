@@ -10,7 +10,6 @@ STU_EXPORT
 STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
                                   STUCGImageFormatOptions options)
 {
-  static bool casUseLA8; // iOS 9 doesn't support the grayscale + alpha pixel format.
   static CGColorSpaceRef grayGamma2_2;
   static CGColorSpaceRef sRGB;
   static CGColorSpaceRef extendedSRGB;
@@ -19,10 +18,7 @@ STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
   dispatch_once(&once, ^{
     grayGamma2_2 = CGColorSpaceCreateWithName(kCGColorSpaceGenericGrayGamma2_2);
     sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
-    if (@available(iOS 10, tvOS 10, macOS 10.12, *)) {
-      casUseLA8 = true;
-      extendedSRGB = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
-    }
+    extendedSRGB = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
   });
 
   const bool withoutAlpha = options & STUCGImageFormatWithoutAlphaChannel;
@@ -40,12 +36,9 @@ STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
       bitmapInfo = 0;
       break;
     }
-    if (casUseLA8) {
-      bitsPerPixel = 16;
-      bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast; // LA8
-      break;
-    }
-    STU_FALLTHROUGH
+    bitsPerPixel = 16;
+    bitmapInfo = (CGBitmapInfo)kCGImageAlphaPremultipliedLast; // LA8
+    break;
   case STUPredefinedCGImageFormatExtendedRGB:
     if (extendedSRGB) {
       colorSpace = extendedSRGB;

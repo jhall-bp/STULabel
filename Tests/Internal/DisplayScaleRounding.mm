@@ -48,11 +48,10 @@ static double naiveCeilToScale(double x, double scale) {
   XCTAssertTrue(!DisplayScale::create(NAN));
 }
 
-- (void)testCreateOrIfInvalidGetMainSceenScale {
-  XCTAssertEqual(DisplayScale::createOrIfInvalidGetMainSceenScale(2), 2);
-  XCTAssertEqual(DisplayScale::createOrIfInvalidGetMainSceenScale(0), UIScreen.mainScreen.scale);
-  XCTAssertEqual(DisplayScale::createOrIfInvalidGetMainSceenScale(infinity<Float64>),
-                 UIScreen.mainScreen.scale);
+- (void)testCreateOrIfInvalidUseOne {
+  XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(2), 2);
+  XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(0), 1);
+  XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(infinity<Float64>), 1);
 }
 
 - (void)testDisplayScaleOptional {

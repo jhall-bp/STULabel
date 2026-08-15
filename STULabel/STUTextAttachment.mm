@@ -97,11 +97,8 @@ static void initCommon(STUTextAttachment* __unsafe_unretained self) {
   const bool isAccessible = self.isAccessibilityElement;
   encode(coder, @"isAccessibilityElement", isAccessible);
   if (isAccessible) {
-    bool isAttributed = false;
-    if (@available(iOS 11, tvOS 11, *)) {
-      isAttributed = true;
-    };
-    encode(coder, @"hasAttributedAccessibilityStrings", isAttributed);
+    bool isAttributed = true;
+    encode(coder, @"hasAttributedAccessibilityStrings", true);
   #define ENCODE(name, attributedName) \
     if (isAttributed) { \
       if (NSAttributedString* const attributedString = self.attributedName) { \
@@ -136,11 +133,6 @@ static void initCommon(STUTextAttachment* __unsafe_unretained self) {
     self.isAccessibilityElement = true;
     bool isAttributed;
     decode(coder, @"hasAttributedAccessibilityStrings", Out{isAttributed});
-    bool isIOS11 = false;
-    if (@available(iOS 11, tvOS 11, *)) {
-      isIOS11 = true;
-    };
-
   #define DECODE(name, attributedName) \
     if (!isAttributed) { \
       NSString* string = nil; \
@@ -152,11 +144,7 @@ static void initCommon(STUTextAttachment* __unsafe_unretained self) {
       NSAttributedString* attributedString = nil; \
       decode(coder, @STU_STRINGIZE(attributedName), Out{attributedString}); \
       if (attributedString) {\
-        if (isIOS11) { \
-          self.attributedName = attributedString; \
-        } else { \
-          self.name = attributedString.string; \
-        } \
+        self.attributedName = attributedString; \
       } \
     }
     STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
@@ -338,26 +326,14 @@ static STUTextAttachmentColorInfo attachmentColorInfoForColorSpace(CGColorSpaceR
                      padding:UIEdgeInsetsZero leading:0 stringRepresentation:stringRepresentation];
   if (attachment.isAccessibilityElement) {
     self.isAccessibilityElement = true;
-    if (@available(iOS 11, tvOS 11, *)) {
-      if (NSAttributedString* const label = attachment.accessibilityAttributedLabel) {
-        self.accessibilityAttributedLabel = label;
-      }
-      if (NSAttributedString* const hint = attachment.accessibilityAttributedHint) {
-        self.accessibilityAttributedHint = hint;
-      }
-      if (NSAttributedString* const value = attachment.accessibilityAttributedValue) {
-        self.accessibilityAttributedValue = value;
-      }
-    } else {
-      if (NSString* const label = attachment.accessibilityLabel) {
-        self.accessibilityLabel = label;
-      }
-      if (NSString* const hint = attachment.accessibilityHint) {
-        self.accessibilityHint = hint;
-      }
-      if (NSString* const value = attachment.accessibilityValue) {
-        self.accessibilityValue = value;
-      }
+    if (NSAttributedString* const label = attachment.accessibilityAttributedLabel) {
+      self.accessibilityAttributedLabel = label;
+    }
+    if (NSAttributedString* const hint = attachment.accessibilityAttributedHint) {
+      self.accessibilityAttributedHint = hint;
+    }
+    if (NSAttributedString* const value = attachment.accessibilityAttributedValue) {
+      self.accessibilityAttributedValue = value;
     }
     if (NSString* const value = attachment.accessibilityLanguage) {
       self.accessibilityLanguage = value;
@@ -658,4 +634,3 @@ void addRunDelegatesIfNecessary(NSAttributedString* __unsafe_unretained attribut
 }
 
 @end
-

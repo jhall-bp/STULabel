@@ -213,6 +213,13 @@ STU_EXPORT
   API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos);
 
 
+/// A Boolean value that indicates whether the label's displayed text is selectable.
+///
+/// When set to @c true, the label installs its non-editable @c UITextInteraction. The default
+/// value is @c false.
+@property (nonatomic, getter=isSelectable) BOOL selectable;
+
+
 /// The lazily created @c UILongPressGestureRecognizer instance used by the label.
 @property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 

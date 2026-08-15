@@ -17,9 +17,7 @@ let fontTextStyles: [(name: String, value: UIFont.TextStyle)] = {
     ("Caption 1", .caption1),
     ("Caption 2", .caption2),
   ]
-  if #available(iOS 11, *) {
-    styles.insert(("Large title", .largeTitle), at: 0)
-  }
+  styles.insert(("Large title", .largeTitle), at: 0)
   return styles
 }()
 
@@ -42,13 +40,9 @@ private extension UIFont {
   static func preferredFont(_ textStyle: UIFont.TextStyle,
                             _ sizeCategory: UIContentSizeCategory) -> UIFont
   {
-    if #available(iOS 10.0, *) {
-      return UIFont.preferredFont(forTextStyle: textStyle,
-                                  compatibleWith: UITraitCollection(preferredContentSizeCategory:
-                                                                      sizeCategory))
-    } else {
-      return UIFont.preferredFont(forTextStyle: textStyle)
-    }
+    return UIFont.preferredFont(forTextStyle: textStyle,
+                                compatibleWith: UITraitCollection(preferredContentSizeCategory:
+                                                                    sizeCategory))
   }
 }
 
@@ -314,7 +308,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private var mode: Mode {
     willSet {
       if mode == .zoomableSTULabel {
-        largeSTULabel.contentScaleFactor = stu_mainScreenScale()
+        largeSTULabel.contentScaleFactor = largeSTULabel.traitCollection.displayScale
         largeSTULabelScrollView.setZoomScale(1, animated: false)
       }
       self.saveScrollState()
@@ -547,13 +541,9 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
   override func viewDidLoad() {
     view.backgroundColor = .white
-    automaticallyAdjustsScrollViewInsets = false
-
-    if #available(iOS 11.0, *) {
-      multiLabelScrollView.contentInsetAdjustmentBehavior = .never
-      largeSTULabelScrollView.contentInsetAdjustmentBehavior = .never
-      largeTextView.contentInsetAdjustmentBehavior = .never
-    }
+    multiLabelScrollView.contentInsetAdjustmentBehavior = .never
+    largeSTULabelScrollView.contentInsetAdjustmentBehavior = .never
+    largeTextView.contentInsetAdjustmentBehavior = .never
 
     multiLabelScrollView.alwaysBounceVertical = false
     multiLabelScrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -576,6 +566,9 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
     (largeTextView as UIScrollView).delegate = self
 
     largeSTULabelScrollView.maximumZoomScale = 10
+    registerForTraitChanges([UITraitDisplayScale.self]) { (self: UDHRViewerVC, _) in
+      self.updateDisplayScaleForCurrentTraitCollection()
+    }
     largeSTULabelScrollView.delegate = self
     largeSTULabelScrollView.addSubview(largeSTULabel)
     largeSTULabelScrollView.addSubview(largeSTULabelScrollViewContentView)
@@ -706,10 +699,8 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
       label.textLayoutMode = textLayoutMode.value
 
-      if #available(iOS 11, *) {
-        label.dragInteractionEnabled = linkDragInteractionEnabled.value
-        textView.textDragInteraction?.isEnabled = linkDragInteractionEnabled.value
-      }
+      label.dragInteractionEnabled = linkDragInteractionEnabled.value
+      textView.textDragInteraction?.isEnabled = linkDragInteractionEnabled.value
 
       label.maximumNumberOfLines = maxLineCount.value
       textView.textContainer.maximumNumberOfLines = maxLineCount.value
@@ -924,6 +915,16 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
   }
 
   private var lastLayoutWidth: CGFloat?
+  private var lastLayoutDisplayScale: CGFloat?
+
+  private func updateDisplayScaleForCurrentTraitCollection() {
+    if mode == .zoomableSTULabel {
+      largeSTULabel.contentScaleFactor = largeSTULabel.traitCollection.displayScale
+                                         * largeSTULabelScrollView.zoomScale
+    }
+    lastLayoutDisplayScale = nil
+    view.setNeedsLayout()
+  }
 
   override func viewWillLayoutSubviews() {
     if _needsTextUpdate {
@@ -936,8 +937,10 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
     // Will be set to false in viewDidLayoutSubviews.
     doNotRemoveSavedScrollStatesOnContentOffsetChanges = true
 
-    if viewWidth == lastLayoutWidth { return }
+    let displayScale = traitCollection.displayScale
+    if viewWidth == lastLayoutWidth && displayScale == lastLayoutDisplayScale { return }
     lastLayoutWidth = viewWidth
+    lastLayoutDisplayScale = displayScale
     defer {
       restoreScrollState()
     }
@@ -950,7 +953,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
     let readableWidth = scrollView.readableContentGuide.layoutFrame.size.width
 
-    let scale = UIScreen.main.scale
+    let scale = displayScale
     func floorToScale(_ x: CGFloat) -> CGFloat { return floor(x*scale)/scale }
     func ceilToScale(_ x: CGFloat) -> CGFloat { return ceil(x*scale)/scale }
 
@@ -993,12 +996,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
     let p = padding
 
-    let safeWidth: CGFloat
-    if #available(iOS 11.0, *) {
-      safeWidth = scrollView.safeAreaLayoutGuide.layoutFrame.size.width
-    } else {
-      safeWidth = viewWidth
-    }
+    let safeWidth = scrollView.safeAreaLayoutGuide.layoutFrame.size.width
 
     let width = floorToScale(min(viewWidth/2 - p, safeWidth/2 + p, readableWidth + 2*p));
 
@@ -1042,7 +1040,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
   override func viewDidLayoutSubviews() {
     let scrollView = self.scrollViewForMode(mode)
-    let topInset = self.topLayoutGuide.length
+    let topInset = view.safeAreaInsets.top
     let oldTopInset = scrollView.contentInset.top
     if topInset != oldTopInset {
       scrollView.contentInset.top = topInset
@@ -1087,7 +1085,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
       removeSavedScrollStates()
     }
     if scrollView == largeSTULabelScrollView {
-      largeSTULabel.contentScaleFactor = stu_mainScreenScale()*scale
+      largeSTULabel.contentScaleFactor = largeSTULabel.traitCollection.displayScale*scale
       self.view.setNeedsLayout()
     }
   }
@@ -1115,7 +1113,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
     case .stuLabel, .zoomableSTULabel:
       let view = self.view!
       let label = self.largeSTULabel
-      let center = view.bounds.center + CGPoint(x: 0, y: self.topLayoutGuide.length/2)
+      let center = view.bounds.center + CGPoint(x: 0, y: view.safeAreaInsets.top/2)
       let textFrame = label.textFrame
       let p = label.convert(center, from: view)
       gcr = STUTextRange(textFrame.rangeOfGraphemeCluster(
@@ -1353,13 +1351,9 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
       switch viewerVC.fontKind {
       case .preferred:
         let style = fontTextStyleCell.value
-        if #available(iOS 10.0, *) {
-          let sizeCategory = fontSizeCategoryCell.value
-          let tc = UITraitCollection(preferredContentSizeCategory: sizeCategory)
-          font = UIFont.preferredFont(forTextStyle: style, compatibleWith: tc)
-        } else {
-          font = UIFont.preferredFont(forTextStyle: style)
-        }
+        let sizeCategory = fontSizeCategoryCell.value
+        let tc = UITraitCollection(preferredContentSizeCategory: sizeCategory)
+        font = UIFont.preferredFont(forTextStyle: style, compatibleWith: tc)
         fontSizeCell.value = font.pointSize
       case .system:
         font = systemFontStyleCell.value.font(size: fontSizeCell.value)
@@ -1511,11 +1505,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
       linkRangesCell = newOptionalRangesCell("Link", vc.linkRanges)
       linkDraggableCell = SwitchCell("Draggable", vc.linkDragInteractionEnabled)
 
-      if #available(iOS 11, *) {
-        linkTableCell = SubtableCell("Links", [linkRangesCell, linkDraggableCell])
-      } else {
-        linkTableCell = SubtableCell("Links", [linkRangesCell])
-      }
+      linkTableCell = SubtableCell("Links", [linkRangesCell, linkDraggableCell])
 
       backgroundColorCell = newOptionalColorCell("Background", vc.backgroundColor)
       backgroundRangesCell = newRangesCell("Background", vc.backgroundRanges)
@@ -1610,9 +1600,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
       var normalFontCells = preferredFontCells
 
       preferredFontCells.append(contentsOf: [fontTextStyleCell])
-      if #available(iOS 10, *) {
-        preferredFontCells.append(fontSizeCategoryCell)
-      }
+      preferredFontCells.append(fontSizeCategoryCell)
       systemFontCells.append(contentsOf: [systemFontStyleCell, fontSizeCell])
       normalFontCells.append(contentsOf: [fontStyleCell, fontSizeCell])
 
@@ -1639,15 +1627,14 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
       let updateCellsForMode = { [unowned self] in
         let mode = vc.modeSetting.value
-        let isNotIOS9 = NSFoundationVersionNumber > Double(NSFoundationVersionNumber_iOS_9_x_Max)
         switch mode {
         case .stuLabel_vs_UITextView:
           self.accessibilitySeparateParagraphsCell.isEnabled = true
-          self.accessibilitySeparateLinksCell.isEnabled = isNotIOS9
+          self.accessibilitySeparateLinksCell.isEnabled = true
           self.highlightGraphemeClusterCell.isEnabled = false
         case .stuLabel, .zoomableSTULabel:
           self.accessibilitySeparateParagraphsCell.isEnabled = false
-          self.accessibilitySeparateLinksCell.isEnabled = isNotIOS9
+          self.accessibilitySeparateLinksCell.isEnabled = true
           self.highlightGraphemeClusterCell.isEnabled = true
         case .uiTextView:
           self.accessibilitySeparateParagraphsCell.isEnabled = false

@@ -166,7 +166,7 @@ public:
     if (UIScreen* const screen = visibleBoundsObserver_.screen()) {
       screenScale_ = screen.scale;
     } else if (layoutEvenWithoutScreen) {
-      screenScale_ = stu_mainScreenScale();
+      screenScale_ = displayScale_;
     } else {
       // Let's wait until the layer has a window and actually needs to be displayed before we update
       // the tiles.
@@ -458,11 +458,8 @@ private:
 
   STU_NO_INLINE
   void updateScreenSizeAndTileSize(UIScreen* __unsafe_unretained screen) {
-    if (!screen) {
-      screen = UIScreen.mainScreen;
-    }
-    Size<CGFloat> screenSize = screen.bounds.size;
-    CGFloat screenScale = screen.scale;
+    Size<CGFloat> screenSize = screen ? screen.bounds.size : layerSize_;
+    CGFloat screenScale = screen ? screen.scale : displayScale_;
     if (!(screenSize.width > 0) || !(screenSize.height > 0)) {
       screenSize = CGSize{1920, 1080};
     }
@@ -1277,7 +1274,7 @@ using namespace stu_label;
 - (instancetype)init {
   if ((self = [super init])) {
     impl.init(self);
-    const CGFloat scale = stu_mainScreenScale();
+    const CGFloat scale = self.contentsScale;
     [super setContentsScale:scale];
     impl.setContentsScale(scale);
   }

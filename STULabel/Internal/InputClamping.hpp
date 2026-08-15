@@ -105,7 +105,7 @@ STU_INLINE
 CGFloat clampDisplayScaleInput(CGFloat scale) {
   scale = clampNonNegativeFloatInput(scale);
   if (scale == 0) {
-    scale = stu_mainScreenScale();
+    scale = 1;
   }
   return scale;
 }

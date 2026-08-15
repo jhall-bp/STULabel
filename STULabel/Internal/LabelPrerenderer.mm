@@ -35,8 +35,8 @@ LabelPrerenderer::LabelPrerenderer()
   referers_.store(Referers::layerOrPrerenderer, std::memory_order_relaxed);
   params_.defaultBaseWritingDirection = stu_defaultBaseWritingDirection();
   params_.setDisplayScale_assumingSizeAndEdgeInsetsAreAlreadyCorrectlyRounded(
-            *DisplayScale::create(stu_mainScreenScale()));
-  params_.neverUsesExtendedRGBBitmapFormat = stu_mainScreenDisplayGamut() == STUDisplayGamutSRGB;
+            DisplayScale::one());
+  params_.neverUsesExtendedRGBBitmapFormat = false;
   stringIsEmpty_ = true;
   textFrameOptions_ = defaultLabelTextFrameOptions().unretained;
 }
@@ -139,4 +139,3 @@ void LabelPrerenderer::objcObjectWasDestroyed() {
 }
 
 } // namespace stu_label
-

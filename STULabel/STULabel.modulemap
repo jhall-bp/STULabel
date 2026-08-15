@@ -5,6 +5,7 @@ framework module STULabel {
   header "STUCancellationFlag.h"
   header "STUDefines.h"
   header "STULabel.h"
+  header "STULabel+UITextInput.h"
   header "STULabelAlignment.h"
   header "STULabelDrawingBlock.h"
   header "STULabelLayer.h"

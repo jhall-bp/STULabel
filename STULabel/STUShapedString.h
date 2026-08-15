@@ -63,7 +63,7 @@ STU_EXPORT
 ///    style is @c NSWritingDirectionNatural.
 /// 2) The writing direction of the paragraph cannot be detected using the Unicode Bidirectional
 ///    algorithm rules P2 and P3, or more specifically, @c stu_detectBaseWritingDirection with
-///    `skipIsolatedText == (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max)`
+///    `skipIsolatedText == true`
 ///    returns @c NSWritingDirectionNatural for the string range of the paragraph.
 @property (readonly) STUWritingDirection defaultBaseWritingDirection;
 
