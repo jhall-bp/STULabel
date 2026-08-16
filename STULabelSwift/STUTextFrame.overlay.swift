@@ -465,7 +465,7 @@ extension STUTextFrame {
   @inlinable
   public var lines: Lines { return Lines(self) }
 
-  public struct Paragraphs : RandomAccessCollection {
+  public struct Paragraphs : @MainActor RandomAccessCollection {
     @usableFromInline internal let textFrame: STUTextFrame
     @usableFromInline internal let textFrameParagraphs: UnsafePointer<__STUTextFrameParagraph>
     public let count: Int
@@ -497,7 +497,7 @@ extension STUTextFrame {
     }
   }
 
-  public struct Lines : RandomAccessCollection {
+  public struct Lines : @MainActor RandomAccessCollection {
     @usableFromInline internal let textFrame: STUTextFrame
     @usableFromInline internal let textFrameLines: UnsafePointer<__STUTextFrameLine>
     public let count: Int
@@ -1139,5 +1139,3 @@ extension STUTextFrame.LayoutInfo {
     return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
   }
 }
-
-

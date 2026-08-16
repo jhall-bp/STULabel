@@ -20,7 +20,7 @@ func preferredFontWithMonospacedDigits(_ textStyle: UIFont.TextStyle,
                                                            compatibleWith: traitCollection)
 }
 
-func styleName(fontName: String) -> String {
+nonisolated func styleName(fontName: String) -> String {
   guard let i = fontName.firstIndex(of: "-") else {
     if fontName.hasPrefix("Damascus") {    
       return fontName == "Damascus" ? "Regular"
@@ -71,12 +71,12 @@ let systemFontStyles: [SystemFontStyle] =
   uiFontWeights.flatMap{ return [SystemFontStyle(weight: $0, italic: false),
                                  SystemFontStyle(weight: $0, italic: true)] }
 
-private let lowercaseFontWeightNames = [
+private nonisolated let lowercaseFontWeightNames = [
   "ultralight", "thin", "light", "book", "regular", "medium",
   "demibold", "semibold", "bold", "extrabold", "heavy", "black"
 ]
 
-private func fontSortOrder(f1: String, f2: String) -> Bool {
+private nonisolated func fontSortOrder(f1: String, f2: String) -> Bool {
   var s1 = styleName(fontName: f1).lowercased()
   var s2 = styleName(fontName: f2).lowercased()
 

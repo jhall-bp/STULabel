@@ -53,7 +53,7 @@ class SwitchCell : UITableViewCell, PropertyObserverProtocol {
     property.addObserver(self)
   }
 
-  deinit {
+  isolated deinit {
     if let property = property {
       property.removeObserver(self)
     }
@@ -252,7 +252,7 @@ class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, PropertyOb
     property.addObserver(self)
   }
 
-  deinit {
+  isolated deinit {
     if let property = property {
       property.removeObserver(self)
     }
@@ -448,7 +448,7 @@ class SelectCell<Value> : UITableViewCell {
   @available(*, unavailable)
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-  deinit {
+  isolated deinit {
     property?.removeObserver(self)
   }
 

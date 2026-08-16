@@ -2,9 +2,20 @@
 
 #include "stu/NSFoundationSupport.hpp"
 
+#include "Localized.hpp"
+
 #include "Equal.hpp"
 
 #include "TestUtils.hpp"
+
+@import STULabel;
+@import STULabel.Unsafe;
+@import STULabel.DynamicTypeFontScaling;
+@import STULabel.ImageUtils;
+@import STULabel.MainScreenProperties;
+@import STULabel.Mutex;
+@import STULabel.ObjCRuntimeWrappers;
+@import STULabel.SwiftExtensions;
 
 using namespace stu;
 
@@ -47,6 +58,19 @@ TEST(RangeConversion) {
     XCTAssertEqual(range.location, 1);
     XCTAssertEqual(range.length, 2);
   }
+}
+
+TEST(PackageResourcesAndNoARCPrerenderer) {
+  // The package target implements this using SwiftPM's generated resource bundle. The language
+  // varies with the test host, so assert only that the default link-action string is available.
+  NSString* const openAction = stu_label::localized(@"Open");
+  XCTAssertNotNil(openAction);
+  XCTAssertGreaterThan(openAction.length, 0u);
+
+  // STULabelPrerenderer owns the implementation object compiled by STULabelNoARC.
+  STULabelPrerenderer* const prerenderer = [STULabelPrerenderer new];
+  prerenderer.attributedText = [[NSAttributedString alloc] initWithString:@"SwiftPM"];
+  XCTAssertNotNil(prerenderer.shapedText);
 }
 
 

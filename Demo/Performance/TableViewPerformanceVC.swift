@@ -469,9 +469,9 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
   private let usesPrefetchLayoutSetting = setting("usesPrefetchLayout", true)
   private var usesPrefetchLayout: Bool { return usesPrefetchLayoutSetting.value }
 
-  override func responds(to selector: Selector!) -> Bool {
+  nonisolated override func responds(to selector: Selector!) -> Bool {
     if selector == #selector(tableView(_:heightForRowAt:)) {
-      return !usesAutoLayout && usesPrefetchLayout
+      return MainActor.assumeIsolated { !usesAutoLayout && usesPrefetchLayout }
     }
     return super.responds(to: selector)
   }
@@ -1274,23 +1274,28 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
 
   var enteredBackground: Int = 0
 
-  var notificationObservers = [NSObjectProtocol]()
+  @objc private func applicationDidEnterBackground() {
+    enteredBackground += 1
+  }
+
+  @objc private func applicationWillEnterForeground() {
+    enteredBackground -= 1
+  }
 
 
   override init(style: UITableView.Style) {
     super.init(style: style)
 
     let notificationCenter = NotificationCenter.default
-    let mainQueue = OperationQueue.main;
-    notificationObservers.append(
-      notificationCenter.addObserver(forName: UIApplication.didEnterBackgroundNotification,
-                                     object: nil, queue: mainQueue, using:
-         { [unowned self] (notification) in self.enteredBackground += 1 }))
+    notificationCenter.addObserver(self,
+                                   selector: #selector(applicationDidEnterBackground),
+                                   name: UIApplication.didEnterBackgroundNotification,
+                                   object: nil)
 
-    notificationObservers.append(
-      notificationCenter.addObserver(forName: UIApplication.willEnterForegroundNotification,
-                                     object: nil, queue: mainQueue, using:
-         { [unowned self] (notification) in self.enteredBackground -= 1 }))
+    notificationCenter.addObserver(self,
+                                   selector: #selector(applicationWillEnterForeground),
+                                   name: UIApplication.willEnterForegroundNotification,
+                                   object: nil)
 
     testCaseSetting.onChange = { [unowned self] in
       self.ourTableView.contentOffset.y = -self.view.safeAreaInsets.top
@@ -1338,10 +1343,8 @@ class TableViewPerformanceVC : UITableViewController, UITableViewDataSourcePrefe
                                                              action: #selector(showSettings))
   }
 
-  deinit {
-    for obs in notificationObservers {
-      NotificationCenter.default.removeObserver(obs)
-    }
+  isolated deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 
   override func viewDidLoad() {

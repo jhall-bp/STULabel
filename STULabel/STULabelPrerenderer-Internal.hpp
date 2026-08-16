@@ -11,8 +11,10 @@ namespace stu_label {
 STU_EXTERN_C_BEGIN
 
 @interface STULabelPrerenderer () {
-@package
-  stu_label::LabelPrerenderer* prerenderer;
+@public
+  // This ivar is implemented by the non-ARC package target but accessed by the ARC target.
+  // It must therefore remain externally visible when SwiftPM links the two object targets.
+  stu_label::LabelPrerenderer* prerenderer __attribute__((visibility("default")));
 }
 @end
 

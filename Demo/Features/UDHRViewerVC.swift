@@ -692,6 +692,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
       }
       // label.drawingBlock = { arg in print("Drawing article \(i)"); arg.draw() }
 
+      label.isSelectable = true
       label.contentInsets = UIEdgeInsets(top: topInset, left: padding,
                                          bottom: bottomInset, right: padding)
       textView.textContainerInset = UIEdgeInsets(top: topInset, left: padding,
@@ -1218,7 +1219,7 @@ class UDHRViewerVC : UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private class SettingsViewController : UITableViewController {
     private let viewerVC: UDHRViewerVC
 
-    deinit {
+    isolated deinit {
       viewerVC.isSettingsPopoverVisible = false
     }
 

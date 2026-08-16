@@ -19,6 +19,7 @@ class ShapedStringTests : XCTestCase {
   // that lazily computed values are cached in a thread-safe way. This suggests that the online
   // documentation is out-of-date (apparently CoreText had some thread-safety bugs in old versions
   // of iOS). To buy us some further peace of mind, we test the thread-safety of CTTypesetter a bit.
+  @MainActor
   func testCTTypesetterThreadSafety() {
 
     seedRand(123)

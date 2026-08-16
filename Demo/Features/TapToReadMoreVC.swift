@@ -9,7 +9,7 @@ enum Link {
 
 let linkColor = UIColor.link
 
-nonisolated(unsafe) let readMoreToken = { () -> NSAttributedString in
+let readMoreToken = { () -> NSAttributedString in
   let token = NSMutableAttributedString()
   token.append(NSAttributedString(string: "… "))
   token.append(NSAttributedString(string: "more", attributes: [.link: Link.readMore,

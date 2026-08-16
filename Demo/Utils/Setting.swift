@@ -89,7 +89,7 @@ class PropertyObserver<Value> : PropertyObserverProtocol {
     onChange()
   }
 
-  deinit {
+  isolated deinit {
     let retainedSelf = self
     property.removeObserver(retainedSelf)
   }
@@ -114,7 +114,7 @@ class ProjectedProperty<Value, ProjectedValue : Equatable>
     property.addObserver(self)
   }
 
-  deinit {
+  isolated deinit {
     property.removeObserver(self)
   }
 

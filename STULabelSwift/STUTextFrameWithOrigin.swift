@@ -331,7 +331,7 @@ public struct STUTextFrameWithOrigin {
     return Lines(textFrame, textFrameOrigin: origin, displayScaleOrZero: displayScaleOrZero)
   }
 
-  public struct Paragraphs : RandomAccessCollection {
+  public struct Paragraphs : @MainActor RandomAccessCollection {
     public let paragraphs: STUTextFrame.Paragraphs
     public let textFrameOrigin: CGPoint
     @usableFromInline internal let displayScaleOrZero: CGFloat
@@ -372,7 +372,7 @@ public struct STUTextFrameWithOrigin {
     }
   }
 
-  public struct Lines : RandomAccessCollection {
+  public struct Lines : @MainActor RandomAccessCollection {
     public let lines: STUTextFrame.Lines
     public let textFrameOrigin: CGPoint
     @usableFromInline internal let displayScaleOrZero: CGFloat

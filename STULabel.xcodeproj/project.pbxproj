@@ -15,11 +15,11 @@
 		A10000000000000000000023 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
 		A10000000000000000000031 /* TextSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* TextSelectionVC.swift */; };
 		A10000000000000000000041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* SceneDelegate.swift */; };
+		A20000000000000000000005 /* STULabel in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000001 /* STULabel */; };
+		A20000000000000000000006 /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000002 /* STULabelSwift */; };
+		A20000000000000000000007 /* STULabel in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000003 /* STULabel */; };
+		A20000000000000000000008 /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000004 /* STULabelSwift */; };
 		D40702842014EC17004E5C07 /* TextFramePerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */; };
-		D407028D2014FFDF004E5C07 /* STULabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; };
-		D407028E2014FFDF004E5C07 /* STULabel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D40702912014FFDF004E5C07 /* STULabelSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42382981F926F2C000B8A63 /* STULabelSwift.framework */; };
-		D40702922014FFDF004E5C07 /* STULabelSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D42382981F926F2C000B8A63 /* STULabelSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D40AE31E1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */; };
 		D40AE31F1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */; };
 		D40AE3211FA4E09000E0F056 /* TextFrame-IndexConversion.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE3201FA4E09000E0F056 /* TextFrame-IndexConversion.mm */; };
@@ -60,8 +60,6 @@
 		D41C92AE2083CBC3002AFFF3 /* STUImageUtils.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D483EE4A202D007C005917F9 /* STUImageUtils.overlay.swift */; };
 		D41C92AF2083CBC3002AFFF3 /* STUTextFrame.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */; };
 		D41C92B02083CBC3002AFFF3 /* STUTextRectArray.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4981F021FBE33F1007E88C2 /* STUTextRectArray.overlay.swift */; };
-		D41C92C22083CEE0002AFFF3 /* STULabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42384761F92AC81000B8A63 /* STULabel.framework */; };
-		D41C92C32083CEE0002AFFF3 /* STULabelSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D41C92B82083CBC3002AFFF3 /* STULabelSwift.framework */; };
 		D41C92C52083D1C7002AFFF3 /* DynamicTypeFontScalingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */; };
 		D41C92C62083D276002AFFF3 /* MainScreenPropertiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */; };
 		D41C92C72083D2A6002AFFF3 /* MutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4731079202E3624000CBFF1 /* MutexTests.m */; };
@@ -673,22 +671,14 @@
 			remoteGlobalIDString = D4E8DBE120DA6F29009F4735;
 			remoteInfo = STULabelResources;
 		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		D40702952014FFDF004E5C07 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				D40702922014FFDF004E5C07 /* STULabelSwift.framework in Embed Frameworks */,
-				D407028E2014FFDF004E5C07 /* STULabel.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
+		A20000000000000000000010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D467A0761F9261E70043C7F0;
+			remoteInfo = Demo;
 		};
-/* End PBXCopyFilesBuildPhase section */
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000001 /* STULabel+UITextInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STULabel+UITextInput.h"; sourceTree = "<group>"; };
@@ -1124,8 +1114,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4C8FC1E20D005A100CDA4EB /* libicucore.tbd in Frameworks */,
-				D41C92C22083CEE0002AFFF3 /* STULabel.framework in Frameworks */,
-				D41C92C32083CEE0002AFFF3 /* STULabelSwift.framework in Frameworks */,
+				A20000000000000000000007 /* STULabel in Frameworks */,
+				A20000000000000000000008 /* STULabelSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1133,8 +1123,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D40702912014FFDF004E5C07 /* STULabelSwift.framework in Frameworks */,
-				D407028D2014FFDF004E5C07 /* STULabel.framework in Frameworks */,
+				A20000000000000000000005 /* STULabel in Frameworks */,
+				A20000000000000000000006 /* STULabelSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1166,13 +1156,6 @@
 				D413108F1F94164A00F39C3A /* Shared.xcconfig */,
 				D41310901F94168400F39C3A /* Debug.xcconfig */,
 				D41310911F94169200F39C3A /* Release.xcconfig */,
-				D41310D31F94247D00F39C3A /* Framework.xcconfig */,
-				D41C92A42083CAF7002AFFF3 /* Static.xcconfig */,
-				D41310921F9416A500F39C3A /* STULabel.xcconfig */,
-				D41310D11F94236200F39C3A /* STULabel static.xcconfig */,
-				D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */,
-				D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */,
-				D41C92A52083CB56002AFFF3 /* STULabelSwift static.xcconfig */,
 				D43E67111FD4A64C00BABD1C /* Tests.xcconfig */,
 				D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */,
 				D407F00920E52B6700922204 /* Demo.xcconfig */,
@@ -1449,14 +1432,8 @@
 		D4B0AEBD1F9259E600B5B2B9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */,
 				D467A0771F9261E70043C7F0 /* Demo.app */,
-				D42382981F926F2C000B8A63 /* STULabelSwift.framework */,
-				D42384761F92AC81000B8A63 /* STULabel.framework */,
-				D423847F1F92AE37000B8A63 /* DynamicFrameworkTests.xctest */,
 				D43E66BD1FD45DB300BABD1C /* AllTests.xctest */,
-				D41C92B82083CBC3002AFFF3 /* STULabelSwift.framework */,
-				D4E8DBE220DA6F29009F4735 /* STULabelResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2094,9 +2071,12 @@
 			);
 			buildRules = (
 			);
+			packageProductDependencies = (
+				A20000000000000000000003 /* STULabel */,
+				A20000000000000000000004 /* STULabelSwift */,
+			);
 			dependencies = (
-				D41C92C12083CEB7002AFFF3 /* PBXTargetDependency */,
-				D41C92BF2083CEB3002AFFF3 /* PBXTargetDependency */,
+				A20000000000000000000011 /* PBXTargetDependency */,
 			);
 			name = AllTests;
 			productName = TestsInternal;
@@ -2110,13 +2090,14 @@
 				D467A0731F9261E70043C7F0 /* Sources */,
 				D467A0741F9261E70043C7F0 /* Frameworks */,
 				D467A0751F9261E70043C7F0 /* Resources */,
-				D40702952014FFDF004E5C07 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
+			packageProductDependencies = (
+				A20000000000000000000001 /* STULabel */,
+				A20000000000000000000002 /* STULabelSwift */,
+			);
 			dependencies = (
-				D40702902014FFDF004E5C07 /* PBXTargetDependency */,
-				D40702942014FFDF004E5C07 /* PBXTargetDependency */,
 			);
 			name = Demo;
 			productName = Demo;
@@ -2253,6 +2234,9 @@
 			mainGroup = D4B0AEB21F9259E600B5B2B9;
 			productRefGroup = D4B0AEBD1F9259E600B5B2B9 /* Products */;
 			projectDirPath = "";
+			packageReferences = (
+				A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */,
+			);
 			projectReferences = (
 				{
 					ProductGroup = D407028B2014FFB0004E5C07 /* Products */;
@@ -2261,14 +2245,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				D4B0AEBB1F9259E600B5B2B9 /* STULabel */,
-				D42383CE1F92AC81000B8A63 /* STULabel static */,
-				D4E8DBE120DA6F29009F4735 /* STULabelResources */,
-				D42382971F926F2C000B8A63 /* STULabelSwift */,
-				D41C92A62083CBC3002AFFF3 /* STULabelSwift static */,
 				D467A0761F9261E70043C7F0 /* Demo */,
 				D43E66BC1FD45DB300BABD1C /* AllTests */,
-				D423847E1F92AE37000B8A63 /* DynamicFrameworkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2701,31 +2679,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D40702902014FFDF004E5C07 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4B0AEBB1F9259E600B5B2B9 /* STULabel */;
-			targetProxy = D407028F2014FFDF004E5C07 /* PBXContainerItemProxy */;
-		};
-		D40702942014FFDF004E5C07 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D42382971F926F2C000B8A63 /* STULabelSwift */;
-			targetProxy = D40702932014FFDF004E5C07 /* PBXContainerItemProxy */;
-		};
-		D41C92BC2083CD48002AFFF3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D42383CE1F92AC81000B8A63 /* STULabel static */;
-			targetProxy = D41C92BB2083CD48002AFFF3 /* PBXContainerItemProxy */;
-		};
-		D41C92BF2083CEB3002AFFF3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D42383CE1F92AC81000B8A63 /* STULabel static */;
-			targetProxy = D41C92BE2083CEB3002AFFF3 /* PBXContainerItemProxy */;
-		};
-		D41C92C12083CEB7002AFFF3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D41C92A62083CBC3002AFFF3 /* STULabelSwift static */;
-			targetProxy = D41C92C02083CEB7002AFFF3 /* PBXContainerItemProxy */;
-		};
 		D42384861F92AE37000B8A63 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D4B0AEBB1F9259E600B5B2B9 /* STULabel */;
@@ -2751,7 +2704,42 @@
 			target = D4E8DBE120DA6F29009F4735 /* STULabelResources */;
 			targetProxy = D4E8DC4620DA8855009F4735 /* PBXContainerItemProxy */;
 		};
+		A20000000000000000000011 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D467A0761F9261E70043C7F0 /* Demo */;
+			targetProxy = A20000000000000000000010 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A20000000000000000000001 /* STULabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
+			productName = STULabel;
+		};
+		A20000000000000000000002 /* STULabelSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
+			productName = STULabelSwift;
+		};
+		A20000000000000000000003 /* STULabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
+			productName = STULabel;
+		};
+		A20000000000000000000004 /* STULabelSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
+			productName = STULabelSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXVariantGroup section */
 		D467A0841F9261E70043C7F0 /* LaunchScreen.storyboard */ = {

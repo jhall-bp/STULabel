@@ -1,8 +1,11 @@
 
 #include "Tests.xcconfig"
 
-#include "Static.xcconfig"
-
 USER_HEADER_SEARCH_PATHS = $(SRCROOT) $(SRCROOT)/STULabel/Internal
 
-OTHER_LDFLAGS = $(inherited) -ObjC
+TEST_HOST = $(BUILT_PRODUCTS_DIR)/Demo.app/Demo
+BUNDLE_LOADER = $(TEST_HOST)
+
+// XCTest's Objective-C lifecycle remains unannotated in Xcode 26.2. Compile the unchanged
+// regression sources in Swift 5 compatibility mode; the package products remain Swift 6.2.
+SWIFT_VERSION = 5.0

@@ -2,7 +2,7 @@
 
 import STULabelSwift
 
-let udhr = UDHR()
+@MainActor let udhr = UDHR()
 
 class UDHR {
   let translations: [Translation]

@@ -439,8 +439,8 @@ class InitializerList {
   std::initializer_list<T> list;
 public:
   /* implicit */ STU_CONSTEXPR_T
-  InitializerList(std::initializer_list<T> list)
-  : list{list} {}
+  InitializerList(std::initializer_list<T> values)
+  : list(values) {}
 
   STU_CONSTEXPR_T
   const T* begin() const noexcept { return list.begin(); }
@@ -608,4 +608,3 @@ public:
 };
 
 } // namespace stu
-

@@ -1,13 +1,21 @@
 // Copyright 2018 Stephan Tolksdorf
 
+@preconcurrency import XCTest
 import STULabelSwift
 
 class SwiftWrapperTests: XCTestCase {
 
   let font = UIFont(name: "HelveticaNeue", size: 20)!
 
+  func testSTULabelSwiftReexportsSTULabel() {
+    let label = STULabel()
+    label.text = "SwiftPM"
+    XCTAssertEqual(label.text, "SwiftPM")
+  }
+
   // Currently we just test here that these properties are actually callable (without causing a
   // linker error) and return the correct value in the simplest situation.
+  @MainActor
   func testTextFrameParagraphAndLineProperties() {
     let string = NSAttributedString("Test \r\n", [.font: font,
                                               .underlineStyle: NSUnderlineStyle.single.rawValue])

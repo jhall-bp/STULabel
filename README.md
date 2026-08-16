@@ -1,14 +1,12 @@
 
 [![CircleCI](https://circleci.com/gh/stephan-tolksdorf/STULabel.svg?style=svg)](https://circleci.com/gh/stephan-tolksdorf/STULabel)
-[![TravisCI](https://travis-ci.com/stephan-tolksdorf/STULabel.svg?branch=master)](https://travis-ci.com/stephan-tolksdorf/STULabel)
-[![Swift 4.2](https://img.shields.io/badge/Swift-4.2-orange.svg?style=flat)](https://swift.org)
-[![Version](https://img.shields.io/cocoapods/v/STULabelSwift.svg?style=flat)](http://cocoapods.org/pods/STULabelSwift)
-![Platform](https://img.shields.io/cocoapods/p/STULabelSwift.svg?style=flat)
-[![License](https://img.shields.io/cocoapods/l/STULabelSwift.svg?style=flat)](https://github.com/stephan-tolksdorf/STULabel/blob/master/LICENSE.txt)
+[![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg?style=flat)](https://swift.org)
+![Platform](https://img.shields.io/badge/platform-iOS%2026%2B-blue.svg?style=flat)
+[![License](https://img.shields.io/badge/license-2--clause%20BSD-blue.svg?style=flat)](https://github.com/stephan-tolksdorf/STULabel/blob/master/LICENSE.txt)
 [![Twitter](https://img.shields.io/badge/twitter-@s_tolksdorf-blue.svg)](http://twitter.com/s_tolksdorf)
 
 
-STULabel is an open source iOS framework for Swift and Objective-C that provides a label view (`STULabel`), a label layer (`STULabelLayer`) and a flexible API for thread-safe text layout and rendering  (`STUShapedString`, `STUTextFrame`). The framework is implemented in Objective-C++ on top of the lower-level parts of the Core Text API. STULabel has a Swift overlay framework (STULabelSwift) that provides a convenient Swift API.
+STULabel is an open source iOS library for Swift that provides a label view (`STULabel`), a label layer (`STULabelLayer`) and a flexible API for thread-safe text layout and rendering  (`STUShapedString`, `STUTextFrame`). The library is implemented in Objective-C++ on top of the lower-level parts of the Core Text API. `STULabelSwift` is the preferred Swift overlay and re-exports the core `STULabel` module.
 
 ##### Table of Contents
 - [Features](#stulabel-features)
@@ -62,49 +60,33 @@ The STULabel library incorporates data derived from the Unicode Character Databa
 
 ## Integration
 
-### CocoaPods integration
+### Swift Package Manager
 
-If you want to use STULabel from Objective-C code, add the following to your Podfile:
+STULabel supports iOS 26 and Swift 6.2. In Xcode, choose **File → Add Package Dependencies…**, enter `https://github.com/stephan-tolksdorf/STULabel.git`, and add the `STULabelSwift` product to your application target.
+
+```swift
+import STULabelSwift
+
+let label = STULabel()
+label.text = "Hello, SwiftPM"
 ```
-pod 'STULabel', '~> 0.8.12'
+
+`STULabelSwift` re-exports `STULabel`, so the core types and the Swift overlay are available from that single import. SwiftPM automatically embeds the package's localized resource bundle; no separate resource target or copy-resources build phase is required for the default link actions.
+
+### Core module and Clang submodules
+
+For Objective-C compatibility or advanced use, add the `STULabel` product instead and import the core module directly:
+
+```objective-c
+@import STULabel;
+@import STULabel.Mutex;
 ```
 
-If you want to use STULabel from Swift code, add the following to your Podfile:
-```
-pod 'STULabelSwift', '~> 0.8.12'
-```
+The existing `Unsafe`, `DynamicTypeFontScaling`, `ImageUtils`, `MainScreenProperties`, `Mutex`, `ObjCRuntimeWrappers`, and `SwiftExtensions` submodules remain available.
 
-STULabel is a dependency of STULabelSwift.
+### Package dependency constraint
 
-### Manual integration
-
-- The STULabel project contains separate schemes for building STULabel and STULabelSwift both as dynamic and as static frameworks. 
-- You should only link STULabelSwift  if you want to use STULabel from Swift code.
-- If you want to use the static framework(s), you need to manually add the  `STULabelResources.bundle` product to your app or framework target. (The resources bundle contains the localized strings for the default link action sheets.)
-- One way to manually integrate STULabel into your Xcode project is as follows:
-  1. Close the STULabel project in Xcode if it is open.
-  2. Open your project in Xcode if it isn't already open.
-  3. Drag the STULabel project from Finder into the project navigator pane of the Xcode window of your project.
-  4. Reveal the subtree below `STULabel.xcodeproj` in the project navigator and reveal the items in the `Products` group. You should now see two `STULabel.framework` items, two `STULabelSwift.framework` items, a `STULabelResources.bundle` and some other items. The identically named framework items are the dynamic and static builds of the respective frameworks. You can identify the static frameworks by their full paths in the Xcode file inspector (in the right Xcode pane). For example, the full path of the static `STULabel.framework` ends with ' `-static/STULabel.framework`'. 
-  5. Select your project at the top of the Xcode project navigator pane.
-  6. Select your app or framework target in the center view (the standard editor view in the middle of the window).
-  7. Select the 'General' tab in the center view.
-  8. If you want to use the dynamic framework(s):
-      * Drag the *non-static* `STULabel.framework` from the `Products` group of  the `STULabel.xcodeproj` in the project navigator pane to the 'Embedded Binaries' section in the center view. When you drop it there, the framework will also be added below below in the 'Linked Frameworks and Libraries' list.
-      * Do the same with the  *non-static* `STULabelSwift.framework` if you want to use Swift.
-    
-      If you want to use the static framework(s) instead:
-      * Add the following items to the 'Linked Frameworks and Libraries' section, e.g. by clicking on the '+' button and selecting the respective items:
-        - `STULabel.framework` from the static target,
-        - `STULabelSwift.framework` from the static target, if you want to use Swift,
-        - `libc++.tbd`, unless that library was already added before.
-      * Select the 'Build Phases' tab in the center view.
-      * Add the static `STULabel(Swift)` framework(s) that you just added to the list of linked frameworks also to the list of 'Target dependencies'. 
-      * Add `STULabelResources` to the 'Target dependencies'.
-      * Reveal the 'Copy Bundle Resources' section.
-      * Drag the `STULabelResources.bundle` from the `Products` group of the `STULabel.xcodeproj` to the 'Copy Bundle Resources' section.
-      * Select the 'Build Settings' tab in the center view.
-      * Add `$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)-static` to the 'Framework Search Paths'.
+The package uses required unsafe compiler flags to preserve the core's ARC/no-ARC, Objective-C++, and C++ build behavior. Add it directly to an Xcode application project; SwiftPM does not permit a product using unsafe flags to be a dependency of another Swift package.
 
 ### LLDB formatters
 

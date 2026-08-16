@@ -14,10 +14,8 @@ NSDictionary<NSString*, NSString*>* localizedStrings_system;
 static void initializeIfNecessary() {
   static dispatch_once_t once;
   dispatch_once_f(&once, nullptr, [](void *) {
-    NSString* const bundlePath = [[NSBundle bundleForClass:STULabel.class]
-                                    pathForResource:@"STULabelResources" ofType:@"bundle"];
-    NSBundle* const bundle = bundlePath ? [NSBundle bundleWithPath:bundlePath] : nil;
-    STU_CHECK_MSG(bundle != nil, "Failed to load STULabelResources.bundle");
+    NSBundle* const bundle = SWIFTPM_MODULE_BUNDLE;
+    STU_CHECK_MSG(bundle != nil, "Failed to load STULabel resources bundle");
     NSArray<NSString*>* const localizations = bundle.localizations;
     appLocalization =
       [[NSBundle preferredLocalizationsFromArray:localizations
@@ -34,7 +32,7 @@ static void initializeIfNecessary() {
                                 [bundle pathForResource:@"Localizable" ofType:@"strings"
                                             inDirectory:nil forLocalization:systemLocalization]];
     STU_CHECK_MSG(localizedStrings_app && localizedStrings_system,
-                  "Failed to load STULabelResources strings dictionary");
+                  "Failed to load STULabel strings dictionary");
   });
 }
 
