@@ -30,7 +30,7 @@ final class TextSelectionVC: UIViewController {
     selectableTextLabel.text = "Long-press this text to select a word or sentence, move the native selection handles, then copy it. Emoji 👩🏽‍💻 and composed characters stay together while selecting."
 
     let rightToLeftText = NSMutableAttributedString("‫اضغط مطولاً على هذا النصّ لتجربة المقابض.", [.font: UIFont.preferredFont(forTextStyle: .body), .foregroundColor: UIColor.label])
-    rightToLeftText.addAttribute(.link, value: URL(string: "https://www.google.com"), range: NSRange(location: 0, length: 5))
+    rightToLeftText.addAttribute(.link, value: URL(string: "https://www.google.com")!, range: NSRange(location: 0, length: 5))
     configureTextLabel(rightToLeftTextLabel)
     rightToLeftTextLabel.semanticContentAttribute = .forceRightToLeft
     rightToLeftTextLabel.attributedText = rightToLeftText

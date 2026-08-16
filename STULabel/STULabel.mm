@@ -575,8 +575,8 @@ static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIVi
   /// A STULabelLinkOverlayLayer if _bits.hasActiveLinkOverlayLayer, else a STUTextLink, or null.
   id _activeLinkOrOverlayLayer;
   CGPoint _activeLinkContentOrigin;
-  STULabelDragInteraction* _dragInteraction API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos);
-  STULabelTextInteraction* _textInteraction;
+  STULabelDragInteraction* _dragInteraction API_UNAVAILABLE(watchos, tvos);
+  STULabelTextInteraction* _textInteraction API_UNAVAILABLE(watchos, tvos);
   STULabelGhostingMaskLayer* _ghostingMaskLayer;
   STUTextFrameAccessibilityElement* _textFrameAccessibilityElement;
   id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
@@ -972,7 +972,6 @@ static STULabelBaselinesLayoutGuide* baselinesLayoutGuide(STULabel* __unsafe_unr
 
 // MARK: - Determining the base writing direction from the UI layout direction
 
-API_AVAILABLE(ios(10.0), tvos(10))
 STU_INLINE UIContentSizeCategory preferredContentSizeCategory(UIView* self) {
   UIContentSizeCategory category = self.traitCollection.preferredContentSizeCategory;
   if (![category isEqualToString:UIContentSizeCategoryUnspecified]) {
@@ -1579,7 +1578,7 @@ afterCancelledDrag:(bool)afterCancelledDrag
 
 // MARK: - UIDragInteraction
 
-static void initializeDragInteraction(STULabel* self) API_AVAILABLE(ios(11.0)) {
+static void initializeDragInteraction(STULabel* self) {
   STU_DEBUG_ASSERT(self->_dragInteraction == nil);
   self->_dragInteraction = [[STULabelDragInteraction alloc] initWithDelegate:self];
   if (self->_dragInteraction.enabled != self->_bits.dragInteractionEnabled) {
@@ -1620,35 +1619,34 @@ void STULabelSetBitsDragInterationEnabled(STULabel* self, bool dragInterationEna
 static const char* const associatedLinkKey = "STULabelLink";
 
 STU_INLINE STUTextLink* __nullable dragItemLink(UIDragItem* item)
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   return objc_getAssociatedObject(item, associatedLinkKey);
 }
 
 
 STU_INLINE void setDragItemLink(UIDragItem* item, STUTextLink* __nullable link)
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   objc_setAssociatedObject(item, associatedLinkKey, link, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 STU_INLINE
 STUTextLink* __nullable dragSessionCurrentlyLiftedLink(id<UIDragSession> session)
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   return objc_getAssociatedObject(session, associatedLinkKey);
 }
 
 STU_INLINE
 void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* __nullable link)
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   objc_setAssociatedObject(session, associatedLinkKey, link, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (NSArray<UIDragItem*>*)stu_dragItemsForPoint:(CGPoint)point
                                        session:(nullable id<UIDragSession>)session
-  API_AVAILABLE(ios(11.0))
 {
   STUTextLink* const link = self.activeLink
                           ?: [_layer.links linkClosestToPoint:point
@@ -1884,7 +1882,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
 - (UITargetedDragPreview*)dragInteraction:(UIDragInteraction* __unused)interaction
                     previewForLiftingItem:(UIDragItem*)item
                                   session:(id<UIDragSession> __unused)session
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   return [self stu_targetedDragPreviewForItem:item];
 }
@@ -1892,7 +1890,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
 - (UITargetedDragPreview*)dragInteraction:(UIDragInteraction* __unused)interaction
                  previewForCancellingItem:(UIDragItem*)item
                               withDefault:(UITargetedDragPreview* __unused)defaultPreview
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   return [self stu_targetedDragPreviewForItem:item];
 }
@@ -1923,7 +1921,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
 
 - (void)dragInteraction:(UIDragInteraction* __unused)interaction
 willAnimateLiftWithAnimator:(id<UIDragAnimating>)animator session:(id<UIDragSession>)session
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   STUTextLink* const link = dragSessionCurrentlyLiftedLink(session);
   if (!link) return;
@@ -1939,7 +1937,7 @@ willAnimateLiftWithAnimator:(id<UIDragAnimating>)animator session:(id<UIDragSess
 
 -(void)dragInteraction:(UIDragInteraction* __unused)interaction item:(UIDragItem*)item
 willAnimateCancelWithAnimator:(id<UIDragAnimating>)animator
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
     if (finalPosition != UIViewAnimatingPositionEnd) return;
@@ -1950,7 +1948,7 @@ willAnimateCancelWithAnimator:(id<UIDragAnimating>)animator
 - (void)dragInteraction:(UIDragInteraction* __unused)interaction
                 session:(id<UIDragSession> __unused)session
     didEndWithOperation:(UIDropOperation __unused)operation
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(watchos, tvos)
+  API_UNAVAILABLE(watchos, tvos)
 {
   [self stu_dragInteractionEnded];
 }

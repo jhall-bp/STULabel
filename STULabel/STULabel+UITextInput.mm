@@ -679,7 +679,7 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
 - (BOOL)shouldChangeTextInRange:(UITextRange* __unused)range
                  replacementText:(NSString* __unused)text { return NO; }
 
-- (NSAttributedString*)attributedTextInRange:(UITextRange*)range API_AVAILABLE(ios(12.0)) {
+- (NSAttributedString*)attributedTextInRange:(UITextRange*)range {
   NSString* const string = textInputString(self);
   STULabelTextInputRange* const r = validTextRange(range, string);
   if (!r) return [[NSAttributedString alloc] initWithString:@""];
@@ -687,12 +687,12 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
             NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index)];
 }
 
-- (void)insertAttributedText:(NSAttributedString* __unused)string API_AVAILABLE(ios(12.0)) {}
+- (void)insertAttributedText:(NSAttributedString* __unused)string {}
 - (void)replaceRange:(UITextRange* __unused)range
-  withAttributedText:(NSAttributedString* __unused)attributedText API_AVAILABLE(ios(13.0)) {}
+  withAttributedText:(NSAttributedString* __unused)attributedText {}
 - (void)setAttributedMarkedText:(NSAttributedString* __unused)markedText
                    selectedRange:(NSRange __unused)selectedRange API_UNAVAILABLE(watchos) {}
 
-- (BOOL)isEditable API_AVAILABLE(ios(18.0)) { return NO; }
+- (BOOL)isEditable { return NO; }
 
 @end

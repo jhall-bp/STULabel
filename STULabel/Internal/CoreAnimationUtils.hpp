@@ -16,11 +16,9 @@ STU_INLINE bool inUIViewAnimation() { return [UIView inheritedAnimationDuration]
 
 UIWindow* window(CALayer* layer);
 
-API_AVAILABLE(macos(10.12), ios(10.0), tvos(10.0), watchos(3.0))
 STUPredefinedCGImageFormat contentsImageFormat(NSString* caLayerContentsFormat,
                                                STUPredefinedCGImageFormat fallbackFormat);
 
-API_AVAILABLE(macos(10.12), ios(10.0), tvos(10.0), watchos(3.0))
 void setContentsImageFormat(CALayer* layer, STUPredefinedCGImageFormat format);
 
 } // namespace stu_label

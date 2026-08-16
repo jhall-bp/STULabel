@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name     = 'STULabel'
-  s.version  = '0.8.12'
+  s.version  = '0.9.0'
 
   s.cocoapods_version = '>= 1.5.0'
 
-  s.platform = :ios, '9.3'
+  s.platform = :ios, '26'
 
   s.license  = { :type => '2-clause BSD', :file => 'LICENSE.txt' }
 

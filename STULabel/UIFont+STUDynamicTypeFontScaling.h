@@ -6,8 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIFont (STUDynamicTypeScaling)
 
-- (UIFont *)stu_fontAdjustedForContentSizeCategory:(UIContentSizeCategory)category
-  API_AVAILABLE(ios(10.0), tvos(10.0));
+- (UIFont *)stu_fontAdjustedForContentSizeCategory:(UIContentSizeCategory)category;
 
 @end
 

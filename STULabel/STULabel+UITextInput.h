@@ -14,7 +14,8 @@ STU_EXPORT
 @interface STULabel (UITextInput) <UITextInput>
 
 /// The lazily created non-editable text interaction used by the label.
-@property (nonatomic, readonly) UITextInteraction* textInteraction API_AVAILABLE(ios(13.0));
+@property (nonatomic, readonly) UITextInteraction* textInteraction
+  API_UNAVAILABLE(tvos);
 
 @end
 

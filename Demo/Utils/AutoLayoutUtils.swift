@@ -6,6 +6,7 @@ func roundToDisplayScale(_ value: CGFloat, displayScale: CGFloat) -> CGFloat {
   return round(displayScale*value)/displayScale
 }
 
+@MainActor
 public protocol ViewOrLayoutGuide : NSObjectProtocol {
   var layoutViewAndBounds: (view: UIView, bounds: CGRect) { get }
   var leadingAnchor: NSLayoutXAxisAnchor { get }

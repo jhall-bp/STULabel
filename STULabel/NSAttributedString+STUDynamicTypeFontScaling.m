@@ -8,7 +8,6 @@
 
 - (NSAttributedString *)
     stu_copyWithFontsAdjustedForContentSizeCategory:(UIContentSizeCategory)category
-      API_AVAILABLE(ios(10.0), tvos(10.0))
 {
   __block NSUInteger start = NSNotFound;
   const NSUInteger length = self.length;
@@ -36,7 +35,6 @@
 @implementation NSMutableAttributedString (STUDynamicTypeScaling)
 
 - (void)stu_adjustFontsInRange:(NSRange)range forContentSizeCategory:(UIContentSizeCategory)category
-  API_AVAILABLE(ios(10.0), tvos(10.0))
 {
   UIFont * __unsafe_unretained __block previousFont = nil;
   UIFont * __unsafe_unretained __block previousScaledFont = nil;

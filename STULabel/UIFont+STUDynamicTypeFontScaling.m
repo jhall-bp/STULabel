@@ -150,7 +150,6 @@ bool floatForFontKey(UIFont * __unsafe_unretained font, NSString * __unsafe_unre
 @implementation UIFont (STUDynamicTypeScaling)
 
 - (UIFont *)stu_fontAdjustedForContentSizeCategory:(__unsafe_unretained UIContentSizeCategory)category
-  API_AVAILABLE(ios(10.0), tvos(10.0))
 {
   const STUContentSizeCategory stuCategory = stuContentSizeCategory(category);
   if (!stuCategory) { // Unknown or unspecified category.

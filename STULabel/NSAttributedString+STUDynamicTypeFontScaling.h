@@ -8,15 +8,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)
     stu_copyWithFontsAdjustedForContentSizeCategory:(UIContentSizeCategory)category
-      NS_RETURNS_RETAINED
-      API_AVAILABLE(ios(10.0), tvos(10.0));
+      NS_RETURNS_RETAINED;
 @end
 
 @interface NSMutableAttributedString (STUDynamicTypeScaling)
 
 - (void)stu_adjustFontsInRange:(NSRange)range
-        forContentSizeCategory:(UIContentSizeCategory)category
-  API_AVAILABLE(ios(10.0), tvos(10.0));
+        forContentSizeCategory:(UIContentSizeCategory)category;
 
 @end
 

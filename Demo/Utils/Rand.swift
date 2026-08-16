@@ -6,7 +6,7 @@ import Foundation
 // Swift still doesn't have one. Since we don't care too much about the statistical qualities of the
 // generated random numbers here, we just std::minstd_rand
 
-private var _randState: Int32 = 1
+nonisolated(unsafe) private var _randState: Int32 = 1
 private let _randModulus: Int32 = 2147483647
 
 func randState() -> Int32 {

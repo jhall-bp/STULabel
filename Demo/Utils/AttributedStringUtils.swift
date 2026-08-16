@@ -8,9 +8,9 @@ func paragraphStyle(_ configure: (NSMutableParagraphStyle) -> ()) -> NSParagraph
   return style.copy() as! NSParagraphStyle
 }
 
-let ltrParaStyle = paragraphStyle({b in b.baseWritingDirection = .leftToRight})
+nonisolated(unsafe) let ltrParaStyle = paragraphStyle({b in b.baseWritingDirection = .leftToRight})
 
-let rtlParaStyle = paragraphStyle({b in b.baseWritingDirection = .rightToLeft})
+nonisolated(unsafe) let rtlParaStyle = paragraphStyle({b in b.baseWritingDirection = .rightToLeft})
 
 typealias StringAttributes = [NSAttributedString.Key: Any]
 

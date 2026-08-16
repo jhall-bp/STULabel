@@ -416,7 +416,7 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
 
 static UIAccessibilityCustomRotor* createLinkRotorForAccessibilityContainer(
                                      const NSObject* container, Range<UInt> elementRange)
-                                   NS_RETURNS_RETAINED API_AVAILABLE(ios(10.0), tvos(10.0))
+                                   NS_RETURNS_RETAINED
 {
   STU_ASSERT(!elementRange.isEmpty());
   const NSObject* __weak weakContainer = container;

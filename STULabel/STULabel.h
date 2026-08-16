@@ -210,14 +210,15 @@ STU_EXPORT
 
 /// The lazily created @c UIDragInteraction instance used by the label.
 @property (nonatomic, readonly) UIDragInteraction *dragInteraction
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos);
+  API_UNAVAILABLE(tvos);
 
 
 /// A Boolean value that indicates whether the label's displayed text is selectable.
 ///
 /// When set to @c true, the label installs its non-editable @c UITextInteraction. The default
 /// value is @c false.
-@property (nonatomic, getter=isSelectable) BOOL selectable;
+@property (nonatomic, getter=isSelectable) BOOL selectable
+  NS_SWIFT_NAME(isSelectable);
 
 
 /// The lazily created @c UILongPressGestureRecognizer instance used by the label.
@@ -270,6 +271,7 @@ STU_EXPORT
 @interface STULabel () <UIDragInteractionDelegate> @end
 #endif
 
+NS_SWIFT_UI_ACTOR
 @protocol STULabelDelegate <NSObject>
 @optional
 
@@ -298,6 +300,9 @@ STU_EXPORT
 /// @param link The long-pressed link.
 /// @param point The location of the touch in the local coordinate system of the label view.
 - (void)label:(STULabel *)label link:(STUTextLink *)link wasLongPressedAtPoint:(CGPoint)point;
+
+- (bool)label:(STULabel *)label shouldDisplayContextMenuForLink:(STUTextLink *)link atLocation:(CGPoint)location;
+- (UIContextMenuConfiguration *)label:(STULabel *)label contextMenuConfigurationForLink:(STUTextLink *)link atLocation:(CGPoint)location;
 
 /// Asks the delegate whether the label should be displayed asynchronously.
 ///
@@ -330,12 +335,12 @@ STU_EXPORT
 - (void)labelTextLayoutWasInvalidated:(STULabel *)label;
 
 - (bool)label:(STULabel *)label link:(STUTextLink *)link canBeDraggedFromPoint:(CGPoint)point
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos);
+  API_UNAVAILABLE(tvos);
 
 /// Asks the delegate for the drag item for the specified link.
 - (nullable UIDragItem *)label:(STULabel *)label dragItemForLink:(STUTextLink *)link
   NS_SWIFT_NAME(label(_:dragItemForLink:))
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos);
+  API_UNAVAILABLE(tvos);
 
 /// Asks the delegate for the background color for the @c UITargetedDragPreview for the specified
 /// @c UIDragItem.
@@ -343,7 +348,7 @@ STU_EXPORT
   backgroundColorForTargetedPreviewOfDragItem:(UIDragItem *)dragItem
                 withDefault:(nullable UIColor*)defaultColor
   NS_SWIFT_NAME(label(_:backgroundColorForTargetedPreviewOfDragItem:withDefault:))
-  API_AVAILABLE(ios(11.0)) API_UNAVAILABLE(tvos);
+  API_UNAVAILABLE(tvos);
 @end
 
 typedef void (^ STULabelLinkObserverBlock)(STULabel* __nullable label,
