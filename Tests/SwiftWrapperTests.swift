@@ -58,6 +58,17 @@ class SwiftWrapperTests: XCTestCase {
                      as? UIColor, labelColor)
   }
 
+  func testSTULabelUsesLinkColorByDefault() {
+    let label = STULabel()
+
+    XCTAssertFalse(label.usesTintColorAsLinkColor)
+    XCTAssertEqual(label.layer.overrideLinkColor, .link)
+
+    label.tintColor = .systemRed
+    label.usesTintColorAsLinkColor = true
+    XCTAssertEqual(label.layer.overrideLinkColor, .systemRed)
+  }
+
   // Currently we just test here that these properties are actually callable (without causing a
   // linker error) and return the correct value in the simplest situation.
   @MainActor

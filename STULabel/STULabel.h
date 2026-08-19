@@ -141,7 +141,8 @@ STU_EXPORT
                                   lastHyphenationLocationInRangeFinder;
 
 
-/// Default value: true
+/// Default value: false. When false, links use @c UIColor.linkColor. When true, links use the
+/// label's @c tintColor instead.
 @property (nonatomic) bool usesTintColorAsLinkColor;
 
 

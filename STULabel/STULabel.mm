@@ -599,7 +599,7 @@ static void initCommon(STULabel* self) {
 
   self->_bits.hasIntrinsicContentWidth = true;
   self->_bits.isEnabled = true;
-  self->_bits.usesTintColorAsLinkColor = true;
+  self->_bits.usesTintColorAsLinkColor = false;
   self->_bits.dragInteractionEnabled = dragInteractionIsEnabledByDefault;
   self->_bits.accessibilityElementRepresentsUntruncatedText = true;
   self->_linkTouchAreaExtensionRadius = 10;
@@ -610,7 +610,7 @@ static void initCommon(STULabel* self) {
   self->_layer = static_cast<STULabelLayer*>([self layer]);
   STU_CHECK([self->_layer isKindOfClass:stuLabelLayerClass]);
   self->_layer.labelLayerDelegate = self;
-  self->_layer.overrideLinkColor = self.tintColor;
+  self->_layer.overrideLinkColor = UIColor.linkColor;
 
   self->_userInterfaceDirectionTraitChangeRegistration = [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(userInterfaceDirectionDidChange:)];
 }
@@ -1036,7 +1036,7 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
   if (_bits.usesTintColorAsLinkColor == usesTintColorAsLinkColor) return;
   _bits.usesTintColorAsLinkColor = usesTintColorAsLinkColor;
   if (_bits.isEnabled || !_disabledLinkColor) {
-    _layer.overrideLinkColor = usesTintColorAsLinkColor ? self.tintColor : nil;
+    _layer.overrideLinkColor = usesTintColorAsLinkColor ? self.tintColor : UIColor.linkColor;
   }
 }
 
@@ -1091,7 +1091,7 @@ static void tintColorMayHaveChanged(STULabel* __unsafe_unretained self) {
   }
   if (_disabledLinkColor) {
     _layer.overrideLinkColor = !enabled ? _disabledLinkColor
-                             : _bits.usesTintColorAsLinkColor ? self.tintColor : nil;
+                             : _bits.usesTintColorAsLinkColor ? self.tintColor : UIColor.linkColor;
   }
 }
 

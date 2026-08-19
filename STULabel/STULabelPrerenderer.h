@@ -26,7 +26,7 @@ STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 /// access from multiple threads is not safe (unless all accesses are non-mutating).
 ///
 /// @note If the text contains links and the @c STULabel view in which you want to display the text
-///       is configured with @c usesTintColorAsLinkColor set to true (the default), you need to set
+///       is configured with @c usesTintColorAsLinkColor set to true, you need to set
 ///       the prerenderer's @c linkOverrideColor to the label's @c tintColor. If the prerenderer
 ///       uses the wrong color for links, the label will have to discard the prerendered image and
 ///       render the text again.
