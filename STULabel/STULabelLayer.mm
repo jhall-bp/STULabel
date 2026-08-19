@@ -364,10 +364,11 @@ public:
         stringIsEmpty_ ? nil : [attributedString_ attributesAtIndex:0 effectiveRange:nil];
       if (!font_) {
         font_ = [attributes objectForKey:NSFontAttributeName]
-                ?: (__bridge UIFont*)defaultCoreTextFont();
+                ?: defaultFont().unretained;
       }
       if (!textColor_) {
-        textColor_ = [attributes objectForKey:NSForegroundColorAttributeName];
+        textColor_ = [attributes objectForKey:NSForegroundColorAttributeName]
+                   ?: defaultTextColor().unretained;
       }
       if (textAlignment_ == NSTextAlignment{-1}) {
         if (NSParagraphStyle* const style = [attributes objectForKey:NSParagraphStyleAttributeName]) {
@@ -387,7 +388,14 @@ public:
 private:
   STU_NO_INLINE
   static Unretained<UIFont* __nonnull> defaultFont() {
-    STU_STATIC_CONST_ONCE(UIFont*, value, [[UILabel alloc] init].font);
+    STU_STATIC_CONST_ONCE(UIFont*, value, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+    STU_ANALYZER_ASSUME(value != nil);
+    return value;
+  }
+
+  STU_NO_INLINE
+  static Unretained<UIColor* __nonnull> defaultTextColor() {
+    STU_STATIC_CONST_ONCE(UIColor*, value, UIColor.labelColor);
     STU_ANALYZER_ASSUME(value != nil);
     return value;
   }
@@ -405,7 +413,7 @@ public:
     {
       return font;
     }
-    return (__bridge UIFont*)defaultCoreTextFont();
+    return defaultFont().unretained;
   }
   void setFont(UIFont* __unsafe_unretained font) {
     if (!font) {
@@ -431,7 +439,7 @@ public:
         return color;
       }
     }
-    return UIColor.blackColor;
+    return defaultTextColor().unretained;
   }
   void setTextColor(UIColor* __unsafe_unretained textColor) {
     if (textColor == textColor_) return;
@@ -476,6 +484,7 @@ public:
     attributedString_ = [attributedString copy];
     stringIsEmpty_ = attributedString_ == nil || attributedString_.length == 0;
     clearStringProperties();
+    addMissingDefaultTextAttributes();
     invalidateShapedString();
   }
 
@@ -524,6 +533,28 @@ private:
     }
   }
 
+  void addMissingDefaultTextAttributes() {
+    if (stringIsEmpty_) return;
+
+    NSMutableAttributedString* const attributedString = [attributedString_ mutableCopy];
+    const NSRange range{0, attributedString.length};
+    [attributedString enumerateAttribute:NSFontAttributeName inRange:range options:0
+                              usingBlock:^(id value, NSRange range, BOOL*) {
+      if (!value) {
+        [attributedString addAttribute:NSFontAttributeName value:defaultFont().unretained
+                                 range:range];
+      }
+    }];
+    [attributedString enumerateAttribute:NSForegroundColorAttributeName inRange:range options:0
+                              usingBlock:^(id value, NSRange range, BOOL*) {
+      if (!value) {
+        [attributedString addAttribute:NSForegroundColorAttributeName
+                                 value:defaultTextColor().unretained range:range];
+      }
+    }];
+    attributedString_ = [attributedString copy];
+  }
+
   void updateAttributedStringIfNecessary() {
     if (!!invalidatedStringAttributes_) {
       updateAttributedString();
@@ -547,23 +578,15 @@ private:
                                                   : defaultParagraphStyle(textAlignment).unretained;
     if (string_) {
       UIFont* __unsafe_unretained font = font_ ?: defaultFont().unretained;
+      UIColor* __unsafe_unretained textColor = textColor_ ?: defaultTextColor().unretained;
       NSDictionary<NSAttributedStringKey, id>* attributes;
       if (!defaultParaStyle) {
-        if (!textColor_) {
-          attributes = @{NSFontAttributeName: font};
-        } else {
-          attributes = @{NSFontAttributeName: font,
-                         NSForegroundColorAttributeName: textColor_};
-        }
+        attributes = @{NSFontAttributeName: font,
+                       NSForegroundColorAttributeName: textColor};
       } else {
-        if (!textColor_) {
-          attributes = @{NSFontAttributeName: font,
-                         NSParagraphStyleAttributeName: defaultParaStyle};
-        } else {
-          attributes = @{NSFontAttributeName: font,
-                         NSParagraphStyleAttributeName: defaultParaStyle,
-                         NSForegroundColorAttributeName: textColor_};
-        }
+        attributes = @{NSFontAttributeName: font,
+                       NSParagraphStyleAttributeName: defaultParaStyle,
+                       NSForegroundColorAttributeName: textColor};
       }
       attributedString_ = [[NSAttributedString alloc] initWithString:string_
                                                                attributes:attributes];
@@ -602,6 +625,7 @@ private:
         }
       }];
       attributedString_ = [attributedString copy];
+      addMissingDefaultTextAttributes();
     }
   }
 

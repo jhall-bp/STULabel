@@ -13,6 +13,51 @@ class SwiftWrapperTests: XCTestCase {
     XCTAssertEqual(label.text, "SwiftPM")
   }
 
+  func testSTULabelUsesDynamicTypeBodyAndLabelColorByDefault() {
+    let label = STULabel()
+    let defaultFont = UIFont.preferredFont(forTextStyle: .body)
+
+    XCTAssertEqual(label.font, defaultFont)
+    XCTAssertEqual(label.textColor, .label)
+
+    label.text = "Plain text"
+    XCTAssertEqual(label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
+                   defaultFont)
+    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
+                     as? UIColor, .label)
+
+    let attributedText = NSMutableAttributedString(string: "unstyled ")
+    let attributedFont = UIFont.monospacedSystemFont(ofSize: 20, weight: .regular)
+    let attributedColor = UIColor.systemRed
+    attributedText.append(NSAttributedString(string: "font", attributes: [.font: attributedFont]))
+    attributedText.append(NSAttributedString(string: " color",
+                                               attributes: [.foregroundColor: attributedColor]))
+    label.attributedText = attributedText
+
+    XCTAssertEqual(label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
+                   defaultFont)
+    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
+                     as? UIColor, .label)
+    XCTAssertEqual(label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
+                   attributedFont)
+    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 9, effectiveRange: nil)
+                     as? UIColor, .label)
+    XCTAssertEqual(label.attributedText.attribute(.font, at: 13, effectiveRange: nil) as? UIFont,
+                   defaultFont)
+    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
+                     as? UIColor, attributedColor)
+
+    let labelFont = UIFont.systemFont(ofSize: 22, weight: .semibold)
+    let labelColor = UIColor.systemGreen
+    label.font = labelFont
+    label.textColor = labelColor
+
+    XCTAssertEqual(label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
+                   labelFont)
+    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
+                     as? UIColor, labelColor)
+  }
+
   // Currently we just test here that these properties are actually callable (without causing a
   // linker error) and return the correct value in the simplest situation.
   @MainActor

@@ -29,8 +29,8 @@ STU_EXPORT
 /// @c textAlignment properties are set to the corresponding attribute values of the first character
 /// in the string.
 ///
-/// The label uses the Core Text default font (Helvetica 12pt.) for ranges in the attributed string
-/// that have no font attribute.
+/// The label uses the preferred @c UIFontTextStyleBody font and @c UIColor.labelColor for ranges
+/// in the attributed string that have no font or foreground color attribute.
 @property (nonatomic, copy, null_resettable) NSAttributedString *attributedText;
 
 @property (nonatomic, copy, null_resettable) NSString *text;
@@ -201,6 +201,7 @@ STU_REENABLE_CLANG_WARNING
 
 @end
 
+
 @protocol STULabelLayerDelegate <NSObject>
 @optional
 
@@ -238,4 +239,3 @@ didMoveDisplayedTextToRect:(CGRect)contentBounds;
 needsVisibleBoundsUpdates:(bool)needsVisibleBoundsUpdates;
 
 @end
-

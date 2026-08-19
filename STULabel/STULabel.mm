@@ -11,20 +11,10 @@
 
 #import "Internal/LabelParameters.hpp"
 #import "Internal/LabelRendering.hpp"
-#import "Internal/Localized.hpp"
 #import "Internal/Once.hpp"
-#import "Internal/STULabelAddToContactsViewController.h"
 #import "Internal/STULabelGhostingMaskLayer.h"
 #import "Internal/STULabelLinkOverlayLayer.h"
 #import "Internal/STULabelSubrangeView.h"
-
-#import <ContactsUI/ContactsUI.h>
-
-#if TARGET_OS_MACCATALYST
-  #import <AppKit/AppKit.h>
-#else
-  #import <SafariServices/SafariServices.h>
-#endif
 
 #import <objc/runtime.h>
 
@@ -517,8 +507,6 @@ API_UNAVAILABLE(tvos)
 static void updateLabelLinkObserversAfterLayoutChange(STULabel* label);
 static void updateLabelLinkObserversInLabelDealloc(STULabel* label);
 
-static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIViewController* vc);
-
 @implementation STULabel  {
   // The layer is owned by the view and stays constant, so we can safely cache a reference.
   __unsafe_unretained STULabelLayer* _layer;
@@ -544,8 +532,7 @@ static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIVi
     bool accessibilityElementSeparatesLinkElements : 1;
     bool delegateRespondsToOverlayStyleForActiveLink : 1;
     bool delegateRespondsToLinkWasTapped : 1;
-    bool delegateRespondsToLinkCanBeLongPressed : 1;
-    bool delegateRespondsToLinkWasLongPressed : 1;
+    bool delegateRespondsToContextMenuConfigurationForLink : 1;
     bool delegateRespondsToShouldDisplayAsynchronously : 1;
     bool delegateRespondsToDidDisplayText : 1;
     bool delegateRespondsDidMoveDisplayedText : 1;
@@ -570,11 +557,11 @@ static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIVi
   STULabelContentLayoutGuide* _contentLayoutGuide;
   UIContentSizeCategory _contentSizeCategory;
   UITouch* _currentTouch;
-  UILongPressGestureRecognizer* _longPressGestureRecognizer;
   STULabelOverlayStyle* _activeLinkOverlayStyle;
   /// A STULabelLinkOverlayLayer if _bits.hasActiveLinkOverlayLayer, else a STUTextLink, or null.
   id _activeLinkOrOverlayLayer;
   CGPoint _activeLinkContentOrigin;
+  UIContextMenuInteraction* _contextMenuInteraction API_UNAVAILABLE(watchos, tvos);
   STULabelDragInteraction* _dragInteraction API_UNAVAILABLE(watchos, tvos);
   STULabelTextInteraction* _textInteraction API_UNAVAILABLE(watchos, tvos);
   STULabelGhostingMaskLayer* _ghostingMaskLayer;
@@ -659,8 +646,7 @@ static void initCommon(STULabel* self) {
   if (!delegate) {
     _bits.delegateRespondsToOverlayStyleForActiveLink = false;
     _bits.delegateRespondsToLinkWasTapped = false;
-    _bits.delegateRespondsToLinkCanBeLongPressed = false;
-    _bits.delegateRespondsToLinkWasLongPressed = false;
+    _bits.delegateRespondsToContextMenuConfigurationForLink = false;
     _bits.delegateRespondsToShouldDisplayAsynchronously = false;
     _bits.delegateRespondsToDidDisplayText = false;
     _bits.delegateRespondsDidMoveDisplayedText = false;
@@ -672,10 +658,9 @@ static void initCommon(STULabel* self) {
       [delegate respondsToSelector:@selector(label:overlayStyleForActiveLink:withDefault:)];
     _bits.delegateRespondsToLinkWasTapped =
       [delegate respondsToSelector:@selector(label:link:wasTappedAtPoint:)];
-    _bits.delegateRespondsToLinkCanBeLongPressed =
-      [delegate respondsToSelector:@selector(label:link:canBeLongPressedAtPoint:)];
-    _bits.delegateRespondsToLinkWasLongPressed =
-      [delegate respondsToSelector:@selector(label:link:wasLongPressedAtPoint:)];
+    _bits.delegateRespondsToContextMenuConfigurationForLink =
+      [delegate respondsToSelector:
+        @selector(label:contextMenuConfigurationForLink:atLocation:)];
     _bits.delegateRespondsToShouldDisplayAsynchronously =
       [delegate respondsToSelector:@selector(label:shouldDisplayAsynchronouslyWithProposedValue:)];
     _bits.delegateRespondsToDidDisplayText =
@@ -1228,7 +1213,7 @@ static void clearCurrentLabelTouch(STULabel* self) {
   updateActiveLinkOverlayIsHidden(self);
 }
 
-// MARK: - Default link action sheet
+// MARK: - Default link handling
 
 static void openURL(NSURL* url) {
   [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
@@ -1240,83 +1225,6 @@ static void openURL(NSURL* url) {
      #endif
      }
    }];
-}
-
-static UIAlertAction* openURLAction(NSString* title, NSURL* url) {
-  return [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action __unused) { openURL(url); }];
-}
-
-static UIAlertAction* copyAction(NSString* title, NSString* string) {
-  return [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action __unused) {
-           UIPasteboard.generalPasteboard.string = string;
-         }];
-}
-
-static UIAlertAction* shareAction(NSString* title, NSURL* url,
-                                  UIViewController* __weak weakPresentingViewController,
-                                  STULabel* __weak weakLabel, STUTextLink* weakLink)
-{
-  return [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action __unused) {
-           UIViewController* const presentingViewController = weakPresentingViewController;
-           STULabel* const label = weakLabel;
-           STUTextLink* const link = [label.links linkMatchingLink:weakLink];
-           if (!presentingViewController || !label || !link) return;
-           UIActivityViewController* const ac = [[UIActivityViewController alloc]
-                                                   initWithActivityItems:@[url]
-                                                   applicationActivities:nil];
-           addLabelLinkPopoverObserver(label, link, ac);
-           [presentingViewController presentViewController:ac animated:true completion:nil];
-         }];
-}
-
-static UIAlertAction* addToContactsAction(NSString* title, CNContact* contact,
-                                          UIViewController* __weak weakPresentingViewController,
-                                          STULabel* __weak weakLabel, STUTextLink* weakLink)
-{
-  return [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action __unused) {
-           UIViewController* const presentingViewController = weakPresentingViewController;
-           STULabel* const label = weakLabel;
-           STUTextLink* const link = [label.links linkMatchingLink:weakLink];
-           if (!presentingViewController || !label || !link) return;
-           UIViewController* const vc = [[STULabelAddToContactsViewController alloc]
-                                           initWithContact:contact];
-           vc.modalPresentationStyle = UIModalPresentationPopover;
-           addLabelLinkPopoverObserver(label, link, vc);
-           [presentingViewController presentViewController:vc animated:true completion:nil];
-         }];
-}
-
-#if TARGET_OS_MACCATALYST
-// SafariServices are not available with Catalyst.
-#else
-static UIAlertAction* addToReadingListAction(NSString* title, NSURL* url) {
-  return [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action __unused) {
-           NSError* error;
-           if (![SSReadingList.defaultReadingList addReadingListItemWithURL:url title:nil
-                                                                previewText:nil error:&error])
-           {
-           #if STU_DEBUG
-             NSLog(@"Failed to add url %@ to reading list: %@", url, error.description);
-           #else
-             NSLog(@"Failed to add url to reading list: %@", error.description);
-           #endif
-           }
-         }];
-}
-#endif
-
-static NSString* urlStringWithoutScheme(NSURL* __unsafe_unretained url) {
-  NSString* const scheme = url.scheme;
-  NSString* const string = url.absoluteString;
-  return [string hasPrefix:scheme]
-      && string.length > scheme.length && [string characterAtIndex:scheme.length] == ':'
-       ? [string substringFromIndex:scheme.length + 1]
-       : string;
 }
 
 static bool isDefaultDraggableLinkValue(id __unsafe_unretained linkValue) {
@@ -1335,94 +1243,6 @@ static NSURL* __nullable urlLinkAttribute(STUTextLink* __unsafe_unretained link)
     return [NSURL URLWithString:attribute];
   }
   return nil;
-}
-
-- (nullable NSString*)stu_actionSheetMessageForLink:(STUTextLink*)link {
-  NSURL* const url = urlLinkAttribute(link);
-  if (!url) return nil;
-  NSString* const scheme = [url.scheme lowercaseString];
-  if (   [scheme isEqualToString:@"mailto"]
-      || [scheme isEqualToString:@"tel"] || [scheme isEqualToString:@"telprompt"])
-  {
-    return urlStringWithoutScheme(url);
-  } else {
-    return url.absoluteString.stringByRemovingPercentEncoding;
-  }
-}
-
-- (nullable NSArray<UIAlertAction*>*)
-    stu_alertActionsForLink:(STUTextLink*)link
-   presentingViewController:(UIViewController*)presentingViewController
-{
-  NSURL* const url = urlLinkAttribute(link);
-  if (!url) return nil;
-  NSString* const scheme = [url.scheme lowercaseString];
-  if ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"]) {
-    if (url.host.length == 0) return nil;
-    return @[openURLAction(localized(@"Open"), url),
-             copyAction(localized(@"Copy"), url.absoluteString),
-             shareAction(localized(@"Share…"), url, presentingViewController, self, link),
-           #if TARGET_OS_MACCATALYST
-             // SafariServices are not available with Catalyst.
-           #else
-             addToReadingListAction(localized(@"Add to Reading List"), url),
-           #endif
-             ];
-  }
-  NSString* const target = urlStringWithoutScheme(url);
-  const NSUInteger q = [target rangeOfString:@"?"].location;
-  NSString* const targetWithoutQuery = q == NSNotFound ? target : [target substringToIndex:q];
-  if ([scheme isEqualToString:@"mailto"]) {
-    if (targetWithoutQuery.length == 0) return nil;
-    CNMutableContact* const contact = [[CNMutableContact alloc] init];
-    contact.emailAddresses = @[[CNLabeledValue labeledValueWithLabel:nil
-                                                               value:targetWithoutQuery]];
-    return @[openURLAction(localized(@"New Mail Message"), url),
-             copyAction(localized(@"Copy Email"), targetWithoutQuery),
-             addToContactsAction(localized(@"Add to Contacts"), contact, presentingViewController,
-                                 self, link)];
-  } else if ([scheme isEqualToString:@"tel"] || [scheme isEqualToString:@"telprompt"]) {
-    if (targetWithoutQuery.length == 0) return nil;
-    CNPhoneNumber* const number = [CNPhoneNumber phoneNumberWithStringValue:targetWithoutQuery];
-    if (!number) return nil;
-    CNMutableContact* const contact = [[CNMutableContact alloc] init];
-    contact.phoneNumbers = @[[CNLabeledValue labeledValueWithLabel:nil value:number]];
-    NSMutableArray* const array = [[NSMutableArray alloc] initWithCapacity:3];
-    if ([UIApplication.sharedApplication canOpenURL:url]) {
-      [array addObject:openURLAction([NSString stringWithFormat:localized(@"Call %@"), target],
-                                     url)];
-    }
-    [array addObject:copyAction(localized(@"Copy Phone Number"), target)];
-    [array addObject:addToContactsAction(localized(@"Add to Contacts"), contact,
-                                         presentingViewController, self, link)];
-    return array;
-  }
-  return @[openURLAction(localized(@"Open"), url),
-           copyAction(localized(@"Copy"), url.absoluteString),
-           shareAction(localized(@"Share…"), url, presentingViewController, self, link)];
-}
-
-- (bool)stu_presentActionSheetForLink:(STUTextLink*)link
-                   fromViewController:(UIViewController*)presentingViewController
-{
-  if (!presentingViewController) return false;
-  NSArray<UIAlertAction*>* const actions = [self stu_alertActionsForLink:link
-                                                presentingViewController:presentingViewController];
-  if (!actions) return false;
-  NSString* const message = [self stu_actionSheetMessageForLink:link];
-  if (!message) return false;
-  UIAlertController* const ac = [UIAlertController
-                                  alertControllerWithTitle:nil
-                                                   message:message
-                                            preferredStyle:UIAlertControllerStyleActionSheet];
-  for (UIAlertAction* const action in actions) {
-    [ac addAction:action];
-  }
-  [ac addAction:[UIAlertAction actionWithTitle:localized(@"Cancel") style:UIAlertActionStyleCancel
-                                       handler:^(UIAlertAction* action __unused) {}]];
-  addLabelLinkPopoverObserver(self, link, ac);
-  [presentingViewController presentViewController:ac animated:true completion:nil];
-  return true;
 }
 
 // MARK: - Touch event handling
@@ -1499,14 +1319,6 @@ static NSURL* __nullable urlLinkAttribute(STUTextLink* __unsafe_unretained link)
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
-  if (gestureRecognizer == _longPressGestureRecognizer) {
-    if (_ghostingMaskLayer) return false;
-    STUTextLink* const link = self.activeLink;
-    if (!link) return false;
-    return !_bits.delegateRespondsToLinkCanBeLongPressed
-        || [_delegate label:self link:link
-              canBeLongPressedAtPoint:[_longPressGestureRecognizer locationInView:self]];
-  }
   if ([gestureRecognizer isKindOfClass:UITapGestureRecognizer.class]
       // We need to allow _UIDragAddItemsGesture here (and possibly other recognizers too).
       && strncmp(object_getClassName(gestureRecognizer), "_UI", 3) != 0
@@ -1518,62 +1330,67 @@ static NSURL* __nullable urlLinkAttribute(STUTextLink* __unsafe_unretained link)
   return true;
 }
 
-static void initializeLongPressGestureRecognizer(STULabel* self) {
-  STU_DEBUG_ASSERT(self->_longPressGestureRecognizer == nil);
-  self->_longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
-                                         initWithTarget:self
-                                         action:@selector(stu_longPressGesture)];
-  [self addGestureRecognizer:self->_longPressGestureRecognizer];
+static const char* const associatedLinkKey = "STULabelLink";
+
+// MARK: - UIContextMenuInteraction
+
+static void initializeContextMenuInteraction(STULabel* self) {
+  STU_DEBUG_ASSERT(self->_contextMenuInteraction == nil);
+  self->_contextMenuInteraction = [[UIContextMenuInteraction alloc] initWithDelegate:self];
+  [self addInteraction:self->_contextMenuInteraction];
 }
 
-- (UILongPressGestureRecognizer*)longPressGestureRecognizer {
-  if (!_longPressGestureRecognizer) {
-    initializeLongPressGestureRecognizer(self);
+- (UIContextMenuInteraction*)contextMenuInteraction {
+  if (!_contextMenuInteraction) {
+    initializeContextMenuInteraction(self);
   }
-  return _longPressGestureRecognizer;
+  return _contextMenuInteraction;
 }
 
-- (void)stu_longPressGesture {
-  if (_longPressGestureRecognizer.state != UIGestureRecognizerStateBegan) return;
-  STUTextLink* const link = self.activeLink;
-  if (!link) return;
-  [self stu_link:link wasLongPressedAtPoint:[_longPressGestureRecognizer locationInView:self]
-                         afterCancelledDrag:false];
-}
-
-static UIViewController* ancestorViewController(UIView* const view) {
-  STU_STATIC_CONST_ONCE(Class, viewControllerClass, UIViewController.class);
-  UIResponder* r = view;
-  while ((r = r.nextResponder)) {
-    if ([r isKindOfClass:viewControllerClass]) {
-      return static_cast<UIViewController*>(r);
-    }
-  }
-  return nil;
-}
-
-- (void)stu_link:(STUTextLink*)link wasLongPressedAtPoint:(CGPoint)point
-afterCancelledDrag:(bool)afterCancelledDrag
+STU_INLINE STUTextLink* __nullable contextMenuConfigurationLink(
+  UIContextMenuConfiguration* configuration)
+  API_UNAVAILABLE(watchos, tvos)
 {
-  if (afterCancelledDrag) {
-    // The drag cancel animation may take some time in which the user may have navigated away.
-    UIWindow* const window = self.window;
-    if (!window
-        || !CGRectIntersectsRect(window.bounds, [window convertRect:link.bounds fromView:self]))
-    {
-      return;
-    }
-    if (_bits.delegateRespondsToLinkCanBeLongPressed
-        && ![_delegate label:self link:link canBeLongPressedAtPoint:point])
-    {
-      return;
-    }
+  return objc_getAssociatedObject(configuration, associatedLinkKey);
+}
+
+STU_INLINE void setContextMenuConfigurationLink(UIContextMenuConfiguration* configuration,
+                                                STUTextLink* link)
+  API_UNAVAILABLE(watchos, tvos)
+{
+  objc_setAssociatedObject(configuration, associatedLinkKey, link,
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (nullable UIContextMenuConfiguration*)
+    contextMenuInteraction:(UIContextMenuInteraction* __unused)interaction
+    configurationForMenuAtLocation:(CGPoint)location
+{
+  if (!_bits.delegateRespondsToContextMenuConfigurationForLink) return nil;
+  STUTextLink* const link = self.activeLink
+                          ?: [_layer.links linkClosestToPoint:location
+                                                  maxDistance:_linkTouchAreaExtensionRadius];
+  if (!link || [_ghostingMaskLayer hasGhostedLink:link]) return nil;
+  UIContextMenuConfiguration* const configuration =
+    [_delegate label:self contextMenuConfigurationForLink:link atLocation:location];
+  if (configuration) {
+    setContextMenuConfigurationLink(configuration, link);
   }
-  if (_bits.delegateRespondsToLinkWasLongPressed) {
-    [_delegate label:self link:link wasLongPressedAtPoint:point];
-  } else {
-    [self stu_presentActionSheetForLink:link fromViewController:ancestorViewController(self)];
-  }
+  return configuration;
+}
+
+- (nullable UITargetedPreview *) contextMenuInteraction:(UIContextMenuInteraction *) interaction
+                                 configuration:(UIContextMenuConfiguration *) configuration
+         highlightPreviewForItemWithIdentifier:(id<NSCopying>) identifier
+{
+  return [self stu_targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
+}
+
+- (nullable UITargetedPreview *) contextMenuInteraction:(UIContextMenuInteraction *) interaction
+                                 configuration:(UIContextMenuConfiguration *) configuration
+         dismissalPreviewForItemWithIdentifier:(id<NSCopying>) identifier
+{
+  return [self stu_targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
 }
 
 // MARK: - UIDragInteraction
@@ -1615,8 +1432,6 @@ void STULabelSetBitsDragInterationEnabled(STULabel* self, bool dragInterationEna
     _dragInteraction.enabled = enabled; // Will also set _bits.dragInteractionEnabled;
   }
 }
-
-static const char* const associatedLinkKey = "STULabelLink";
 
 STU_INLINE STUTextLink* __nullable dragItemLink(UIDragItem* item)
   API_UNAVAILABLE(watchos, tvos)
@@ -1727,10 +1542,10 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
   return [self stu_dragItemsForPoint:point session:session];
 }
 
-- (UITargetedDragPreview*)stu_targetedDragPreviewForItem:(UIDragItem*)item
-    NS_AVAILABLE_IOS(11_0)
+- (UITargetedDragPreview*)stu_targetedPreviewForLink:(STUTextLink*)link
+                                            dragItem:(nullable UIDragItem*)dragItem
 {
-  STUTextLink* const link = [_layer.links linkMatchingLink:dragItemLink(item)];
+  link = [_layer.links linkMatchingLink:link];
   if (!link) return nil;
 
   STUTextFrame* const textFrame = _layer.textFrame;
@@ -1865,10 +1680,10 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
     backgroundColor = self.backgroundColor;
   }
   id<STULabelDelegate> delegate = _delegate;
-  if (delegate && [delegate respondsToSelector:
+  if (dragItem && delegate && [delegate respondsToSelector:
                     @selector(label:backgroundColorForTargetedPreviewOfDragItem:withDefault:)])
   {
-    backgroundColor = [delegate label:self backgroundColorForTargetedPreviewOfDragItem:item
+    backgroundColor = [delegate label:self backgroundColorForTargetedPreviewOfDragItem:dragItem
                         withDefault:backgroundColor];
   }
   if (backgroundColor) {
@@ -1884,7 +1699,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
                                   session:(id<UIDragSession> __unused)session
   API_UNAVAILABLE(watchos, tvos)
 {
-  return [self stu_targetedDragPreviewForItem:item];
+  return [self stu_targetedPreviewForLink:dragItemLink(item) dragItem:item];
 }
 
 - (UITargetedDragPreview*)dragInteraction:(UIDragInteraction* __unused)interaction
@@ -1892,7 +1707,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
                               withDefault:(UITargetedDragPreview* __unused)defaultPreview
   API_UNAVAILABLE(watchos, tvos)
 {
-  return [self stu_targetedDragPreviewForItem:item];
+  return [self stu_targetedPreviewForLink:dragItemLink(item) dragItem:item];
 }
 
 - (void)stu_startedDragInteractionWithLink:(STUTextLink*)link {
@@ -1930,8 +1745,6 @@ willAnimateLiftWithAnimator:(id<UIDragAnimating>)animator session:(id<UIDragSess
   [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
     if (finalPosition == UIViewAnimatingPositionEnd) return;
     [self stu_cancelledDragInteractionWithLink:link];
-    [self stu_link:link wasLongPressedAtPoint:[session locationInView:self]
-                           afterCancelledDrag:true];
   }];
 }
 
@@ -2015,8 +1828,8 @@ didDisplayTextWithFlags:(STUTextFrameFlags)textFrameFlags inRect:(CGRect)content
   [_textInteraction stu_textDidDisplay];
   updateLayoutGuides(self);
   if (textFrameFlags & STUTextFrameHasLink) {
-    if (!_longPressGestureRecognizer) {
-      initializeLongPressGestureRecognizer(self);
+    if (!_contextMenuInteraction) {
+      initializeContextMenuInteraction(self);
     }
     if (!_dragInteraction && _bits.dragInteractionEnabled) {
       initializeDragInteraction(self);
@@ -2464,84 +2277,3 @@ static void updateLabelLinkObserversInLabelDealloc(STULabel* __unsafe_unretained
   }
 }
 @end
-
-// MARK: - STULabelLinkPopoverObserver
-
-@interface STULabelLinkPopoverObserver : STULabelLinkObserver
-                                         <UIPopoverPresentationControllerDelegate>
-- (instancetype)initWithLabel:(STULabel*)label link:(STUTextLink*)link
-               popoverPresentationController:(UIPopoverPresentationController*)
-                                               popoverPresentationController
-  NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithLabel:(STULabel*)label link:(STUTextLink*)link
-                     observer:(STULabelLinkObserverBlock)observerBlock
-  NS_UNAVAILABLE;
-@end
-
-@implementation STULabelLinkPopoverObserver {
-  UIPopoverPresentationController* __weak _popoverPresentationController;
-}
-
-static CGRect popoverSourceRect(STULabel* label, STUTextLink*link) {
-  const CGRect linkBounds = link.bounds;
-  UIWindow* const window = label.window;
-  if (!window) return linkBounds;
-  const CGRect visibleLabelBounds = [label convertRect:window.bounds fromView:window];
-  /// UIPopoverPresentationController has difficulties with very large source rects.
-  if (area(linkBounds) >= 0.75*area(visibleLabelBounds)) {
-    const CGRect visibleLinkBounds = CGRectIntersection(linkBounds, visibleLabelBounds);
-    if (!CGRectIsEmpty(visibleLinkBounds)) {
-      return CGRect{{visibleLinkBounds.origin.x + visibleLinkBounds.size.width/2,
-                     visibleLinkBounds.origin.y + visibleLinkBounds.size.height/2},
-                    {1, 1}};
-    }
-  }
-  return linkBounds;
-}
-
-- (instancetype)initWithLabel:(STULabel*)label link:(STUTextLink*)link
-popoverPresentationController:(UIPopoverPresentationController*)ppc
-{
-  if (!ppc) return nil;
-  if ((self = [super initWithLabel:label link:link observer:nil]))  {
-    _popoverPresentationController = ppc;
-    ppc.delegate = self;
-    ppc.sourceView = label;
-    ppc.sourceRect = popoverSourceRect(label, link);
-    ppc.canOverlapSourceViewRect = true;
-  }
-  return self;
-}
-
-- (void)linkDidChangeFrom:(STUTextLink* __nullable __unused)oldValue
-                       to:(STUTextLink* __nullable)newValue
-{
-  if (!newValue) return;
-  // Setting this rect after the popover has been presented currently doesn't have any effect,
-  // but maybe that changes in the future.
-  _popoverPresentationController.sourceRect = popoverSourceRect(self.label, newValue);
-}
-
-// This delegate method may be called before linkDidChangeFrom:to:
-- (void)popoverPresentationController:(UIPopoverPresentationController* __unused)ppc
-          willRepositionPopoverToRect:(inout CGRect*)rect
-                               inView:(inout UIView* __autoreleasing * __unused)view
-{
-  STULabel* const label = self.label;
-  STUTextLink* const link = [label.links linkMatchingLink:self.mostRecentNonNullLink];
-  if (!link) return;
-  *rect = popoverSourceRect(label, link);
-}
-
-@end
-
-static void addLabelLinkPopoverObserver(STULabel* label, STUTextLink* link, UIViewController* vc) {
-  auto* const ppc = vc.popoverPresentationController;
-  if (!ppc) return;
-  auto* const observer = [[STULabelLinkPopoverObserver alloc] initWithLabel:label link:link
-                                              popoverPresentationController:ppc];
-  if (!observer) return;
-  objc_setAssociatedObject(ppc, (__bridge void*)observer, observer,
-                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}

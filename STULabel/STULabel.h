@@ -34,8 +34,8 @@ STU_EXPORT
 /// @c textAlignment properties are set to the corresponding attribute values of the first character
 /// in the string.
 ///
-/// The label uses the Core Text default font (Helvetica 12pt.) for ranges in the attributed string
-/// that have no font attribute.
+/// The label uses the preferred @c UIFontTextStyleBody font and @c UIColor.labelColor for ranges
+/// in the attributed string that have no font or foreground color attribute.
 @property (nonatomic, copy, null_resettable) NSAttributedString *attributedText;
 
 @property (nonatomic, copy, null_resettable) NSString *text;
@@ -90,7 +90,7 @@ STU_EXPORT
 /// If this property is set to true, the label will scale both the font returned by the @c font
 /// property and any font in the @c attributedString. However, it can only scale "preferred" fonts,
 /// i.e. those fonts e.g. obtained from @c UIFont.preferredFont(forTextStyle:), and fonts created
-/// using @c UIFontMetrics. The default label font will not be scaled.
+/// using @c UIFontMetrics. The default label font uses @c UIFontTextStyleBody and will be scaled.
 ///
 /// @note This property has no effect on versions of iOS before 10.0.
 ///
@@ -212,6 +212,10 @@ STU_EXPORT
 @property (nonatomic, readonly) UIDragInteraction *dragInteraction
   API_UNAVAILABLE(tvos);
 
+/// The lazily created @c UIContextMenuInteraction instance used by the label for links.
+@property (nonatomic, readonly) UIContextMenuInteraction *contextMenuInteraction
+  API_UNAVAILABLE(tvos);
+
 
 /// A Boolean value that indicates whether the label's displayed text is selectable.
 ///
@@ -219,10 +223,6 @@ STU_EXPORT
 /// value is @c false.
 @property (nonatomic, getter=isSelectable) BOOL selectable
   NS_SWIFT_NAME(isSelectable);
-
-
-/// The lazily created @c UILongPressGestureRecognizer instance used by the label.
-@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 
 - (CGSize)sizeThatFits:(CGSize)size;
@@ -268,7 +268,7 @@ STU_EXPORT
 @end
 
 #if TARGET_OS_IOS
-@interface STULabel () <UIDragInteractionDelegate> @end
+@interface STULabel () <UIDragInteractionDelegate, UIContextMenuInteractionDelegate> @end
 #endif
 
 NS_SWIFT_UI_ACTOR
@@ -289,20 +289,16 @@ NS_SWIFT_UI_ACTOR
 /// @param point The location of the touch in the local coordinate system of the label view.
 - (void)label:(STULabel *)label link:(STUTextLink *)link wasTappedAtPoint:(CGPoint)point;
 
-/// Asks the delegate whether it should recognize a long press of the specified link.
+/// Asks the delegate for the context menu configuration for the specified link.
 /// @param label The label view.
 /// @param link The touched link.
-/// @param point The location of the touch in the local coordinate system of the label view.
-- (bool)label:(STULabel *)label link:(STUTextLink *)link canBeLongPressedAtPoint:(CGPoint)point;
-
-/// Tells the delegate that the specified link was long-pressed.
-/// @param label The label view.
-/// @param link The long-pressed link.
-/// @param point The location of the touch in the local coordinate system of the label view.
-- (void)label:(STULabel *)label link:(STUTextLink *)link wasLongPressedAtPoint:(CGPoint)point;
-
-- (bool)label:(STULabel *)label shouldDisplayContextMenuForLink:(STUTextLink *)link atLocation:(CGPoint)location;
-- (UIContextMenuConfiguration *)label:(STULabel *)label contextMenuConfigurationForLink:(STUTextLink *)link atLocation:(CGPoint)location;
+/// @param location The location of the interaction in the local coordinate system of the label.
+/// @return The context menu configuration, or @c nil to prevent the menu from being displayed.
+- (nullable UIContextMenuConfiguration *)label:(STULabel *)label
+                       contextMenuConfigurationForLink:(STUTextLink *)link
+                                            atLocation:(CGPoint)location
+  NS_SWIFT_NAME(label(_:contextMenuConfigurationForLink:at:))
+  API_UNAVAILABLE(tvos);
 
 /// Asks the delegate whether the label should be displayed asynchronously.
 ///

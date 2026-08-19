@@ -268,7 +268,9 @@ underline thickness is calculated based both on the original font and the substi
 - On iOS 13 and later, set `label.selectable = true` to enable non-editable native text selection.
   Selection and Copy operate on the currently displayed text, including non-link truncation-token
   content. A link in a truncation token, such as a "more" control, is not selectable. Existing
-  link long-press actions take precedence, so selection must begin outside a link.
+  link context menus take precedence, so selection must begin outside a link. Implement
+  `STULabelDelegate.label(_:contextMenuConfigurationForLink:at:)` to vend each link's
+  `UIContextMenuConfiguration`.
 
 - `STULabel` and `STUTextFrame` don't support specifying an exclusion path, in contrast to  `UITextView` and `NSTextContainer`.
 

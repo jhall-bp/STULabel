@@ -210,10 +210,6 @@
 		D4320B13212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */; };
 		D437A41D20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */; };
 		D437A41E20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */; };
-		D439844B20A9CCAF0007624B /* STULabelAddToContactsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D439844920A9CCAF0007624B /* STULabelAddToContactsViewController.h */; };
-		D439844C20A9CCAF0007624B /* STULabelAddToContactsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = D439844920A9CCAF0007624B /* STULabelAddToContactsViewController.h */; };
-		D439844D20A9CCAF0007624B /* STULabelAddToContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D439844A20A9CCAF0007624B /* STULabelAddToContactsViewController.m */; };
-		D439844E20A9CCAF0007624B /* STULabelAddToContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D439844A20A9CCAF0007624B /* STULabelAddToContactsViewController.m */; };
 		D43E66C81FD45DD400BABD1C /* UnicodeCodePointPropertiesTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */; };
 		D43E66C91FD45DD700BABD1C /* TextLineSpansPathTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */; };
 		D43E66CD1FD464D100BABD1C /* UnicodeCodePointProperties.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */; };
@@ -778,8 +774,6 @@
 		D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameLineBreakingTests.swift; sourceTree = "<group>"; };
 		D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtension.swift; sourceTree = "<group>"; };
 		D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextFrameDrawingOptions.hpp; sourceTree = "<group>"; };
-		D439844920A9CCAF0007624B /* STULabelAddToContactsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabelAddToContactsViewController.h; sourceTree = "<group>"; };
-		D439844A20A9CCAF0007624B /* STULabelAddToContactsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STULabelAddToContactsViewController.m; sourceTree = "<group>"; };
 		D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UnicodeCodePointPropertiesTests.mm; sourceTree = "<group>"; };
 		D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextLineSpansPathTests.mm; sourceTree = "<group>"; };
 		D43E66BD1FD45DB300BABD1C /* AllTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1629,8 +1623,6 @@
 				D49F0AD81FCC6018004B0E5C /* UnicodeCodePointProperties.hpp */,
 				D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */,
 				D45F218020A1E015007E6C36 /* Unretained.hpp */,
-				D439844920A9CCAF0007624B /* STULabelAddToContactsViewController.h */,
-				D439844A20A9CCAF0007624B /* STULabelAddToContactsViewController.m */,
 				D49F0ADA1FCC6018004B0E5C /* STULabelGhostingMaskLayer.h */,
 				D49F0ABF1FCC6012004B0E5C /* STULabelGhostingMaskLayer.mm */,
 				D49F0ADC1FCC6019004B0E5C /* STULabelLinkOverlayLayer.h */,
@@ -1774,7 +1766,6 @@
 				D42384EE1F9381D7000B8A63 /* Vector.hpp in Headers */,
 				D44A5EB91F9A533C007325B4 /* Config.hpp in Headers */,
 				D42384DE1F9381D7000B8A63 /* Config.h in Headers */,
-				D439844C20A9CCAF0007624B /* STULabelAddToContactsViewController.h in Headers */,
 				D41A37D42030FFC900ADDE1E /* PurgeableImage.hpp in Headers */,
 				D42384431F92AC81000B8A63 /* STULabelLayer-Internal.hpp in Headers */,
 				D42384451F92AC81000B8A63 /* STUTextHighlightStyle.h in Headers */,
@@ -1918,7 +1909,6 @@
 				D42384B51F9379B9000B8A63 /* ArenaAllocator.hpp in Headers */,
 				D4B0B0001F925BE000B5B2B9 /* STUMainScreenProperties.h in Headers */,
 				D4B0AF211F925AF900B5B2B9 /* STUTextRectArray.h in Headers */,
-				D439844B20A9CCAF0007624B /* STULabelAddToContactsViewController.h in Headers */,
 				D41A37D32030FFC900ADDE1E /* PurgeableImage.hpp in Headers */,
 				D4B0AFFB1F925BD700B5B2B9 /* STUImageUtils.h in Headers */,
 				D42384C01F9379B9000B8A63 /* FunctionRef.hpp in Headers */,
@@ -2402,7 +2392,6 @@
 				D43E66E11FD464E200BABD1C /* TextLineSpansPath.mm in Sources */,
 				D42584E41FCE137800DDA412 /* ThreadLocalAllocator.mm in Sources */,
 				D42383F01F92AC81000B8A63 /* STUPlaceholderObjects-no-ARC.m in Sources */,
-				D439844E20A9CCAF0007624B /* STULabelAddToContactsViewController.m in Sources */,
 				D42383F11F92AC81000B8A63 /* STULabel.mm in Sources */,
 				A10000000000000000000013 /* STULabel+UITextInput.mm in Sources */,
 				D42383F21F92AC81000B8A63 /* STUTextFrame.mm in Sources */,
@@ -2619,7 +2608,6 @@
 				D4B0B0031F925BE800B5B2B9 /* stu_mutex.c in Sources */,
 				D4B0AF111F925AF900B5B2B9 /* STULabelPrerenderer.mm in Sources */,
 				D49F0B001FCC601A004B0E5C /* LabelRendering.mm in Sources */,
-				D439844D20A9CCAF0007624B /* STULabelAddToContactsViewController.m in Sources */,
 				D49F0AEE1FCC601A004B0E5C /* UnicodeCodePointProperties.mm in Sources */,
 				D4B0AF1E1F925AF900B5B2B9 /* STUPlaceholderObjects-no-ARC.m in Sources */,
 				D42384C81F9379B9000B8A63 /* ArenaAllocator.cpp in Sources */,

@@ -31,6 +31,27 @@
                    didChange:(id<UITextInput> __unused)textInput API_AVAILABLE(ios(18.4)) {}
 @end
 
+@interface ContextMenuDelegateRecorder : NSObject <STULabelDelegate>
+@property (nonatomic) UIContextMenuConfiguration* configuration;
+@property (nonatomic, readonly) NSUInteger callCount;
+@property (nonatomic, readonly, weak) STULabel* lastLabel;
+@property (nonatomic, readonly) STUTextLink* lastLink;
+@property (nonatomic, readonly) CGPoint lastLocation;
+@end
+
+@implementation ContextMenuDelegateRecorder
+- (UIContextMenuConfiguration*)label:(STULabel*)label
+             contextMenuConfigurationForLink:(STUTextLink*)link
+                                  atLocation:(CGPoint)location
+{
+  ++_callCount;
+  _lastLabel = label;
+  _lastLink = link;
+  _lastLocation = location;
+  return _configuration;
+}
+@end
+
 @interface UITextInputTests : XCTestCase
 @end
 
@@ -305,6 +326,53 @@
                                             atPoint:[self pointInLabel:label range:NSMakeRange(0, 4)]]);
   XCTAssertTrue([delegate interactionShouldBegin:interaction
                                          atPoint:[self pointInLabel:label range:NSMakeRange(5, 5)]]);
+}
+
+- (void)testLinkContextMenuInteractionInstallationAndDelegateForwarding {
+  NSMutableAttributedString* const text = [[NSMutableAttributedString alloc]
+      initWithString:@"link plain text"
+          attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:18]}];
+  [text addAttribute:NSLinkAttributeName value:[NSURL URLWithString:@"https://example.com"]
+               range:NSMakeRange(0, 4)];
+  STULabel* const label = [self labelWithAttributedText:text size:CGSizeMake(250, 50)
+                                                  insets:UIEdgeInsetsZero];
+  UIContextMenuInteraction* const interaction = label.contextMenuInteraction;
+  XCTAssertTrue([label.interactions containsObject:interaction]);
+  XCTAssertEqual(interaction.view, label);
+  XCTAssertEqual(interaction.delegate, label);
+
+  const CGPoint linkPoint = [self pointInLabel:label range:NSMakeRange(0, 4)];
+  XCTAssertNil([label contextMenuInteraction:interaction
+              configurationForMenuAtLocation:linkPoint]);
+
+  ContextMenuDelegateRecorder* const recorder = [[ContextMenuDelegateRecorder alloc] init];
+  UIContextMenuConfiguration* const configuration =
+    [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                            previewProvider:nil
+                                             actionProvider:nil];
+  recorder.configuration = configuration;
+  label.delegate = recorder;
+
+  XCTAssertEqual([label contextMenuInteraction:interaction
+                   configurationForMenuAtLocation:linkPoint], configuration);
+  XCTAssertEqual(recorder.callCount, 1u);
+  XCTAssertEqual(recorder.lastLabel, label);
+  XCTAssertEqual(recorder.lastLink, label.links[0]);
+  XCTAssertTrue(CGPointEqualToPoint(recorder.lastLocation, linkPoint));
+
+  XCTAssertNil([label contextMenuInteraction:interaction
+              configurationForMenuAtLocation:CGPointMake(-100, -100)]);
+  XCTAssertEqual(recorder.callCount, 1u);
+
+  recorder.configuration = nil;
+  XCTAssertNil([label contextMenuInteraction:interaction
+              configurationForMenuAtLocation:linkPoint]);
+  XCTAssertEqual(recorder.callCount, 2u);
+
+  label.delegate = nil;
+  XCTAssertNil([label contextMenuInteraction:interaction
+              configurationForMenuAtLocation:linkPoint]);
+  XCTAssertEqual(recorder.callCount, 2u);
 }
 
 @end

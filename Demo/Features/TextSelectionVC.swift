@@ -2,9 +2,10 @@
 
 import UIKit
 import STULabelSwift
+import SafariServices
 
 /// Demonstrates STULabel's non-editable UITextInteraction support.
-final class TextSelectionVC: UIViewController {
+final class TextSelectionVC: UIViewController, STULabelDelegate {
   private let interactionStatusLabel = UILabel()
   private let selectableTextLabel = STULabel()
   private let rightToLeftTextLabel = STULabel()
@@ -32,6 +33,7 @@ final class TextSelectionVC: UIViewController {
     let rightToLeftText = NSMutableAttributedString("‫اضغط مطولاً على هذا النصّ لتجربة المقابض.", [.font: UIFont.preferredFont(forTextStyle: .body), .foregroundColor: UIColor.label])
     rightToLeftText.addAttribute(.link, value: URL(string: "https://www.google.com")!, range: NSRange(location: 0, length: 5))
     configureTextLabel(rightToLeftTextLabel)
+    rightToLeftTextLabel.delegate = self
     rightToLeftTextLabel.semanticContentAttribute = .forceRightToLeft
     rightToLeftTextLabel.attributedText = rightToLeftText
 
@@ -61,7 +63,7 @@ final class TextSelectionVC: UIViewController {
       rightToLeftTextLabel,
       sectionCaption("Truncated text"),
       truncatedTextLabel,
-      sectionCaption("Link text keeps its existing long-press behavior, so selection begins on non-link text.")
+      sectionCaption("Link text presents a context menu, so selection begins on non-link text.")
     ])
 
     scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -101,6 +103,23 @@ final class TextSelectionVC: UIViewController {
       interactionStatusLabel.text = "Each selectable STULabel installed UITextInteractionModeNonEditable. Long-press any sample below to select and copy its visible text."
     } else {
       interactionStatusLabel.text = "UITextInteractionModeNonEditable was not installed."
+    }
+  }
+
+  func label(_ label: STULabel,
+             contextMenuConfigurationForLink link: STUTextLink,
+             at location: CGPoint) -> UIContextMenuConfiguration? {
+    guard let url = link.linkAttribute as? URL else { return nil }
+    return UIContextMenuConfiguration {
+      SFSafariViewController(url: url)
+    } actionProvider: { _ in
+      let open = UIAction(title: "Open", image: UIImage(systemName: "safari")) { _ in
+        UIApplication.shared.open(url)
+      }
+      let copy = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
+        UIPasteboard.general.url = url
+      }
+      return UIMenu(children: [open, copy])
     }
   }
 
