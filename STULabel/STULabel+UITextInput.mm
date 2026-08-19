@@ -111,6 +111,7 @@
 - (BOOL)isVertical {
   return NO;
 }
+- (CGAffineTransform)transform { return CGAffineTransformIdentity; }
 - (id)copyWithZone:(NSZone* __unused)zone { return self; }
 - (BOOL)isEqual:(id)object {
   return [object isKindOfClass:STULabelTextSelectionRect.class]
@@ -131,8 +132,7 @@ static STU_INLINE NSString* visibleString(STULabel* self) {
   return self.textFrame.truncatedAttributedString.string;
 }
 
-static STU_INLINE STULabelTextInputPosition*
-  textPosition(NSUInteger index)
+static STU_INLINE STULabelTextInputPosition* textPosition(NSUInteger index)
 {
   return [[STULabelTextInputPosition alloc] initWithIndex:index];
 }
@@ -142,10 +142,6 @@ static STULabelTextInputPosition* validTextPosition(UITextPosition* position, NS
   if (![position isKindOfClass:STULabelTextInputPosition.class]) return nil;
   STULabelTextInputPosition* const p = (STULabelTextInputPosition*)position;
   if (p.index > string.length) return nil;
-  if (p.index != 0 && p.index != string.length) {
-    const NSRange r = [string rangeOfComposedCharacterSequenceAtIndex:p.index];
-    if (r.location != p.index) return nil;
-  }
   return p;
 }
 
@@ -231,6 +227,31 @@ static STUTextRectArray* rectsForRange(STULabel* self, NSRange range) {
                      displayScale:self.layer.contentsScale];
 }
 
+static NSUInteger selectionRectIndexContainingEndpoint(STULabel* self,
+                                                        STUTextRectArray* selectionRects,
+                                                        NSString* string, NSRange selectionRange,
+                                                        bool start)
+{
+  if (selectionRange.length == 0) return NSNotFound;
+  const NSUInteger characterIndex = start ? selectionRange.location
+                                          : NSMaxRange(selectionRange) - 1;
+  const NSRange characterRange = NSIntersectionRange(
+    selectionRange, [string rangeOfComposedCharacterSequenceAtIndex:characterIndex]);
+  STUTextRectArray* const characterRects = rectsForRange(self, characterRange);
+  for (size_t j = 0; j < characterRects.rectCount; ++j) {
+    const size_t lineIndex = [characterRects textLineIndexForRectAtIndex:j];
+    const CGRect characterRect = [characterRects rectAtIndex:j];
+    const CGPoint midpoint = CGPointMake(CGRectGetMidX(characterRect),
+                                         CGRectGetMidY(characterRect));
+    for (size_t i = 0; i < selectionRects.rectCount; ++i) {
+      if ([selectionRects textLineIndexForRectAtIndex:i] != lineIndex) continue;
+      const CGRect rect = CGRectInset([selectionRects rectAtIndex:i], -1, -1);
+      if (CGRectContainsPoint(rect, midpoint)) return i;
+    }
+  }
+  return NSNotFound;
+}
+
 static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabel* self, CGPoint point) {
   return [self.textFrame rangeOfGraphemeClusterClosestToPoint:point
                                       ignoringTrailingWhitespace:true
@@ -266,6 +287,27 @@ static NSWritingDirection writingDirectionAtPosition(STULabel* self, NSUInteger 
     return writingDirectionAtPoint(self, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)));
   }
   return NSWritingDirectionLeftToRight;
+}
+
+static NSWritingDirection baseWritingDirectionAtPosition(STULabel* self, NSString* string,
+                                                          NSUInteger index,
+                                                          UITextStorageDirection direction)
+{
+  STUTextFrame* const textFrame = self.textFrame;
+  if (direction == UITextStorageDirectionBackward && index > 0) {
+    --index;
+  } else if (index == string.length && index > 0) {
+    --index;
+  }
+  const STUTextFrameRange range =
+    [textFrame rangeForRangeInTruncatedString:NSMakeRange(index, 0)];
+  const STUTextFrameData* const data = __STUTextFrameGetData(textFrame);
+  if (data->lineCount == 0 || data->paragraphCount == 0) return NSWritingDirectionNatural;
+  const int32_t lineIndex = MIN((int32_t)range.start.lineIndex, data->lineCount - 1);
+  const STUTextFrameLine* const line = STUTextFrameDataGetLines(data) + lineIndex;
+  const STUTextFrameParagraph* const paragraph =
+    STUTextFrameDataGetParagraphs(data) + line->paragraphIndex;
+  return (NSWritingDirection)paragraph->baseWritingDirection;
 }
 
 static NSUInteger positionOnAdjacentLine(STULabel* self, NSUInteger index, CGRect caret,
@@ -357,9 +399,10 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
   if (label) updateVisibleString(label, self);
 }
 
-- (BOOL)interactionShouldBegin:(UITextInteraction*)interaction atPoint:(CGPoint)point {
+- (BOOL)interactionShouldBegin:(UITextInteraction* __unused)interaction atPoint:(CGPoint)point {
   STULabel* const label = _label;
-  return label.isSelectable;
+  return label.isSelectable
+      && ![label.links linkClosestToPoint:point maxDistance:label.linkTouchAreaExtensionRadius];
 }
 
 @end
@@ -432,9 +475,12 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
                                      toPosition:(UITextPosition*)toPosition
 {
   NSString* const string = textInputString(self);
-  STULabelTextInputPosition* const start = validTextPosition(fromPosition, string);
-  STULabelTextInputPosition* const end = validTextPosition(toPosition, string);
-  if (!start || !end || start.index > end.index) return nil;
+  STULabelTextInputPosition* const from = validTextPosition(fromPosition, string);
+  STULabelTextInputPosition* const to = validTextPosition(toPosition, string);
+  if (!from || !to) return nil;
+  // UIKit supplies the endpoints in either order while moving selection handles.
+  STULabelTextInputPosition* const start = from.index <= to.index ? from : to;
+  STULabelTextInputPosition* const end = from.index <= to.index ? to : from;
   return [[STULabelTextInputRange alloc] initWithStart:start end:end];
 }
 
@@ -453,11 +499,7 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
     if (unsignedOffset > p.index) return nil;
     index = p.index - unsignedOffset;
   }
-  if (index != 0 && index != string.length
-      && [string rangeOfComposedCharacterSequenceAtIndex:index].location != index)
-  {
-    return nil;
-  }
+  // UITextInput offsets count UTF-16 code units, not composed character sequences.
   return textPosition(index);
 }
 
@@ -538,11 +580,12 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
 }
 
 - (NSWritingDirection)baseWritingDirectionForPosition:(UITextPosition*)position
-                                           inDirection:(UITextStorageDirection __unused)direction
+                                           inDirection:(UITextStorageDirection)direction
 {
   NSString* const string = textInputString(self);
   STULabelTextInputPosition* const p = validTextPosition(position, string);
-  return p ? writingDirectionAtPosition(self, p.index) : NSWritingDirectionNatural;
+  return p ? baseWritingDirectionAtPosition(self, string, p.index, direction)
+           : NSWritingDirectionNatural;
 }
 
 - (void)setBaseWritingDirection:(NSWritingDirection __unused)writingDirection
@@ -567,8 +610,13 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
   NSString* const string = textInputString(self);
   STULabelTextInputRange* const r = validTextRange(range, string);
   if (!r || r.empty) return @[];
-  STUTextRectArray* const rects = rectsForRange(
-    self, NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index));
+  const NSRange selectionRange = NSMakeRange(r.startPosition.index,
+                                              r.endPosition.index - r.startPosition.index);
+  STUTextRectArray* const rects = rectsForRange(self, selectionRange);
+  const NSUInteger startRectIndex = selectionRectIndexContainingEndpoint(
+    self, rects, string, selectionRange, true);
+  const NSUInteger endRectIndex = selectionRectIndexContainingEndpoint(
+    self, rects, string, selectionRange, false);
   NSMutableArray<UITextSelectionRect*>* const result = [NSMutableArray arrayWithCapacity:rects.rectCount];
   for (size_t i = 0; i < rects.rectCount; ++i) {
     const CGRect rect = [rects rectAtIndex:i];
@@ -576,8 +624,8 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
       initWithRect:rect
       writingDirection:writingDirectionAtPoint(self, CGPointMake(CGRectGetMidX(rect),
                                                                   CGRectGetMidY(rect)))
-      containsStart:i == 0
-      containsEnd:i + 1 == rects.rectCount];
+      containsStart:i == (startRectIndex == NSNotFound ? 0 : startRectIndex)
+      containsEnd:i == (endRectIndex == NSNotFound ? rects.rectCount - 1 : endRectIndex)];
     [result addObject:selectionRect];
   }
   return result;
@@ -633,11 +681,6 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
   const NSUInteger unsignedOffset = (NSUInteger)offset;
   if (unsignedOffset > r.endPosition.index - r.startPosition.index) return nil;
   const NSUInteger index = r.startPosition.index + unsignedOffset;
-  if (index != r.startPosition.index && index != r.endPosition.index
-      && [string rangeOfComposedCharacterSequenceAtIndex:index].location != index)
-  {
-    return nil;
-  }
   return textPosition(index);
 }
 
@@ -670,10 +713,17 @@ static NSRange characterRangeInDirection(STULabel* self, NSString* string, NSUIn
                                             toPosition:self.endOfDocument];
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id __unused)sender {
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   if (action == @selector(copy:)) return self.selectedTextRange && !self.selectedTextRange.empty;
   if (action == @selector(selectAll:)) return self.hasText;
-  return NO;
+  if (action == @selector(cut:) || action == @selector(paste:)
+      || action == @selector(delete:))
+  {
+    return NO;
+  }
+  // UIKit provides services such as Look Up, Translate, Search Web and Share through
+  // responder actions. Let the responder chain validate those system-owned actions.
+  return [super canPerformAction:action withSender:sender];
 }
 
 - (BOOL)shouldChangeTextInRange:(UITextRange* __unused)range
