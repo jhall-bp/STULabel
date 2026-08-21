@@ -77,7 +77,7 @@ class LabelPerformanceTestCase {
     mutableString2.mutableString.replaceCharacters(in: NSRange(0..<1), with: "2")
     // Prevents trivial caching of the attribute dictionary.
     mutableString2.addAttribute(
-      .foregroundColor, value: UIColor.black,
+      .foregroundColor, value: UIColor.label,
       range: NSRange(0..<mutableString2.length))
     self.attributedString2 = NSAttributedString(attributedString: mutableString2)
 
@@ -967,7 +967,7 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
   override func loadView() {
     let scrollView = UIScrollView()
     self.view = scrollView
-    self.view.backgroundColor = UIColor.white
+    self.view.backgroundColor = UIColor.systemBackground
 
     let contentView = UIView()
     contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -1199,12 +1199,11 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
   @objc
   private func showSettings() {
     let navigationVC = UINavigationController(rootViewController: SettingsViewController(self))
-    navigationVC.modalPresentationStyle = .popover
-    navigationVC.popoverPresentationController?.barButtonItem =
-      self.navigationItem.rightBarButtonItem
-    navigationVC.popoverPresentationController?.delegate = self
-    navigationVC.setNavigationBarHidden(true, animated: false)
-    self.present(navigationVC, animated: false, completion: nil)
+    navigationVC.modalPresentationStyle = .pageSheet
+    navigationVC.preferredTransition = .zoom { [weak self] _ in
+      self?.navigationItem.rightBarButtonItem
+    }
+    self.present(navigationVC, animated: true, completion: nil)
   }
 
   func adaptivePresentationStyle(
@@ -1233,6 +1232,18 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
           ])
           return SwitchCell(text, d.enabled)
         }
+    }
+
+    override func viewDidLoad() {
+      super.viewDidLoad()
+
+      navigationItem.title = "Settings"
+      navigationItem.leftBarButtonItem = UIBarButtonItem(
+          systemItem: .close,
+          primaryAction: UIAction { [weak self] _ in
+              self?.dismiss(animated: true)
+          }
+      )
     }
   }
 }

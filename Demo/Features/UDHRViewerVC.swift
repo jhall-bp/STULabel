@@ -278,13 +278,13 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private let backgroundOutset = setting("background.outset", 0 as CGFloat)
   private let backgroundCornerRadius = setting("background.cornerRadus", 0 as CGFloat)
   private let backgroundBorderWidth = setting("background.borderWidth", 0 as CGFloat)
-  private let backgroundBorderColor = setting("background.borderColor", UIColor.black)
+  private let backgroundBorderColor = setting("background.borderColor", UIColor.systemFill)
 
   private let underlineRanges = setting("underline.ranges", nil as RandomTextRanges?)
   private var underlineStyle: NSUnderlineStyle
   private let underlineStyleStyle = setting("underline.style.style", NSUnderlineStyle.single)
   private let underlineStylePattern = setting("underline.style.pattern", NSUnderlineStyle())
-  private let underlineColor = setting("underline.color", UIColor.black)
+  private let underlineColor = setting("underline.color", UIColor.label)
 
   private let strikethroughRanges = setting("strikethrough.ranges", nil as RandomTextRanges?)
   private var strikethroughStyle: NSUnderlineStyle
@@ -292,11 +292,11 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     "strikethrough.style.style",
     NSUnderlineStyle.single)
   private let strikethroughStylePattern = setting("strikethrough.style.pattern", NSUnderlineStyle())
-  private let strikethroughColor = setting("strikethrough.color", UIColor.black)
+  private let strikethroughColor = setting("strikethrough.color", UIColor.label)
 
   private let shadowRanges = setting("shadow.ranges", nil as RandomTextRanges?)
   private var shadow: NSShadow
-  private let shadowColor = setting("shadow.color", UIColor.black)
+  private let shadowColor = setting("shadow.color", UIColor.label)
   private let shadowColorAlpha = setting("shadow.colorAlpha", 1 / 3.0 as CGFloat)
   private let shadowOffsetX = setting("shadow.offsetX", 2 as CGFloat)
   private let shadowOffsetY = setting("shadow.offsetY", 2 as CGFloat)
@@ -304,7 +304,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
   private let strokeRanges = setting("stroke.ranges", RandomTextRanges.everything)
   private let strokeWidth = setting("stroke.width", 0 as CGFloat)
-  private let strokeColor = setting("stroke.color", UIColor.black)
+  private let strokeColor = setting("stroke.color", UIColor.label)
   private let strokeFillColor = setting("stroke.fillColor", nil as UIColor?)
 
   private let maxLineCount = setting("maxLineCount", 0)
@@ -540,11 +540,11 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
     stuLabelColumnHeader.text = "STULabel"
     stuLabelColumnHeader.font = UIFont.preferredFont(forTextStyle: .caption2)
-    stuLabelColumnHeader.textColor = UIColor.darkGray
+    stuLabelColumnHeader.textColor = UIColor.secondaryLabel
 
     textViewColumnHeader.text = "UITextView"
     textViewColumnHeader.font = UIFont.preferredFont(forTextStyle: .caption2)
-    textViewColumnHeader.textColor = UIColor.darkGray
+    textViewColumnHeader.textColor = UIColor.secondaryLabel
 
     copyrightFooter.text = "© 1996 – 2009 The Office of the High Commissioner for Human Rights"
     copyrightFooter.font = UIFont.preferredFont(forTextStyle: .caption2)
@@ -556,7 +556,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   }
 
   override func viewDidLoad() {
-    view.backgroundColor = .white
+    view.backgroundColor = .systemBackground
     multiLabelScrollView.contentInsetAdjustmentBehavior = .never
     largeSTULabelScrollView.contentInsetAdjustmentBehavior = .never
     largeTextView.contentInsetAdjustmentBehavior = .never
@@ -603,7 +603,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
         action: #selector(largeLabelWasTapped(_:))))
     largeSTULabel.highlightStyle = STUTextHighlightStyle { b in
       b.background = STUBackgroundAttribute { b in
-        b.color = UIColor.orange
+        b.color = UIColor.systemOrange
           .withAlphaComponent(0.4)
       }
     }
@@ -890,7 +890,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
       attributes.merging(
         [
           .font: font,
-          .foregroundColor: UIColor.darkGray,
+          .foregroundColor: UIColor.secondaryLabel,
           .paragraphStyle: paraStyle,
         ],
         uniquingKeysWith: { $1 })
@@ -1263,12 +1263,11 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private func showSettings() {
     isSettingsPopoverVisible = true
     let navigationVC = UINavigationController(rootViewController: SettingsViewController(self))
-    navigationVC.modalPresentationStyle = .popover
-    navigationVC.popoverPresentationController?.barButtonItem =
+    navigationVC.modalPresentationStyle = .pageSheet
+    navigationVC.preferredTransition = .zoom { [unowned self] _ in
       self.navigationItem.rightBarButtonItem
-    navigationVC.popoverPresentationController?.delegate = self
-    navigationVC.setNavigationBarHidden(true, animated: false)
-    self.present(navigationVC, animated: false, completion: nil)
+  }
+    self.present(navigationVC, animated: true, completion: nil)
   }
 
   func adaptivePresentationStyle(
@@ -1542,7 +1541,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
         let cs =
           blackName == nil
           ? colors
-          : [(name: blackName!, value: UIColor.black)] + colors[1...]
+          : [(name: blackName!, value: UIColor.label)] + colors[1...]
         let cell = SelectCell(title, cs, property)
         cell.valueLabelStyler = { (index: Int, color: UIColor, label: UILabel) in
           label.textColor = color
@@ -1570,7 +1569,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
         }
         cell.navigationItemTitle = section + " " + title.lowercased()
         cell.onIndexChange = { [unowned cell] (_, newColor) in
-          cell.detailTextColor = newColor ?? UIColor.black
+          cell.detailTextColor = newColor ?? UIColor.label
         }
         return cell
       }
@@ -2035,6 +2034,14 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
+      navigationItem.title = "Settings"
+      navigationItem.leftBarButtonItem = UIBarButtonItem(
+          systemItem: .close,
+          primaryAction: UIAction { [weak self] _ in
+              self?.dismiss(animated: true)
+          }
+      )
+
       self.tableView.alwaysBounceVertical = false
     }
 
