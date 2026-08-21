@@ -20,7 +20,7 @@ namespace stu_label {
 STU_NO_INLINE
 CTFont *defaultCoreTextFont()
 {
-  STU_STATIC_CONST_ONCE(UIFont *, value, [UIFont fontWithName:@"Helvetica" size:12] ?: [UIFont systemFontOfSize:12]);
+  STU_STATIC_CONST_ONCE(UIFont *, value, [UIFont systemFontOfSize:12]);
   return (__bridge CTFont *)value;
 }
 
