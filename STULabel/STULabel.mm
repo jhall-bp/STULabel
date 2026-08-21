@@ -248,7 +248,7 @@ public:
   NSLayoutConstraint* _lastBaselineConstraint;
   CGFloat _firstBaseline;
   CGFloat _lastBaseline;
-  CGFloat _screenScale;
+  CGFloat _displayScale;
   FirstAndLastLineHeightInfo _lineHeightInfo;
   stu::Vector<SpacingConstraintRef, 3> _lineHeightConstraints;
 }
@@ -313,7 +313,7 @@ NSLayoutYAxisAnchor* lastBaselineAnchor(STULabelBaselinesLayoutGuide* __unsafe_u
 }
 
 static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide* __unsafe_unretained self,
-                                       CGFloat screenScale,
+                                       CGFloat displayScale,
                                        const LabelTextFrameInfo& info)
 {
   if (self->_firstBaselineConstraint && self->_firstBaseline != info.firstBaseline) {
@@ -323,9 +323,9 @@ static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide* __unsafe_un
     self->_lastBaselineConstraint.constant = info.lastBaseline;
   }
   if (!self->_lineHeightConstraints.isEmpty()
-      && (self->_lineHeightInfo != info || self->_screenScale != screenScale))
+      && (self->_lineHeightInfo != info || self->_displayScale != displayScale))
   {
-    const DisplayScale scale = DisplayScale::createOrIfInvalidUseOne(self->_screenScale);
+    const DisplayScale scale = DisplayScale::createOrIfInvalidUseOne(displayScale);
     const FirstAndLastLineHeightInfo lineHeightInfo{info};
     for (SpacingConstraintRef& cr : self->_lineHeightConstraints) {
       SpacingConstraint& c = cr.constraint();
@@ -335,7 +335,7 @@ static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide* __unsafe_un
   }
   self->_firstBaseline = info.firstBaseline;
   self->_lastBaseline = info.lastBaseline;
-  self->_screenScale = screenScale;
+  self->_displayScale = displayScale;
   self->_lineHeightInfo = info;
 }
 
@@ -398,7 +398,7 @@ NSLayoutConstraint* createSpacingConstraint(SpacingConstraint::Type type,
   }
 
   if (const CGFloat spacing = c.spacing(); spacing != 0) {
-  const auto scale = DisplayScale::createOrIfInvalidUseOne(guide->_screenScale);
+    const auto scale = DisplayScale::createOrIfInvalidUseOne(guide->_displayScale);
     constraint.constant = c.layoutConstantForSpacing(spacing, scale);
   }
 
@@ -409,9 +409,9 @@ static STULabelSpacingConstraint* __nullable spacingConstraint(NSLayoutConstrain
   return objc_getAssociatedObject(constraint, spacingConstraintAssociatedObjectKey);
 }
 
-static CGFloat screenScale(const SpacingConstraint& constraint) {
-  return constraint.layoutGuide2 ? constraint.layoutGuide2->_screenScale
-       : constraint.layoutGuide1 ? constraint.layoutGuide1->_screenScale
+static CGFloat displayScale(const SpacingConstraint& constraint) {
+  return constraint.layoutGuide2 ? constraint.layoutGuide2->_displayScale
+       : constraint.layoutGuide1 ? constraint.layoutGuide1->_displayScale
        : 0;
 }
 
@@ -472,7 +472,7 @@ static CGFloat screenScale(const SpacingConstraint& constraint) {
   if (!object) return;
   SpacingConstraint& c = object->impl;
   c.multiplier = multiplier;
-  const auto scale = DisplayScale::createOrIfInvalidUseOne(screenScale(c));
+  const auto scale = DisplayScale::createOrIfInvalidUseOne(displayScale(c));
   self.constant = c.layoutConstantForSpacing(c.spacing(), scale);
 }
 
@@ -489,7 +489,7 @@ static CGFloat screenScale(const SpacingConstraint& constraint) {
   if (!object) return;
   SpacingConstraint& c = object->impl;
   c.offset = c.type == SpacingConstraint::Type::defaultSpacingAbove ? -offset : offset;
-  const auto scale = DisplayScale::createOrIfInvalidUseOne(screenScale(c));
+  const auto scale = DisplayScale::createOrIfInvalidUseOne(displayScale(c));
   self.constant = c.layoutConstantForSpacing(c.spacing(), scale);
 }
 
@@ -508,6 +508,7 @@ static void updateLabelLinkObserversAfterLayoutChange(STULabel* label);
 static void updateLabelLinkObserversInLabelDealloc(STULabel* label);
 static void initializeContextMenuInteraction(STULabel* label);
 static void clearCurrentLabelTouch(STULabel* label);
+static void updateLayoutGuides(STULabel* label);
 
 @implementation STULabel  {
   // The layer is owned by the view and stays constant, so we can safely cache a reference.
@@ -571,6 +572,7 @@ static void clearCurrentLabelTouch(STULabel* label);
   STUTextFrameAccessibilityElement* _textFrameAccessibilityElement;
   id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
   id<UITraitChangeRegistration> _backgroundColorTraitChangeRegistration;
+  id<UITraitChangeRegistration> _displayPropertiesTraitChangeRegistration;
   id<UITraitChangeRegistration> _userInterfaceDirectionTraitChangeRegistration;
 }
 
@@ -616,12 +618,18 @@ static void initCommon(STULabel* self) {
 
   self->_layer = static_cast<STULabelLayer*>([self layer]);
   STU_CHECK([self->_layer isKindOfClass:stuLabelLayerClass]);
+  UITraitCollection* const traits = self.traitCollection;
+  [self->_layer stu_setTraitDisplayScale:traits.displayScale displayGamut:traits.displayGamut];
+  self->_layer.contentsScale = traits.displayScale;
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = UIColor.linkColor;
 
   self->_backgroundColorTraitChangeRegistration =
     [self registerForTraitChanges:UITraitCollection.systemTraitsAffectingColorAppearance
                            withAction:@selector(colorAppearanceDidChange)];
+  self->_displayPropertiesTraitChangeRegistration =
+    [self registerForTraitChanges:@[UITraitDisplayScale.class, UITraitDisplayGamut.class]
+                       withAction:@selector(displayPropertiesDidChange)];
   self->_userInterfaceDirectionTraitChangeRegistration = [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(userInterfaceDirectionDidChange:)];
 }
 
@@ -716,7 +724,7 @@ static void updateLayoutGuides(STULabel* __unsafe_unretained self) {
   }
   if (self->_baselinesLayoutGuide) {
     updateBaselinesLayoutGuide(self->_baselinesLayoutGuide,
-                               STULabelLayerGetScreenScale(self->_layer),
+                               self.traitCollection.displayScale,
                                STULabelLayerGetCurrentTextFrameInfo(self->_layer));
   }
 }
@@ -1055,6 +1063,17 @@ static void updateDisplayedBackgroundColor(STULabel* __unsafe_unretained self) {
     [self->_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 }
 
+static void updateDisplayProperties(STULabel* __unsafe_unretained self) {
+  UITraitCollection* const traits = self.traitCollection;
+  [self->_layer stu_setTraitDisplayScale:traits.displayScale displayGamut:traits.displayGamut];
+  self->_layer.contentsScale = traits.displayScale;
+}
+
+- (void)displayPropertiesDidChange {
+  updateDisplayProperties(self);
+  updateLayoutGuides(self);
+}
+
 - (void)colorAppearanceDidChange {
   updateDisplayedBackgroundColor(self);
 }
@@ -1118,6 +1137,7 @@ static void tintColorMayHaveChanged(STULabel* __unsafe_unretained self) {
 - (void)didMoveToWindow {
   UIWindow* const window = self.window;
   tintColorMayHaveChanged(self);
+  updateDisplayProperties(self);
   [_layer stu_didMoveToWindow:window];
 }
 

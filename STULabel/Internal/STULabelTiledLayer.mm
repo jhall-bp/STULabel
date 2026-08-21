@@ -159,23 +159,23 @@ private:
   }
 
 public:
-  void layout(bool layoutEvenWithoutScreen = false) {
+  void layout(bool layoutEvenWithoutWindow = false) {
     checkNotDisplaying();
     needsLayout_ = false;
 
-    if (UIScreen* const screen = visibleBoundsObserver_.screen()) {
-      screenScale_ = screen.scale;
-    } else if (layoutEvenWithoutScreen) {
-      screenScale_ = displayScale_;
+    if (visibleBoundsObserver_.window()) {
+      baseDisplayScale_ = contentsScale_;
+    } else if (layoutEvenWithoutWindow) {
+      baseDisplayScale_ = displayScale_;
     } else {
       // Let's wait until the layer has a window and actually needs to be displayed before we update
       // the tiles.
-      screenScale_ = 0;
+      baseDisplayScale_ = 0;
       setNeedsDisplay();
       return;
     }
-    if (!(screenScale_ > 0)) {
-      screenScale_ = 1;
+    if (!(baseDisplayScale_ > 0)) {
+      baseDisplayScale_ = 1;
     }
 
     const auto oldSize = size_;
@@ -294,7 +294,7 @@ public:
 
   void display() {
     checkNotDisplaying();
-    if (!(screenScale_ > 0)) {
+    if (!(baseDisplayScale_ > 0)) {
       layout(true);
     }
     isDisplaying_ = true;
@@ -384,17 +384,17 @@ private:
 
   /// Returns true if size_, displayScale_ or visibleBounds_.size changes.
   bool updateSizeAndVisibleBounds() {
-    STU_ASSERT(screenScale_ > 0);
+    STU_ASSERT(baseDisplayScale_ > 0);
     bool displayScaleChanged = contentsScaleChanged_;
     /// We have to be careful not to consume too much memory if a transform with scale less than
-    /// displayScale/screenScale_ zooms out the layer and hence makes more tiles visible than
+    /// displayScale/baseDisplayScale_ zooms out the layer and hence makes more tiles visible than
     /// would normally fit on the screen.
     Rect<CGFloat> visibleBounds = visibleBoundsObserver_.calculateVisibleBounds();
     if (const CGFloat areaScale = visibleBoundsObserver_.areaScale();
         displayScaleChanged || areaScale_ != areaScale)
     {
       areaScale_ = areaScale;
-      const CGFloat threshold = sqrt(areaScale)*screenScale_;
+      const CGFloat threshold = sqrt(areaScale)*baseDisplayScale_;
       if (threshold >= contentsScale_*zoomScale_) {
         if (zoomScale_ < 1 && threshold > contentsScale_*zoomScale_) {
           do zoomScale_ *= 2;
@@ -457,25 +457,25 @@ private:
   }
 
   STU_NO_INLINE
-  void updateScreenSizeAndTileSize(UIScreen* __unsafe_unretained screen) {
-    Size<CGFloat> screenSize = screen ? screen.bounds.size : layerSize_;
-    CGFloat screenScale = screen ? screen.scale : displayScale_;
-    if (!(screenSize.width > 0) || !(screenSize.height > 0)) {
-      screenSize = CGSize{1920, 1080};
+  void updateWindowSizeAndTileSize(UIWindow* __unsafe_unretained window) {
+    Size<CGFloat> windowSize = window ? window.bounds.size : layerSize_;
+    CGFloat displayScale = contentsScale_;
+    if (!(windowSize.width > 0) || !(windowSize.height > 0)) {
+      windowSize = CGSize{1920, 1080};
     }
-    if (!(screenScale > 0)) {
-      screenScale = 1;
+    if (!(displayScale > 0)) {
+      displayScale = 1;
     }
-    screenSize *= screenScale;
-    screenSize.roundToNearbyInt();
-    screenSize_ = Size{truncatePositiveFloatTo<SInt>(screenSize.width),
-                       truncatePositiveFloatTo<SInt>(screenSize.height)};
+    windowSize *= displayScale;
+    windowSize.roundToNearbyInt();
+    windowSize_ = Size{truncatePositiveFloatTo<SInt>(windowSize.width),
+                       truncatePositiveFloatTo<SInt>(windowSize.height)};
 
-    CGFloat w = min(screenSize.width*1.25f, layerSize_.width*displayScale_);
-    const CGFloat a1 = w*screenSize.height;
-    const CGFloat a2 = min(screenSize.height*1.25f, layerSize_.width*displayScale_)
-                       *screenSize.width;
-    const bool isLarge = max(screenSize.width, screenSize.height) > 1900;
+    CGFloat w = min(windowSize.width*1.25f, layerSize_.width*displayScale_);
+    const CGFloat a1 = w*windowSize.height;
+    const CGFloat a2 = min(windowSize.height*1.25f, layerSize_.width*displayScale_)
+                       *windowSize.width;
+    const bool isLarge = max(windowSize.width, windowSize.height) > 1900;
     const CGFloat a = max(a1, a2)*(isLarge ? 0.25f : CGFloat{1}/3);
     w = nearbyint(w);
     tileSize_ = Size{truncatePositiveFloatTo<SInt>(w),
@@ -505,8 +505,8 @@ private:
     STU_ASSUME(h >= 0);
     const Point<SInt> center = {visibleBounds_.x.start + w/2, visibleBounds_.y.start + h/2};
     if (relativeToScreenSize) {
-      w = max(w, screenSize_.width);
-      h = max(h, screenSize_.height);
+      w = max(w, windowSize_.width);
+      h = max(h, windowSize_.height);
     }
     w = mul_positive_saturated(w, multiplier);
     h = mul_positive_saturated(h, multiplier);
@@ -771,7 +771,7 @@ private:
   STU_NO_INLINE
   void resizeTiles(Size<SInt> oldTiledLayerSize) {
     const Size oldTileSize = tileSize_;
-    updateScreenSizeAndTileSize(visibleBoundsObserver_.screen());
+    updateWindowSizeAndTileSize(visibleBoundsObserver_.window());
     const Size newTileSize = tileSize_;
     if (oldTileSize == newTileSize && oldTiledLayerSize == size_) return;
     STU_TRACE_IF(oldTileSize != newTileSize,
@@ -1125,7 +1125,7 @@ private:
   }
 
   void releaseMemory() {
-    if (!visibleBoundsObserver_.screen()) {
+    if (!visibleBoundsObserver_.window()) {
       removeAllTiles();
       setNeedsLayout();
     } else {
@@ -1226,7 +1226,7 @@ private:
   bool sectorPrerendered_[4];
 
   CGFloat contentsScale_{1};
-  CGFloat screenScale_; ///< Updated by layout().
+  CGFloat baseDisplayScale_; ///< Updated by layout().
   CGFloat areaScale_{1};
   CGFloat zoomScale_{1}; ///< Is <= 1. Prevents excessive memory use during zoom out operations.
   CGFloat displayScale_{1}; ///< contentsScale_*zoomScale_
@@ -1234,7 +1234,7 @@ private:
   CGSize layerSize_; ///< The tiled layer size in points.
 
   Size<SInt> size_; ///< The tiled layer size in pixels.
-  Size<SInt> screenSize_; ///< The screen size in pixels.
+  Size<SInt> windowSize_; ///< The window size in pixels.
   Size<SInt> tileSize_; ///< The maximum tile size in pixels.
   Rect<SInt> visibleBounds_; ///< The visible bounds in pixels. NOT clamped to Rect{{}, size_}.
   Point<SInt> lastVisibleBoundsCenterDelta_;

@@ -139,13 +139,13 @@ void LayerVisibleBoundsObserver::addMissingSuperlayerObservers() {
   } while ((layer = sublayer.superlayer));
 }
 
-UIScreen* LayerVisibleBoundsObserver::screen() {
+UIWindow* LayerVisibleBoundsObserver::window() {
   if (!rootSuperlayerIsScrollViewLayer_) {
     addMissingSuperlayerObservers();
   }
   for (SuperlayerRef& sl : superlayers_.reversed()) {
     if (!sl.isViewLayer()) continue;
-    return static_cast<UIView*>(sl.layer().unretained.delegate).window.screen;
+    return static_cast<UIView*>(sl.layer().unretained.delegate).window;
   }
   return nil;
 }

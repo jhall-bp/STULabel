@@ -55,7 +55,7 @@ public:
   /// calculateVisibleBounds is called.
   CGFloat areaScale() const { return areaScale_; }
 
-  UIScreen* screen();
+  UIWindow* window();
 
   void _private_superlayerIsBeingRemovedOrDestroyed(CALayer* superlayer);
   void _private_superlayerMasksToBoundsChanged(CALayer* superlayer, bool masksToBounds);

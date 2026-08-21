@@ -83,9 +83,7 @@ public:
 
   // Defined below after the Optional<DisplayScale> specialization.
   static Optional<DisplayScale> create(CGFloat scale);
-  [[deprecated("Use DisplayScale::createOrIfInvalidUseScreenScale(...) instead")]]
   static DisplayScale createOrIfInvalidUseOne(CGFloat scale);
-  static DisplayScale createOrIfInvalidUseScreenScale(CGFloat scale, UIScreen * _Nonnull screen);
 
   STU_CONSTEXPR
   static const DisplayScale& one();
@@ -178,22 +176,12 @@ Optional<DisplayScale> DisplayScale::create(CGFloat scale) {
   return DisplayScale::none;
 }
 
-[[deprecated("Use DisplayScale::createOrIfInvalidUseScreenScale(...) instead")]]
 STU_INLINE
 DisplayScale DisplayScale::createOrIfInvalidUseOne(CGFloat scale) {
   if (const Optional<DisplayScale> displayScale = create(scale); displayScale) {
     return *displayScale;
   }
   return one();
-}
-
-STU_INLINE
-DisplayScale DisplayScale::createOrIfInvalidUseScreenScale(CGFloat scale, UIScreen * _Nonnull screen) {
-  if (const Optional<DisplayScale> displayScale = create(scale); displayScale) {
-    return *displayScale;
-  }
-  DisplayScale result{screen.scale, unchecked};
-  return result;
 }
 
 namespace detail {

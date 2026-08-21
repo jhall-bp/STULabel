@@ -10,6 +10,9 @@
 
 - (void)stu_didMoveToWindow:(UIWindow*)window;
 
+- (void)stu_setTraitDisplayScale:(CGFloat)displayScale
+                    displayGamut:(UIDisplayGamut)displayGamut;
+
 @property (nonatomic, setter=stu_setAlwaysUsesContentSublayer:) bool stu_alwaysUsesContentSublayer;
 
 @property (readonly, nullable) CALayer* stu_contentSublayer;
@@ -25,8 +28,6 @@ namespace stu_label {
 // For some reason LabelLayer can't friend this function if the CGSize is returned by value.
 const CGSize& STULabelLayerGetSize(const STULabelLayer* __nonnull);
 
-CGFloat STULabelLayerGetScreenScale(const STULabelLayer* __nonnull);
-
 bool STULabelLayerIsAttributed(const STULabelLayer* __nonnull);
 
 const stu_label::LabelParameters& STULabelLayerGetParams(const STULabelLayer* __nonnull);
@@ -34,4 +35,3 @@ const stu_label::LabelParameters& STULabelLayerGetParams(const STULabelLayer* __
 NSInteger STULabelLayerGetMaximumNumberOfLines(const STULabelLayer* __nonnull);
 
 const stu_label::LabelTextFrameInfo& STULabelLayerGetCurrentTextFrameInfo(STULabelLayer* __nonnull);
-

@@ -3,8 +3,6 @@
 #import "STULabelLayer-Internal.hpp"
 #import "STULabelSwiftExtensions.h"
 
-#import "STUMainScreenProperties.h"
-
 #import "STULabelDrawingBlock-Internal.hpp"
 #import "STULabelLayoutInfo-Internal.hpp"
 #import "STULabelPrerenderer-Internal.hpp"
@@ -95,7 +93,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer> {
   bool displaysAsynchronously_;
   bool prefersSynchronousDrawingForNextDisplay_;
 
-  STUDisplayGamut screenDisplayGamut_ : 8;
+  UIDisplayGamut displayGamut_ : 8;
   InvalidatedStringAttributes invalidatedStringAttributes_;
   LabelRenderMode renderMode_ : LabelRenderModeBitSize;
   STUPredefinedCGImageFormat imageFormat_ : STUPredefinedCGImageFormatBitSize;
@@ -118,7 +116,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer> {
   CGSize size_;
   UIEdgeInsets contentInsets_;
   LabelParameters params_;
-  CGFloat screenScale_{0};
+  CGFloat traitDisplayScale_{0};
   DisplayScale sizeThatFitsDisplayScale_{DisplayScale::one()};
 
   /// May be an invalid pointer.
@@ -197,14 +195,13 @@ public:
     deregisterAsLabelLayerThatHasImage();
   }
 
-  /// MARK: - hasWindow and screen scale
+  /// MARK: - Window and display properties
 
   void didMoveToWindow(UIWindow* window) {
     hasWindowStatus_ = window ? LayerHasWindowStatus::hasWindow : LayerHasWindowStatus::noWindow;
     if (window && displaysAsynchronously_ && !hasContent_ && inUIViewAnimation()) {
       prefersSynchronousDrawingForNextDisplay_ = true;
     }
-    updateScreenProperties(window ? window : nil);
   }
 
 private:
@@ -215,22 +212,14 @@ private:
     return window(self) != nil;
   }
 
-  void updateScreenProperties(UIWindow* __unsafe_unretained window) {
-    if (UIScreen* const screen = window.windowScene.screen) {
-      screenScale_ = screen.scale;
-      screenDisplayGamut_ = static_cast<STUDisplayGamut>(screen.traitCollection.displayGamut);
-    } else {
-      screenScale_ = 0;
-      screenDisplayGamut_ = STUDisplayGamutUnspecified;
-    }
-  }
-  void updateScreenProperties() {
-    if (hasWindowStatus_ == LayerHasWindowStatus::noWindow) return;
-    updateScreenProperties(window(self));
-  }
-
 public:
-  CGFloat screenScale() const { return screenScale_; }
+  void setTraitDisplayProperties(CGFloat displayScale, UIDisplayGamut displayGamut) {
+    traitDisplayScale_ = clampDisplayScaleInput(displayScale);
+    if (displayGamut_ != displayGamut && hasContent_) {
+      [self setNeedsDisplay];
+    }
+    displayGamut_ = displayGamut;
+  }
 
   /// MARK: - STULabelLayerDelegate
 
@@ -696,7 +685,6 @@ public:
       return;
     }
     super_setContentsScale(scale);
-    updateScreenProperties();
     displayScaleOrVerticalAlignmentChanged(true);
   }
 
@@ -754,14 +742,9 @@ public:
         }
       }
     }
-    // We assume that the screen scale stays constants until the next call to `setContentScale`
-    // or `didMoveToWindow`.
-    if (screenScale_ == 0) {
-      updateScreenProperties();
-    }
     // We want to avoid having to recompute the layout information when the content scale is changed
     // after the label is zoomed in or out on in a ScrollView or similar view.
-    const CGFloat scale = screenScale_ >= 1 ? min(params_.displayScale(), screenScale_)
+    const CGFloat scale = traitDisplayScale_ >= 1 ? min(params_.displayScale(), traitDisplayScale_)
                         : params_.displayScale();
     if (sizeThatFitsDisplayScale_ != scale) {
       sizeThatFitsDisplayScale_ = params_.displayScale();
@@ -1173,7 +1156,7 @@ public:
       didDisplayText(delegate);
       return;
     }
-    const bool allowExtendedRGBBitmapFormat = screenDisplayGamut_ != STUDisplayGamutSRGB;
+    const bool allowExtendedRGBBitmapFormat = displayGamut_ != UIDisplayGamutSRGB;
     if (!async) {
       createTextFrameIfNecessary();
       const auto renderInfo = labelTextFrameRenderInfo(textFrame_, textFrameInfo_,
@@ -1924,12 +1907,14 @@ auto LabelPrerenderer::WaitingLabelSetNode::get(LabelLayer& layer) -> WaitingLab
   impl.didMoveToWindow(window);
 }
 
-const CGSize& STULabelLayerGetSize(const STULabelLayer* self) {
-  return self->impl.size_;
+- (void)stu_setTraitDisplayScale:(CGFloat)displayScale
+                    displayGamut:(UIDisplayGamut)displayGamut
+{
+  impl.setTraitDisplayProperties(displayScale, displayGamut);
 }
 
-CGFloat STULabelLayerGetScreenScale(const STULabelLayer* self) {
-  return self->impl.screenScale();
+const CGSize& STULabelLayerGetSize(const STULabelLayer* self) {
+  return self->impl.size_;
 }
 
 const LabelParameters& STULabelLayerGetParams(const STULabelLayer* __nonnull self) {
