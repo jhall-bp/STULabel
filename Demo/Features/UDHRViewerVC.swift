@@ -1055,7 +1055,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     let x = viewWidth / 2 - width
     var y: CGFloat = p
 
-    {
+    let _ = {
       let isRTL = translation.writingDirection == .rightToLeft
       let w = width - 2 * p
       let size1 = stuLabelColumnHeader.sizeThatFits(CGSize(width: w, height: 1000))
@@ -1079,7 +1079,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     }
     y += p
 
-    {
+    let _ = {
       let size = copyrightFooter.sizeThatFits(CGSize(width: safeWidth, height: 1000))
       let x = ceilToScale((viewWidth - size.width) / 2)
       copyrightFooter.frame = CGRect(x: x, y: y, width: size.width, height: size.height)
