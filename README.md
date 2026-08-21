@@ -1,5 +1,5 @@
 
-[![CircleCI](https://circleci.com/gh/stephan-tolksdorf/STULabel.svg?style=svg)](https://circleci.com/gh/stephan-tolksdorf/STULabel)
+[![CI](https://github.com/jhall-bp/STULabel/actions/workflows/ci.yml/badge.svg)](https://github.com/jhall-bp/STULabel/actions/workflows/ci.yml)
 [![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg?style=flat)](https://swift.org)
 ![Platform](https://img.shields.io/badge/platform-iOS%2026%2B-blue.svg?style=flat)
 [![License](https://img.shields.io/badge/license-2--clause%20BSD-blue.svg?style=flat)](https://github.com/stephan-tolksdorf/STULabel/blob/master/LICENSE.txt)

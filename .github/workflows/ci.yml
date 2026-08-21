@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# This workflow only reads the repository and uploads test logs.
+permissions:
+  contents: read
+
+# A newer commit to the same branch or pull request makes an older CI run obsolete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: macos-26
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Validate Swift package graph
+        run: make package-graph
+
+      - name: Build package-backed Demo
+        run: make build
+
+      - name: Run simulator regression suite
+        run: make test
+
+      - name: Upload Xcode test logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcode-test-logs
+          path: build/derived_data/Logs/Test
+          if-no-files-found: warn
+          retention-days: 7
