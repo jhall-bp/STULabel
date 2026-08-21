@@ -27,72 +27,72 @@ typedef NS_ENUM(uint8_t, STUContentSizeCategory) {
 };
 const int STUContentSizeCategoryCount = STUContentSizeCategoryAccessibilityExtraExtraExtraLarge + 1;
 
-static
-STUContentSizeCategory stuContentSizeCategory(UIContentSizeCategory __unsafe_unretained cat) {
-  if (!cat) return STUContentSizeCategoryUnspecified;
+static STUContentSizeCategory stuContentSizeCategory(UIContentSizeCategory __unsafe_unretained cat)
+{
+  if (!cat)
+    return STUContentSizeCategoryUnspecified;
   const CFIndex length = CFStringGetLength((__bridge CFStringRef)cat);
-  if (length == 0) return STUContentSizeCategoryUnspecified;
+  if (length == 0)
+    return STUContentSizeCategoryUnspecified;
   bool unexpectedLength = false;
   switch (length) {
-  #define oneCategoryCase(name) \
-    if (cat == UIContentSizeCategory ## name \
-        || [cat isEqualToString:UIContentSizeCategory ## name]) \
-    { \
-      return STUContentSizeCategory ## name; \
-    } \
-    if (!unexpectedLength) goto UnexpectedLength;
+#define oneCategoryCase(name)                                                                                          \
+  if (cat == UIContentSizeCategory##name || [cat isEqualToString:UIContentSizeCategory##name]) {                       \
+    return STUContentSizeCategory##name;                                                                               \
+  }                                                                                                                    \
+  if (!unexpectedLength)                                                                                               \
+    goto UnexpectedLength;
 
-  #define twoCategoriesCase(name1, name2) \
-    if (cat == UIContentSizeCategory ## name1) return STUContentSizeCategory ## name1; \
-    if (cat == UIContentSizeCategory ## name2) return STUContentSizeCategory ## name2;  \
-    if ([cat isEqualToString:UIContentSizeCategory ## name1]) return STUContentSizeCategory ## name1; \
-    if ([cat isEqualToString:UIContentSizeCategory ## name2]) return STUContentSizeCategory ## name2; \
-    if (!unexpectedLength) goto UnexpectedLength;
+#define twoCategoriesCase(name1, name2)                                                                                \
+  if (cat == UIContentSizeCategory##name1)                                                                             \
+    return STUContentSizeCategory##name1;                                                                              \
+  if (cat == UIContentSizeCategory##name2)                                                                             \
+    return STUContentSizeCategory##name2;                                                                              \
+  if ([cat isEqualToString:UIContentSizeCategory##name1])                                                              \
+    return STUContentSizeCategory##name1;                                                                              \
+  if ([cat isEqualToString:UIContentSizeCategory##name2])                                                              \
+    return STUContentSizeCategory##name2;                                                                              \
+  if (!unexpectedLength)                                                                                               \
+    goto UnexpectedLength;
 
-  #define threeCategoriesCase(name1, name2, name3) \
-    if (cat == UIContentSizeCategory ## name1) return STUContentSizeCategory ## name1; \
-    if (cat == UIContentSizeCategory ## name2) return STUContentSizeCategory ## name2;  \
-    if (cat == UIContentSizeCategory ## name3) return STUContentSizeCategory ## name2;  \
-    if ([cat isEqualToString:UIContentSizeCategory ## name1]) return STUContentSizeCategory ## name1; \
-    if ([cat isEqualToString:UIContentSizeCategory ## name2]) return STUContentSizeCategory ## name2; \
-    if ([cat isEqualToString:UIContentSizeCategory ## name3]) return STUContentSizeCategory ## name3; \
-    if (!unexpectedLength) goto UnexpectedLength;
+#define threeCategoriesCase(name1, name2, name3)                                                                       \
+  if (cat == UIContentSizeCategory##name1)                                                                             \
+    return STUContentSizeCategory##name1;                                                                              \
+  if (cat == UIContentSizeCategory##name2)                                                                             \
+    return STUContentSizeCategory##name2;                                                                              \
+  if (cat == UIContentSizeCategory##name3)                                                                             \
+    return STUContentSizeCategory##name2;                                                                              \
+  if ([cat isEqualToString:UIContentSizeCategory##name1])                                                              \
+    return STUContentSizeCategory##name1;                                                                              \
+  if ([cat isEqualToString:UIContentSizeCategory##name2])                                                              \
+    return STUContentSizeCategory##name2;                                                                              \
+  if ([cat isEqualToString:UIContentSizeCategory##name3])                                                              \
+    return STUContentSizeCategory##name3;                                                                              \
+  if (!unexpectedLength)                                                                                               \
+    goto UnexpectedLength;
 
   default:
   UnexpectedLength:
     unexpectedLength = true;
     STU_FALLTHROUGH
-  case 24: // UICTContentSizeCategoryS
-           // UICTContentSizeCategoryM
-           // UICTContentSizeCategoryL
-    threeCategoriesCase(Small, Medium, Large)
-    STU_FALLTHROUGH
-  case 25: // UICTContentSizeCategoryXS
-           // UICTContentSizeCategoryXL
-    twoCategoriesCase(ExtraSmall, ExtraLarge)
-    STU_FALLTHROUGH
-  case 26: // UICTContentSizeCategoryXXL
-    oneCategoryCase(ExtraExtraLarge)
-    STU_FALLTHROUGH
-  case 27: // UICTContentSizeCategoryXXXL
-    oneCategoryCase(ExtraExtraExtraLarge)
-    STU_FALLTHROUGH
-  case 37: // UICTContentSizeCategoryAccessibilityM
-           // UICTContentSizeCategoryAccessibilityL
-    twoCategoriesCase(AccessibilityMedium, AccessibilityLarge)
-    STU_FALLTHROUGH
-  case 38: // UICTContentSizeCategoryAccessibilityXL
-    oneCategoryCase(AccessibilityExtraLarge)
-    STU_FALLTHROUGH
-  case 39: // UICTContentSizeCategoryAccessibilityXXL
-    oneCategoryCase(AccessibilityExtraExtraLarge)
-    STU_FALLTHROUGH
-  case 40: // UICTContentSizeCategoryAccessibilityXXXL
+  case 24:                                                           // UICTContentSizeCategoryS
+                                                                     // UICTContentSizeCategoryM
+                                                                     // UICTContentSizeCategoryL
+  threeCategoriesCase(Small, Medium, Large) STU_FALLTHROUGH case 25: // UICTContentSizeCategoryXS
+                                                                     // UICTContentSizeCategoryXL
+  twoCategoriesCase(ExtraSmall, ExtraLarge) STU_FALLTHROUGH case 26: // UICTContentSizeCategoryXXL
+  oneCategoryCase(ExtraExtraLarge) STU_FALLTHROUGH case 27:          // UICTContentSizeCategoryXXXL
+  oneCategoryCase(ExtraExtraExtraLarge) STU_FALLTHROUGH case 37:     // UICTContentSizeCategoryAccessibilityM
+                                                                     // UICTContentSizeCategoryAccessibilityL
+  twoCategoriesCase(AccessibilityMedium, AccessibilityLarge)
+      STU_FALLTHROUGH case 38:                                           // UICTContentSizeCategoryAccessibilityXL
+  oneCategoryCase(AccessibilityExtraLarge) STU_FALLTHROUGH case 39:      // UICTContentSizeCategoryAccessibilityXXL
+  oneCategoryCase(AccessibilityExtraExtraLarge) STU_FALLTHROUGH case 40: // UICTContentSizeCategoryAccessibilityXXXL
     oneCategoryCase(AccessibilityExtraExtraExtraLarge)
 
-  #undef oneCategoryCase
-  #undef twoCategoriesCase
-  #undef threeCategoriesCase
+#undef oneCategoryCase
+#undef twoCategoriesCase
+#undef threeCategoriesCase
   } // switch
   return STUContentSizeCategoryUnspecified;
 }
@@ -102,9 +102,7 @@ static Class nsStringClass;
 
 static atomic_bool canScaleNonPreferredFonts;
 
-static
-id valueForFontKey(UIFont * __unsafe_unretained font,
-                   NSString * __unsafe_unretained key, Class valueClass)
+static id valueForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe_unretained key, Class valueClass)
 {
   if (atomic_load_explicit(&canScaleNonPreferredFonts, memory_order_relaxed)) {
     @try {
@@ -112,28 +110,27 @@ id valueForFontKey(UIFont * __unsafe_unretained font,
       if (value && [value isKindOfClass:valueClass]) {
         return value;
       }
-    } @catch (NSException * __unused e) {
+    } @catch (NSException *__unused e) {
       atomic_store_explicit(&canScaleNonPreferredFonts, false, memory_order_relaxed);
     }
   }
   return nil;
 }
 
-static id stringForFontKey(UIFont * __unsafe_unretained font, NSString * __unsafe_unretained key) {
+static id stringForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe_unretained key)
+{
   return valueForFontKey(font, key, nsStringClass);
 }
 
-static
-bool floatForFontKey(UIFont * __unsafe_unretained font, NSString * __unsafe_unretained key,
-                     CGFloat *outValue)
+static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe_unretained key, CGFloat *outValue)
 {
-  NSNumber * const number = valueForFontKey(font, key, nsNumberClass);
+  NSNumber *const number = valueForFontKey(font, key, nsNumberClass);
   if (number != nil) {
-  #if CGFLOAT_IS_DOUBLE
+#if CGFLOAT_IS_DOUBLE
     *outValue = number.doubleValue;
-  #else
+#else
     *outValue = number.floatValue;
-  #endif
+#endif
     return true;
   }
   return false;
@@ -141,7 +138,7 @@ bool floatForFontKey(UIFont * __unsafe_unretained font, NSString * __unsafe_unre
 
 @interface STUWeakFontReference : NSObject {
 @package // fileprivate
-  UIFont* font;
+  UIFont *font;
 }
 @end
 @implementation STUWeakFontReference
@@ -159,11 +156,11 @@ bool floatForFontKey(UIFont * __unsafe_unretained font, NSString * __unsafe_unre
 
   static Class weakFontReferenceClass;
   static bool fontMetricsIsAvailable;
-    
-STU_DISABLE_CLANG_WARNING("-Wgnu-folding-constant")
+
+  STU_DISABLE_CLANG_WARNING("-Wgnu-folding-constant")
   static dispatch_once_t onces[STUContentSizeCategoryCount - 1];
   static UITraitCollection *traitCollections[STUContentSizeCategoryCount - 1];
-STU_REENABLE_CLANG_WARNING
+  STU_REENABLE_CLANG_WARNING
 
   static dispatch_once_t once;
   dispatch_once(&once, ^{
@@ -174,11 +171,10 @@ STU_REENABLE_CLANG_WARNING
     fontMetricsIsAvailable = true;
   });
   dispatch_once(&onces[index], ^{
-    traitCollections[index] = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
-                                                   category];
+    traitCollections[index] = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:category];
   });
 
-  const void * const associatedObjectKey = &traitCollections[index];
+  const void *const associatedObjectKey = &traitCollections[index];
 
   STUWeakFontReference *weakRef;
   {
@@ -188,47 +184,46 @@ STU_REENABLE_CLANG_WARNING
         return self;
       }
       weakRef = cached;
-      UIFont * const font = weakRef->font;
-      if (font) return font;
+      UIFont *const font = weakRef->font;
+      if (font)
+        return font;
     }
   }
-
 
   UIFontTextStyle style = [self.fontDescriptor objectForKey:UIFontDescriptorTextStyleAttribute];
   const bool isPreferredFont = style && [style hasPrefix:@"UICTFontTextStyle"];
   CGFloat sizeForScaling = 0;
   if (!isPreferredFont) {
-    if (!fontMetricsIsAvailable
-        || !(style = stringForFontKey(self, @"textStyleForScaling")) // assignment
-        || !floatForFontKey(self, @"pointSizeForScaling", &sizeForScaling)
-        || !(sizeForScaling > 0))
-    {
+    if (!fontMetricsIsAvailable || !(style = stringForFontKey(self, @"textStyleForScaling")) // assignment
+        || !floatForFontKey(self, @"pointSizeForScaling", &sizeForScaling) || !(sizeForScaling > 0)) {
     FontCanNotBeScaled:
       if (atomic_load_explicit(&canScaleNonPreferredFonts, memory_order_relaxed)) {
-        objc_setAssociatedObject(self, associatedObjectKey, (__bridge id)kCFNull,
-                                 OBJC_ASSOCIATION_ASSIGN);
+        objc_setAssociatedObject(self, associatedObjectKey, (__bridge id)kCFNull, OBJC_ASSOCIATION_ASSIGN);
       }
       return self;
     }
   }
 
-  UIFont *font = !isPreferredFont ? [self fontWithSize:sizeForScaling]
-                                  : [UIFont preferredFontForTextStyle:style
-                                        compatibleWithTraitCollection:traitCollections[index]];
-  if (!font) goto FontCanNotBeScaled;
+  UIFont *font = !isPreferredFont
+                     ? [self fontWithSize:sizeForScaling]
+                     : [UIFont preferredFontForTextStyle:style compatibleWithTraitCollection:traitCollections[index]];
+  if (!font)
+    goto FontCanNotBeScaled;
 
   if (fontMetricsIsAvailable) {
-  STU_DISABLE_CLANG_WARNING("-Wunguarded-availability-new")
+    STU_DISABLE_CLANG_WARNING("-Wunguarded-availability-new")
     CGFloat maxSize = 0;
     if (!floatForFontKey(self, @"maximumPointSizeAfterScaling", &maxSize)) {
-      if (!isPreferredFont) goto FontCanNotBeScaled;
+      if (!isPreferredFont)
+        goto FontCanNotBeScaled;
     }
     if (!isPreferredFont || maxSize > 0) {
-      UIFontMetrics* const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
-      font = [metrics scaledFontForFont:font maximumPointSize:maxSize
+      UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
+      font = [metrics scaledFontForFont:font
+                       maximumPointSize:maxSize
           compatibleWithTraitCollection:traitCollections[index]];
     }
-  STU_REENABLE_CLANG_WARNING
+    STU_REENABLE_CLANG_WARNING
   }
 
   if (!weakRef) {

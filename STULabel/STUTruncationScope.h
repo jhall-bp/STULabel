@@ -22,16 +22,14 @@ STU_EXPORT
 
 - (instancetype)initWithMaximumNumberOfLines:(int32_t)maximumNumberOfLines
                       lastLineTruncationMode:(CTLineTruncationType)lastLineTruncationMode
-                             truncationToken:(NSAttributedString * __nullable)truncationToken;
+                             truncationToken:(NSAttributedString *__nullable)truncationToken;
 
 - (instancetype)initWithMaximumNumberOfLines:(int32_t)maximumNumberOfLines
                       lastLineTruncationMode:(CTLineTruncationType)lastLineTruncationMode
-                             truncationToken:(NSAttributedString * __nullable)truncationToken
-                      truncatableStringRange:(NSRange)stringRange
-  NS_DESIGNATED_INITIALIZER;
+                             truncationToken:(NSAttributedString *__nullable)truncationToken
+                      truncatableStringRange:(NSRange)stringRange NS_DESIGNATED_INITIALIZER;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)decoder
-  NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)decoder NS_DESIGNATED_INITIALIZER;
 
 @property (readonly) int32_t maximumNumberOfLines;
 

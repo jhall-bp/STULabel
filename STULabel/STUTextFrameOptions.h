@@ -62,43 +62,45 @@ typedef NS_CLOSED_ENUM(uint8_t, STUTextLayoutMode) {
   /// layout bounds as if s = g for the last line.
   STUTextLayoutModeTextKit = 1
 };
-enum { STUTextLayoutModeBitSize STU_SWIFT_UNAVAILABLE = 1 };
+enum
+{
+  STUTextLayoutModeBitSize STU_SWIFT_UNAVAILABLE = 1
+};
 
 /// Alignment mode for text paragraphs that have no associated @c NSParagraphStyle attribute
 /// or have a paragraph style attribute whose @c baseWritingDirection property is @c .natural and
 /// whose @c textAlignment property is @c .natural or @c .justified.
 typedef NS_CLOSED_ENUM(uint8_t, STUDefaultTextAlignment) {
-  STUDefaultTextAlignmentLeft  = 0,
+  STUDefaultTextAlignmentLeft = 0,
   STUDefaultTextAlignmentRight = 1,
   /// Left-aligned if the paragraph's detected base writing direction is left-to-right,
   /// otherwise right-aligned.
   STUDefaultTextAlignmentStart = 2,
   /// Right-aligned if the paragraph's detected base writing direction is left-to-right,
   /// otherwise left-aligned.
-  STUDefaultTextAlignmentEnd   = 3
+  STUDefaultTextAlignmentEnd = 3
 };
 
 typedef NS_CLOSED_ENUM(uint8_t, STULastLineTruncationMode) {
-  STULastLineTruncationModeEnd    = 0,
+  STULastLineTruncationModeEnd = 0,
   STULastLineTruncationModeMiddle = 1,
-  STULastLineTruncationModeStart  = 2,
-  STULastLineTruncationModeClip   = 3
+  STULastLineTruncationModeStart = 2,
+  STULastLineTruncationModeClip = 3
 };
 
 typedef NS_CLOSED_ENUM(uint8_t, STUBaselineAdjustment) {
-  STUBaselineAdjustmentNone                          = 0,
-  STUBaselineAdjustmentAlignFirstBaseline            = 1,
-  STUBaselineAdjustmentAlignFirstLineCenter          = 2,
+  STUBaselineAdjustmentNone = 0,
+  STUBaselineAdjustmentAlignFirstBaseline = 1,
+  STUBaselineAdjustmentAlignFirstLineCenter = 2,
   STUBaselineAdjustmentAlignFirstLineCapHeightCenter = 3,
-  STUBaselineAdjustmentAlignFirstLineXHeightCenter   = 4
+  STUBaselineAdjustmentAlignFirstLineXHeightCenter = 4
 };
 
 /// Reserved for future use.
-typedef NS_OPTIONS(uint32_t, STUHyphenationLocationOptions) {
-  STUHyphenationLocationOptionsNone = 0
-};
+typedef NS_OPTIONS(uint32_t, STUHyphenationLocationOptions) { STUHyphenationLocationOptionsNone = 0 };
 
-typedef struct STUHyphenationLocation {
+typedef struct STUHyphenationLocation
+{
   size_t index;
   UTF32Char hyphen;
   /// Reserved for future use. Must be STUHyphenationLocationOptionsNone.
@@ -106,19 +108,15 @@ typedef struct STUHyphenationLocation {
 } STUHyphenationLocation;
 
 // Must be thread-safe.
-typedef STUHyphenationLocation
-          (^ STULastHyphenationLocationInRangeFinder)(NSAttributedString *, NSRange);
-
+typedef STUHyphenationLocation (^STULastHyphenationLocationInRangeFinder)(NSAttributedString *, NSRange);
 
 // Must be thread-safe.
-typedef NSRange (^ STUTruncationRangeAdjuster)(NSAttributedString *,
-                                               NSRange fullRange, NSRange excisedRange);
-
+typedef NSRange (^STUTruncationRangeAdjuster)(NSAttributedString *, NSRange fullRange, NSRange excisedRange);
 
 @class STUTextFrameOptionsBuilder;
 
 /// An immutable class storing @c STUTextFrame layout configuration options.
-/// 
+///
 /// Equality for @c STUTextFrameOptions instances is defined as pointer equality.
 /// (There doesn't seem to be a good use case for comparing @c STUTextFrameOptions instances
 /// structurally, and we'd have to replace the block properties with object properties if we wanted
@@ -127,15 +125,14 @@ STU_EXPORT
 @interface STUTextFrameOptions : NSObject <NSCopying>
 
 - (instancetype)initWithBuilder:(nullable STUTextFrameOptionsBuilder *)builder
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STUTextFrameOptionsBuilder *builder))block
-  // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
-  // Use Swift's trailing closure syntax when calling this initializer.
-  NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STUTextFrameOptionsBuilder *builder))block
+    // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
+    // Use Swift's trailing closure syntax when calling this initializer.
+    NS_REFINED_FOR_SWIFT;
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STUTextFrameOptionsBuilder *builder))block;
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STUTextFrameOptionsBuilder *builder))block;
 
 /// Default value: @c .default
 @property (readonly) STUTextLayoutMode textLayoutMode;
@@ -171,8 +168,7 @@ STU_EXPORT
 @property (readonly) STUBaselineAdjustment textScalingBaselineAdjustment;
 
 /// Default value: @c nil
-@property (readonly, nullable) STULastHyphenationLocationInRangeFinder
-                                 lastHyphenationLocationInRangeFinder;
+@property (readonly, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
 @end
 
@@ -181,8 +177,7 @@ STU_EXPORT
 @interface STUTextFrameOptionsBuilder : NSObject
 
 - (instancetype)initWithOptions:(nullable STUTextFrameOptions *)options
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 /// Default value: @c .default
 @property (nonatomic) STUTextLayoutMode textLayoutMode;
@@ -224,8 +219,7 @@ STU_EXPORT
 @property (nonatomic) STUBaselineAdjustment textScalingBaselineAdjustment;
 
 /// Default value: @c nil
-@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder
-                                  lastHyphenationLocationInRangeFinder;
+@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
 @end
 

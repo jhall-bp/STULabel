@@ -15,27 +15,24 @@
 
 STU_EXTERN_C_BEGIN
 
-STUShapedString * __nullable STUShapedStringCreate(__nullable Class cls,
-                                                   NSAttributedString * __nonnull,
-                                                   STUWritingDirection,
-                                                   const STUCancellationFlag *)
-                               NS_RETURNS_RETAINED;
+STUShapedString *__nullable STUShapedStringCreate(__nullable Class cls,
+                                                  NSAttributedString *__nonnull,
+                                                  STUWritingDirection,
+                                                  const STUCancellationFlag *) NS_RETURNS_RETAINED;
 
-STUTextFrame * __nonnull
-  STUTextFrameCreateWithShapedString(__nullable Class cls,
-                                     STUShapedString * __nonnull shapedString,
-                                     CGSize size, CGFloat displayScale,
-                                     STUTextFrameOptions * __nullable options)
-    NS_RETURNS_RETAINED;
+STUTextFrame *__nonnull STUTextFrameCreateWithShapedString(__nullable Class cls,
+                                                           STUShapedString *__nonnull shapedString,
+                                                           CGSize size,
+                                                           CGFloat displayScale,
+                                                           STUTextFrameOptions *__nullable options) NS_RETURNS_RETAINED;
 
-STUTextFrame * __nonnull
-  STUTextFrameCreateWithShapedStringRange(__nullable Class cls,
-                                          STUShapedString * __nonnull shapedString,
-                                          NSRange stringRange,
-                                          CGSize size, CGFloat displayScale,
-                                          STUTextFrameOptions * __nullable options,
-                                          const STUCancellationFlag*)
-    NS_RETURNS_RETAINED;
+STUTextFrame *__nonnull STUTextFrameCreateWithShapedStringRange(__nullable Class cls,
+                                                                STUShapedString *__nonnull shapedString,
+                                                                NSRange stringRange,
+                                                                CGSize size,
+                                                                CGFloat displayScale,
+                                                                STUTextFrameOptions *__nullable options,
+                                                                const STUCancellationFlag *) NS_RETURNS_RETAINED;
 
 STU_EXTERN_C_END
 
@@ -49,7 +46,6 @@ STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
   return (id)STUShapedStringCreate(nil, attributedString, stu_defaultBaseWritingDirection(), nil);
 }
 
-
 - (STUShapedString *)initWithAttributedString:(NSAttributedString *)attributedString
                   defaultBaseWritingDirection:(STUWritingDirection)baseWritingDirection
 {
@@ -58,18 +54,28 @@ STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
 
 - (nullable STUShapedString *)initWithAttributedString:(NSAttributedString *)attributedString
                            defaultBaseWritingDirection:(STUWritingDirection)baseWritingDirection
-                                     cancellationFlag:(nullable const STUCancellationFlag *)
-                                                         cancellationFlag
+                                      cancellationFlag:(nullable const STUCancellationFlag *)cancellationFlag
 {
   return (id)STUShapedStringCreate(nil, attributedString, baseWritingDirection, cancellationFlag);
 }
 
-- (void)dealloc {}
+- (void)dealloc
+{}
 
-- (instancetype)retain { return self;  }
-- (oneway void)release { }
-- (instancetype)autorelease { return self; }
-- (NSUInteger)retainCount { return NSUIntegerMax; }
+- (instancetype)retain
+{
+  return self;
+}
+- (oneway void)release
+{}
+- (instancetype)autorelease
+{
+  return self;
+}
+- (NSUInteger)retainCount
+{
+  return NSUIntegerMax;
+}
 
 @end
 
@@ -78,35 +84,41 @@ STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
 - (nonnull STUTextFrame *)initWithShapedString:(nonnull STUShapedString *)shapedString
                                           size:(CGSize)size
                                   displayScale:(CGFloat)displayScale
-                                       options:(STUTextFrameOptions * __nullable)options
+                                       options:(STUTextFrameOptions *__nullable)options
 {
   return (id)STUTextFrameCreateWithShapedString(nil, shapedString, size, displayScale, options);
 }
-
 
 - (nullable STUTextFrame *)initWithShapedString:(nonnull STUShapedString *)shapedString
                                     stringRange:(NSRange)stringRange
                                            size:(CGSize)size
                                    displayScale:(CGFloat)displayScale
-                                        options:(STUTextFrameOptions * __nullable)options
-                              cancellationFlag:(nullable const STUCancellationFlag *)
-                                                  cancellationFlag
+                                        options:(STUTextFrameOptions *__nullable)options
+                               cancellationFlag:(nullable const STUCancellationFlag *)cancellationFlag
 {
-  return (id)STUTextFrameCreateWithShapedStringRange(nil, shapedString, stringRange, size,
-                                                     displayScale, options, cancellationFlag);
+  return (id)STUTextFrameCreateWithShapedStringRange(
+      nil, shapedString, stringRange, size, displayScale, options, cancellationFlag);
 }
 
-- (void)dealloc {}
+- (void)dealloc
+{}
 
-- (instancetype)retain { return self;  }
-- (oneway void)release { }
-- (instancetype)autorelease { return self; }
-- (NSUInteger)retainCount { return NSUIntegerMax; }
+- (instancetype)retain
+{
+  return self;
+}
+- (oneway void)release
+{}
+- (instancetype)autorelease
+{
+  return self;
+}
+- (NSUInteger)retainCount
+{
+  return NSUIntegerMax;
+}
 
 @end
 
 STU_REENABLE_CLANG_WARNING
 STU_REENABLE_CLANG_WARNING
-
-
-

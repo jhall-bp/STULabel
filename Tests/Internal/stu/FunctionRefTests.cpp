@@ -18,11 +18,14 @@ static Int add4_noexcept(Int value) noexcept {
 
 class Add {
   Int addend_;
-public:
-  explicit Add(Int addend)
-  : addend_{addend} {}
 
-  Int operator()(Int value) const noexcept { return addend_ + value; }
+public:
+  explicit Add(Int addend) : addend_{addend} {
+  }
+
+  Int operator()(Int value) const noexcept {
+    return addend_ + value;
+  }
 };
 
 TEST(Basics) {
@@ -33,13 +36,13 @@ TEST(Basics) {
     CHECK_EQ(f(2), 5);
     f = add4_noexcept;
     CHECK_EQ(f(2), 6);
-    static_assert(!isAssignable<FunctionRef<Int(Int)>&, Add>);
+    static_assert(!isAssignable<FunctionRef<Int(Int)> &, Add>);
   }
   {
     const FunctionRef<Int(Int) noexcept> f = add4_noexcept;
     static_assert(noexcept(f(1)));
     CHECK_EQ(f(2), 6);
-    static_assert(!isAssignable<FunctionRef<Int(Int) noexcept>&, FunctionRef<Int(Int)>>);
+    static_assert(!isAssignable<FunctionRef<Int(Int) noexcept> &, FunctionRef<Int(Int)>>);
   }
   {
     static_assert(isSame<decltype(FunctionRef{Add{5}}), FunctionRef<Int(Int) noexcept>>);
@@ -47,7 +50,7 @@ TEST(Basics) {
     CHECK_EQ(result, 4);
   }
 #if STU_ASSERT_MAY_THROW
-  CHECK_FAILS_ASSERT(FunctionRef<void()>{static_cast<void(*)()>(nullptr)});
+  CHECK_FAILS_ASSERT(FunctionRef<void()>{static_cast<void (*)()>(nullptr)});
 #endif
 }
 

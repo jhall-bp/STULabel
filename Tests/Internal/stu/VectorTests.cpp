@@ -18,7 +18,7 @@ using namespace stu;
 TEST_CASE_START(VectorTests)
 
 TEST(Append) {
-  const auto test = [&](auto& vector) {
+  const auto test = [&](auto &vector) {
     for (int i = 1; i <= 16; ++i) {
       vector.append(i);
       CHECK_EQ(vector.count(), i);
@@ -44,19 +44,19 @@ TEST(Append) {
 }
 
 TEST(AppendArray) {
-  const auto test = [&](auto& vector) {
+  const auto test = [&](auto &vector) {
     vector.append(ArrayRef<int>());
     CHECK_EQ(vector.count(), 0);
     CHECK_EQ(vector.capacity(), 0);
     vector.append(arrayRef({1, 2, 3}));
     CHECK_EQ(vector.count(), 3);
     CHECK_EQ(vector.capacity(), 3);
-  #if STU_ASSERT_MAY_THROW
+#if STU_ASSERT_MAY_THROW
     {
       ArrayRef<const int> aliased = vector[{0, 1}];
       CHECK_FAILS_ASSERT(vector.append(aliased));
     }
-  #endif
+#endif
     vector.append(arrayRef({4, 5}));
     CHECK_EQ(vector.count(), 5);
     CHECK_EQ(vector.capacity(), 6);
@@ -78,7 +78,8 @@ TEST(AppendArray) {
 
 struct ValueWithUninitializedConstructor {
   int value;
-  /* implicit */ ValueWithUninitializedConstructor(Uninitialized) : value{-123} {}
+  /* implicit */ ValueWithUninitializedConstructor(Uninitialized) : value{-123} {
+  }
 };
 
 template <typename T>
@@ -151,7 +152,8 @@ TEST(Insert) {
 struct TestValueWithDestructor {
   Int value;
 
-  TestValueWithDestructor(Int value) : value{value} {}
+  TestValueWithDestructor(Int value) : value{value} {
+  }
   ~TestValueWithDestructor() {
     value = -123;
   }
@@ -162,7 +164,7 @@ template <> struct stu::IsBitwiseMovable<TestValueWithDestructor> : stu::True {}
 TEST(RemoveLast) {
   using Alloc = MoveOnlyAllocatorRef;
   Vector<TestValueWithDestructor, 0, Alloc> vector(Alloc::create());
- #if STU_ASSERT_MAY_THROW
+#if STU_ASSERT_MAY_THROW
   CHECK_FAILS_ASSERT(vector.removeLast());
   CHECK_FAILS_ASSERT(vector.removeLast(1));
   CHECK_FAILS_ASSERT(vector.removeLast(maxValue<Int>));
@@ -276,14 +278,14 @@ TEST(SetCapacity) {
 }
 
 TEST(EmbeddedAndExternalStorage) {
-  const auto test = [&](auto& vector) {
+  const auto test = [&](auto &vector) {
     CHECK_EQ(vector.capacity(), 3);
-    const auto* const p = vector.begin();
-  #if STU_USE_ADDRESS_SANITIZER
+    const auto *const p = vector.begin();
+#if STU_USE_ADDRESS_SANITIZER
     CHECK(__asan_address_is_poisoned(&p[0]));
     CHECK(__asan_address_is_poisoned(&p[1]));
     CHECK(__asan_address_is_poisoned(&p[2]));
-  #endif
+#endif
 
     vector.trimFreeCapacity(); // Should have no effect here.
     CHECK_EQ(vector.capacity(), 3);
@@ -300,11 +302,11 @@ TEST(EmbeddedAndExternalStorage) {
     }
     vector.append(4);
     CHECK_EQ(vector.capacity(), 6);
-  #if STU_USE_ADDRESS_SANITIZER
+#if STU_USE_ADDRESS_SANITIZER
     CHECK(__asan_address_is_poisoned(&p[0]));
     CHECK(__asan_address_is_poisoned(&p[1]));
     CHECK(__asan_address_is_poisoned(&p[2]));
-  #endif
+#endif
     for (int i = 0; i < 4; ++i) {
       CHECK_EQ(vector[i].value, i + 1);
     }
@@ -347,7 +349,7 @@ TEST(EmbeddedAndExternalStorage) {
 }
 
 TEST(MoveConstructor) {
-  
+
   using Alloc = MoveOnlyAllocatorRef;
   {
     Vector<Int, 0, Alloc> vector{Alloc::create()};
@@ -410,20 +412,20 @@ TEST(MoveConstructor) {
 
 TEST(MoveToArray) {
   // TODO: Use explicit lambda template parameter when Xcode supports that.
-  auto test = [&](Int n, auto&& vector) {
+  auto test = [&](Int n, auto &&vector) {
     using Alloc = RemoveReference<decltype(vector.allocator())>;
-    const auto* const p = vector.begin();
+    const auto *const p = vector.begin();
     for (Int i = 0; i < n; ++i) {
       vector.append(i + 1);
     }
     Array<Int, Alloc> array = std::move(vector);
     if (RemoveReference<decltype(vector)>::embeddedStorageCapacity > 0) {
       for (Int i = 0; i < n; ++i) {
-      #if STU_USE_ADDRESS_SANITIZER
+#if STU_USE_ADDRESS_SANITIZER
         CHECK(__asan_address_is_poisoned(&p[i]));
-      #else
+#else
         discard(p);
-      #endif
+#endif
       }
     }
     Array<Int, Alloc> array2 = std::move(vector);
@@ -439,4 +441,3 @@ TEST(MoveToArray) {
 }
 
 TEST_CASE_END
-

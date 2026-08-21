@@ -7,8 +7,7 @@
 #import <tgmath.h>
 
 STU_EXPORT
-STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
-                                  STUCGImageFormatOptions options)
+STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format, STUCGImageFormatOptions options)
 {
   static CGColorSpaceRef grayGamma2_2;
   static CGColorSpaceRef sRGB;
@@ -44,9 +43,8 @@ STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
       colorSpace = extendedSRGB;
       bitsPerComponent = 16;
       bitsPerPixel = 64;
-      bitmapInfo = kCGBitmapFloatComponents
-                 | kCGImageByteOrder16Little
-                 | (withoutAlpha ? kCGImageAlphaNoneSkipLast        // RGBX16
+      bitmapInfo = kCGBitmapFloatComponents | kCGImageByteOrder16Little |
+                   (withoutAlpha ? kCGImageAlphaNoneSkipLast        // RGBX16
                                  : kCGImageAlphaPremultipliedLast); // RGBA16
       break;
     }
@@ -54,38 +52,35 @@ STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat format,
   case STUPredefinedCGImageFormatRGB:
     colorSpace = sRGB;
     bitsPerPixel = 32;
-    bitmapInfo = kCGBitmapByteOrder32Little
-               | (withoutAlpha ? kCGImageAlphaNoneSkipFirst        // BGRX8
-                               : kCGImageAlphaPremultipliedFirst); // BGRA8
+    bitmapInfo = kCGBitmapByteOrder32Little | (withoutAlpha ? kCGImageAlphaNoneSkipFirst        // BGRX8
+                                                            : kCGImageAlphaPremultipliedFirst); // BGRA8
     break;
   }
-  return (STUCGImageFormat){
-           .colorSpace = colorSpace,
-           .bitmapInfo = bitmapInfo,
-           .bitsPerComponent = bitsPerComponent,
-           .bitsPerPixel = bitsPerPixel
-         };
+  return (STUCGImageFormat){.colorSpace = colorSpace,
+                            .bitmapInfo = bitmapInfo,
+                            .bitsPerComponent = bitsPerComponent,
+                            .bitsPerPixel = bitsPerPixel};
 }
 
 STU_EXPORT
-CGContextRef stu_createCGBitmapContext(size_t widthInPixels, size_t heightInPixels, CGFloat scale,
+CGContextRef stu_createCGBitmapContext(size_t widthInPixels,
+                                       size_t heightInPixels,
+                                       CGFloat scale,
                                        __nullable CGColorRef backgroundColor,
                                        STUCGImageFormat imageFormat,
-                                       void * __nullable data, size_t bytesPerRow)
-               CF_RETURNS_RETAINED
+                                       void *__nullable data,
+                                       size_t bytesPerRow) CF_RETURNS_RETAINED
 {
 #if STU_DEBUG
   STU_CHECK_MSG(scale > 0 || scale < 0, "scale must not be 0 or NaN");
-  STU_CHECK_MSG(imageFormat.bitsPerPixel >= 8
-                && (imageFormat.bitsPerPixel & (imageFormat.bitsPerPixel - 1)) == 0,
+  STU_CHECK_MSG(imageFormat.bitsPerPixel >= 8 && (imageFormat.bitsPerPixel & (imageFormat.bitsPerPixel - 1)) == 0,
                 "imageFormat.bitsPerPixel must be a power of 2 not less than 8");
   STU_ASSERT(!data || bytesPerRow != 0);
 #else
-  if (STU_UNLIKELY(!(   (scale > 0 || scale < 0)
-                     && (imageFormat.bitsPerPixel >= 8
-                         && (imageFormat.bitsPerPixel & (imageFormat.bitsPerPixel - 1)) == 0)
-                     && (!data || bytesPerRow != 0))))
-  {
+  if (STU_UNLIKELY(
+          !((scale > 0 || scale < 0) &&
+            (imageFormat.bitsPerPixel >= 8 && (imageFormat.bitsPerPixel & (imageFormat.bitsPerPixel - 1)) == 0) &&
+            (!data || bytesPerRow != 0)))) {
     NSLog(@"Invalid argument passed to stu_createCGBitmapContext");
     return nil;
   }
@@ -94,8 +89,11 @@ CGContextRef stu_createCGBitmapContext(size_t widthInPixels, size_t heightInPixe
   widthInPixels = MAX(1u, widthInPixels);
   heightInPixels = MAX(1u, heightInPixels);
 
-  const CGContextRef context = CGBitmapContextCreate(data, widthInPixels, heightInPixels,
-                                                     imageFormat.bitsPerComponent, bytesPerRow,
+  const CGContextRef context = CGBitmapContextCreate(data,
+                                                     widthInPixels,
+                                                     heightInPixels,
+                                                     imageFormat.bitsPerComponent,
+                                                     bytesPerRow,
                                                      imageFormat.colorSpace,
                                                      imageFormat.bitmapInfo);
 #if STU_DEBUG
@@ -123,21 +121,18 @@ CGContextRef stu_createCGBitmapContext(size_t widthInPixels, size_t heightInPixe
 }
 
 STU_EXPORT
-CGImageRef stu_createCGImage(CGSize size, CGFloat scale,
+CGImageRef stu_createCGImage(CGSize size,
+                             CGFloat scale,
                              __nullable CGColorRef backgroundColor,
                              STUCGImageFormat imageFormat,
-                             void (^ STU_NOESCAPE __unsafe_unretained
-                                     drawingBlock)(__nonnull CGContextRef context))
-             CF_RETURNS_RETAINED
+                             void (^STU_NOESCAPE __unsafe_unretained drawingBlock)(__nonnull CGContextRef context))
+    CF_RETURNS_RETAINED
 {
 #if STU_DEBUG
-  STU_CHECK_MSG(size.width >= 0 && size.height >= 0,
-                "size.width and size.height must not be negative or NaN");
+  STU_CHECK_MSG(size.width >= 0 && size.height >= 0, "size.width and size.height must not be negative or NaN");
   STU_ASSERT(drawingBlock != nil);
 #else
-  if (STU_UNLIKELY(   !(size.width >= 0 && size.height >= 0)
-                   || drawingBlock == nil))
-  {
+  if (STU_UNLIKELY(!(size.width >= 0 && size.height >= 0) || drawingBlock == nil)) {
     NSLog(@"Invalid argument passed to stu_createCGImage");
     return nil;
   }
@@ -146,15 +141,14 @@ CGImageRef stu_createCGImage(CGSize size, CGFloat scale,
   // The other arguments are checked by stu_createCGBitmapContext.
 
   const CGFloat absScale = fabs(scale);
-  CGFloat width  = nearbyint(size.width*absScale);
-  CGFloat height = nearbyint(size.height*absScale);
+  CGFloat width = nearbyint(size.width * absScale);
+  CGFloat height = nearbyint(size.height * absScale);
   _Static_assert(sizeof(CGFloat) == 4 || sizeof(CGFloat) == 8, "Unexpected CGFloat type");
   _Static_assert(sizeof(size_t) == 4 || sizeof(size_t) == 8, "Unexpected size_t type");
   _Static_assert(sizeof(CGFloat) >= sizeof(size_t), "Unexpected CGFloat and size_t types");
-  const CGFloat maxValue = sizeof(size_t) == 4
-                         ? (sizeof(CGFloat) == 4 ? 4294967040.f // Float32(pow(2.0, 32)).nextDown
-                                                 : (CGFloat)UINT32_MAX)
-                         : (CGFloat)18446744073709549568ull; // Float64(pow(2.0, 64)).nextDown
+  const CGFloat maxValue = sizeof(size_t) == 4 ? (sizeof(CGFloat) == 4 ? 4294967040.f // Float32(pow(2.0, 32)).nextDown
+                                                                       : (CGFloat)UINT32_MAX)
+                                               : (CGFloat)18446744073709549568ull; // Float64(pow(2.0, 64)).nextDown
   if (STU_UNLIKELY(!(width >= 1))) {
     width = 1;
   } else if (STU_UNLIKELY(width > maxValue)) {
@@ -166,10 +160,10 @@ CGImageRef stu_createCGImage(CGSize size, CGFloat scale,
     height = maxValue;
   }
 
-  const CGContextRef context = stu_createCGBitmapContext((size_t)width, (size_t)height,
-                                                         scale, backgroundColor, imageFormat,
-                                                         nil, 0);
-  if (!context) return nil;
+  const CGContextRef context =
+      stu_createCGBitmapContext((size_t)width, (size_t)height, scale, backgroundColor, imageFormat, nil, 0);
+  if (!context)
+    return nil;
 
   drawingBlock(context);
 

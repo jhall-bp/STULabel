@@ -6,11 +6,11 @@
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
-typedef struct STUIndexAndDistance {
+typedef struct STUIndexAndDistance
+{
   size_t index;
   CGFloat distance;
-} STUIndexAndDistance
-  NS_REFINED_FOR_SWIFT;
+} STUIndexAndDistance NS_REFINED_FOR_SWIFT;
 
 /// An immutable array of text span rectangles and associated text layout information.
 STU_EXPORT
@@ -21,8 +21,7 @@ STU_EXPORT
 /// Hence, if you want to create a subclass that doesn't just act as proxy class, you'll likely have
 /// to override most of this class's methods, including @c isEqual and @c hash.
 - (instancetype)initWithTextRectArray:(nullable STUTextRectArray *)textRectArray
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 @property (readonly) CGRect bounds;
 
@@ -46,12 +45,9 @@ STU_EXPORT
 /// If the array contains no rect or if the distance between the closest rect and the point is
 /// greater than @c maxDistance, this method returns @c NSNotFound as the index and @c CGFLOAT_MAX
 /// as the distance.
-- (STUIndexAndDistance)findRectClosestToPoint:(CGPoint)point
-                                  maxDistance:(CGFloat)maxDistance
-  NS_REFINED_FOR_SWIFT;
+- (STUIndexAndDistance)findRectClosestToPoint:(CGPoint)point maxDistance:(CGFloat)maxDistance NS_REFINED_FOR_SWIFT;
 
-@property (readonly)
-  bool pathWithTextLinesExtendedToCommonHorizontalBoundsAndFilledTextLineGapsIsRectangular;
+@property (readonly) bool pathWithTextLinesExtendedToCommonHorizontalBoundsAndFilledTextLineGapsIsRectangular;
 
 /// Creates a @c CGPath for the outline(s) of the text rects.
 ///
@@ -85,16 +81,14 @@ STU_EXPORT
 /// @param transform
 ///  A pointer to an affine transformation matrix, or null if no transformation is needed.
 ///  If non-null, this transformation is applied to the path before it is returned.
--   (CGPathRef)createPathWithEdgeInsets:(UIEdgeInsets)edgeInsets
-                           cornerRadius:(CGFloat)cornerRadius
-extendTextLinesToCommonHorizontalBounds:(bool)extendTextLinesToCommonHorizontalBounds
-                       fillTextLineGaps:(bool)fillTextLineGaps
-                              transform:(nullable const CGAffineTransform *)transform
-    CF_RETURNS_RETAINED;
+- (CGPathRef)createPathWithEdgeInsets:(UIEdgeInsets)edgeInsets
+                               cornerRadius:(CGFloat)cornerRadius
+    extendTextLinesToCommonHorizontalBounds:(bool)extendTextLinesToCommonHorizontalBounds
+                           fillTextLineGaps:(bool)fillTextLineGaps
+                                  transform:(nullable const CGAffineTransform *)transform CF_RETURNS_RETAINED;
 
 @property (class, readonly, nonnull) STUTextRectArray *emptyArray;
 
 @end
 
 STU_ASSUME_NONNULL_AND_STRONG_END
-

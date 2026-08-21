@@ -12,7 +12,8 @@ using namespace stu;
 
 TEST_CASE_START(NSFoundationSupportNoARCTests)
 
-TEST(RefCountTraits) {
+TEST(RefCountTraits)
+{
   static_assert(isRefCountable<RemovePointer<CFArrayRef>>);
   static_assert(isRefCountable<NSArray>);
   const CFArrayRef obj = CFArrayCreateMutable(nullptr, 1, nullptr);
@@ -21,9 +22,9 @@ TEST(RefCountTraits) {
   XCTAssertEqual(CFGetRetainCount(obj), 2);
   decrementRefCount(obj);
   XCTAssertEqual(CFGetRetainCount(obj), 1);
-  incrementRefCount((NSArray*)obj);
+  incrementRefCount((NSArray *)obj);
   XCTAssertEqual(CFGetRetainCount(obj), 2);
-  decrementRefCount((NSArray*)obj);
+  decrementRefCount((NSArray *)obj);
   XCTAssertEqual(CFGetRetainCount(obj), 1);
   decrementRefCount(obj);
 }

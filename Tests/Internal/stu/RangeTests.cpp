@@ -64,6 +64,4 @@ TEST(Range) {
   CHECK_EQ(Range<Int32>(1, 2) / -2LL, Range<Int64>(-1, 0));
 }
 
-
 TEST_CASE_END
-

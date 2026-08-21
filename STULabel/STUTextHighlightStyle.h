@@ -13,15 +13,14 @@ STU_EXPORT
 @interface STUTextHighlightStyle : NSObject <NSCopying>
 
 - (instancetype)initWithBuilder:(nullable STUTextHighlightStyleBuilder *)builder
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STUTextHighlightStyleBuilder *builder))block
-  // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
-  // Use Swift's trailing closure syntax when calling this initializer.
-  NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STUTextHighlightStyleBuilder *builder))block
+    // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
+    // Use Swift's trailing closure syntax when calling this initializer.
+    NS_REFINED_FOR_SWIFT;
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STUTextHighlightStyleBuilder *builder))block;
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STUTextHighlightStyleBuilder *builder))block;
 
 - (BOOL)isEqual:(nullable id)object;
 
@@ -57,9 +56,7 @@ STU_EXPORT
 STU_EXPORT
 @interface STUTextHighlightStyleBuilder : NSObject
 
-- (instancetype)initWithStyle:(nullable STUTextHighlightStyle *)style
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(nullable STUTextHighlightStyle *)style NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 /// A null text color has no effect on the highlighted text.
 @property (nonatomic, nullable) UIColor *textColor;
@@ -77,8 +74,7 @@ STU_EXPORT
 /// @param doNotFill   Indicates whether the text should be @i only stroked, not filled.
 - (void)setStrokeWidth:(CGFloat)strokeWidth
                  color:(nullable UIColor *)color
-             doNotFill:(bool)doNotFill
-  NS_SWIFT_NAME(setStroke(width:color:doNotFill:));
+             doNotFill:(bool)doNotFill NS_SWIFT_NAME(setStroke(width:color:doNotFill:));
 
 /// The stroke width. A non-negative number.
 ///
@@ -129,8 +125,7 @@ STU_EXPORT
 /// text.
 - (void)setShadowOffset:(CGSize)offset
              blurRadius:(CGFloat)blurRadius
-                  color:(nullable UIColor *)color
-  NS_SWIFT_NAME(setShadow(offset:blurRadius:color:));
+                  color:(nullable UIColor *)color NS_SWIFT_NAME(setShadow(offset:blurRadius:color:));
 
 // CGSize is the type that UIKit and CoreAnimation use for shadow offsets, curiously.
 @property (nonatomic, readonly) CGSize shadowOffset;

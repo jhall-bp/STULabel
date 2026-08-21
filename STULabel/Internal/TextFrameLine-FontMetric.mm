@@ -4,23 +4,28 @@
 
 namespace stu_label {
 
-template <FontMetric metric>
-STU_INLINE
-CGFloat getRunFontMetric(GlyphRunRef run) {
-  const CTFont* font = run.font();
-       if constexpr (metric == FontMetric::xHeight)   return [(__bridge UIFont*)font xHeight];
-  else if constexpr (metric == FontMetric::capHeight) return [(__bridge UIFont*)font capHeight];
-  else static_assert(false && metric == metric);
+template <FontMetric metric> STU_INLINE CGFloat getRunFontMetric(GlyphRunRef run)
+{
+  const CTFont *font = run.font();
+  if constexpr (metric == FontMetric::xHeight)
+    return [(__bridge UIFont *)font xHeight];
+  else if constexpr (metric == FontMetric::capHeight)
+    return [(__bridge UIFont *)font capHeight];
+  else
+    static_assert(false && metric == metric);
 }
 
-template <FontMetric metric>
-Float32 TextFrameLine::maxFontMetricValue() const {
-  _Atomic(Float32)* p;
+template <FontMetric metric> Float32 TextFrameLine::maxFontMetricValue() const
+{
+  _Atomic(Float32) *p;
   {
-    TextFrameLine& line = const_cast<TextFrameLine&>(*this);
-         if constexpr (metric == FontMetric::xHeight)   { p = &line._xHeight; }
-    else if constexpr (metric == FontMetric::capHeight) { p = &line._capHeight; }
-    else static_assert(false && metric == metric);
+    TextFrameLine &line = const_cast<TextFrameLine &>(*this);
+    if constexpr (metric == FontMetric::xHeight) {
+      p = &line._xHeight;
+    } else if constexpr (metric == FontMetric::capHeight) {
+      p = &line._capHeight;
+    } else
+      static_assert(false && metric == metric);
   }
   Float32 value = atomic_load_explicit(p, memory_order_relaxed);
   if (value == FLT_MAX) {

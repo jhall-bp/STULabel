@@ -14,9 +14,7 @@ namespace stu_label {
 // We don't want to include the header since this is a no-objc-arc file.
 STU_DISABLE_CLANG_WARNING("-Wmissing-prototypes")
 
-CGColor* cgColor(UIColor*  color) {
-  return color.CGColor;
-}
+CGColor *cgColor(UIColor *color) { return color.CGColor; }
 
 STU_REENABLE_CLANG_WARNING
 

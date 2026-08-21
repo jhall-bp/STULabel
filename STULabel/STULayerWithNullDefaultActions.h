@@ -15,4 +15,3 @@ STU_EXPORT
 STU_EXPORT
 @interface STUShapeLayerWithNullDefaultActions : CAShapeLayer
 @end
-

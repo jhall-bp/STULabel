@@ -6,4 +6,4 @@ namespace stu_label {
 
 template class SortedIntervalBuffer<CGFloat>;
 
-} // stu_label
+} // namespace stu_label

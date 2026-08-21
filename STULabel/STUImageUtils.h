@@ -8,18 +8,22 @@
 STU_EXTERN_C_BEGIN
 
 typedef NS_ENUM(uint8_t, STUPredefinedCGImageFormat) {
-  STUPredefinedCGImageFormatRGB         NS_SWIFT_NAME(rgb) = 0,
-  STUPredefinedCGImageFormatExtendedRGB                    = 1,
-  STUPredefinedCGImageFormatGrayscale                      = 2
+  STUPredefinedCGImageFormatRGB NS_SWIFT_NAME(rgb) = 0,
+                                              STUPredefinedCGImageFormatExtendedRGB = 1,
+                                              STUPredefinedCGImageFormatGrayscale = 2
 } NS_SWIFT_NAME(STUCGImageFormat.Predefined);
-enum { STUPredefinedCGImageFormatBitSize STU_SWIFT_UNAVAILABLE = 2 };
+enum
+{
+  STUPredefinedCGImageFormatBitSize STU_SWIFT_UNAVAILABLE = 2
+};
 
 typedef NS_OPTIONS(uint32_t, STUCGImageFormatOptions) {
-  STUCGImageFormatOptionsNone         = 0,
+  STUCGImageFormatOptionsNone = 0,
   STUCGImageFormatWithoutAlphaChannel = 1
 } NS_SWIFT_NAME(STUCGImageFormat.Options);
 
-typedef struct STUCGImageFormat {
+typedef struct STUCGImageFormat
+{
   __nonnull CGColorSpaceRef colorSpace NS_REFINED_FOR_SWIFT;
   CGBitmapInfo bitmapInfo;
   uint16_t bitsPerComponent NS_REFINED_FOR_SWIFT;
@@ -27,11 +31,10 @@ typedef struct STUCGImageFormat {
 
   // public init(_ predefinedFormat: STUCGImageFormat.Predefined,
   //             _ options: STUCGImageFormat.Options = [])
-  
+
 } STUCGImageFormat;
 
-STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat, STUCGImageFormatOptions)
-  NS_REFINED_FOR_SWIFT;
+STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat, STUCGImageFormatOptions) NS_REFINED_FOR_SWIFT;
 
 /// @param size
 ///        The size of the bitmap in pixels is determined by multiplying the width and height of
@@ -46,13 +49,12 @@ STUCGImageFormat stuCGImageFormat(STUPredefinedCGImageFormat, STUCGImageFormatOp
 ///        and the fill color of the context is also set to this color.
 /// @param format The image format parameters.
 /// @param drawingBlock This block will be called in order to draw the image.
-__nullable CGImageRef stu_createCGImage(CGSize size, CGFloat scale,
+__nullable CGImageRef stu_createCGImage(CGSize size,
+                                        CGFloat scale,
                                         __nullable CGColorRef backgroundColor,
                                         STUCGImageFormat format,
-                                        void (^ STU_NOESCAPE __nonnull
-                                              drawingBlock)(__nonnull CGContextRef context))
-  CF_RETURNS_RETAINED
-  NS_REFINED_FOR_SWIFT;
+                                        void (^STU_NOESCAPE __nonnull drawingBlock)(__nonnull CGContextRef context))
+    CF_RETURNS_RETAINED NS_REFINED_FOR_SWIFT;
 
 /// Wraps @c CGBitmapContextCreate.
 ///
@@ -79,12 +81,12 @@ __nullable CGImageRef stu_createCGImage(CGSize size, CGFloat scale,
 ///        The number of bytes of memory to use per row of the bitmap. If @c data is null,
 ///        passing a value of 0 causes the value to be calculated automatically. If the `data`
 ///        argument is not null, this value must not be 0.
-__nullable CGContextRef stu_createCGBitmapContext(size_t widthInPixels, size_t heightInPixels,
+__nullable CGContextRef stu_createCGBitmapContext(size_t widthInPixels,
+                                                  size_t heightInPixels,
                                                   CGFloat scale,
                                                   __nullable CGColorRef backgroundColor,
                                                   STUCGImageFormat format,
-                                                  void* __nullable data, size_t bytesPerRow)
-  CF_RETURNS_RETAINED
-  NS_REFINED_FOR_SWIFT;
+                                                  void *__nullable data,
+                                                  size_t bytesPerRow) CF_RETURNS_RETAINED NS_REFINED_FOR_SWIFT;
 
 STU_EXTERN_C_END

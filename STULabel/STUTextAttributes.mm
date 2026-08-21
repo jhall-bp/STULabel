@@ -10,6 +10,4 @@ using namespace stu;
 using namespace stu_label;
 
 STU_EXPORT
-const NSAttributedStringKey STUHyphenationLocaleIdentifierAttributeName
-                              = @"STUHyphenationLocaleIdentifier";
-
+const NSAttributedStringKey STUHyphenationLocaleIdentifierAttributeName = @"STUHyphenationLocaleIdentifier";

@@ -4,19 +4,17 @@
 #import "STULabelLayoutInfo.h"
 #import "STUTextRange.h"
 
-typedef void (^ STULabelRenderTaskSchedulerBlock)(
-               void * __nullable taskContext,
-               void (* __nonnull taskFunction)(void * __nullable taskContext));
+typedef void (^STULabelRenderTaskSchedulerBlock)(void *__nullable taskContext,
+                                                 void (*__nonnull taskFunction)(void *__nullable taskContext));
 
 typedef NS_OPTIONS(uint8_t, STULabelPrerendererSizeOptions) {
-  STUShrinkLabelWidthToFit  = 1,
+  STUShrinkLabelWidthToFit = 1,
   STUShrinkLabelHeightToFit = 2
 };
 
 STU_DISABLE_CLANG_WARNING("-Wunguarded-availability-new")
 typedef NSDirectionalEdgeInsets STUDirectionalEdgeInsets;
 STU_REENABLE_CLANG_WARNING
-
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
@@ -33,7 +31,7 @@ STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 ///
 STU_EXPORT
 @interface STULabelPrerenderer : NSObject
-@end 
+@end
 @interface STULabelPrerenderer (Interface)
 
 // Calling one of the render methods freezes this object.
@@ -73,8 +71,7 @@ STU_EXPORT
 ///                  contentInsets: contentInsets,
 ///                  options: [.shrinkLabelHeightToFit])
 ///
-- (void)setWidth:(CGFloat)width maxHeight:(CGFloat)maxHeight
-   contentInsets:(UIEdgeInsets)contentInsets;
+- (void)setWidth:(CGFloat)width maxHeight:(CGFloat)maxHeight contentInsets:(UIEdgeInsets)contentInsets;
 
 /// Equivalent to
 ///
@@ -82,16 +79,16 @@ STU_EXPORT
 ///                  directionalContentInsets: contentInsets,
 ///                  options: [.shrinkLabelHeightToFit])
 ///
-- (void)setWidth:(CGFloat)width maxHeight:(CGFloat)maxHeight
-directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
+- (void)setWidth:(CGFloat)width
+                   maxHeight:(CGFloat)maxHeight
+    directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 
 /// Equivalent to
 ///
 ///     self.setSize(CGSize(width: maxWidth, height: maxHeight), contentInsets: contentInsets,
 ///                  options: [.shrinkLabelWidthToFit, .shrinkLabelHeightToFit])
 ///
-- (void)setMaxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight
-      contentInsets:(UIEdgeInsets)contentInsets;
+- (void)setMaxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight contentInsets:(UIEdgeInsets)contentInsets;
 
 /// Equivalent to
 ///
@@ -99,14 +96,15 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 ///                  directionalContentInsets: contentInsets,
 ///                  options: [.shrinkLabelWidthToFit, .shrinkLabelHeightToFit])
 ///
-- (void)setMaxWidth:(CGFloat)maxWidth maxHeight:(CGFloat)maxHeight
-directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
+- (void)setMaxWidth:(CGFloat)maxWidth
+                   maxHeight:(CGFloat)maxHeight
+    directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 
-- (void)setSize:(CGSize)size contentInsets:(UIEdgeInsets)contentInsets
-        options:(STULabelPrerendererSizeOptions)options;
+- (void)setSize:(CGSize)size contentInsets:(UIEdgeInsets)contentInsets options:(STULabelPrerendererSizeOptions)options;
 
-- (void)setSize:(CGSize)size directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets
-        options:(STULabelPrerendererSizeOptions)options;
+- (void)setSize:(CGSize)size
+    directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets
+                     options:(STULabelPrerendererSizeOptions)options;
 
 /// Default value: 1. Set this to the target label's @c traitCollection.displayScale before rendering.
 @property (nonatomic) CGFloat displayScale;
@@ -123,7 +121,7 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 /// @c lastHyphenationLocationInRangeCallback.
 ///
 /// @c options.defaultTextAlignment is ignored.
-- (void)setTextFrameOptions:(nullable STUTextFrameOptions*)options;
+- (void)setTextFrameOptions:(nullable STUTextFrameOptions *)options;
 
 /// Default value: @c .default
 @property (nonatomic) STUTextLayoutMode textLayoutMode;
@@ -147,22 +145,19 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 @property (nonatomic) STUBaselineAdjustment textScalingBaselineAdjustment;
 
 /// Default value: @c nil
-@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder
-                                  lastHyphenationLocationInRangeFinder;
-
+@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
 // MARK: - Configuration properties that do not influence the text layout
 
 @property (nonatomic, nullable) CGColorRef backgroundColor;
 
-@property(nonatomic, getter=isHighlighted) bool highlighted;
+@property (nonatomic, getter=isHighlighted) bool highlighted;
 
 @property (nonatomic, nullable) STUTextHighlightStyle *highlightStyle;
 
 @property (nonatomic) STUTextRange highlightRange;
 
-- (void)setHighlightRange:(NSRange)range type:(STUTextRangeType)rangeType
-  NS_SWIFT_NAME(setHighlightRange(_:type:));
+- (void)setHighlightRange:(NSRange)range type:(STUTextRangeType)rangeType NS_SWIFT_NAME(setHighlightRange(_:type:));
 
 /// Default value: true
 @property (nonatomic) bool overrideColorsApplyToHighlightedText;
@@ -206,8 +201,7 @@ directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets;
 @property (nonatomic, readonly) CGSize sizeThatFits;
 
 - (bool)tryGetSizeThatFits:(nullable CGSize *)outSizeThatFits
-                layoutInfo:(nullable STULabelLayoutInfo *)outLayoutInfo
-  NS_SWIFT_NAME(tryGet(sizeThatFits:layoutInfo:));
+                layoutInfo:(nullable STULabelLayoutInfo *)outLayoutInfo NS_SWIFT_NAME(tryGet(sizeThatFits:layoutInfo:));
 
 /// \pre `!self.isFrozen || self.hasLayoutInfo `
 /// \post `self.hasLayoutInfo`

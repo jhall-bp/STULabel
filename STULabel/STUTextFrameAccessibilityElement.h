@@ -4,7 +4,7 @@
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
-typedef bool (^ STUTextLinkRangePredicate)(STUTextRange range, id linkValue, CGPoint point);
+typedef bool (^STUTextLinkRangePredicate)(STUTextRange range, id linkValue, CGPoint point);
 
 @class STUTextFrameAccessibilitySubelement;
 
@@ -20,10 +20,9 @@ STU_EXPORT
                             separateParagraphs:(bool)separateParagraphs
                           separateLinkElements:(bool)separateLinkElements
                                isDraggableLink:(__nullable STUTextLinkRangePredicate)isDraggableLink
-                         linkActivationHandler:(__nullable STUTextLinkRangePredicate)
-                                                 linkActivationHandler
+                         linkActivationHandler:(__nullable STUTextLinkRangePredicate)linkActivationHandler
 
-  NS_DESIGNATED_INITIALIZER;
+    NS_DESIGNATED_INITIALIZER;
 
 STU_DISABLE_CLANG_WARNING("-Wproperty-attribute-mismatch")
 @property (nullable, weak) UIView *accessibilityContainer;
@@ -43,7 +42,7 @@ STU_REENABLE_CLANG_WARNING
 - (instancetype)init NS_UNAVAILABLE;
 - (void)setAccessibilityElements:(nullable NSArray *)accessibilityElements NS_UNAVAILABLE;
 - (void)setAccessibilityFrame:(CGRect)accessibilityFrame
-  STU_UNAVAILABLE("Set textFrameOriginInContainerSpace or accessibilityFrameInContainerSpace instead.");
+    STU_UNAVAILABLE("Set textFrameOriginInContainerSpace or accessibilityFrameInContainerSpace instead.");
 
 @end
 

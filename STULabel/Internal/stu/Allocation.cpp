@@ -4,8 +4,7 @@
 
 namespace stu::detail {
 
-[[noreturn]] STU_NO_INLINE
-void throwBadAlloc() {
+[[noreturn]] STU_NO_INLINE void throwBadAlloc() {
 #ifdef __cpp_exceptions
   throw std::bad_alloc();
 #else
@@ -13,4 +12,4 @@ void throwBadAlloc() {
 #endif
 }
 
-}
+} // namespace stu::detail

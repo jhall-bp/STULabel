@@ -13,14 +13,14 @@ TEST_CASE_START(AllocationTests)
 #if STU_ASSERT_MAY_THROW
 TEST(AllocatorBasePreconditionAssert) {
   ValidatingMalloc allocator;
-#if !STU_NO_EXCEPTIONS
-  CHECK_THROWS_BAD_ALLOC(allocator.allocate(maxValue<UInt>/2 + 1));
-  CHECK_THROWS_BAD_ALLOC(allocator.allocate<UInt>(maxValue<UInt>/2 + 1));
-#endif
-  UInt* p = allocator.allocate<UInt>(2);
-#if !STU_NO_EXCEPTIONS
+  #if !STU_NO_EXCEPTIONS
+  CHECK_THROWS_BAD_ALLOC(allocator.allocate(maxValue<UInt> / 2 + 1));
+  CHECK_THROWS_BAD_ALLOC(allocator.allocate<UInt>(maxValue<UInt> / 2 + 1));
+  #endif
+  UInt *p = allocator.allocate<UInt>(2);
+  #if !STU_NO_EXCEPTIONS
   CHECK_THROWS_BAD_ALLOC(allocator.increaseCapacity(p, UInt{0}, UInt{2}, UInt{maxValue<Int>} + 1));
-#endif
+  #endif
   CHECK_FAILS_ASSERT(allocator.increaseCapacity(p, 0, 2, 1));
   CHECK_FAILS_ASSERT(allocator.increaseCapacity(p, 3, 2, 2));
   CHECK_FAILS_ASSERT(allocator.decreaseCapacity(p, 2, 2, 3));
@@ -33,7 +33,7 @@ TEST(Malloc) {
   static_assert(isAllocator<Malloc>);
   static_assert(isAllocatorRef<Malloc>);
   ValidatingMalloc allocator;
-  Int* p = allocator.allocate<Int>(1);
+  Int *p = allocator.allocate<Int>(1);
   *p = 1;
   allocator.deallocate(p);
   p = allocator.allocate<Int>(2);

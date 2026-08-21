@@ -5,15 +5,15 @@
 #import "DrawingContext.hpp"
 #import "TextFrame.hpp"
 
-
 namespace stu_label {
 
 void TextFrame::draw(CGPoint origin,
-                     CGContext* cgContext, ContextBaseCTM_d baseCTM_d,
+                     CGContext *cgContext,
+                     ContextBaseCTM_d baseCTM_d,
                      PixelAlignBaselines pixelAlignBaselines,
-                     Optional<const TextFrameDrawingOptions&> options,
-                     const Optional<TextStyleOverride&> styleOverride,
-                     const Optional<const STUCancellationFlag&> cancellationFlag) const
+                     Optional<const TextFrameDrawingOptions &> options,
+                     const Optional<TextStyleOverride &> styleOverride,
+                     const Optional<const STUCancellationFlag &> cancellationFlag) const
 {
   if (this->textScaleFactor < 1) {
     CGContextSaveGState(cgContext);
@@ -51,36 +51,43 @@ void TextFrame::draw(CGPoint origin,
 
   CGContextSetTextDrawingMode(cgContext, kCGTextFill);
 
-  DrawingContext context{[&]()-> DrawingContext {
+  DrawingContext context{[&]() -> DrawingContext {
     const Optional<DisplayScale> displayScale = DisplayScale::create(scale);
     // We outset the clip rect by 2*displayScale.inverseValue(), so that we can ignore the effects
     // of (repeated) display scale rounding when comparing bounds.
     Rect clipRect = CGContextGetClipBoundingBox(cgContext);
     if (displayScale) {
-      clipRect = clipRect.outset(2*displayScale->inverseValue());
+      clipRect = clipRect.outset(2 * displayScale->inverseValue());
     }
-    return {cancellationFlag, cgContext, baseCTM_d, displayScale, clipRect, ctmYOffset, origin,
-            options, *this, styleOverride};
+    return {cancellationFlag,
+            cgContext,
+            baseCTM_d,
+            displayScale,
+            clipRect,
+            ctmYOffset,
+            origin,
+            options,
+            *this,
+            styleOverride};
   }()};
 
-  const STUTextFrameDrawingMode mode = options ? options->drawingMode()
-                                     : STUTextFrameDefaultDrawingMode;
-  const bool shouldDrawBackground = !(mode & STUTextFrameDrawOnlyForeground)
-                                 && (   (flags & STUTextFrameHasBackground)
-                                     || (styleOverride
-                                         && (styleOverride->flags & TextFlags::hasBackground)));
+  const STUTextFrameDrawingMode mode = options ? options->drawingMode() : STUTextFrameDefaultDrawingMode;
+  const bool shouldDrawBackground =
+      !(mode & STUTextFrameDrawOnlyForeground) &&
+      ((flags & STUTextFrameHasBackground) || (styleOverride && (styleOverride->flags & TextFlags::hasBackground)));
   const bool shouldDrawForeground = !(mode & STUTextFrameDrawOnlyBackground);
 
   const Rect clipRect = context.clipRect();
-  const Range<Int> clipLineRange = verticalSearchTable()
-                                   .indexRange(narrow_cast<Range<Float32>>(clipRect.y - origin.y));
+  const Range<Int> clipLineRange = verticalSearchTable().indexRange(narrow_cast<Range<Float32>>(clipRect.y - origin.y));
 
   if (shouldDrawBackground) {
     drawBackground(clipLineRange, context);
-    if (context.isCancelled()) return;
+    if (context.isCancelled())
+      return;
   }
 
-  if (!shouldDrawForeground) return;
+  if (!shouldDrawForeground)
+    return;
 
   const bool needToDrawAttachments = (flags & STUTextFrameHasTextAttachment);
   if (needToDrawAttachments) {
@@ -98,8 +105,9 @@ void TextFrame::draw(CGPoint origin,
 
   const Point<Float64> textFrameOrigin = origin;
 
-  for (const TextFrameLine& line : this->lines()[clipLineRange]) {
-    if (context.isCancelled()) break;
+  for (const TextFrameLine &line : this->lines()[clipLineRange]) {
+    if (context.isCancelled())
+      break;
 
     Point<Float64> lineOrigin = textFrameOrigin + line.origin();
     if (context.displayScale()) {
@@ -107,7 +115,8 @@ void TextFrame::draw(CGPoint origin,
     }
     const Point<CGFloat> cgLineOrigin = narrow_cast<Point<CGFloat>>(lineOrigin);
 
-    if (!clipRect.overlaps(cgLineOrigin + line.fastBounds())) continue;
+    if (!clipRect.overlaps(cgLineOrigin + line.fastBounds()))
+      continue;
 
     if (const auto scope = context.enterLineDrawingScope(line)) {
       context.setLineOrigin({cgLineOrigin.x, -cgLineOrigin.y});
@@ -117,7 +126,3 @@ void TextFrame::draw(CGPoint origin,
 }
 
 } // namespace stu_label
-
-
-
-

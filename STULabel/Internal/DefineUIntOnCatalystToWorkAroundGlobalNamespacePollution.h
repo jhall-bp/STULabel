@@ -4,4 +4,3 @@
 #if TARGET_OS_MACCATALYST
   #define UInt ::stu::UInt
 #endif
-

@@ -6,8 +6,7 @@
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
-extern const NSAttributedStringKey STUBackgroundAttributeName
-  NS_SWIFT_NAME(stuBackground);
+extern const NSAttributedStringKey STUBackgroundAttributeName NS_SWIFT_NAME(stuBackground);
 
 @class STUBackgroundAttributeBuilder;
 
@@ -15,18 +14,16 @@ STU_EXPORT
 @interface STUBackgroundAttribute : NSObject <NSCopying, NSSecureCoding>
 
 - (instancetype)initWithBuilder:(nullable STUBackgroundAttributeBuilder *)builder
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STUBackgroundAttributeBuilder *builder))block
-  // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
-  // Use Swift's trailing closure syntax when calling this initializer.
-  NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STUBackgroundAttributeBuilder *builder))block
+    // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
+    // Use Swift's trailing closure syntax when calling this initializer.
+    NS_REFINED_FOR_SWIFT;
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STUBackgroundAttributeBuilder *builder))block;
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STUBackgroundAttributeBuilder *builder))block;
 
-- (instancetype)initWithCoder:(NSCoder *)decoder
-  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCoder:(NSCoder *)decoder NS_DESIGNATED_INITIALIZER;
 
 - (void)encodeWithCoder:(NSCoder *)encoder;
 
@@ -61,8 +58,7 @@ STU_EXPORT
 @interface STUBackgroundAttributeBuilder : NSObject
 
 - (instancetype)initWithBackgroundAttribute:(nullable STUBackgroundAttribute *)backgroundAttribute
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, nullable) UIColor *color;
 
@@ -92,4 +88,3 @@ STU_EXPORT
 @end
 
 STU_ASSUME_NONNULL_AND_STRONG_END
-

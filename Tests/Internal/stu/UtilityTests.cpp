@@ -24,16 +24,18 @@ TEST(ArrayLength) {
   {
     struct Wrapper {
       int array[3];
-      void test() { static_assert(STU_ARRAY_LENGTH(array) == 3); }
+      void test() {
+        static_assert(STU_ARRAY_LENGTH(array) == 3);
+      }
     };
     Wrapper().test();
   }
 }
 
-template <typename UInt>
-constexpr int countLeadingZeroBits_generic(UInt value) {
+template <typename UInt> constexpr int countLeadingZeroBits_generic(UInt value) {
   static_assert(IntegerTraits<UInt>::isUnsigned);
-  if (value == 0) return IntegerTraits<UInt>::bits;
+  if (value == 0)
+    return IntegerTraits<UInt>::bits;
   int result = 0;
   while ((value & (UInt(1) << (IntegerTraits<UInt>::bits - 1))) == 0) {
     value <<= 1;
@@ -125,7 +127,7 @@ TEST(RoundDownToMultipleOf) {
   static_assert(roundDownToMultipleOf<8>(17) == 16);
   static_assert(roundDownToMultipleOf<8>(24) == 24);
   static_assert(roundDownToMultipleOf<8>(25) == 24);
-  static_assert(roundDownToMultipleOf<8>(INT_MAX) == (INT_MAX/8)*8);
+  static_assert(roundDownToMultipleOf<8>(INT_MAX) == (INT_MAX / 8) * 8);
   static_assert(roundDownToMultipleOf<8>(-1) == -8);
   static_assert(roundDownToMultipleOf<8>(-7) == -8);
   static_assert(roundDownToMultipleOf<8>(-8) == -8);
@@ -148,7 +150,7 @@ TEST(RoundUpToMultipleOf) {
   static_assert(roundUpToMultipleOf<8>(17) == 24);
   static_assert(roundUpToMultipleOf<8>(24) == 24);
   static_assert(roundUpToMultipleOf<8>(25) == 32);
-  static_assert(roundUpToMultipleOf<8>((INT_MAX/8)*8) == (INT_MAX/8)*8);
+  static_assert(roundUpToMultipleOf<8>((INT_MAX / 8) * 8) == (INT_MAX / 8) * 8);
   static_assert(roundUpToMultipleOf<8>(-1) == 0);
   static_assert(roundUpToMultipleOf<8>(-7) == 0);
   static_assert(roundUpToMultipleOf<8>(-8) == -8);
@@ -165,12 +167,12 @@ TEST(IsAligned) {
   UInt n = 0;
   CHECK(isAligned<UInt>(&n));
   CHECK(isAligned<alignof(UInt)>(&n));
-  CHECK(!isAligned<UInt>(reinterpret_cast<Byte*>(&n) + 1));
-  CHECK(!isAligned<alignof(UInt)>(reinterpret_cast<Byte*>(&n) + 1));
-  CHECK(!isAligned<UInt>(reinterpret_cast<Byte*>(&n) + (alignof(UInt) - 1)));
-  CHECK(!isAligned<alignof(UInt)>(reinterpret_cast<Byte*>(&n) + (alignof(UInt) - 1)));
-  CHECK(isAligned<UInt>(reinterpret_cast<Byte*>(&n) + alignof(UInt)));
-  CHECK(isAligned<alignof(UInt)>(reinterpret_cast<Byte*>(&n) + alignof(UInt)));
+  CHECK(!isAligned<UInt>(reinterpret_cast<Byte *>(&n) + 1));
+  CHECK(!isAligned<alignof(UInt)>(reinterpret_cast<Byte *>(&n) + 1));
+  CHECK(!isAligned<UInt>(reinterpret_cast<Byte *>(&n) + (alignof(UInt) - 1)));
+  CHECK(!isAligned<alignof(UInt)>(reinterpret_cast<Byte *>(&n) + (alignof(UInt) - 1)));
+  CHECK(isAligned<UInt>(reinterpret_cast<Byte *>(&n) + alignof(UInt)));
+  CHECK(isAligned<alignof(UInt)>(reinterpret_cast<Byte *>(&n) + alignof(UInt)));
 }
 
 TEST_CASE_END

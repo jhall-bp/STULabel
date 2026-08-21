@@ -4,11 +4,11 @@
 
 #import "stu/Assert.h"
 
-typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
+typedef void (^FadeCompletion)(STULabelLinkOverlayLayer *__nonnull);
 
 @interface STULabelLinkOverlayFadeAnimationDelegate : NSObject <CAAnimationDelegate> {
 @package
-  STULabelLinkOverlayLayer * __weak _layer;
+  STULabelLinkOverlayLayer *__weak _layer;
   FadeCompletion _completion;
 }
 @end
@@ -20,12 +20,12 @@ typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
   STULabelLinkOverlayFadeAnimationDelegate *_fadeDelegate;
 }
 
-- (void)setBounds:(CGRect __unused)bounds {
+- (void)setBounds:(CGRect __unused)bounds
+{
   [super setBounds:CGRectZero];
 }
 
-- (instancetype)initWithStyle:(STULabelOverlayStyle *)style
-                         link:(STUTextLink *)link
+- (instancetype)initWithStyle:(STULabelOverlayStyle *)style link:(STUTextLink *)link
 {
   if (self = [super init]) {
     super.opacity = 0;
@@ -35,10 +35,15 @@ typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
   return self;
 }
 
-- (STUTextLink *)link { return _link; }
+- (STUTextLink *)link
+{
+  return _link;
+}
 
-- (void)setLink:(STUTextLink *)link {
-  if (_link == link) return;
+- (void)setLink:(STUTextLink *)link
+{
+  if (_link == link)
+    return;
   if (_fadeDelegate) {
     _fadeDelegate = nil;
     [self removeAnimationForKey:fadeAnimationKey];
@@ -47,10 +52,15 @@ typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
   [self setNeedsDisplay];
 }
 
-- (STULabelOverlayStyle *)overlayStyle { return _style; }
+- (STULabelOverlayStyle *)overlayStyle
+{
+  return _style;
+}
 
-- (void)setOverlayStyle:(STULabelOverlayStyle *)style {
-  if (style == _style) return;
+- (void)setOverlayStyle:(STULabelOverlayStyle *)style
+{
+  if (style == _style)
+    return;
   _style = style;
   self.strokeColor = style.borderColor.CGColor;
   self.lineWidth = style.borderWidth;
@@ -58,8 +68,8 @@ typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
   [self setNeedsDisplay];
 }
 
-
-- (void)display {
+- (void)display
+{
   CGPathRef path = [_link createPathWithEdgeInsets:_style.edgeInsets
                                       cornerRadius:_style.cornerRadius
            extendTextLinesToCommonHorizontalBounds:_style.extendTextLinesToCommonHorizontalBounds
@@ -69,46 +79,45 @@ typedef void (^ FadeCompletion)(STULabelLinkOverlayLayer * __nonnull);
   CFRelease(path);
 }
 
-
-- (BOOL)isHidden {
+- (BOOL)isHidden
+{
   return self.opacity == 0;
 }
 
-static NSString * const fadeAnimationKey = @"stuFade";
+static NSString *const fadeAnimationKey = @"stuFade";
 
-- (void)setHidden:(BOOL)hidden {
+- (void)setHidden:(BOOL)hidden
+{
   [self setHidden:hidden withAnimationCompletion:nil];
 }
-- (void)setHidden:(BOOL)hidden
-withAnimationCompletion:(void (^)(STULabelLinkOverlayLayer * _Nonnull))completion
+- (void)setHidden:(BOOL)hidden withAnimationCompletion:(void (^)(STULabelLinkOverlayLayer *_Nonnull))completion
 {
   const CFTimeInterval duration = !hidden ? _style.fadeInDuration : _style.fadeOutDuration;
   if (duration == 0) {
     self.opacity = hidden ? 0 : 1;
     if (_fadeDelegate) {
-       _fadeDelegate = nil;
-       [self removeAnimationForKey:fadeAnimationKey];
+      _fadeDelegate = nil;
+      [self removeAnimationForKey:fadeAnimationKey];
     }
     if (completion) {
       completion(self);
     }
     return;
   }
-  const Float32 opacity = _fadeDelegate ? self.presentationLayer.opacity  : self.opacity;
+  const Float32 opacity = _fadeDelegate ? self.presentationLayer.opacity : self.opacity;
   self.opacity = hidden ? 0 : 1;
   const Float32 progress = !hidden ? opacity : 1 - opacity;
-  __auto_type * const delegate = [[STULabelLinkOverlayFadeAnimationDelegate alloc] init];
+  __auto_type *const delegate = [[STULabelLinkOverlayFadeAnimationDelegate alloc] init];
   _fadeDelegate = delegate;
   delegate->_layer = self;
   delegate->_completion = completion;
-  CABasicAnimation * const animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+  CABasicAnimation *const animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
   animation.timingFunction = (hidden ? _style.fadeOutTimingFunction : _style.fadeInTimingFunction)
-                             ?: [CAMediaTimingFunction
-                                  functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                                 ?: [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
   animation.delegate = delegate;
   animation.fromValue = @(opacity);
   animation.toValue = @(hidden ? 0 : 1);
-  animation.duration = (1 - progress)*duration;
+  animation.duration = (1 - progress) * duration;
   [self addAnimation:animation forKey:fadeAnimationKey];
 }
 
@@ -116,8 +125,9 @@ withAnimationCompletion:(void (^)(STULabelLinkOverlayLayer * _Nonnull))completio
 
 @implementation STULabelLinkOverlayFadeAnimationDelegate
 
-- (void)animationDidStop:(CAAnimation * __unused)animation finished:(BOOL __unused)flag {
-  STULabelLinkOverlayLayer * const layer = self->_layer;
+- (void)animationDidStop:(CAAnimation *__unused)animation finished:(BOOL __unused)flag
+{
+  STULabelLinkOverlayLayer *const layer = self->_layer;
   const FadeCompletion completion = self->_completion;
   self->_completion = nil;
   if (layer && self == layer->_fadeDelegate) {
@@ -129,5 +139,3 @@ withAnimationCompletion:(void (^)(STULabelLinkOverlayLayer * _Nonnull))completio
 }
 
 @end
-
-

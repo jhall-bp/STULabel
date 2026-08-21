@@ -9,9 +9,8 @@
 #undef STU_DEBUG_ASSERT
 #undef STU_PRECONDITION
 
-#define STU_CHECK_MSG(assertion, message) \
-  (STU_LIKELY(assertion) ? (void)0 \
-   : stu_assertion_failed(__FILE__, __LINE__, __PRETTY_FUNCTION__, message))
+#define STU_CHECK_MSG(assertion, message)                                                                              \
+  (STU_LIKELY(assertion) ? (void)0 : stu_assertion_failed(__FILE__, __LINE__, __PRETTY_FUNCTION__, message))
 
 #if STU_DEBUG
   #define STU_CHECK(assertion) STU_CHECK_MSG(assertion, #assertion)
@@ -23,18 +22,18 @@
 
 #if defined(NDEBUG) // Release build without asserts
 
-#define STU_ASSERT(assertion) STU_ASSUME(assertion)
-#define STU_DEBUG_ASSERT(assertion) STU_ASSUME(assertion)
+  #define STU_ASSERT(assertion) STU_ASSUME(assertion)
+  #define STU_DEBUG_ASSERT(assertion) STU_ASSUME(assertion)
 
 #elif !STU_DEBUG // Release build with asserts
 
-#define STU_ASSERT(assertion) STU_CHECK(assertion)
-#define STU_DEBUG_ASSERT(assertion)
+  #define STU_ASSERT(assertion) STU_CHECK(assertion)
+  #define STU_DEBUG_ASSERT(assertion)
 
 #else // Debug build
 
-#define STU_ASSERT(assertion) STU_CHECK(assertion)
-#define STU_DEBUG_ASSERT(assertion) STU_ASSERT(assertion)
+  #define STU_ASSERT(assertion) STU_CHECK(assertion)
+  #define STU_DEBUG_ASSERT(assertion) STU_ASSERT(assertion)
 
 #endif
 
@@ -43,7 +42,5 @@
 #ifdef __cplusplus
 extern "C"
 #endif
-void stu_assertion_failed(const char *fileName, int line, const char *functionName,
-                          const char *condition)
-       __attribute__((noreturn));
-
+    void stu_assertion_failed(const char *fileName, int line, const char *functionName, const char *condition)
+        __attribute__((noreturn));

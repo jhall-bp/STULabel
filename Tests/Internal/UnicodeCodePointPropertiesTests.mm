@@ -12,15 +12,17 @@ using namespace stu_label;
 @end
 @implementation UnicodeCodePointPropertiesTests
 
-- (void)setUp {
+- (void)setUp
+{
   [super setUp];
   self.continueAfterFailure = false;
 }
 
-- (void)testIsSurrogate {
+- (void)testIsSurrogate
+{
   for (uint32_t cp = 0; cp <= UCHAR_MAX_VALUE + 4; ++cp) {
     XCTAssertEqual(isHighSurrogate(cp), cp <= 0xffff && CFStringIsSurrogateHighCharacter((UInt16)cp));
-    XCTAssertEqual(isLowSurrogate(cp),  cp <= 0xffff && CFStringIsSurrogateLowCharacter((UInt16)cp));
+    XCTAssertEqual(isLowSurrogate(cp), cp <= 0xffff && CFStringIsSurrogateLowCharacter((UInt16)cp));
     XCTAssertEqual(isSurrogate(cp), isHighSurrogate(cp) || isLowSurrogate(cp));
   }
   XCTAssertEqual(isHighSurrogate(UINT32_MAX), false);
@@ -28,18 +30,16 @@ using namespace stu_label;
   XCTAssertEqual(isSurrogate(UINT32_MAX), false);
 }
 
-- (void)testCodePointFromSurrogatePair {
-  XCTAssertEqual(codePointFromSurrogatePair(0xD800, 0xDC00),
-                 CFStringGetLongCharacterForSurrogatePair(0xD800, 0xDC00));
-  XCTAssertEqual(codePointFromSurrogatePair(0xD800, 0xDFFF),
-                 CFStringGetLongCharacterForSurrogatePair(0xD800, 0xDFFF));
-  XCTAssertEqual(codePointFromSurrogatePair(0xDBFF, 0xDC00),
-                 CFStringGetLongCharacterForSurrogatePair(0xDBFF, 0xDC00));
-  XCTAssertEqual(codePointFromSurrogatePair(0xDBFF, 0xDFFF),
-                 CFStringGetLongCharacterForSurrogatePair(0xDBFF, 0xDFFF));
+- (void)testCodePointFromSurrogatePair
+{
+  XCTAssertEqual(codePointFromSurrogatePair(0xD800, 0xDC00), CFStringGetLongCharacterForSurrogatePair(0xD800, 0xDC00));
+  XCTAssertEqual(codePointFromSurrogatePair(0xD800, 0xDFFF), CFStringGetLongCharacterForSurrogatePair(0xD800, 0xDFFF));
+  XCTAssertEqual(codePointFromSurrogatePair(0xDBFF, 0xDC00), CFStringGetLongCharacterForSurrogatePair(0xDBFF, 0xDC00));
+  XCTAssertEqual(codePointFromSurrogatePair(0xDBFF, 0xDFFF), CFStringGetLongCharacterForSurrogatePair(0xDBFF, 0xDFFF));
 }
 
-- (void)testIsLineTerminator {
+- (void)testIsLineTerminator
+{
   const CFCharacterSetRef set = CFCharacterSetGetPredefined(kCFCharacterSetNewline);
 
   for (uint32_t cp = 0; cp <= UINT16_MAX; ++cp) {
@@ -48,16 +48,17 @@ using namespace stu_label;
   }
 }
 
-- (void)testIsRegionalIndicator {
+- (void)testIsRegionalIndicator
+{
   for (UChar32 cp = 0; cp < UCHAR_MAX_VALUE + 4; ++cp) {
-    XCTAssertEqual(isRegionalIndicator((Char32)cp),
-                   u_hasBinaryProperty(cp, UCHAR_REGIONAL_INDICATOR),
-                   @"code point 0x%x", cp);
+    XCTAssertEqual(
+        isRegionalIndicator((Char32)cp), u_hasBinaryProperty(cp, UCHAR_REGIONAL_INDICATOR), @"code point 0x%x", cp);
   }
   XCTAssert(!isRegionalIndicator(UINT32_MAX));
 }
 
-- (void)testIsUnicodeWhitespace {
+- (void)testIsUnicodeWhitespace
+{
   for (uint32_t cp = 0; cp <= UINT16_MAX; ++cp) {
     const bool expected = u_hasBinaryProperty((UChar32)cp, UCHAR_WHITE_SPACE);
     XCTAssertEqual(isUnicodeWhitespace((Char32)cp), expected, @"code point 0x%x", cp);
@@ -66,25 +67,24 @@ using namespace stu_label;
 
 // This library uses the Unicode 11 data, which corresponds to the data of the system ICU library
 // in iOS 12 (>= beta 3).
-- (void)testIsNotIgnorableWithCodePoint:(uint32_t)cp {
-  const bool ignorable = u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT)
-                      || (u_isISOControl((UChar32)cp) && !u_isUWhiteSpace((UChar32)cp))
-                      || (0xFFF9 <= cp && cp <= 0xFFFB);
-  XCTAssertEqual(isNotIgnorable(cp), !ignorable,
-                 @"code point 0x%x", cp);
+- (void)testIsNotIgnorableWithCodePoint:(uint32_t)cp
+{
+  const bool ignorable = u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT) ||
+                         (u_isISOControl((UChar32)cp) && !u_isUWhiteSpace((UChar32)cp)) ||
+                         (0xFFF9 <= cp && cp <= 0xFFFB);
+  XCTAssertEqual(isNotIgnorable(cp), !ignorable, @"code point 0x%x", cp);
 }
 
-- (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint:(uint32_t)cp {
-  const bool ignorableOrWhitespace =
-                u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT)
-             || u_hasBinaryProperty((UChar32)cp, UCHAR_WHITE_SPACE)
-             || u_isISOControl((UChar32)cp)
-             || (0xFFF9 <= cp && cp <= 0xFFFB);
-  XCTAssertEqual(isNotIgnorableAndNotWhitespace(cp), !ignorableOrWhitespace,
-                 @"code point 0x%x", cp);
+- (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint:(uint32_t)cp
+{
+  const bool ignorableOrWhitespace = u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT) ||
+                                     u_hasBinaryProperty((UChar32)cp, UCHAR_WHITE_SPACE) ||
+                                     u_isISOControl((UChar32)cp) || (0xFFF9 <= cp && cp <= 0xFFFB);
+  XCTAssertEqual(isNotIgnorableAndNotWhitespace(cp), !ignorableOrWhitespace, @"code point 0x%x", cp);
 }
 
-- (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint {
+- (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint
+{
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testIsNotIgnorableAndNotWhitespaceWithCodePoint:i];
     [self testIsNotIgnorableWithCodePoint:i];
@@ -95,32 +95,34 @@ using namespace stu_label;
   [self testIsNotIgnorableWithCodePoint:UINT32_MAX];
 }
 
- - (void)testBidiStrongTypeOfCodePoint:(uint32_t)cp {
-   BidiStrongType expected;
-   const UCharDirection d = cp > UCHAR_MAX_VALUE ? U_OTHER_NEUTRAL : u_charDirection((UChar32)cp);
-   switch (d) {
-     case U_LEFT_TO_RIGHT:
-       expected = BidiStrongType::ltr;
-       break;
-     case U_RIGHT_TO_LEFT:
-     case U_RIGHT_TO_LEFT_ARABIC:
-       expected = BidiStrongType::rtl;
-       break;
-     case U_LEFT_TO_RIGHT_ISOLATE:
-     case U_RIGHT_TO_LEFT_ISOLATE:
-     case U_FIRST_STRONG_ISOLATE:
-     case U_POP_DIRECTIONAL_ISOLATE:
-       expected = BidiStrongType::isolate;
-       break;
-     default:
-       expected = BidiStrongType::none;
-       break;
-   }
-   const BidiStrongType st = bidiStrongType(cp);
-   XCTAssertEqual(st, expected, @"code point 0x%x", cp);
- }
+- (void)testBidiStrongTypeOfCodePoint:(uint32_t)cp
+{
+  BidiStrongType expected;
+  const UCharDirection d = cp > UCHAR_MAX_VALUE ? U_OTHER_NEUTRAL : u_charDirection((UChar32)cp);
+  switch (d) {
+  case U_LEFT_TO_RIGHT:
+    expected = BidiStrongType::ltr;
+    break;
+  case U_RIGHT_TO_LEFT:
+  case U_RIGHT_TO_LEFT_ARABIC:
+    expected = BidiStrongType::rtl;
+    break;
+  case U_LEFT_TO_RIGHT_ISOLATE:
+  case U_RIGHT_TO_LEFT_ISOLATE:
+  case U_FIRST_STRONG_ISOLATE:
+  case U_POP_DIRECTIONAL_ISOLATE:
+    expected = BidiStrongType::isolate;
+    break;
+  default:
+    expected = BidiStrongType::none;
+    break;
+  }
+  const BidiStrongType st = bidiStrongType(cp);
+  XCTAssertEqual(st, expected, @"code point 0x%x", cp);
+}
 
-- (void)testBidiStrongType {
+- (void)testBidiStrongType
+{
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testBidiStrongTypeOfCodePoint:i];
   }
@@ -130,13 +132,15 @@ using namespace stu_label;
 
 static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp);
 
- - (void)testGraphemeClusterCategoryOfCodePoint:(uint32_t)cp {
-   const GraphemeClusterCategory expected = graphemeClusterCategoryFromICU(cp);
-   const GraphemeClusterCategory value = graphemeClusterCategory(cp);
-   XCTAssertEqual(value, expected, @"code point 0x%x", cp);
- }
+- (void)testGraphemeClusterCategoryOfCodePoint:(uint32_t)cp
+{
+  const GraphemeClusterCategory expected = graphemeClusterCategoryFromICU(cp);
+  const GraphemeClusterCategory value = graphemeClusterCategory(cp);
+  XCTAssertEqual(value, expected, @"code point 0x%x", cp);
+}
 
-- (void)testGraphemeClusterCategory {
+- (void)testGraphemeClusterCategory
+{
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testGraphemeClusterCategoryOfCodePoint:i];
   }
@@ -144,11 +148,11 @@ static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp);
   [self testGraphemeClusterCategoryOfCodePoint:UINT32_MAX];
 }
 
-static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp) {
+static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp)
+{
   const bool isApplePUA = 0xf7f3 <= cp && cp < 0xf900;
   const bool isPicto = u_hasBinaryProperty(UChar32(cp), UCHAR_EXTENDED_PICTOGRAPHIC);
-  const auto gcb = static_cast<UGraphemeClusterBreak>(u_getIntPropertyValue(
-                                                        UChar32(cp), UCHAR_GRAPHEME_CLUSTER_BREAK));
+  const auto gcb = static_cast<UGraphemeClusterBreak>(u_getIntPropertyValue(UChar32(cp), UCHAR_GRAPHEME_CLUSTER_BREAK));
   switch (gcb) {
   case U_GCB_OTHER:
     if (isPicto) {
@@ -199,8 +203,7 @@ static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp) {
   case U_GCB_E_MODIFIER:
   case U_GCB_GLUE_AFTER_ZWJ:
     STU_CHECK(isApplePUA);
-    return gcb == U_GCB_E_MODIFIER ? GraphemeClusterCategory::extend
-         : GraphemeClusterCategory::extendedPictographic;
+    return gcb == U_GCB_E_MODIFIER ? GraphemeClusterCategory::extend : GraphemeClusterCategory::extendedPictographic;
   default:
     STU_CHECK_MSG(false, "unexpected UGraphemeClusterBreak value");
   }

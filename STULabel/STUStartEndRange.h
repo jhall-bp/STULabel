@@ -11,4 +11,3 @@ typedef struct STUStartEndRangeI32 {
   int32_t start;
   int32_t end;
 } STUStartEndRangeI32;
-

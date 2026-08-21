@@ -45,7 +45,7 @@ TEST(AllocatedArray) {
   {
     Array<TestValue, Alloc> array(repeat(TestValue{1}, 3), Alloc::create());
     CHECK_EQ(array.count(), 3);
-    TestValue* const p = array.begin();
+    TestValue *const p = array.begin();
     for (Int i = 0; i < array.count(); ++i) {
       CHECK_EQ(array[i], 1);
     }
@@ -56,35 +56,35 @@ TEST(AllocatedArray) {
     CHECK_EQ(array2.begin(), p);
 
     Array<TestValue, Alloc> array3{repeat(TestValue{3}, 7), Alloc::create()};
-    TestValue* const p2 = array3.begin();
+    TestValue *const p2 = array3.begin();
     array2 = std::move(array3);
     CHECK_EQ(array2.count(), 7);
     CHECK_EQ(array2.begin(), p2);
 
     ArrayRef<TestValue> arrayRef = std::move(array2).toNonOwningArrayRef();
-    const Array<TestValue, Alloc> array4{arrayRef.begin(), arrayRef.count(),
-                                         std::move(array2.allocator())};
+    const Array<TestValue, Alloc> array4{arrayRef.begin(), arrayRef.count(), std::move(array2.allocator())};
     CHECK_EQ(array4.count(), 7);
     CHECK_EQ(array4.begin(), p2);
 
-  #if !STU_NO_EXCEPTIONS
+#if !STU_NO_EXCEPTIONS
     {
       static int countDown = 5;
       struct Exception : std::exception {};
       struct Value : TestValue {
         using TestValue::TestValue;
-        Value(const Value& other)
-        : TestValue(other)
-        {
-          if (--countDown == 0) { throw Exception(); }
+        Value(const Value &other) : TestValue(other) {
+          if (--countDown == 0) {
+            throw Exception();
+          }
         }
       };
       try {
         Array<Value, Alloc>{repeat(Value{0}, 3), Alloc::create()};
         __builtin_trap();
-      } catch (const Exception&) {}
+      } catch (const Exception &) {
+      }
     }
-  #endif
+#endif
   }
 
   CHECK_EQ(TestValue::liveValueCount(), 0);
@@ -92,4 +92,3 @@ TEST(AllocatedArray) {
 }
 
 TEST_CASE_END
-

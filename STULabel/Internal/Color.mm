@@ -4,17 +4,18 @@
 
 namespace stu_label {
 
-ColorFlags colorFlags(const RGBA& rgba) {
+ColorFlags colorFlags(const RGBA &rgba)
+{
   const auto [r, g, b, a] = rgba;
-  if (a <= 0) return ColorFlags::isClear;
-  return (a < 1 ? ColorFlags{} : ColorFlags::isOpaque)
-       | (r == g && g == b ? ColorFlags{} : ColorFlags::isNotGray)
-       | (0 <= r && r <= 1 && 0 <= g && g <= 1 && 0 <= b && b <= 1
-          ? ColorFlags{} : ColorFlags::isExtended)
-       | (r == 0 && g == 0 && b == 0 && a >= 1 ? ColorFlags::isBlack : ColorFlags{});
+  if (a <= 0)
+    return ColorFlags::isClear;
+  return (a < 1 ? ColorFlags{} : ColorFlags::isOpaque) | (r == g && g == b ? ColorFlags{} : ColorFlags::isNotGray) |
+         (0 <= r && r <= 1 && 0 <= g && g <= 1 && 0 <= b && b <= 1 ? ColorFlags{} : ColorFlags::isExtended) |
+         (r == 0 && g == 0 && b == 0 && a >= 1 ? ColorFlags::isBlack : ColorFlags{});
 }
 
-ColorFlags colorFlags(UIColor* __unsafe_unretained __nullable color) {
+ColorFlags colorFlags(UIColor *__unsafe_unretained __nullable color)
+{
   if (STU_UNLIKELY(!color)) {
     return ColorFlags::isClear;
   }
@@ -24,7 +25,8 @@ ColorFlags colorFlags(UIColor* __unsafe_unretained __nullable color) {
   return ColorFlags::isNotGray;
 }
 
-ColorFlags colorFlags(CGColor* __nullable color) {
+ColorFlags colorFlags(CGColor *__nullable color)
+{
   if (STU_UNLIKELY(!color)) {
     return ColorFlags::isClear;
   }
@@ -32,4 +34,4 @@ ColorFlags colorFlags(CGColor* __nullable color) {
   return colorFlags([UIColor colorWithCGColor:color]);
 }
 
-}
+} // namespace stu_label

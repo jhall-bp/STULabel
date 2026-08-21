@@ -37,15 +37,14 @@ typedef NS_CLOSED_ENUM(uint8_t, STUFirstOrLastBaseline) {
                                                 to:(STUFirstOrLastBaseline)baseline
                                                 of:(STULabel *)label
                         plusLineHeightMultipliedBy:(CGFloat)lineHeightMultiplier
-                                              plus:(CGFloat)offset
-  NS_REFINED_FOR_SWIFT
-  NS_SWIFT_NAME(__stu_constraint(_:to:of:plusLineHeightMultipliedBy:plus:));
-  //
-  // func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-  //                     to baseline: STUFirstOrLastBaseline, of label: STULabel,
-  //                     plusLineHeightMultipliedBy lineHeightMultiplier: CGFloat,
-  //                     plus offset: CGFloat = 0)
-  //   -> NSLayoutConstraint
+                                              plus:(CGFloat)offset NS_REFINED_FOR_SWIFT
+    NS_SWIFT_NAME(__stu_constraint(_:to:of:plusLineHeightMultipliedBy:plus:));
+//
+// func stu_constraint(_ relation: NSLayoutConstraint.Relation,
+//                     to baseline: STUFirstOrLastBaseline, of label: STULabel,
+//                     plusLineHeightMultipliedBy lineHeightMultiplier: CGFloat,
+//                     plus offset: CGFloat = 0)
+//   -> NSLayoutConstraint
 
 /// Returns a constraint that relates the anchor to a position above the specified label baseline,
 /// with a spacing specified as a multiple of the default spacing.
@@ -68,14 +67,12 @@ typedef NS_CLOSED_ENUM(uint8_t, STUFirstOrLastBaseline) {
                                    toPositionAbove:(STUFirstOrLastBaseline)baseline
                                                 of:(STULabel *)label
                                  spacingMultiplier:(CGFloat)spacingMultiplier
-                                            offset:(CGFloat)offset
-  NS_REFINED_FOR_SWIFT
-  NS_SWIFT_NAME(__stu_constraint(_:toPositionAbove:of:spacingMultiplier:offset:));
-  // func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-  //                     toPositionAbove baseline: STUFirstOrLastBaseline, of label: STULabel,
-  //                     spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
-  //   -> NSLayoutConstraint
-
+                                            offset:(CGFloat)offset NS_REFINED_FOR_SWIFT
+    NS_SWIFT_NAME(__stu_constraint(_:toPositionAbove:of:spacingMultiplier:offset:));
+// func stu_constraint(_ relation: NSLayoutConstraint.Relation,
+//                     toPositionAbove baseline: STUFirstOrLastBaseline, of label: STULabel,
+//                     spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
+//   -> NSLayoutConstraint
 
 /// Returns a constraint that relates the anchor to a position below the specified label baseline,
 /// with a spacing specified as a multiple of the default spacing.
@@ -98,13 +95,12 @@ typedef NS_CLOSED_ENUM(uint8_t, STUFirstOrLastBaseline) {
                                    toPositionBelow:(STUFirstOrLastBaseline)baseline
                                                 of:(STULabel *)label
                                  spacingMultiplier:(CGFloat)spacingMultiplier
-                                            offset:(CGFloat)offset
-  NS_REFINED_FOR_SWIFT
-  NS_SWIFT_NAME(__stu_constraint(_:toPositionBelow:of:spacingMultiplier:offset:));
-  // func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-  //                     toPositionBelow baseline: STUFirstOrLastBaseline, of label: STULabel,
-  //                     spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
-  //   -> NSLayoutConstraint
+                                            offset:(CGFloat)offset NS_REFINED_FOR_SWIFT
+    NS_SWIFT_NAME(__stu_constraint(_:toPositionBelow:of:spacingMultiplier:offset:));
+// func stu_constraint(_ relation: NSLayoutConstraint.Relation,
+//                     toPositionBelow baseline: STUFirstOrLastBaseline, of label: STULabel,
+//                     spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
+//   -> NSLayoutConstraint
 
 @end
 
@@ -119,15 +115,13 @@ typedef NS_CLOSED_ENUM(uint8_t, STUFirstOrLastBaseline) {
 ///
 /// If the constraint was not created with one of @c STULabelSpacing extension methods,
 /// the getter returns 0 and the setter does nothing.
-@property (nonatomic, setter = stu_setLabelSpacingConstraintMultiplier:)
-          CGFloat stu_labelSpacingConstraintMultiplier;
+@property (nonatomic, setter=stu_setLabelSpacingConstraintMultiplier:) CGFloat stu_labelSpacingConstraintMultiplier;
 
 /// The spacing offset of a constraint created with one of the
 /// @c STULabelSpacing extension methods.
 ///
 /// If the constraint was not created with one of @c STULabelSpacing extension methods,
 /// the getter returns 0 and the setter does nothing.
-@property (nonatomic, setter = stu_setLabelSpacingConstraintOffset:)
-          CGFloat stu_labelSpacingConstraintOffset;
+@property (nonatomic, setter=stu_setLabelSpacingConstraintOffset:) CGFloat stu_labelSpacingConstraintOffset;
 
 @end

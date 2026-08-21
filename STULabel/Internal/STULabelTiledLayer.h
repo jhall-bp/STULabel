@@ -6,8 +6,9 @@
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
-typedef void (^ STULabelTileDrawingBlock)(CGContextRef context, CGRect rect,
-                                          const STUCancellationFlag *cancellationFlag);
+typedef void (^STULabelTileDrawingBlock)(CGContextRef context,
+                                         CGRect rect,
+                                         const STUCancellationFlag *cancellationFlag);
 
 /// Displays synchronously, prerenders asynchronously and uses larger tile sizes than CATiledLayer.
 @interface STULabelTiledLayer : STULayerWithNullDefaultActions

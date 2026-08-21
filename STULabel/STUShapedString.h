@@ -12,10 +12,11 @@ typedef NS_ENUM(uint8_t, STUWritingDirection) {
   STUWritingDirectionRightToLeft = NSWritingDirectionRightToLeft
 };
 
-STU_INLINE NS_SWIFT_NAME(STUWritingDirection.init(_:))
-STUWritingDirection stuWritingDirection(UIUserInterfaceLayoutDirection direction) {
-  _Static_assert(STUWritingDirectionLeftToRight == (STUWritingDirection)false, "");
-  _Static_assert(STUWritingDirectionRightToLeft == (STUWritingDirection)true, "");
+STU_INLINE NS_SWIFT_NAME(STUWritingDirection.init(_:)) STUWritingDirection
+                         stuWritingDirection(UIUserInterfaceLayoutDirection direction)
+{
+  _Static_assert(STUWritingDirectionLeftToRight == (STUWritingDirection) false, "");
+  _Static_assert(STUWritingDirectionRightToLeft == (STUWritingDirection) true, "");
   return (STUWritingDirection)(direction == UIUserInterfaceLayoutDirectionRightToLeft);
 }
 
@@ -31,8 +32,7 @@ STU_EXPORT
 ///               cancellationFlag: nil)
 ///
 /// - Precondition: `attributedString.length < 2^30`
-- (instancetype)initWithAttributedString:(NSAttributedString *)attributedString
-  NS_SWIFT_NAME(init(_:));
+- (instancetype)initWithAttributedString:(NSAttributedString *)attributedString NS_SWIFT_NAME(init(_:));
 /// Calls
 ///     self.init(attributedString, defaultBaseWritingDirection: baseWritingDirection,
 ///               cancellationFlag: nil)
@@ -40,22 +40,19 @@ STU_EXPORT
 /// - Precondition: `attributedString.length < 2^30`
 - (instancetype)initWithAttributedString:(NSAttributedString *)attributedString
              defaultBaseWritingDirection:(STUWritingDirection)baseWritingDirection
-  NS_SWIFT_NAME(init(_:defaultBaseWritingDirection:));
+    NS_SWIFT_NAME(init(_:defaultBaseWritingDirection:));
 
 /// - Precondition: `attributedString.length < 2^30`
 - (nullable instancetype)initWithAttributedString:(NSAttributedString *)attributedString
                       defaultBaseWritingDirection:(STUWritingDirection)baseWritingDirection
-                                 cancellationFlag:(nullable const STUCancellationFlag*)
-                                                     cancellationFlag
-  NS_DESIGNATED_INITIALIZER
-  NS_SWIFT_NAME(init(_:defaultBaseWritingDirection:cancellationFlag:));
+                                 cancellationFlag:(nullable const STUCancellationFlag *)cancellationFlag
+    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(_:defaultBaseWritingDirection:cancellationFlag:));
 
 @property (readonly) NSAttributedString *attributedString;
 
 /// The length of the string in UTF-16 code units, i.e. @c self.attributedString.length.
-@property (readonly) NSUInteger length
-  NS_REFINED_FOR_SWIFT STU_SWIFT_UNAVAILABLE;
-  // var length: Int
+@property (readonly) NSUInteger length NS_REFINED_FOR_SWIFT STU_SWIFT_UNAVAILABLE;
+// var length: Int
 
 /// The writing direction that is assumed for text paragraphs that satisfy both of the following
 /// conditions:
@@ -73,8 +70,7 @@ STU_EXPORT
 
 - (nonnull instancetype)init NS_UNAVAILABLE;
 
-+ (nonnull STUShapedString *)emptyShapedStringWithDefaultBaseWritingDirection:
-                               (STUWritingDirection)baseWritingDirection;
++ (nonnull STUShapedString *)emptyShapedStringWithDefaultBaseWritingDirection:(STUWritingDirection)baseWritingDirection;
 
 @end
 
@@ -90,8 +86,7 @@ STU_EXPORT
 /// otherwise returns @c NSWritingDirectionNatural.
 ///
 /// \pre @c range must be a valid UTF-16 index range for @c string.
-NSWritingDirection stu_detectBaseWritingDirection(NSString *string, NSRange range,
-                                                  bool skipIsolatedText);
+NSWritingDirection stu_detectBaseWritingDirection(NSString *string, NSRange range, bool skipIsolatedText);
 
 STU_ASSUME_NONNULL_AND_STRONG_END
 STU_EXTERN_C_END

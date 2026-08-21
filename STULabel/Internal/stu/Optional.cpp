@@ -4,12 +4,11 @@
 
 #if !STU_NO_EXCEPTIONS
 
-const char* stu::BadOptionalAccess::what() const noexcept {
+const char *stu::BadOptionalAccess::what() const noexcept {
   return "Attempt to unwrap empty stu::Optional<T>";
 }
 
-[[noreturn]] STU_NO_INLINE
-void stu::detail::throwBadOptionalAccess() {
+[[noreturn]] STU_NO_INLINE void stu::detail::throwBadOptionalAccess() {
   throw BadOptionalAccess();
 }
 

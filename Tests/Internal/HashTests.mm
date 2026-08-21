@@ -11,7 +11,8 @@ using namespace stu_label;
 
 @implementation HashTests
 
-- (void)testHash {
+- (void)testHash
+{
   static_assert(hash(0u, 0u).value == 0);
   static_assert(hash(0xffffffffffffffff, 0xffffffffffffffff).value == 0xe286fb3ae0b4292f);
   static_assert(hash(0xfedcba9876543210u, 0x7654321089abcdefu).value == 0x3d9dc4e3bde6427d);

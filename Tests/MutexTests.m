@@ -4,14 +4,14 @@
 
 @import XCTest;
 
-
 @interface MutexTests : XCTestCase
 
 @end
 
 @implementation MutexTests
 
-- (void)testInitializer {
+- (void)testInitializer
+{
   stu_mutex mutex = STU_MUTEX_INIT;
   stu_mutex mutex2;
   stu_mutex_init(&mutex2);
@@ -26,7 +26,8 @@
   STU_REENABLE_CLANG_WARNING
 }
 
-- (void)testLocking {
+- (void)testLocking
+{
   stu_mutex mutex = STU_MUTEX_INIT;
   XCTAssertTrue(stu_mutex_trylock(&mutex));
   XCTAssertTrue(!stu_mutex_trylock(&mutex));

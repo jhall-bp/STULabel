@@ -13,10 +13,11 @@ namespace stu_label::detail {
 // We don't want to include the header since this is a no-objc-arc file.
 STU_DISABLE_CLANG_WARNING("-Wmissing-prototypes")
 
-CFStringRef getStringWithoutRetain(NSAttributedString* attributedString) {
+CFStringRef getStringWithoutRetain(NSAttributedString *attributedString)
+{
   return (CFStringRef)[attributedString string];
 }
 
 STU_REENABLE_CLANG_WARNING
 
-}
+} // namespace stu_label::detail

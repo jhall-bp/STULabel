@@ -8,9 +8,8 @@
 @interface STULabelLinkOverlayLayer : STUShapeLayerWithNullDefaultActions
 
 /// The layer's initial `hidden` value is false.
-- (null_unspecified instancetype)initWithStyle:(nonnull STULabelOverlayStyle*)style
-                                          link:(nonnull STUTextLink *)link
-  NS_DESIGNATED_INITIALIZER;
+- (null_unspecified instancetype)initWithStyle:(nonnull STULabelOverlayStyle *)style
+                                          link:(nonnull STUTextLink *)link NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, strong, nonnull) STUTextLink *link;
 
@@ -19,9 +18,6 @@
 - (void)setHidden:(BOOL)hidden;
 
 - (void)setHidden:(BOOL)hidden
-withAnimationCompletion:(void ( ^ __nullable)(STULabelLinkOverlayLayer * __nonnull))completion;
+    withAnimationCompletion:(void (^__nullable)(STULabelLinkOverlayLayer *__nonnull))completion;
 
 @end
-
-
-

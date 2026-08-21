@@ -6,12 +6,10 @@
 
 STU_EXTERN_C_BEGIN
 
-typedef NS_ENUM(NSInteger, STUDisplayGamut)  {
-STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
-  STUDisplayGamutUnspecified = UIDisplayGamutUnspecified,
+typedef NS_ENUM(NSInteger, STUDisplayGamut) {
+  STU_DISABLE_CLANG_WARNING("-Wunguarded-availability") STUDisplayGamutUnspecified = UIDisplayGamutUnspecified,
   STUDisplayGamutSRGB = UIDisplayGamutSRGB,
-  STUDisplayGamutP3 = UIDisplayGamutP3
-STU_REENABLE_CLANG_WARNING
+  STUDisplayGamutP3 = UIDisplayGamutP3 STU_REENABLE_CLANG_WARNING
 };
 
 /// Returns the display scale of @c traitCollection.

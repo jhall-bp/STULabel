@@ -3,11 +3,10 @@
 #import "STUMainScreenProperties.h"
 
 STU_EXPORT
-CGFloat stu_displayScaleForTraitCollection(UITraitCollection *traitCollection) {
-  return traitCollection.displayScale;
-}
+CGFloat stu_displayScaleForTraitCollection(UITraitCollection *traitCollection) { return traitCollection.displayScale; }
 
 STU_EXPORT
-STUDisplayGamut stu_displayGamutForTraitCollection(UITraitCollection *traitCollection) {
+STUDisplayGamut stu_displayGamutForTraitCollection(UITraitCollection *traitCollection)
+{
   return (STUDisplayGamut)traitCollection.displayGamut;
 }

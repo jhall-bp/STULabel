@@ -6,15 +6,16 @@
 
 STU_EXTERN_C_BEGIN
 
-STULabelPrerenderer* STULabelPrerendererAlloc(const Class prerendererClass) NS_RETURNS_RETAINED {
+STULabelPrerenderer *STULabelPrerendererAlloc(const Class prerendererClass) NS_RETURNS_RETAINED
+{
   using namespace stu_label;
   const size_t instanceSize = class_getInstanceSize(prerendererClass);
-  void* const p = malloc(sizeof(LabelPrerenderer) + instanceSize);
-  if (!p) stu::detail::badAlloc();
-  LabelPrerenderer* const prerenderer = new (p) LabelPrerenderer();
+  void *const p = malloc(sizeof(LabelPrerenderer) + instanceSize);
+  if (!p)
+    stu::detail::badAlloc();
+  LabelPrerenderer *const prerenderer = new (p) LabelPrerenderer();
   memset(prerenderer->objcObjectStorage, 0, instanceSize);
-  STULabelPrerenderer* const instance = stu_constructClassInstance(
-                                          prerendererClass, prerenderer->objcObjectStorage);
+  STULabelPrerenderer *const instance = stu_constructClassInstance(prerendererClass, prerenderer->objcObjectStorage);
   STU_DEBUG_ASSERT([instance isKindOfClass:STULabelPrerenderer.class]);
   instance->prerenderer = prerenderer;
   return instance;
@@ -24,35 +25,36 @@ STU_EXTERN_C_END
 
 namespace stu_label {
 
-void LabelPrerenderer::destroyAndDeallocate() {
+void LabelPrerenderer::destroyAndDeallocate()
+{
   this->~LabelPrerenderer();
   free(this);
 }
 
-LabelPrerenderer::LabelPrerenderer()
-: LabelTextShapingAndLayoutAndRenderTask(Type::prerender)
+LabelPrerenderer::LabelPrerenderer() : LabelTextShapingAndLayoutAndRenderTask(Type::prerender)
 {
   referers_.store(Referers::layerOrPrerenderer, std::memory_order_relaxed);
   params_.defaultBaseWritingDirection = stu_defaultBaseWritingDirection();
-  params_.setDisplayScale_assumingSizeAndEdgeInsetsAreAlreadyCorrectlyRounded(
-            DisplayScale::one());
+  params_.setDisplayScale_assumingSizeAndEdgeInsetsAreAlreadyCorrectlyRounded(DisplayScale::one());
   params_.neverUsesExtendedRGBBitmapFormat = false;
   stringIsEmpty_ = true;
   textFrameOptions_ = defaultLabelTextFrameOptions().unretained;
 }
 
-STU_NO_INLINE STU_NO_RETURN
-void LabelPrerenderer::attemptedMutationOfFrozenObject() {
+STU_NO_INLINE STU_NO_RETURN void LabelPrerenderer::attemptedMutationOfFrozenObject()
+{
   STU_CHECK_MSG(false, "ERROR: Attempted mutation of frozen STULabelPrerenderer object.");
 }
 
-void LabelPrerenderer::invalidateShapedString_slowPath() {
+void LabelPrerenderer::invalidateShapedString_slowPath()
+{
   shapedString_ = nil;
   hasShapedString_ = false;
   invalidateLayout();
 }
 
-void LabelPrerenderer::invalidateLayout_slowPath() {
+void LabelPrerenderer::invalidateLayout_slowPath()
+{
   textFrame_ = nil;
   links_ = nil;
   textFrameInfo_.isValid = false;
@@ -61,7 +63,8 @@ void LabelPrerenderer::invalidateLayout_slowPath() {
   completedLayout_.store(false, std::memory_order_relaxed);
 }
 
-void LabelPrerenderer::layout() {
+void LabelPrerenderer::layout()
+{
   checkNotFrozen();
   STU_DEBUG_ASSERT(!hasLayoutInfo_);
   if (!stringIsEmpty_) {
@@ -70,7 +73,7 @@ void LabelPrerenderer::layout() {
       hasShapedString_ = true;
     }
     createTextFrame(); // Also calculates the layout info and links.
-  } else { // stringIsEmpty_
+  } else {             // stringIsEmpty_
     textFrameInfo_ = LabelTextFrameInfo::empty;
     textFrameOriginInLayer_ = CGPoint{};
     if (sizeOptions_) {
@@ -82,10 +85,11 @@ void LabelPrerenderer::layout() {
   hasTextFrame_ = true;
 }
 
-void LabelPrerenderer::registerWaitingLabelLayer(LabelLayer& label) {
+void LabelPrerenderer::registerWaitingLabelLayer(LabelLayer &label)
+{
   if (!label_) {
     label_ = &label;
-    incrementRefCount(((__bridge id)implicit_cast<void*>(objcObjectStorage)));
+    incrementRefCount(((__bridge id)implicit_cast<void *>(objcObjectStorage)));
   } else {
     WaitingLabelSetNode::get(label).previousLabel = label_;
     WaitingLabelSetNode::get(*label_).nextLabel = &label;
@@ -93,9 +97,10 @@ void LabelPrerenderer::registerWaitingLabelLayer(LabelLayer& label) {
   }
 }
 
-void LabelPrerenderer::deregisterWaitingLabelLayer(LabelLayer& label) {
-  WaitingLabelSetNode& node = WaitingLabelSetNode::get(label);
-  LabelLayer* const previousLabel = node.previousLabel;
+void LabelPrerenderer::deregisterWaitingLabelLayer(LabelLayer &label)
+{
+  WaitingLabelSetNode &node = WaitingLabelSetNode::get(label);
+  LabelLayer *const previousLabel = node.previousLabel;
   if (previousLabel) {
     WaitingLabelSetNode::get(*previousLabel).nextLabel = node.nextLabel;
     node.previousLabel = nullptr;
@@ -107,31 +112,33 @@ void LabelPrerenderer::deregisterWaitingLabelLayer(LabelLayer& label) {
     STU_ASSERT(label_ == &label);
     label_ = previousLabel;
     if (!previousLabel) {
-      decrementRefCount(((__bridge id)implicit_cast<void*>(objcObjectStorage)));
+      decrementRefCount(((__bridge id)implicit_cast<void *>(objcObjectStorage)));
     }
   }
 }
 
-Optional<LabelLayer&> LabelPrerenderer::popLabelFromWaitingSet() {
-   LabelLayer* label = label_;
-   if (label) {
-     auto& node = WaitingLabelSetNode::get(*label);
-     STU_DEBUG_ASSERT(node.nextLabel == nil);
-     label_ = node.previousLabel;
-     if (label_) {
-       WaitingLabelSetNode::get(*label_).nextLabel = nil;
-     } else {
-       decrementRefCount(((__bridge id)implicit_cast<void*>(objcObjectStorage)));
-     }
-   }
+Optional<LabelLayer &> LabelPrerenderer::popLabelFromWaitingSet()
+{
+  LabelLayer *label = label_;
+  if (label) {
+    auto &node = WaitingLabelSetNode::get(*label);
+    STU_DEBUG_ASSERT(node.nextLabel == nil);
+    label_ = node.previousLabel;
+    if (label_) {
+      WaitingLabelSetNode::get(*label_).nextLabel = nil;
+    } else {
+      decrementRefCount(((__bridge id)implicit_cast<void *>(objcObjectStorage)));
+    }
+  }
   return label;
 }
 
-
-void detail::labelPrerendererObjCObjectWasDestroyed(LabelPrerenderer& prerenderer) {
+void detail::labelPrerendererObjCObjectWasDestroyed(LabelPrerenderer &prerenderer)
+{
   prerenderer.objcObjectWasDestroyed();
 }
-void LabelPrerenderer::objcObjectWasDestroyed() {
+void LabelPrerenderer::objcObjectWasDestroyed()
+{
   isCancelled_.setCancelled();
   if (releaseReferenceAndReturnTrueIfItWasTheLast(Referers::layerOrPrerenderer)) {
     destroyAndDeallocate();

@@ -10,31 +10,28 @@
 using namespace stu_label;
 
 STU_NO_INLINE
-static double naiveFloorToScale(double x, double scale) {
-  return floor(x*scale)/scale;
-}
+static double naiveFloorToScale(double x, double scale) { return floor(x * scale) / scale; }
 
 STU_NO_INLINE
-static double naiveCeilToScale(double x, double scale) {
-  return ceil(x*scale)/scale;
-}
+static double naiveCeilToScale(double x, double scale) { return ceil(x * scale) / scale; }
 
 @interface DisplayScaleRounding : XCTestCase
 @end
 
 @implementation DisplayScaleRounding
 
-
-- (void)testDocumentationClaims {
-  XCTAssertEqual(naiveFloorToScale(1 + 4/3.0, 3), 2);
-  XCTAssertEqual(naiveCeilToScale(6/3.0 + 7/3.0, 3), (6 + 8)/3.0);
+- (void)testDocumentationClaims
+{
+  XCTAssertEqual(naiveFloorToScale(1 + 4 / 3.0, 3), 2);
+  XCTAssertEqual(naiveCeilToScale(6 / 3.0 + 7 / 3.0, 3), (6 + 8) / 3.0);
 
   const DisplayScale scale{*DisplayScale::create(3)};
-  XCTAssertEqual(floorToScale(1 + 4/3.0, scale), 7*(1/3.0));
-  XCTAssertEqual(ceilToScale(6/3.0 + 7/3.0, scale), (6 + 7)*(1/3.0));
+  XCTAssertEqual(floorToScale(1 + 4 / 3.0, scale), 7 * (1 / 3.0));
+  XCTAssertEqual(ceilToScale(6 / 3.0 + 7 / 3.0, scale), (6 + 7) * (1 / 3.0));
 }
 
-- (void)testCreate {
+- (void)testCreate
+{
   XCTAssertEqual(DisplayScale::create(1), 1);
   XCTAssertTrue(!DisplayScale::create(0));
   XCTAssertTrue(!DisplayScale::create(-1));
@@ -48,13 +45,15 @@ static double naiveCeilToScale(double x, double scale) {
   XCTAssertTrue(!DisplayScale::create(NAN));
 }
 
-- (void)testCreateOrIfInvalidUseOne {
+- (void)testCreateOrIfInvalidUseOne
+{
   XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(2), 2);
   XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(0), 1);
   XCTAssertEqual(DisplayScale::createOrIfInvalidUseOne(infinity<Float64>), 1);
 }
 
-- (void)testDisplayScaleOptional {
+- (void)testDisplayScaleOptional
+{
   Optional<DisplayScale> scale = DisplayScale::oneAsOptional();
   XCTAssertTrue(scale);
   XCTAssertEqual(scale, 1);
@@ -64,7 +63,8 @@ static double naiveCeilToScale(double x, double scale) {
   XCTAssertEqual(scale, 3);
 }
 
-- (void)testRounding {
+- (void)testRounding
+{
   self.continueAfterFailure = false;
   auto test = [&](auto scaleValue, int n) {
     using Float = decltype(scaleValue);
@@ -72,22 +72,22 @@ static double naiveCeilToScale(double x, double scale) {
     std::mt19937 rng{123};
     std::uniform_real_distribution<Float> ud(-2, 2);
     const DisplayScale scale{*DisplayScale::create(scaleValue)};
-    const Float inverseScale = 1/scaleValue;
+    const Float inverseScale = 1 / scaleValue;
     for (int i = 0; i < n; ++i) {
-      const Float xe = i*inverseScale*(1 + ud(rng)*maxRelDiffForRounding<Float>);
-      const Float x = nearbyint(xe*scaleValue)*inverseScale;
+      const Float xe = i * inverseScale * (1 + ud(rng) * maxRelDiffForRounding<Float>);
+      const Float x = nearbyint(xe * scaleValue) * inverseScale;
       XCTAssertEqual(roundToScale(xe, scale), x);
       const Float e = abs(x - xe);
-      const Float maxError = xe*maxRelDiffForRounding<Float>;
+      const Float maxError = xe * maxRelDiffForRounding<Float>;
       if (e <= maxError || xe > x) {
         XCTAssertEqual(floorToScale(xe, scale), x);
       } else {
-        XCTAssertEqual(floorToScale(xe, scale), floor(xe*scaleValue)*inverseScale);
+        XCTAssertEqual(floorToScale(xe, scale), floor(xe * scaleValue) * inverseScale);
       }
       if (e <= maxError || xe < x) {
         XCTAssertEqual(ceilToScale(xe, scale), x);
       } else {
-        XCTAssertEqual(ceilToScale(xe, scale), ceil(xe*scaleValue)*inverseScale);
+        XCTAssertEqual(ceilToScale(xe, scale), ceil(xe * scaleValue) * inverseScale);
       }
     }
   };
@@ -96,24 +96,26 @@ static double naiveCeilToScale(double x, double scale) {
   test(CGFloat{3}, 100000);
   test(float{2}, 100000);
   test(float{3}, 100000);
-  test(CGFloat{8}/9, 100000);
+  test(CGFloat{8} / 9, 100000);
 }
 
-- (void)testCeilToScaleWithOffset {
-  XCTAssertEqual(ceilToScale(3.0, *DisplayScale::create(2), 0.125), 3.5 - 0.125/2);
+- (void)testCeilToScaleWithOffset
+{
+  XCTAssertEqual(ceilToScale(3.0, *DisplayScale::create(2), 0.125), 3.5 - 0.125 / 2);
   XCTAssertEqual(ceilToScale(3.25, *DisplayScale::create(2), 0.5), 3.25);
   XCTAssertEqual(ceilToScale(3.25, *DisplayScale::create(2), -0.5), 3.25);
 }
 
-- (void)testCeilSize {
+- (void)testCeilSize
+{
   const CGSize r = ceilToScale(CGSize{CGFloat(0.1), CGFloat(1.6)}, *DisplayScale::create(2));
   XCTAssertEqual(r.width, 0.5);
   XCTAssertEqual(r.height, 2);
 }
 
-- (void)testCeilRect {
-  const CGRect r = ceilToScale(CGRect{{.x = 0.375, .y = 0.875}, {.width = 1, .height = 2}},
-                               *DisplayScale::create(2));
+- (void)testCeilRect
+{
+  const CGRect r = ceilToScale(CGRect{{.x = 0.375, .y = 0.875}, {.width = 1, .height = 2}}, *DisplayScale::create(2));
   XCTAssertEqual(r.origin.x, 0);
   XCTAssertEqual(r.origin.y, 0.5);
   XCTAssertEqual(r.size.width, 1.5);

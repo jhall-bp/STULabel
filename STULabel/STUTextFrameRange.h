@@ -4,7 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
-typedef struct STU_ALIGN_AS(uint64_t) NS_SWIFT_NAME(STUTextFrame.Index) STUTextFrameIndex {
+typedef struct STU_ALIGN_AS(uint64_t) NS_SWIFT_NAME(STUTextFrame.Index) STUTextFrameIndex
+{
   /// Indicates whether this is the index for a hyphen that was inserted immediately after
   /// @c indexInTruncatedString during line breaking.
   bool isIndexOfInsertedHyphen : 1;
@@ -22,40 +23,47 @@ typedef struct STU_ALIGN_AS(uint64_t) NS_SWIFT_NAME(STUTextFrame.Index) STUTextF
 
 STU_EXTERN_C_BEGIN
 
-STU_INLINE NS_REFINED_FOR_SWIFT
-static bool STUTextFrameIndexEqualToIndex(STUTextFrameIndex a, STUTextFrameIndex b) {
+STU_INLINE NS_REFINED_FOR_SWIFT static bool STUTextFrameIndexEqualToIndex(STUTextFrameIndex a, STUTextFrameIndex b)
+{
   _Static_assert(sizeof(STUTextFrameIndex) == 8, "");
   // We only compare indexInTruncatedString and isIndexOfInsertedHyphen.
-  uint32_t aIndex; __builtin_memcpy(&aIndex, &a, 4);
-  uint32_t bIndex; __builtin_memcpy(&bIndex, &b, 4);
+  uint32_t aIndex;
+  __builtin_memcpy(&aIndex, &a, 4);
+  uint32_t bIndex;
+  __builtin_memcpy(&bIndex, &b, 4);
   return aIndex == bIndex;
 }
 
-STU_INLINE NS_REFINED_FOR_SWIFT
-static bool STUTextFrameIndexLessThanIndex(STUTextFrameIndex a, STUTextFrameIndex b) {
+STU_INLINE NS_REFINED_FOR_SWIFT static bool STUTextFrameIndexLessThanIndex(STUTextFrameIndex a, STUTextFrameIndex b)
+{
   // We only compare indexInTruncatedString and isIndexOfInsertedHyphen.
   // The C standard doesn't specify the memory layout for bitfields, but we only need this to
   // work with Clang on little-endian platforms, and we test the implementation.
-  uint32_t aIndex; __builtin_memcpy(&aIndex, &a, 4);
-  uint32_t bIndex; __builtin_memcpy(&bIndex, &b, 4);
+  uint32_t aIndex;
+  __builtin_memcpy(&aIndex, &a, 4);
+  uint32_t bIndex;
+  __builtin_memcpy(&bIndex, &b, 4);
   return aIndex < bIndex;
 }
 
-STU_INLINE STU_SWIFT_UNAVAILABLE
-static bool STUTextFrameIndexLessThanOrEqualToIndex(STUTextFrameIndex a, STUTextFrameIndex b) {
+STU_INLINE STU_SWIFT_UNAVAILABLE static bool STUTextFrameIndexLessThanOrEqualToIndex(STUTextFrameIndex a,
+                                                                                     STUTextFrameIndex b)
+{
   return !(STUTextFrameIndexLessThanIndex(b, a));
 }
 
 // In Swift code this type is replaced by Range<STUTextFrame.Index>
-typedef struct NS_REFINED_FOR_SWIFT STUTextFrameRange {
+typedef struct NS_REFINED_FOR_SWIFT STUTextFrameRange
+{
   STUTextFrameIndex start;
   STUTextFrameIndex end;
 } STUTextFrameRange;
 
-#define STUTextFrameRangeZero (STUTextFrameRange){STUTextFrameIndexZero, STUTextFrameIndexZero}
+#define STUTextFrameRangeZero                                                                                          \
+  (STUTextFrameRange) { STUTextFrameIndexZero, STUTextFrameIndexZero }
 
-STU_INLINE NS_REFINED_FOR_SWIFT
-static bool STUTextFrameRangeIsEmpty(STUTextFrameRange range) {
+STU_INLINE NS_REFINED_FOR_SWIFT static bool STUTextFrameRangeIsEmpty(STUTextFrameRange range)
+{
   return STUTextFrameIndexLessThanOrEqualToIndex(range.end, range.start);
 }
 

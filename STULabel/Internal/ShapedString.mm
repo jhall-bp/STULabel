@@ -19,20 +19,21 @@
 
 namespace stu_label {
 
-NSWritingDirection detectBaseWritingDirection(const NSStringRef& string, Range<Int> range,
-                                              SkipIsolatedText skipIsolatedText)
+NSWritingDirection
+detectBaseWritingDirection(const NSStringRef &string, Range<Int> range, SkipIsolatedText skipIsolatedText)
 {
   NSWritingDirection result = NSWritingDirectionNatural;
   NSInteger isolateCounter = 0;
   string.indexOfFirstCodePointWhere(range, [&](Char32 cp) -> bool {
     const BidiStrongType bt = bidiStrongType(cp);
     switch (bt) {
-    case BidiStrongType::none: return false;
+    case BidiStrongType::none:
+      return false;
     case BidiStrongType::ltr:
     case BidiStrongType::rtl:
-      if (isolateCounter != 0) return false;
-      result = bt == BidiStrongType::ltr ? NSWritingDirectionLeftToRight
-                                         : NSWritingDirectionRightToLeft;
+      if (isolateCounter != 0)
+        return false;
+      result = bt == BidiStrongType::ltr ? NSWritingDirectionLeftToRight : NSWritingDirectionRightToLeft;
       return true;
     case BidiStrongType::isolate:
       if (skipIsolatedText) {
@@ -45,60 +46,55 @@ NSWritingDirection detectBaseWritingDirection(const NSStringRef& string, Range<I
   return result;
 }
 
-struct ScanStatus {
+struct ScanStatus
+{
   int32_t stringLength;
   bool needToFixParagraphStyles;
   bool defaultBaseWritingDirectionWasUsed;
 };
 
-static ScanStatus scanAttributedString(
-                    NSAttributedString* __unsafe_unretained __nonnull nsAttributedString,
-                    const STUWritingDirection defaultBaseWritingDirection,
-                    TempVector<ShapedString::Paragraph>& paragraphs,
-                    TempVector<TruncationScope>& truncationScopes,
-                    TextStyleBuffer& textStyleBuffer)
+static ScanStatus scanAttributedString(NSAttributedString *__unsafe_unretained __nonnull nsAttributedString,
+                                       const STUWritingDirection defaultBaseWritingDirection,
+                                       TempVector<ShapedString::Paragraph> &paragraphs,
+                                       TempVector<TruncationScope> &truncationScopes,
+                                       TextStyleBuffer &textStyleBuffer)
 {
   TempStringBuffer stringBuffer{paragraphs.allocator()};
   NSAttributedStringRef attributedString{nsAttributedString, Ref{stringBuffer}};
-  STU_CHECK_MSG(attributedString.string.count() < (1 << 30),
-                "The string must have length less than 2^30.");
+  STU_CHECK_MSG(attributedString.string.count() < (1 << 30), "The string must have length less than 2^30.");
   const Int32 stringLength = narrow_cast<Int32>(attributedString.string.count());
 
   STU_DEBUG_ASSERT(paragraphs.isEmpty());
 
-  ScanStatus status {
-    .stringLength = stringLength ,
-    .needToFixParagraphStyles = false,
-    .defaultBaseWritingDirectionWasUsed = false
-  };
+  ScanStatus status{
+      .stringLength = stringLength, .needToFixParagraphStyles = false, .defaultBaseWritingDirectionWasUsed = false};
 
   Int32 start = 0;
   Range<Int> attributesRange = {};
-  STUTruncationScope* __unsafe_unretained previousTruncationScopeAttribute = nil;
-  NSDictionary<NSAttributedStringKey, id>* __unsafe_unretained attributes = nil;
+  STUTruncationScope *__unsafe_unretained previousTruncationScopeAttribute = nil;
+  NSDictionary<NSAttributedStringKey, id> *__unsafe_unretained attributes = nil;
   TextFlags lastTextFlags = TextFlags{0};
   TextStyleBuffer::ParagraphAttributes pas;
 
   while (start != stringLength) {
-    ShapedString::Paragraph& para = paragraphs.append(uninitialized);
+    ShapedString::Paragraph &para = paragraphs.append(uninitialized);
 
     // Find the end of the paragraph.
     bool isCR = false;
-    Int32 end = narrow_cast<Int32>(attributedString.string.indexOfFirstUTF16CharWhere(
-                                     Range{start, stringLength}, [&isCR](Char16 ch) -> bool
-                                   {
-                                      switch (ch) {
-                                      case 0xD: // CR
-                                        isCR = true;
-                                        // Fall through.
-                                        [[fallthrough]];
-                                      case 0xA:    // LF
-                                      case 0x2029: // PS
-                                        return true;
-                                      default:
-                                       return false;
-                                      }
-                                    }));
+    Int32 end = narrow_cast<Int32>(
+        attributedString.string.indexOfFirstUTF16CharWhere(Range{start, stringLength}, [&isCR](Char16 ch) -> bool {
+          switch (ch) {
+          case 0xD: // CR
+            isCR = true;
+            // Fall through.
+            [[fallthrough]];
+          case 0xA:    // LF
+          case 0x2029: // PS
+            return true;
+          default:
+            return false;
+          }
+        }));
     const Int32 terminatorStart = end;
     if (end < stringLength) {
       end += 1;
@@ -120,7 +116,7 @@ static ScanStatus scanAttributedString(
 
     if (pas.truncationScope != previousTruncationScopeAttribute) {
       if (previousTruncationScopeAttribute) {
-        TruncationScope& scope = truncationScopes[$ - 1];
+        TruncationScope &scope = truncationScopes[$ - 1];
         scope.stringRange.end = start;
         scope.truncatableStringRange.end = min(scope.truncatableStringRange.end, start);
         scope.finalLineTerminatorUTF16Length = paragraphs[$ - 2].terminatorStringLength;
@@ -133,31 +129,27 @@ static ScanStatus scanAttributedString(
           } else {
             NSLog(@"ERROR: Ignoring STUTruncationScope.truncatableStringRange that"
                    " exceeds the bounds of the paragraph the attribute is applied to.");
-          #if STU_DEBUG
+#if STU_DEBUG
             __builtin_trap();
-          #endif
+#endif
           }
         }
-        truncationScopes.append(TruncationScope{
-          .stringRange = {start, -1},
-          .truncatableStringRange = truncatableStringRange,
-          .maxLineCount = pas.truncationScope->_maximumNumberOfLines,
-          .lastLineTruncationMode = pas.truncationScope->_lastLineTruncationMode,
-          .truncationToken = pas.truncationScope->_fixedTruncationToken
-        });
+        truncationScopes.append(TruncationScope{.stringRange = {start, -1},
+                                                .truncatableStringRange = truncatableStringRange,
+                                                .maxLineCount = pas.truncationScope->_maximumNumberOfLines,
+                                                .lastLineTruncationMode = pas.truncationScope->_lastLineTruncationMode,
+                                                .truncationToken = pas.truncationScope->_fixedTruncationToken});
       }
       previousTruncationScopeAttribute = pas.truncationScope;
-    } else if (pas.truncationScope
-               && truncationScopes[$ - 1].truncatableStringRange.end != maxValue<Int32>)
-    {
+    } else if (pas.truncationScope && truncationScopes[$ - 1].truncatableStringRange.end != maxValue<Int32>) {
       NSLog(@"ERROR: Ignoring truncatableStringRange of STUTruncationScope that is applied to"
-            " multiple paragraphs.");
-    #if STU_DEBUG
+             " multiple paragraphs.");
+#if STU_DEBUG
       __builtin_trap();
-    #else
+#else
       truncationScopes[$ - 1].truncatableStringRange =
-        Range{truncationScopes[$ - 1].stringRange.start, maxValue<Int32>};
-    #endif
+          Range{truncationScopes[$ - 1].stringRange.start, maxValue<Int32>};
+#endif
     }
 
     bool hasTruncationScope = pas.truncationScope;
@@ -172,26 +164,24 @@ static ScanStatus scanAttributedString(
       case NSLineBreakByTruncatingHead:
       case NSLineBreakByTruncatingTail:
       case NSLineBreakByTruncatingMiddle:
-        static_assert((int)NSLineBreakByTruncatingHead   - 3 == (int)kCTLineTruncationStart);
-        static_assert((int)NSLineBreakByTruncatingTail   - 3 == (int)kCTLineTruncationEnd);
+        static_assert((int)NSLineBreakByTruncatingHead - 3 == (int)kCTLineTruncationStart);
+        static_assert((int)NSLineBreakByTruncatingTail - 3 == (int)kCTLineTruncationEnd);
         static_assert((int)NSLineBreakByTruncatingMiddle - 3 == (int)kCTLineTruncationMiddle);
-        truncationScopes.append(TruncationScope{
-          .stringRange = para.stringRange,
-          .truncatableStringRange = para.stringRange,
-          .lastLineTruncationMode = static_cast<CTLineTruncationType>(lineBreakMode - 3),
-          .finalLineTerminatorUTF16Length = static_cast<UInt8>(para.terminatorStringLength)});
+        truncationScopes.append(
+            TruncationScope{.stringRange = para.stringRange,
+                            .truncatableStringRange = para.stringRange,
+                            .lastLineTruncationMode = static_cast<CTLineTruncationType>(lineBreakMode - 3),
+                            .finalLineTerminatorUTF16Length = static_cast<UInt8>(para.terminatorStringLength)});
         hasTruncationScope = true;
         break;
       }
     }
 
-    para.truncationScopeIndex = !hasTruncationScope ? -1
-                              : narrow_cast<Int32>(truncationScopes.count() - 1);
+    para.truncationScopeIndex = !hasTruncationScope ? -1 : narrow_cast<Int32>(truncationScopes.count() - 1);
 
-    NSParagraphStyle* __unsafe_unretained const paraStyle = pas.style;
+    NSParagraphStyle *__unsafe_unretained const paraStyle = pas.style;
 
-    NSWritingDirection baseWritingDirection = paraStyle ? paraStyle.baseWritingDirection
-                                                        : NSWritingDirectionNatural;
+    NSWritingDirection baseWritingDirection = paraStyle ? paraStyle.baseWritingDirection : NSWritingDirectionNatural;
     const bool baseWritingDirectionWasNatural = baseWritingDirection == NSWritingDirectionNatural;
     if (baseWritingDirectionWasNatural) {
       if (pas.hasWritingDirectionAttribute) {
@@ -202,8 +192,8 @@ static ScanStatus scanAttributedString(
         // that CoreText assumes the same base writing direction, we fix the paragraph style.
         para.paragraphStyleNeededFix = !isEmpty;
       }
-      baseWritingDirection = detectBaseWritingDirection(attributedString.string, para.stringRange,
-                                                        SkipIsolatedText{true});
+      baseWritingDirection =
+          detectBaseWritingDirection(attributedString.string, para.stringRange, SkipIsolatedText{true});
       if (baseWritingDirection == NSWritingDirectionNatural) {
         baseWritingDirection = NSWritingDirection(defaultBaseWritingDirection);
         status.defaultBaseWritingDirectionWasUsed = true;
@@ -213,7 +203,7 @@ static ScanStatus scanAttributedString(
       }
     }
     para.baseWritingDirection = static_cast<STUWritingDirection>(baseWritingDirection);
-    LineHeightParams& lineHeightParams = para.lineHeightParams;
+    LineHeightParams &lineHeightParams = para.lineHeightParams;
     if (!paraStyle) {
       lineHeightParams.lineHeightMultiple = 1;
       lineHeightParams.minLineHeight = 0;
@@ -231,26 +221,21 @@ static ScanStatus scanAttributedString(
         lineHeightParams.lineHeightMultiple = 1;
       }
       const CGFloat maxLineHeight = paraStyle.maximumLineHeight;
-      lineHeightParams.maxLineHeight = maxLineHeight > 0 ? narrow_cast<Float32>(maxLineHeight)
-                                     : maxValue<Float32>;
+      lineHeightParams.maxLineHeight = maxLineHeight > 0 ? narrow_cast<Float32>(maxLineHeight) : maxValue<Float32>;
       lineHeightParams.minLineHeight =
-        min(narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.minimumLineHeight)),
-            lineHeightParams.maxLineHeight);
-      lineHeightParams.minLineSpacing = narrow_cast<Float32>(
-                                          clampNonNegativeFloatInput(paraStyle.lineSpacing));
+          min(narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.minimumLineHeight)),
+              lineHeightParams.maxLineHeight);
+      lineHeightParams.minLineSpacing = narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.lineSpacing));
 
       para.hyphenationFactor = clamp(0.f, paraStyle.hyphenationFactor, 1.f);
 
       NSTextAlignment alignment = clampTextAlignment(paraStyle.alignment);
       if (!baseWritingDirectionWasNatural && alignment == NSTextAlignmentNatural) {
-        alignment = baseWritingDirection == NSWritingDirectionLeftToRight
-                  ? NSTextAlignmentLeft : NSTextAlignmentRight;
+        alignment = baseWritingDirection == NSWritingDirectionLeftToRight ? NSTextAlignmentLeft : NSTextAlignmentRight;
       }
       para.alignment = alignment;
-      para.paddingTop = narrow_cast<Float32>(clampNonNegativeFloatInput(
-                                               paraStyle.paragraphSpacingBefore));
-      para.paddingBottom = narrow_cast<Float32>(clampNonNegativeFloatInput(
-                                                  paraStyle.paragraphSpacing));
+      para.paddingTop = narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.paragraphSpacingBefore));
+      para.paddingBottom = narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.paragraphSpacing));
     }
     Float32 nonInitialHeadIndent;
     Float32 nonInitialTailIndent;
@@ -262,8 +247,7 @@ static ScanStatus scanAttributedString(
     } else {
       nonInitialHeadIndent = narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.headIndent));
       nonInitialTailIndent = narrow_cast<Float32>(clampNonNegativeFloatInput(-paraStyle.tailIndent));
-      initialHeadIndent = narrow_cast<Float32>(clampNonNegativeFloatInput(
-                                                 paraStyle.firstLineHeadIndent));
+      initialHeadIndent = narrow_cast<Float32>(clampNonNegativeFloatInput(paraStyle.firstLineHeadIndent));
     }
     if (!pas.extraStyle) {
       para.firstLineOffsetType = STUOffsetOfFirstBaselineFromDefault;
@@ -276,8 +260,7 @@ static ScanStatus scanAttributedString(
     }
     Float32 initialTailIndent;
     if (pas.extraStyle && pas.extraStyle->numberOfInitialLines > 0) {
-      para.maxNumberOfInitialLines = narrow_cast<Int32>(min(pas.extraStyle->numberOfInitialLines,
-                                                            maxValue<Int32>));
+      para.maxNumberOfInitialLines = narrow_cast<Int32>(min(pas.extraStyle->numberOfInitialLines, maxValue<Int32>));
       initialHeadIndent = narrow_cast<Float32>(pas.extraStyle->initialLinesHeadIndent);
       initialTailIndent = -narrow_cast<Float32>(pas.extraStyle->initialLinesTailIndent);
     } else {
@@ -288,8 +271,8 @@ static ScanStatus scanAttributedString(
     const Float32 initialExtraTailIndent = initialTailIndent - nonInitialTailIndent;
     const Float32 commonHeadIndent = min(initialHeadIndent, nonInitialHeadIndent);
     const Float32 commonTailIndent = min(initialTailIndent, nonInitialTailIndent);
-    para.isIndented = initialHeadIndent != 0 || nonInitialHeadIndent != 0
-                   || initialTailIndent != 0 || nonInitialTailIndent != 0;
+    para.isIndented =
+        initialHeadIndent != 0 || nonInitialHeadIndent != 0 || initialTailIndent != 0 || nonInitialTailIndent != 0;
     if (baseWritingDirection == NSWritingDirectionLeftToRight) {
       para.commonLeftIndent = commonHeadIndent;
       para.commonRightIndent = commonTailIndent;
@@ -304,8 +287,7 @@ static ScanStatus scanAttributedString(
 
     TextFlags textFlags = lastTextFlags;
     while (attributesRange.end < end) {
-      attributes = attributedString.attributesAtIndex(attributesRange.end,
-                                                      OutEffectiveRange{attributesRange});
+      attributes = attributedString.attributesAtIndex(attributesRange.end, OutEffectiveRange{attributesRange});
       lastTextFlags = textStyleBuffer.encodeStringRangeStyle(attributesRange, attributes, Out{pas});
       textFlags |= lastTextFlags;
       if (pas.hasWritingDirectionAttribute && baseWritingDirectionWasNatural) {
@@ -320,7 +302,7 @@ static ScanStatus scanAttributedString(
   // paragraph afterwards, but we don't.
   textStyleBuffer.addStringTerminatorStyle();
   if (previousTruncationScopeAttribute) {
-    TruncationScope& scope = truncationScopes[$ - 1];
+    TruncationScope &scope = truncationScopes[$ - 1];
     scope.stringRange.end = start;
     scope.truncatableStringRange.end = min(scope.truncatableStringRange.end, start);
     scope.finalLineTerminatorUTF16Length = paragraphs[$ - 1].terminatorStringLength;
@@ -328,25 +310,24 @@ static ScanStatus scanAttributedString(
   return status;
 }
 
-static void fixParagraphStyles(NSMutableAttributedString* const attributedString,
+static void fixParagraphStyles(NSMutableAttributedString *const attributedString,
                                const ArrayRef<const ShapedString::Paragraph> paragraphs)
 {
   for (Int i = 0; i < paragraphs.count(); ++i) {
-    const auto& para = paragraphs[i];
-    if (!para.paragraphStyleNeededFix) continue;
+    const auto &para = paragraphs[i];
+    if (!para.paragraphStyleNeededFix)
+      continue;
     NSRange range;
-    NSParagraphStyle* const style = [attributedString attribute:NSParagraphStyleAttributeName
+    NSParagraphStyle *const style = [attributedString attribute:NSParagraphStyleAttributeName
                                                         atIndex:sign_cast(para.stringRange.start)
                                                  effectiveRange:&range];
-    NSMutableParagraphStyle* const newStyle = style ? [style mutableCopy]
-                                                    : [[NSMutableParagraphStyle alloc] init];
+    NSMutableParagraphStyle *const newStyle = style ? [style mutableCopy] : [[NSMutableParagraphStyle alloc] init];
     const auto writingDirection = para.baseWritingDirection;
     newStyle.baseWritingDirection = NSWritingDirection(writingDirection);
     const NSUInteger rangeEnd = range.location + range.length;
     NSUInteger paraStringRangeEnd;
     while (rangeEnd > (paraStringRangeEnd = sign_cast(paragraphs[i].stringRange.end)) // Assignment
-           && paragraphs[i + 1].baseWritingDirection == writingDirection)
-    {
+           && paragraphs[i + 1].baseWritingDirection == writingDirection) {
       ++i;
     }
     range.length = paraStringRangeEnd - range.location;
@@ -355,12 +336,12 @@ static void fixParagraphStyles(NSMutableAttributedString* const attributedString
 }
 
 static void initializeParagraphMinFontMetrics(const ArrayRef<ShapedString::Paragraph> paragraphs,
-                                              const TextStyle* style,
+                                              const TextStyle *style,
                                               const ArrayRef<const FontMetrics> fontMetrics)
 {
-  const TextStyle* nextStyle = &style->next();
+  const TextStyle *nextStyle = &style->next();
   Int32 nextIndex = nextStyle->stringIndex();
-  for (ShapedString::Paragraph& para : paragraphs) {
+  for (ShapedString::Paragraph &para : paragraphs) {
     while (nextIndex < para.stringRange.start) {
       style = nextStyle;
       nextStyle = &style->next();
@@ -368,9 +349,8 @@ static void initializeParagraphMinFontMetrics(const ArrayRef<ShapedString::Parag
     }
     MinFontMetrics minMetrics{uninitialized};
     {
-      const FontMetrics& metrics = !style->hasAttachment()
-                                 ? fontMetrics[style->fontIndex().value]
-                                 : style->attachmentInfo()->attribute->_metrics;
+      const FontMetrics &metrics = !style->hasAttachment() ? fontMetrics[style->fontIndex().value]
+                                                           : style->attachmentInfo()->attribute->_metrics;
       if (STU_LIKELY(!style->hasBaselineOffset())) {
         minMetrics = metrics;
       } else {
@@ -383,9 +363,8 @@ static void initializeParagraphMinFontMetrics(const ArrayRef<ShapedString::Parag
       style = nextStyle;
       nextStyle = &style->next();
       nextIndex = nextStyle->stringIndex();
-      const FontMetrics& metrics = !style->hasAttachment()
-                                 ? fontMetrics[style->fontIndex().value]
-                                 : style->attachmentInfo()->attribute->_metrics;
+      const FontMetrics &metrics = !style->hasAttachment() ? fontMetrics[style->fontIndex().value]
+                                                           : style->attachmentInfo()->attribute->_metrics;
       if (STU_LIKELY(!style->hasBaselineOffset())) {
         minMetrics.aggregate(metrics);
       } else {
@@ -393,40 +372,38 @@ static void initializeParagraphMinFontMetrics(const ArrayRef<ShapedString::Parag
       }
     }
     para.effectiveMinLineHeightInfo_[UInt{STUTextLayoutModeDefault}] =
-      TextFrameLayouter::minLineHeightInfo<STUTextLayoutModeDefault>
-                                          (para.lineHeightParams, minMetrics);
+        TextFrameLayouter::minLineHeightInfo<STUTextLayoutModeDefault>(para.lineHeightParams, minMetrics);
     para.effectiveMinLineHeightInfo_[UInt{STUTextLayoutModeTextKit}] =
-      TextFrameLayouter::minLineHeightInfo<STUTextLayoutModeTextKit>
-                                          (para.lineHeightParams, minMetrics);
+        TextFrameLayouter::minLineHeightInfo<STUTextLayoutModeTextKit>(para.lineHeightParams, minMetrics);
   }
 }
 
-ShapedString* __nullable
-  ShapedString::create(NSAttributedString* __unsafe_unretained const originalAttributedString,
-                       const STUWritingDirection defaultBaseWritingDirection,
-                       const STUCancellationFlag* cancellationFlagPointer,
-                       const FunctionRef<void*(UInt)> alloc)
+ShapedString *__nullable ShapedString::create(NSAttributedString *__unsafe_unretained const originalAttributedString,
+                                              const STUWritingDirection defaultBaseWritingDirection,
+                                              const STUCancellationFlag *cancellationFlagPointer,
+                                              const FunctionRef<void *(UInt)> alloc)
 {
   // Make sure the string is immutable.
-  NSAttributedString* attributedString = [originalAttributedString copy];
+  NSAttributedString *attributedString = [originalAttributedString copy];
 
-  const STUCancellationFlag& cancellationFlag = *(cancellationFlagPointer
-                                                  ?: &CancellationFlag::neverCancelledFlag);
-  if (isCancelled(cancellationFlag)) return nullptr;
+  const STUCancellationFlag &cancellationFlag = *(cancellationFlagPointer ?: &CancellationFlag::neverCancelledFlag);
+  if (isCancelled(cancellationFlag))
+    return nullptr;
 
   TempVector<Paragraph> paragraphs{Capacity{8}};
   TempVector<TruncationScope> truncationScopes{Capacity{4}, paragraphs.allocator()};
   LocalFontInfoCache fontInfoCache;
   TextStyleBuffer textStyleBuffer{Ref{fontInfoCache}, paragraphs.allocator()};
 
-  const auto status = scanAttributedString(attributedString, defaultBaseWritingDirection,
-                                           paragraphs, truncationScopes, textStyleBuffer);
+  const auto status = scanAttributedString(
+      attributedString, defaultBaseWritingDirection, paragraphs, truncationScopes, textStyleBuffer);
   // We must apply any attachment attribute fixes before checking for cancellation and returning
   // since otherwise we could leak memory.
   if (status.needToFixParagraphStyles | textStyleBuffer.needToFixAttachmentAttributes()) {
-    NSMutableAttributedString* const mutableString = [attributedString mutableCopy];
+    NSMutableAttributedString *const mutableString = [attributedString mutableCopy];
     if (status.needToFixParagraphStyles) {
-      if (isCancelled(cancellationFlag)) return nullptr;
+      if (isCancelled(cancellationFlag))
+        return nullptr;
       fixParagraphStyles(mutableString, paragraphs);
     }
     // To reliably work around rdar://36622225 the attachments have to be fixed after the paragraph
@@ -434,53 +411,58 @@ ShapedString* __nullable
     if (textStyleBuffer.needToFixAttachmentAttributes()) {
       textStyleBuffer.fixAttachmentAttributesIn(mutableString);
     }
-    if (isCancelled(cancellationFlag)) return nullptr;
+    if (isCancelled(cancellationFlag))
+      return nullptr;
     // The CTTypesetter will make a copy of the attributedString. By making it immutable now
     // we can turn that later copy into a retain and thus reduce memory usage.
     attributedString = [mutableString copy];
   }
-  if (isCancelled(cancellationFlag)) return nullptr;
+  if (isCancelled(cancellationFlag))
+    return nullptr;
 
   const ArrayRef<const ColorRef> colors = textStyleBuffer.colors();
   const ArrayRef<const ColorHashBucket> colorHashBuckets = textStyleBuffer.colorHashBuckets();
 
-  const UInt size = sizeof(ShapedString)
-                  + paragraphs.arraySizeInBytes() + sanitizerGap
-                  + truncationScopes.arraySizeInBytes() + sanitizerGap
-                  + sizeof(FontMetrics)*sign_cast(textStyleBuffer.fonts().count()) + sanitizerGap
-                  + colors.arraySizeInBytes() + sanitizerGap
-                  + sizeof(ColorHashBucket)*sign_cast(colors.count()) + sanitizerGap
-                  + sign_cast(textStyleBuffer.data().count()) + sanitizerGap;
+  const UInt size = sizeof(ShapedString) + paragraphs.arraySizeInBytes() + sanitizerGap +
+                    truncationScopes.arraySizeInBytes() + sanitizerGap +
+                    sizeof(FontMetrics) * sign_cast(textStyleBuffer.fonts().count()) + sanitizerGap +
+                    colors.arraySizeInBytes() + sanitizerGap + sizeof(ColorHashBucket) * sign_cast(colors.count()) +
+                    sanitizerGap + sign_cast(textStyleBuffer.data().count()) + sanitizerGap;
 
-  return new (alloc(size))
-             ShapedString{attributedString, status.stringLength,
-                          defaultBaseWritingDirection, status.defaultBaseWritingDirectionWasUsed,
-                          paragraphs, truncationScopes, colors, colorHashBuckets,
-                          textStyleBuffer.fonts(), textStyleBuffer.data()};
+  return new (alloc(size)) ShapedString{attributedString,
+                                        status.stringLength,
+                                        defaultBaseWritingDirection,
+                                        status.defaultBaseWritingDirectionWasUsed,
+                                        paragraphs,
+                                        truncationScopes,
+                                        colors,
+                                        colorHashBuckets,
+                                        textStyleBuffer.fonts(),
+                                        textStyleBuffer.data()};
 }
 
-static
-CTTypesetter* createTypesetter(CFAttributedStringRef string, Int32 stringLength) CF_RETURNS_RETAINED {
+static CTTypesetter *createTypesetter(CFAttributedStringRef string, Int32 stringLength) CF_RETURNS_RETAINED
+{
   STU_STATIC_CONST_ONCE(CFDictionaryRef, options, ({
-    // Without this option CTTypesetter stops working properly for texts with a UTF-16 length
-    // longer than 4096. If not setting this option is important to protect against denial-of-
-    // service attacks, then we may have to split up the ShapedString into multiple typesetters.
-    // However, currently there is no documentation on what this option does exactly, and just
-    // limiting the paragraph length (as opposed to, say, the grapheme cluster length or bidi
-    // context stack depth) seems incredibly blunt.
-    const void* keys[1] = {kCTTypesetterOptionAllowUnboundedLayout};
-    const void* values[1] = {kCFBooleanTrue};
-    CFDictionaryCreate(nil, keys, values, 1,
-                       &kCFTypeDictionaryKeyCallBacks,
-                       &kCFTypeDictionaryValueCallBacks);
-  }));
+                          // Without this option CTTypesetter stops working properly for texts with a UTF-16 length
+                          // longer than 4096. If not setting this option is important to protect against denial-of-
+                          // service attacks, then we may have to split up the ShapedString into multiple typesetters.
+                          // However, currently there is no documentation on what this option does exactly, and just
+                          // limiting the paragraph length (as opposed to, say, the grapheme cluster length or bidi
+                          // context stack depth) seems incredibly blunt.
+                          const void *keys[1] = {kCTTypesetterOptionAllowUnboundedLayout};
+                          const void *values[1] = {kCFBooleanTrue};
+                          CFDictionaryCreate(
+                              nil, keys, values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+                        }));
   if (stringLength > 4096) {
     return CTTypesetterCreateWithAttributedStringAndOptions(string, options);
   }
   return CTTypesetterCreateWithAttributedString(string);
 }
 
-ShapedString::ShapedString(NSAttributedString* const attributedString, const Int32 stringLength,
+ShapedString::ShapedString(NSAttributedString *const attributedString,
+                           const Int32 stringLength,
                            const STUWritingDirection defaultBaseWritingDirection,
                            const bool defaultBaseWritingDirectionWasUsed,
                            const ArrayRef<const Paragraph> paragraphs,
@@ -489,26 +471,23 @@ ShapedString::ShapedString(NSAttributedString* const attributedString, const Int
                            const ArrayRef<const ColorHashBucket> colorHashBuckets,
                            const ArrayRef<const FontRef> fonts,
                            const ArrayRef<const Byte> textStyleDataIncludingTerminator)
-: attributedString{attributedString},
-  typesetter{createTypesetter((__bridge CFAttributedStringRef)attributedString, stringLength),
-              ShouldIncrementRefCount{false}},
-  stringLength{stringLength},
-  paragraphCount{narrow_cast<Int32>(paragraphs.count())},
-  truncationScopeCount{narrow_cast<Int32>(truncationScopes.count())},
-  fontCount{narrow_cast<UInt16>(fonts.count())},
-  colorCount{narrow_cast<UInt16>(colors.count())},
-  defaultBaseWritingDirection{defaultBaseWritingDirection},
-  defaultBaseWritingDirectionWasUsed{defaultBaseWritingDirectionWasUsed},
-  textStylesSize{textStyleDataIncludingTerminator.count()}
+    : attributedString{attributedString},
+      typesetter{createTypesetter((__bridge CFAttributedStringRef)attributedString, stringLength),
+                 ShouldIncrementRefCount{false}},
+      stringLength{stringLength}, paragraphCount{narrow_cast<Int32>(paragraphs.count())},
+      truncationScopeCount{narrow_cast<Int32>(truncationScopes.count())}, fontCount{narrow_cast<UInt16>(fonts.count())},
+      colorCount{narrow_cast<UInt16>(colors.count())}, defaultBaseWritingDirection{defaultBaseWritingDirection},
+      defaultBaseWritingDirectionWasUsed{defaultBaseWritingDirectionWasUsed},
+      textStylesSize{textStyleDataIncludingTerminator.count()}
 {
   const ArraysRef tas = arrays();
 
 #if STU_USE_ADDRESS_SANITIZER
-  sanitizer::poison((Byte*)tas.paragraphs.end(), sanitizerGap);
-  sanitizer::poison((Byte*)tas.truncationSopes.end(), sanitizerGap);
-  sanitizer::poison((Byte*)tas.colors.end(), sanitizerGap);
-  sanitizer::poison((Byte*)tas.fontMetrics.end(), sanitizerGap);
-  sanitizer::poison((Byte*)(tas.textStyles.dataBegin() + textStylesSize), sanitizerGap);
+  sanitizer::poison((Byte *)tas.paragraphs.end(), sanitizerGap);
+  sanitizer::poison((Byte *)tas.truncationSopes.end(), sanitizerGap);
+  sanitizer::poison((Byte *)tas.colors.end(), sanitizerGap);
+  sanitizer::poison((Byte *)tas.fontMetrics.end(), sanitizerGap);
+  sanitizer::poison((Byte *)(tas.textStyles.dataBegin() + textStylesSize), sanitizerGap);
 #endif
 
   using array_utils::copyConstructArray;
@@ -520,42 +499,42 @@ ShapedString::ShapedString(NSAttributedString* const attributedString, const Int
   {
     ArrayRef<FontMetrics> fontMetrics = const_array_cast(tas.fontMetrics);
     Int i = 0;
-    for (const FontRef& font : fonts) {
+    for (const FontRef &font : fonts) {
       new (&fontMetrics[i++]) FontMetrics{CachedFontInfo::get(font).metrics};
     }
   }
   if (!colors.isEmpty()) {
-    for (auto& color : colors) {
+    for (auto &color : colors) {
       incrementRefCount(color.cgColor());
     }
     copyConstructArray(colors, const_array_cast(tas.colors).begin());
     const ArrayRef<ColorHashBucket> thisHashBuckets = const_array_cast(tas.colorHashBuckets);
     Int i = 0;
-    for (auto& bucket : colorHashBuckets) {
-      if (bucket.isEmpty()) continue;
+    for (auto &bucket : colorHashBuckets) {
+      if (bucket.isEmpty())
+        continue;
       thisHashBuckets[i] = bucket;
       ++i;
     }
     STU_ASSERT(i == thisHashBuckets.count());
   }
-  copyConstructArray(textStyleDataIncludingTerminator,
-                     const_cast<Byte*>(tas.textStyles.dataBegin()));
+  copyConstructArray(textStyleDataIncludingTerminator, const_cast<Byte *>(tas.textStyles.dataBegin()));
 
-  initializeParagraphMinFontMetrics(const_array_cast(tas.paragraphs), tas.textStyles.firstStyle,
-                                    tas.fontMetrics);
+  initializeParagraphMinFontMetrics(const_array_cast(tas.paragraphs), tas.textStyles.firstStyle, tas.fontMetrics);
 }
 
-ShapedString::~ShapedString() {
+ShapedString::~ShapedString()
+{
   const ArraysRef tas = arrays();
   for (ColorRef color : tas.colors.reversed()) {
     decrementRefCount(color.cgColor());
   }
 #if STU_USE_ADDRESS_SANITIZER
-  sanitizer::unpoison((Byte*)tas.paragraphs.end(), sanitizerGap);
-  sanitizer::unpoison((Byte*)tas.truncationSopes.end(), sanitizerGap);
-  sanitizer::unpoison((Byte*)tas.colors.end(), sanitizerGap);
-  sanitizer::unpoison((Byte*)tas.fontMetrics.end(), sanitizerGap);
-  sanitizer::unpoison((Byte*)(tas.textStyles.dataBegin() + textStylesSize), sanitizerGap);
+  sanitizer::unpoison((Byte *)tas.paragraphs.end(), sanitizerGap);
+  sanitizer::unpoison((Byte *)tas.truncationSopes.end(), sanitizerGap);
+  sanitizer::unpoison((Byte *)tas.colors.end(), sanitizerGap);
+  sanitizer::unpoison((Byte *)tas.fontMetrics.end(), sanitizerGap);
+  sanitizer::unpoison((Byte *)(tas.textStyles.dataBegin() + textStylesSize), sanitizerGap);
 #endif
 }
 

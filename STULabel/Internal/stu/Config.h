@@ -45,11 +45,9 @@
 
 #define STU_CONCATENATE(x, y) x##y
 
-#define STU_DISABLE_CLANG_WARNING(warning_string) \
-  _Pragma("clang diagnostic push") \
-  _Pragma(STU_STRINGIZE(clang diagnostic ignored warning_string))
+#define STU_DISABLE_CLANG_WARNING(warning_string)                                                                      \
+  _Pragma("clang diagnostic push") _Pragma(STU_STRINGIZE(clang diagnostic ignored warning_string))
 
-#define STU_REENABLE_CLANG_WARNING \
-  _Pragma("clang diagnostic pop")
+#define STU_REENABLE_CLANG_WARNING _Pragma("clang diagnostic pop")
 
 #define STU_DISABLE_LOOP_UNROLL _Pragma("clang loop unroll (disable)")

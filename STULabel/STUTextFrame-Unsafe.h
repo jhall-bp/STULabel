@@ -17,7 +17,7 @@ STU_EXTERN_C_BEGIN
 @interface STUTextFrame () {
 @public
   /// @note Points into memory owned by the @c STUTextFrame instance.
-  const struct STUTextFrameData * const data;
+  const struct STUTextFrameData *const data;
 }
 @end
 
@@ -26,10 +26,11 @@ typedef struct STUTextBackgroundSegment STUTextBackgroundSegment;
 /// @note All functions accepting a pointer to a @c STUTextFrameData instance assume that the
 ///       instance is owned by a @c STUTextFrame. Never pass a pointer to a copied or manually
 ///       created @c STUTextFrameData struct instance.
-typedef struct STUTextFrameData {
+typedef struct STUTextFrameData
+{
   int32_t paragraphCount;
   int32_t lineCount;
-  const uint8_t * __nonnull _textStylesData;
+  const uint8_t *__nonnull _textStylesData;
   uint16_t _colorCount;
   STUTextFrameFlags flags;
   STUTextFrameConsistentAlignment consistentAlignment;
@@ -87,35 +88,37 @@ typedef struct STUTextFrameData {
   float lastLineHeightBelowBaselineWithMinimalSpacing;
   size_t _dataSize;
   /// The attributed string of the @c STUShapedString from which this text frame was created.
-  NSAttributedString * __unsafe_unretained __nullable originalAttributedString;
+  NSAttributedString *__unsafe_unretained __nullable originalAttributedString;
   _Atomic(CFAttributedStringRef) _truncatedAttributedString;
   _Atomic(const STUTextBackgroundSegment *) _backgroundSegments;
 } STUTextFrameData;
 
-static STU_INLINE NS_REFINED_FOR_SWIFT
-STUTextFrameIndex STUTextFrameDataGetEndIndex(const STUTextFrameData * __nonnull data) {
+static STU_INLINE NS_REFINED_FOR_SWIFT STUTextFrameIndex
+STUTextFrameDataGetEndIndex(const STUTextFrameData *__nonnull data)
+{
   return (STUTextFrameIndex){.indexInTruncatedString = (uint32_t)data->truncatedStringLength,
                              .lineIndex = (uint32_t)MAX(0, data->lineCount - 1)};
 }
 
-typedef NS_ENUM(uint8_t, STUParagraphAlignment)  {
-  STUParagraphAlignmentLeft           = 0,
+typedef NS_ENUM(uint8_t, STUParagraphAlignment) {
+  STUParagraphAlignmentLeft = 0,
 #if !TARGET_ABI_USES_IOS_VALUES
-  STUParagraphAlignmentJustifiedLeft  = 2,
-  STUParagraphAlignmentRight          = 1,
+  STUParagraphAlignmentJustifiedLeft = 2,
+  STUParagraphAlignmentRight = 1,
 #else
-  STUParagraphAlignmentJustifiedLeft  = 1,
-  STUParagraphAlignmentRight          = 2,
+  STUParagraphAlignmentJustifiedLeft = 1,
+  STUParagraphAlignmentRight = 2,
 #endif
   STUParagraphAlignmentJustifiedRight = 3,
-  STUParagraphAlignmentCenter         = 4,
+  STUParagraphAlignmentCenter = 4,
 };
 
 /// Contains layout information for a single paragraph in a @c STUTextFrame.
 ///
 /// Text paragraphs are separated by any of the following characters (grapheme clusters):
 /// `"\r"`, `"\n"`, `"\r\n"`,`"\u2029"`
-typedef struct NS_REFINED_FOR_SWIFT STUTextFrameParagraph {
+typedef struct NS_REFINED_FOR_SWIFT STUTextFrameParagraph
+{
   /// The 0-based index of the paragraph in the text frame.
   int32_t paragraphIndex;
   STUStartEndRangeI32 lineIndexRange;
@@ -149,15 +152,14 @@ typedef struct NS_REFINED_FOR_SWIFT STUTextFrameParagraph {
   bool excisedStringRangeIsContinuationFromLastParagraph : 1;
   /// The UTF-16 code unit length of the paragraph terminator (`"\r"`, `"\n"`, `"\r\n"` or
   /// `"\u2029"`). The value is between 0 and 2 (inclusive).
-  uint8_t paragraphTerminatorInOriginalStringLength : 2
-            NS_SWIFT_NAME(paragraphTerminatorInOriginalStringUTF16Length);
+  uint8_t paragraphTerminatorInOriginalStringLength : 2 NS_SWIFT_NAME(paragraphTerminatorInOriginalStringUTF16Length);
   bool isIndented : 1;
   /// The truncation token in the last line of this paragraph,
   /// or @c nil if the paragraph is not truncated.
   ///
   /// @note If @c excisedStringRangeIsContinuationFromLastParagraph, the paragraph has no text lines
   ///       and no truncation token even though @c excisedRangeInOriginalString is not empty.
-  NSAttributedString * __unsafe_unretained __nullable truncationToken;
+  NSAttributedString *__unsafe_unretained __nullable truncationToken;
   CGFloat initialLinesLeftIndent;
   CGFloat initialLinesRightIndent;
   CGFloat nonInitialLinesLeftIndent;
@@ -167,20 +169,17 @@ typedef struct NS_REFINED_FOR_SWIFT STUTextFrameParagraph {
 /// @pre @c data must be a pointer to a valid @c STUTextFrameData instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-static STU_INLINE NS_REFINED_FOR_SWIFT
-const STUTextFrameParagraph * __nonnull
-  STUTextFrameDataGetParagraphs(const STUTextFrameData * __nonnull data)
+static STU_INLINE NS_REFINED_FOR_SWIFT const STUTextFrameParagraph *__nonnull
+STUTextFrameDataGetParagraphs(const STUTextFrameData *__nonnull data)
 {
-  return (const STUTextFrameParagraph *)
-           ((const STUTextFrameLine *)(data + 1));
+  return (const STUTextFrameParagraph *)((const STUTextFrameLine *)(data + 1));
 }
 
 /// @pre @c data must be a pointer to a valid @c STUTextFrameData instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-static STU_INLINE NS_REFINED_FOR_SWIFT
-const STUTextFrameLine * __nonnull
-  STUTextFrameDataGetLines(const STUTextFrameData * __nonnull data)
+static STU_INLINE NS_REFINED_FOR_SWIFT const STUTextFrameLine *__nonnull
+STUTextFrameDataGetLines(const STUTextFrameData *__nonnull data)
 {
   return (const STUTextFrameLine *)(STUTextFrameDataGetParagraphs(data) + data->paragraphCount);
 }
@@ -188,11 +187,10 @@ const STUTextFrameLine * __nonnull
 /// @pre @c line must be a pointer to a valid @c STUTextFrameLine instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-static STU_INLINE NS_REFINED_FOR_SWIFT
-const STUTextFrameParagraph * __nonnull
-  STUTextFrameLineGetParagraph(const STUTextFrameLine * __nonnull line)
+static STU_INLINE NS_REFINED_FOR_SWIFT const STUTextFrameParagraph *__nonnull
+STUTextFrameLineGetParagraph(const STUTextFrameLine *__nonnull line)
 {
-  __auto_type * const lastPara = (const STUTextFrameParagraph *)(line - line->lineIndex) - 1;
+  __auto_type *const lastPara = (const STUTextFrameParagraph *)(line - line->lineIndex) - 1;
   return lastPara + (line->paragraphIndex - lastPara->paragraphIndex);
 }
 
@@ -201,16 +199,16 @@ const STUTextFrameParagraph * __nonnull
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
 //  (This precondition is currently unnecessary, but may be needed in the future.)
-static STU_INLINE NS_REFINED_FOR_SWIFT
-int32_t STUTextFrameParagraphGetStartIndexOfTruncationTokenInTruncatedString(
-                      const STUTextFrameParagraph * __nonnull para)
+static STU_INLINE NS_REFINED_FOR_SWIFT int32_t
+STUTextFrameParagraphGetStartIndexOfTruncationTokenInTruncatedString(const STUTextFrameParagraph *__nonnull para)
 {
-  return para->rangeInTruncatedString.start
-       + (para->excisedRangeInOriginalString.start - para->rangeInOriginalString.start);
+  return para->rangeInTruncatedString.start +
+         (para->excisedRangeInOriginalString.start - para->rangeInOriginalString.start);
 }
 
-static STU_INLINE NS_SWIFT_NAME(STUTextFrameConsistentAlignment.init(_:))
-STUTextFrameConsistentAlignment stuTextFrameConsistentAlignment(STUParagraphAlignment alignment) {
+static STU_INLINE NS_SWIFT_NAME(STUTextFrameConsistentAlignment.init(_:)) STUTextFrameConsistentAlignment
+                                stuTextFrameConsistentAlignment(STUParagraphAlignment alignment)
+{
   switch (alignment) {
   case STUParagraphAlignmentLeft:
   case STUParagraphAlignmentJustifiedLeft:
@@ -225,8 +223,9 @@ STUTextFrameConsistentAlignment stuTextFrameConsistentAlignment(STUParagraphAlig
   }
 }
 
-static STU_INLINE NS_SWIFT_NAME(getter:STUTextFrame.__data(self:))
-const STUTextFrameData * __nonnull __STUTextFrameGetData(const STUTextFrame * __nonnull textFrame) {
+static STU_INLINE NS_SWIFT_NAME(getter:STUTextFrame.__data(self:)) const STUTextFrameData *__nonnull
+                                __STUTextFrameGetData(const STUTextFrame *__nonnull textFrame)
+{
   return textFrame->data;
 }
 

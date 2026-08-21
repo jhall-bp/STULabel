@@ -1,0 +1,64 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ColumnLimit: 120
+
+BreakBeforeBraces: Attach
+IndentCaseLabels: true
+
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+DerivePointerAlignment: false
+
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+
+BinPackArguments: false
+BinPackParameters: false
+
+IndentPPDirectives: BeforeHash
+
+SortIncludes: Never
+
+---
+Language: ObjC
+
+BasedOnStyle: LLVM
+
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ColumnLimit: 120
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: Never
+  AfterEnum: true
+  AfterFunction: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: false
+  BeforeElse: false
+  SplitEmptyFunction: false
+
+ObjCBlockIndentWidth: 2
+ObjCBreakBeforeNestedBlockParam: true
+ObjCSpaceAfterProperty: true
+ObjCBinPackProtocolList: Never
+
+BinPackArguments: false
+BinPackParameters: false
+
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+IndentPPDirectives: BeforeHash
+
+SortIncludes: Never

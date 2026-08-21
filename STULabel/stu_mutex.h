@@ -30,44 +30,53 @@ STU_EXTERN_C_BEGIN
 ///  Swift 4 does not support using @c stu_mutex and similar C structs wrapping atomic variables
 ///  directly in Swift properties, see https://twitter.com/jckarter/status/962776179269775360
 #if STU_ALWAYS_HAS_OS_LOCK
-  typedef struct stu_mutex { os_unfair_lock unfair_lock; } stu_mutex;
+typedef struct stu_mutex {
+  os_unfair_lock unfair_lock;
+} stu_mutex;
 #else
-  typedef union stu_mutex {
-    pthread_mutex_t pthread_mutex;
-    struct {
-      long _padding; // Ensures that PTHREAD_MUTEX_INITIALIZER zero-initializes unfair_lock.
+typedef union stu_mutex {
+  pthread_mutex_t pthread_mutex;
+  struct {
+    long _padding; // Ensures that PTHREAD_MUTEX_INITIALIZER zero-initializes unfair_lock.
     STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
-      os_unfair_lock unfair_lock;
+    os_unfair_lock unfair_lock;
     STU_REENABLE_CLANG_WARNING
-    };
-  } stu_mutex;
+  };
+} stu_mutex;
 #endif
 
 #if !STU_ALWAYS_HAS_OS_LOCK
-  #define STU_MUTEX_INIT (stu_mutex){.pthread_mutex = PTHREAD_MUTEX_INITIALIZER}
-  void stu_mutex_destroy(stu_mutex * __nonnull mutex);
-  bool stu_mutex_trylock(stu_mutex * __nonnull mutex);
-  void stu_mutex_lock(stu_mutex * __nonnull mutex);
-  void stu_mutex_unlock(stu_mutex * __nonnull mutex);
+  #define STU_MUTEX_INIT                                                                                               \
+    (stu_mutex) {                                                                                                      \
+      .pthread_mutex = PTHREAD_MUTEX_INITIALIZER                                                                       \
+    }
+void stu_mutex_destroy(stu_mutex *__nonnull mutex);
+bool stu_mutex_trylock(stu_mutex *__nonnull mutex);
+void stu_mutex_lock(stu_mutex *__nonnull mutex);
+void stu_mutex_unlock(stu_mutex *__nonnull mutex);
 #else
-  #define STU_MUTEX_INIT (stu_mutex){.unfair_lock = OS_UNFAIR_LOCK_INIT}
-  static STU_INLINE void stu_mutex_destroy(stu_mutex * __nonnull) { /* do nothing */ }
+  #define STU_MUTEX_INIT                                                                                               \
+    (stu_mutex) {                                                                                                      \
+      .unfair_lock = OS_UNFAIR_LOCK_INIT                                                                               \
+    }
+static STU_INLINE void stu_mutex_destroy(stu_mutex *__nonnull) { /* do nothing */
+}
 
-  static STU_INLINE bool stu_mutex_trylock(stu_mutex * __nonnull mutex) {
-    return os_unfair_lock_trylock(&mutex->unfair_lock);
-  }
+static STU_INLINE bool stu_mutex_trylock(stu_mutex *__nonnull mutex) {
+  return os_unfair_lock_trylock(&mutex->unfair_lock);
+}
 
-  static STU_INLINE void stu_mutex_lock(stu_mutex * __nonnull mutex) {
-    os_unfair_lock_lock(&mutex->unfair_lock);
-  }
+static STU_INLINE void stu_mutex_lock(stu_mutex *__nonnull mutex) {
+  os_unfair_lock_lock(&mutex->unfair_lock);
+}
 
-  static STU_INLINE void stu_mutex_unlock(stu_mutex * __nonnull mutex) {
-    os_unfair_lock_unlock(&mutex->unfair_lock);
-  }
+static STU_INLINE void stu_mutex_unlock(stu_mutex *__nonnull mutex) {
+  os_unfair_lock_unlock(&mutex->unfair_lock);
+}
 #endif
 
 /// Initializes the mutex. Equivalent to `*mutex = STU_MUTEX_INIT`.
-static STU_INLINE void stu_mutex_init(stu_mutex * __nonnull mutex) {
+static STU_INLINE void stu_mutex_init(stu_mutex *__nonnull mutex) {
   *mutex = STU_MUTEX_INIT;
 }
 

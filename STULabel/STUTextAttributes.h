@@ -13,11 +13,3 @@ NS_SWIFT_NAME(stuHyphenationLocaleIdentifier)
 extern const NSAttributedStringKey STUHyphenationLocaleIdentifierAttributeName;
 
 STU_ASSUME_NONNULL_AND_STRONG_END
-
-
-
-
-
-
-
-

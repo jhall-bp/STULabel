@@ -12,7 +12,7 @@ extern const NSAttributedStringKey STUAttachmentAttributeName;
 @class STUTextAttachment;
 
 typedef NS_OPTIONS(uint8_t, STUTextAttachmentColorInfo) {
-  STUTextAttachmentIsGrayscale  = 1,
+  STUTextAttachmentIsGrayscale = 1,
   /// Indicates that the attachment needs a bitmap context with a wide-gamut color space and more
   /// than 8-bits per color channel for optimal display quality.
   STUTextAttachmentUsesExtendedColors = 2
@@ -87,11 +87,9 @@ STU_EXPORT
                       leading:(CGFloat)leading
                   imageBounds:(CGRect)imageBounds
                     colorInfo:(STUTextAttachmentColorInfo)colorInfo
-         stringRepresentation:(nullable NSString *)stringRepresentation
-  NS_DESIGNATED_INITIALIZER;
+         stringRepresentation:(nullable NSString *)stringRepresentation NS_DESIGNATED_INITIALIZER;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)decoder
-  NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)decoder NS_DESIGNATED_INITIALIZER;
 
 /// The typographic width of the attachment.
 @property (readonly) CGFloat width;
@@ -180,7 +178,7 @@ STU_EXPORT
 ///      verticalOffset:verticalOffset
 ///             padding:UIEdgeInsetsZero
 ///             leading:0
-///stringRepresentation:stringRepresentation]
+/// stringRepresentation:stringRepresentation]
 /// @endcode
 - (instancetype)initWithImage:(UIImage *)image
                verticalOffset:(CGFloat)verticalOffset
@@ -208,8 +206,7 @@ STU_EXPORT
                verticalOffset:(CGFloat)verticalOffset
                       padding:(UIEdgeInsets)padding
                       leading:(CGFloat)leading
-         stringRepresentation:(nullable NSString *)stringRepresentation
-  NS_DESIGNATED_INITIALIZER;
+         stringRepresentation:(nullable NSString *)stringRepresentation NS_DESIGNATED_INITIALIZER;
 
 /// Initializes the @c STUImageTextAttachment with the properties of the specified
 /// @c NSTextAttachment such that the appearance when displayed is similar.
@@ -222,10 +219,9 @@ STU_EXPORT
 /// @c accessibilityAttributedValue and @c accessibilityLanguage properties from the attachment.
 - (nullable instancetype)initWithNSTextAttachment:(NSTextAttachment *)attachment
                              stringRepresentation:(nullable NSString *)stringRepresentation
-  NS_SWIFT_NAME(init(_:stringRepresentation:));
+    NS_SWIFT_NAME(init(_:stringRepresentation:));
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-  NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_DESIGNATED_INITIALIZER;
 
 @property (readonly) UIImage *image;
 
@@ -236,15 +232,14 @@ STU_EXPORT
                       leading:(CGFloat)leading
                   imageBounds:(CGRect)imageBounds
                     colorInfo:(STUTextAttachmentColorInfo)colorInfo
-         stringRepresentation:(nullable NSString *)stringRepresentation
-  NS_UNAVAILABLE;
+         stringRepresentation:(nullable NSString *)stringRepresentation NS_UNAVAILABLE;
 @end
 
 STU_EXPORT
 @interface NSAttributedString (STUTextAttachment)
 
 + (instancetype)stu_newWithSTUAttachment:(STUTextAttachment *)attachment
-  NS_SWIFT_NAME(init(stu_attachment:)) NS_RETURNS_RETAINED;
+    NS_SWIFT_NAME(init(stu_attachment:)) NS_RETURNS_RETAINED;
 
 - (NSAttributedString *)stu_attributedStringByConvertingNSTextAttachmentsToSTUTextAttachments;
 

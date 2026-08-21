@@ -8,10 +8,10 @@ STU_EXPORT
 @interface STULabelDrawingBlockParameters : NSObject
 
 @property (readonly) STUTextFrame *textFrame NS_REFINED_FOR_SWIFT;
-  // var textFrame: STUTextFrameWithOrigin
+// var textFrame: STUTextFrameWithOrigin
 
 @property (readonly) STUTextFrameRange range NS_REFINED_FOR_SWIFT;
-  // var indices: Range<STUTextFrame.Index>
+// var indices: Range<STUTextFrame.Index>
 
 @property (readonly) CGPoint textFrameOrigin NS_REFINED_FOR_SWIFT;
 
@@ -32,7 +32,7 @@ STU_EXPORT
 @end
 
 /// Must be thread-safe.
-typedef void (^ STULabelDrawingBlock)(STULabelDrawingBlockParameters *params);
+typedef void (^STULabelDrawingBlock)(STULabelDrawingBlockParameters *params);
 
 typedef NS_ENUM(uint8_t, STULabelDrawingBounds) {
   STULabelTextImageBounds = 1,
@@ -40,7 +40,10 @@ typedef NS_ENUM(uint8_t, STULabelDrawingBounds) {
   STULabelTextLayoutBoundsPlusInsets = 0,
   STULabelViewBounds = 3
 };
-enum { STULabelDrawingBoundsBitSize STU_SWIFT_UNAVAILABLE = 2 };
+enum
+{
+  STULabelDrawingBoundsBitSize STU_SWIFT_UNAVAILABLE = 2
+};
 
 typedef NS_OPTIONS(uint8_t, STULabelDrawingBlockColorOptions) {
   /// Indicates that the drawing block only uses colors present in the content of the text frame,
@@ -50,6 +53,9 @@ typedef NS_OPTIONS(uint8_t, STULabelDrawingBlockColorOptions) {
   /// than 8-bits per color channel for optimal display quality.
   STULabelDrawingBlockUsesExtendedColors = 2
 };
-enum { STULabelDrawingBlockColorOptionsBitSize STU_SWIFT_UNAVAILABLE = 3 };
+enum
+{
+  STULabelDrawingBlockColorOptionsBitSize STU_SWIFT_UNAVAILABLE = 3
+};
 
 STU_ASSUME_NONNULL_AND_STRONG_END

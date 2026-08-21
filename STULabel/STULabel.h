@@ -24,7 +24,6 @@ STU_EXPORT
 /// Default value: false
 @property (nonatomic) bool displaysAsynchronously;
 
-
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer;
 
 /// The attributed string that should be displayed in the label.
@@ -137,14 +136,11 @@ STU_EXPORT
 @property (nonatomic) STUBaselineAdjustment textScalingBaselineAdjustment;
 
 /// Default value: @c nil
-@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder
-                                  lastHyphenationLocationInRangeFinder;
-
+@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
 /// Default value: false. When false, links use @c UIColor.linkColor. When true, links use the
 /// label's @c tintColor instead.
 @property (nonatomic) bool usesTintColorAsLinkColor;
-
 
 @property (nonatomic, getter=isHighlighted) BOOL highlighted;
 
@@ -153,7 +149,6 @@ STU_EXPORT
 @property (nonatomic) STUTextRange highlightRange;
 
 - (void)setHighlightRange:(NSRange)range type:(STUTextRangeType)rangeType;
-
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
 
@@ -182,7 +177,6 @@ STU_EXPORT
 /// Default value: false
 @property (nonatomic) bool releasesTextFrameAfterRendering;
 
-
 /// An array with @c STUTextLink objects for every link contained in the label's truncated text.
 ///
 /// This property is a proxy for @c self.layer.links.
@@ -210,21 +204,16 @@ STU_EXPORT
 @property (nonatomic) bool dragInteractionEnabled;
 
 /// The lazily created @c UIDragInteraction instance used by the label.
-@property (nonatomic, readonly) UIDragInteraction *dragInteraction
-  API_UNAVAILABLE(tvos);
+@property (nonatomic, readonly) UIDragInteraction *dragInteraction API_UNAVAILABLE(tvos);
 
 /// The lazily created @c UIContextMenuInteraction instance used by the label for links.
-@property (nonatomic, readonly) UIContextMenuInteraction *contextMenuInteraction
-  API_UNAVAILABLE(tvos);
-
+@property (nonatomic, readonly) UIContextMenuInteraction *contextMenuInteraction API_UNAVAILABLE(tvos);
 
 /// A Boolean value that indicates whether the label's displayed text is selectable.
 ///
 /// When set to @c true, the label installs its non-editable @c UITextInteraction. The default
 /// value is @c false.
-@property (nonatomic, getter=isSelectable) BOOL selectable
-  NS_SWIFT_NAME(isSelectable);
-
+@property (nonatomic, getter=isSelectable) BOOL selectable NS_SWIFT_NAME(isSelectable);
 
 - (CGSize)sizeThatFits:(CGSize)size;
 
@@ -249,7 +238,6 @@ STU_EXPORT
 
 @property (nonatomic, readonly) NSLayoutYAxisAnchor *lastBaselineAnchor;
 
-
 @property (nonatomic, readonly) STUTextFrame *textFrame NS_REFINED_FOR_SWIFT;
 // var textFrame: STUTextFrameWithOrigin
 
@@ -269,7 +257,8 @@ STU_EXPORT
 @end
 
 #if TARGET_OS_IOS
-@interface STULabel () <UIDragInteractionDelegate, UIContextMenuInteractionDelegate> @end
+@interface STULabel () <UIDragInteractionDelegate, UIContextMenuInteractionDelegate>
+@end
 #endif
 
 NS_SWIFT_UI_ACTOR
@@ -296,10 +285,9 @@ NS_SWIFT_UI_ACTOR
 /// @param location The location of the interaction in the local coordinate system of the label.
 /// @return The context menu configuration, or @c nil to prevent the menu from being displayed.
 - (nullable UIContextMenuConfiguration *)label:(STULabel *)label
-                       contextMenuConfigurationForLink:(STUTextLink *)link
-                                            atLocation:(CGPoint)location
-  NS_SWIFT_NAME(label(_:contextMenuConfigurationForLink:at:))
-  API_UNAVAILABLE(tvos);
+               contextMenuConfigurationForLink:(STUTextLink *)link
+                                    atLocation:(CGPoint)location
+    NS_SWIFT_NAME(label(_:contextMenuConfigurationForLink:at:)) API_UNAVAILABLE(tvos);
 
 /// Asks the delegate whether the label should be displayed asynchronously.
 ///
@@ -314,9 +302,9 @@ NS_SWIFT_UI_ACTOR
 /// @param flags Flags indicating various properties of the displayed text.
 /// @param contentBounds
 ///  The bounds of the displayed text in the local coordinate system of the label view.
-- (void)label:(STULabel *)label didDisplayTextWithFlags:(STUTextFrameFlags)flags
-       inRect:(CGRect)contentBounds
-  NS_SWIFT_NAME(label(_:didDisplayTextWithFlags:in:));
+- (void)label:(STULabel *)label
+    didDisplayTextWithFlags:(STUTextFrameFlags)flags
+                     inRect:(CGRect)contentBounds NS_SWIFT_NAME(label(_:didDisplayTextWithFlags:in:));
 
 /// Tells the delegate that the displayed text moved to the specified bounds.
 ///
@@ -331,27 +319,23 @@ NS_SWIFT_UI_ACTOR
 /// Tells the delegate that the text layout was invalidated.
 - (void)labelTextLayoutWasInvalidated:(STULabel *)label;
 
-- (bool)label:(STULabel *)label link:(STUTextLink *)link canBeDraggedFromPoint:(CGPoint)point
-  API_UNAVAILABLE(tvos);
+- (bool)label:(STULabel *)label link:(STUTextLink *)link canBeDraggedFromPoint:(CGPoint)point API_UNAVAILABLE(tvos);
 
 /// Asks the delegate for the drag item for the specified link.
-- (nullable UIDragItem *)label:(STULabel *)label dragItemForLink:(STUTextLink *)link
-  NS_SWIFT_NAME(label(_:dragItemForLink:))
-  API_UNAVAILABLE(tvos);
+- (nullable UIDragItem *)label:(STULabel *)label
+               dragItemForLink:(STUTextLink *)link NS_SWIFT_NAME(label(_:dragItemForLink:)) API_UNAVAILABLE(tvos);
 
 /// Asks the delegate for the background color for the @c UITargetedDragPreview for the specified
 /// @c UIDragItem.
 - (nullable UIColor *)label:(STULabel *)label
-  backgroundColorForTargetedPreviewOfDragItem:(UIDragItem *)dragItem
-                withDefault:(nullable UIColor*)defaultColor
-  NS_SWIFT_NAME(label(_:backgroundColorForTargetedPreviewOfDragItem:withDefault:))
-  API_UNAVAILABLE(tvos);
+    backgroundColorForTargetedPreviewOfDragItem:(UIDragItem *)dragItem
+                                    withDefault:(nullable UIColor *)defaultColor
+    NS_SWIFT_NAME(label(_:backgroundColorForTargetedPreviewOfDragItem:withDefault:)) API_UNAVAILABLE(tvos);
 @end
 
-typedef void (^ STULabelLinkObserverBlock)(STULabel* __nullable label,
-                                           STUTextLink* __nullable oldLink,
-                                           STUTextLink* __nullable newLink)
-        NS_SWIFT_NAME(STULabelLinkObserver.Function);
+typedef void (^STULabelLinkObserverBlock)(STULabel *__nullable label,
+                                          STUTextLink *__nullable oldLink,
+                                          STUTextLink *__nullable newLink) NS_SWIFT_NAME(STULabelLinkObserver.Function);
 
 /// Provides a way to track a link across text layout changes.
 ///
@@ -364,9 +348,9 @@ typedef void (^ STULabelLinkObserverBlock)(STULabel* __nullable label,
 ///  reference to the instance for as long as you need it.
 @interface STULabelLinkObserver : NSObject
 
-- (instancetype)initWithLabel:(STULabel *)label link:(STUTextLink *)link
-                     observer:(nullable STULabelLinkObserverBlock)observerBlock
-  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLabel:(STULabel *)label
+                         link:(STUTextLink *)link
+                     observer:(nullable STULabelLinkObserverBlock)observerBlock NS_DESIGNATED_INITIALIZER;
 
 /// A weak reference to the label for which the this observer was created.
 @property (nonatomic, readonly, weak, nullable) STULabel *label;
@@ -384,7 +368,7 @@ typedef void (^ STULabelLinkObserverBlock)(STULabel* __nullable label,
 /// initializer, except if the block is null.
 ///
 /// If you override this method in a subclass, you don't need to call the superclass implementation.
-- (void)linkDidChangeFrom:(nullable STUTextLink *)oldValue to:(nullable STUTextLink*)newValue;
+- (void)linkDidChangeFrom:(nullable STUTextLink *)oldValue to:(nullable STUTextLink *)newValue;
 
 - (instancetype)init NS_UNAVAILABLE;
 

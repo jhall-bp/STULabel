@@ -6,13 +6,12 @@
 
 namespace stu_label {
 
-UIWindow* window(CALayer* __unsafe_unretained layer) {
+UIWindow *window(CALayer *__unsafe_unretained layer)
+{
   STU_STATIC_CONST_ONCE(Class, uiViewClass, UIView.class);
   do {
-    if (const __unsafe_unretained id delegate = layer.delegate;
-        [delegate isKindOfClass:uiViewClass])
-    {
-      UIView* __unsafe_unretained const view = static_cast<UIView*>(delegate);
+    if (const __unsafe_unretained id delegate = layer.delegate; [delegate isKindOfClass:uiViewClass]) {
+      UIView *__unsafe_unretained const view = static_cast<UIView *>(delegate);
       if (view.layer == layer) {
         return view.window;
       }
@@ -21,7 +20,7 @@ UIWindow* window(CALayer* __unsafe_unretained layer) {
   return nil;
 }
 
-STUPredefinedCGImageFormat contentsImageFormat(NSString* __unsafe_unretained contentsFormat,
+STUPredefinedCGImageFormat contentsImageFormat(NSString *__unsafe_unretained contentsFormat,
                                                STUPredefinedCGImageFormat fallbackFormat)
 {
   if (contentsFormat == kCAContentsFormatGray8Uint) {
@@ -41,8 +40,9 @@ STUPredefinedCGImageFormat contentsImageFormat(NSString* __unsafe_unretained con
   return fallbackFormat;
 }
 
-void setContentsImageFormat(CALayer* __unsafe_unretained layer, STUPredefinedCGImageFormat format) {
-  NSString* __unsafe_unretained formatString = nil;
+void setContentsImageFormat(CALayer *__unsafe_unretained layer, STUPredefinedCGImageFormat format)
+{
+  NSString *__unsafe_unretained formatString = nil;
   switch (format) {
   case STUPredefinedCGImageFormatRGB:
     formatString = kCAContentsFormatRGBA8Uint;

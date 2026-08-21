@@ -23,8 +23,7 @@ STU_EXPORT
                      rangeInOriginalString:(NSRange)rangeInOriginalString
                     rangeInTruncatedString:(NSRange)rangeInTruncatedString
                              textRectArray:(nullable STUTextRectArray *)rectArray
-  NS_SWIFT_NAME(init(linkAttributeValue:rangeInOriginalString:rangeInTruncatedString:_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(linkAttributeValue:rangeInOriginalString:rangeInTruncatedString:_:)) NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTextRectArray:(nullable STUTextRectArray *)textRectArray NS_UNAVAILABLE;
@@ -47,8 +46,7 @@ STU_EXPORT
 - (STUTextLink *)objectAtIndexedSubscript:(size_t)index;
 
 - (nullable STUTextLink *)linkClosestToPoint:(CGPoint)point
-                                 maxDistance:(CGFloat)maxDistance
-  NS_SWIFT_NAME(link(closestTo:maxDistance:));
+                                 maxDistance:(CGFloat)maxDistance NS_SWIFT_NAME(link(closestTo:maxDistance:));
 
 /// Returns the first link with the specified attribute value whose @c rangeInOriginalString
 /// overlaps with the specified @c rangeInOrsiginalString and whose @c rangeInTruncatedString

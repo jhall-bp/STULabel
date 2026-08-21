@@ -4,7 +4,8 @@
 
 @implementation STULayerWithNullDefaultActions
 
-+ (id<CAAction>)defaultActionForKey:(NSString *) __unused event {
++ (id<CAAction>)defaultActionForKey:(NSString *)__unused event
+{
   return NSNull.null;
 }
 
@@ -12,7 +13,8 @@
 
 @implementation STUShapeLayerWithNullDefaultActions
 
-+ (id<CAAction>)defaultActionForKey:(NSString *) __unused event {
++ (id<CAAction>)defaultActionForKey:(NSString *)__unused event
+{
   return NSNull.null;
 }
 

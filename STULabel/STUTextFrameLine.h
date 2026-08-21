@@ -15,7 +15,8 @@
 
 STU_EXTERN_C_BEGIN
 
-typedef struct STURunGlyphIndex {
+typedef struct STURunGlyphIndex
+{
   int32_t runIndex;
   int32_t glyphIndex;
 } STURunGlyphIndex;
@@ -46,14 +47,15 @@ typedef struct STURunGlyphIndex {
 ///   leadingₙ = 2*max(max(ascentₙ₋₁  + leadingₙ₋₁/2, rangeAscentₙ  + rangeLeadingₙ/2) - ascentₙ,
 ///                    max(descentₙ₋₁ + leadingₙ₋₁/2, rangeDescentₙ + rangeLeadingₙ/2) - descentₙ)
 /// @endcode
-typedef struct NS_REFINED_FOR_SWIFT STUTextFrameLine {
+typedef struct NS_REFINED_FOR_SWIFT STUTextFrameLine
+{
 
   /// The 0-based index of the line in the text frame.
   int32_t lineIndex;
 
   /// The 0-based index of the line's paragraph in the text frame.
   int32_t paragraphIndex;
-  
+
   /// The UTF-16 code unit range in the original string corresponding to the text of this line,
   /// including any text that was replaced with a truncation token, excluding any trailing
   /// whitespace.
@@ -70,17 +72,15 @@ typedef struct NS_REFINED_FOR_SWIFT STUTextFrameLine {
 
   /// The UTF-16 code unit length of the whitespace after this line in the truncated string up to
   /// and including the next line terminator, if there is one.
-  int32_t trailingWhitespaceInTruncatedStringLength
-            NS_SWIFT_NAME(trailingWhitespaceInTruncatedStringUTF16Length);
+  int32_t trailingWhitespaceInTruncatedStringLength NS_SWIFT_NAME(trailingWhitespaceInTruncatedStringUTF16Length);
 
-
-  STUTextFlags textFlags         : STUTextFlagsBitSize;
+  STUTextFlags textFlags : STUTextFlagsBitSize;
 
   /// The text flags for the non-token part(s) of the line.
   STUTextFlags nonTokenTextFlags : STUTextFlagsBitSize;
 
   /// The text flags for the truncation or hyphen token, if there is one.
-  STUTextFlags tokenTextFlags    : STUTextFlagsBitSize;
+  STUTextFlags tokenTextFlags : STUTextFlagsBitSize;
 
   // Fields with an underscore name prefix are 'private' implementation details.
 
@@ -220,24 +220,23 @@ typedef struct NS_REFINED_FOR_SWIFT STUTextFrameLine {
 ///       will lead to undefined behaviour.
 //  (This precondition is currently unnecessary, but may be needed in the future.)
 NS_REFINED_FOR_SWIFT
-STU_INLINE STUTextFrameRange STUTextFrameLineGetRange(const STUTextFrameLine * __nonnull line) {
-  return (STUTextFrameRange){
-           .start = {.indexInTruncatedString = (uint32_t)line->rangeInTruncatedString.start,
-                     .lineIndex = (uint32_t)line->lineIndex},
-           .end = {.indexInTruncatedString = (uint32_t)line->rangeInTruncatedString.end,
-                   .lineIndex = (uint32_t)line->lineIndex}
-         };
+STU_INLINE STUTextFrameRange STUTextFrameLineGetRange(const STUTextFrameLine *__nonnull line)
+{
+  return (STUTextFrameRange){.start = {.indexInTruncatedString = (uint32_t)line->rangeInTruncatedString.start,
+                                       .lineIndex = (uint32_t)line->lineIndex},
+                             .end = {.indexInTruncatedString = (uint32_t)line->rangeInTruncatedString.end,
+                                     .lineIndex = (uint32_t)line->lineIndex}};
 }
 
 /// @pre @c line must be a pointer to a valid @c STUTextFrameLine instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-CGFloat STUTextFrameLineGetXHeight(const STUTextFrameLine * __nonnull line) NS_REFINED_FOR_SWIFT;
+CGFloat STUTextFrameLineGetXHeight(const STUTextFrameLine *__nonnull line) NS_REFINED_FOR_SWIFT;
 
 /// @pre @c line must be a pointer to a valid @c STUTextFrameLine instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-CGFloat STUTextFrameLineGetCapHeight(const STUTextFrameLine * __nonnull line) NS_REFINED_FOR_SWIFT;
+CGFloat STUTextFrameLineGetCapHeight(const STUTextFrameLine *__nonnull line) NS_REFINED_FOR_SWIFT;
 
 /// @param xOffset
 ///  The X offset from the origin of the line in the unscaled coordinate system of the text frame.
@@ -254,9 +253,7 @@ CGFloat STUTextFrameLineGetCapHeight(const STUTextFrameLine * __nonnull line) NS
 /// @pre `line` must be a pointer to a valid `STUTextFrameLine` instance owned by a text frame.
 ///       Passing in a pointer to a copy of the original instance or to a manually created instance
 ///       will lead to undefined behaviour.
-STUTextFrameGraphemeClusterRange STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(
-                                   const STUTextFrameLine * __nonnull line, double xOffset);
+STUTextFrameGraphemeClusterRange
+STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(const STUTextFrameLine *__nonnull line, double xOffset);
 
 STU_EXTERN_C_END
-
-

@@ -129,8 +129,7 @@ STU_EXPORT
 @property (nonatomic) STUBaselineAdjustment textScalingBaselineAdjustment;
 
 /// Default value: @c nil
-@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder
-                                  lastHyphenationLocationInRangeFinder;
+@property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
 /// The actually displayed background color of the @c STULabeLayer.
 @property (nonatomic, nullable) CGColorRef displayedBackgroundColor;
@@ -141,8 +140,8 @@ STU_EXPORT
 /// The @c STULabelLayer will automatically set and clear this property to optimize rendering
 /// performance.
 STU_DISABLE_CLANG_WARNING("-Wproperty-attribute-mismatch")
-@property (nonatomic, nullable) CGColorRef backgroundColor
-    DEPRECATED_MSG_ATTRIBUTE("Use displayedBackgroundColor instead.");
+@property (nonatomic, nullable)
+    CGColorRef backgroundColor DEPRECATED_MSG_ATTRIBUTE("Use displayedBackgroundColor instead.");
 STU_REENABLE_CLANG_WARNING
 
 @property (nonatomic, getter=isHighlighted) bool highlighted;
@@ -151,8 +150,7 @@ STU_REENABLE_CLANG_WARNING
 
 @property (nonatomic) STUTextRange highlightRange;
 
-- (void)setHighlightRange:(NSRange)range type:(STUTextRangeType)rangeType
-  NS_SWIFT_NAME(setHighlightRange(_:type:));
+- (void)setHighlightRange:(NSRange)range type:(STUTextRangeType)rangeType NS_SWIFT_NAME(setHighlightRange(_:type:));
 
 /// Default value: true
 @property (nonatomic) bool overrideColorsApplyToHighlightedText;
@@ -167,7 +165,6 @@ STU_REENABLE_CLANG_WARNING
 
 /// Default value: @c .textLayoutBoundsPlusInsets
 @property (nonatomic) STULabelDrawingBounds drawingBlockImageBounds;
-
 
 /// Default value: false
 @property (nonatomic) bool neverUsesGrayscaleBitmapFormat;
@@ -193,14 +190,12 @@ STU_REENABLE_CLANG_WARNING
 
 @property (nonatomic, readonly) CGPoint textFrameOrigin NS_REFINED_FOR_SWIFT;
 
-@property (copy, nonnull) NSString *contentsGravity
-  STU_UNAVAILABLE("Use verticalAlignment and textAlignment or  NSParagraphStyle.textAlignment instead.");
+@property (copy, nonnull) NSString *contentsGravity STU_UNAVAILABLE(
+    "Use verticalAlignment and textAlignment or  NSParagraphStyle.textAlignment instead.");
 
-@property BOOL drawsAsynchronously
-  STU_UNAVAILABLE("Use displaysAsynchronously instead.");
+@property BOOL drawsAsynchronously STU_UNAVAILABLE("Use displaysAsynchronously instead.");
 
 @end
-
 
 @protocol STULabelLayerDelegate <NSObject>
 @optional
@@ -209,8 +204,7 @@ STU_REENABLE_CLANG_WARNING
 /// but it may be @c false even when @c labelLayer.displaysAsynchronously is @c true if the
 /// label implementation has determined that synchronous drawing may on this occasion be preferable
 /// to avoid visible flickering.
-- (bool)labelLayer:(nonnull STULabelLayer *)labelLayer
-        shouldDisplayAsynchronouslyWithProposedValue:(bool)proposedValue;
+- (bool)labelLayer:(nonnull STULabelLayer *)labelLayer shouldDisplayAsynchronouslyWithProposedValue:(bool)proposedValue;
 
 /// Tells the delegate that the label layer displayed text in the specified bounds.
 /// @param labelLayer The label layer.
@@ -218,8 +212,8 @@ STU_REENABLE_CLANG_WARNING
 /// @param contentBounds
 ///  The bounds of the displayed text in the local coordinate system of the label layer.
 - (void)labelLayer:(nonnull STULabelLayer *)labelLayer
-didDisplayTextWithFlags:(STUTextFrameFlags)flags
-            inRect:(CGRect)contentBounds;
+    didDisplayTextWithFlags:(STUTextFrameFlags)flags
+                     inRect:(CGRect)contentBounds;
 
 /// Tells the delegate that the displayed text moved to the specified bounds.
 ///
@@ -230,12 +224,10 @@ didDisplayTextWithFlags:(STUTextFrameFlags)flags
 /// @param labelLayer The label layer.
 /// @param contentBounds
 ///  The new bounds of the displayed text in the local coordinate system of the label layer.
-- (void)labelLayer:(nonnull STULabelLayer *)labelLayer
-didMoveDisplayedTextToRect:(CGRect)contentBounds;
+- (void)labelLayer:(nonnull STULabelLayer *)labelLayer didMoveDisplayedTextToRect:(CGRect)contentBounds;
 
 - (void)labelLayerTextLayoutWasInvalidated:(nonnull STULabelLayer *)labelLayer;
 
-- (void)labelLayer:(nonnull STULabelLayer *)labelLayer
-needsVisibleBoundsUpdates:(bool)needsVisibleBoundsUpdates;
+- (void)labelLayer:(nonnull STULabelLayer *)labelLayer needsVisibleBoundsUpdates:(bool)needsVisibleBoundsUpdates;
 
 @end

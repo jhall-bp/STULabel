@@ -18,23 +18,15 @@
 using namespace stu;
 using namespace stu_label;
 
-#define FOR_ALL_FIELDS(f) \
-  f(STUBackgroundAttribute*, background) \
-  f(UIColor*, textColor) \
-  f(UIColor*, shadowColor) \
-  f(UIColor*, strokeColor) \
-  f(UIColor*, underlineColor) \
-  f(UIColor*, strikethroughColor) \
-  f(CGSize, shadowOffset) \
-  f(CGFloat, shadowBlurRadius) \
-  f(CGFloat, strokeWidth) \
-  f(NSUnderlineStyle, underlineStyle) \
-  f(NSUnderlineStyle, strikethroughStyle) \
-  f(bool, strokeButDoNotFill)
+#define FOR_ALL_FIELDS(f)                                                                                              \
+  f(STUBackgroundAttribute *, background) f(UIColor *, textColor) f(UIColor *, shadowColor) f(UIColor *, strokeColor)  \
+      f(UIColor *, underlineColor) f(UIColor *, strikethroughColor) f(CGSize, shadowOffset)                            \
+          f(CGFloat, shadowBlurRadius) f(CGFloat, strokeWidth) f(NSUnderlineStyle, underlineStyle)                     \
+              f(NSUnderlineStyle, strikethroughStyle) f(bool, strokeButDoNotFill)
 
 #define DEFINE_FIELD(Type, name) Type _##name;
 
-@interface STUTextHighlightStyle() {
+@interface STUTextHighlightStyle () {
 @package // Accessed by the Builder's initWithStyle.
   FOR_ALL_FIELDS(DEFINE_FIELD)
 }
@@ -47,44 +39,40 @@ using namespace stu_label;
 
 #undef DEFINE_FIELD
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithStyle:nil];
 }
-- (instancetype)initWithStyle:(STUTextHighlightStyle*)style {
+- (instancetype)initWithStyle:(STUTextHighlightStyle *)style
+{
   if (style) {
-    #define ASSIGN_FROM_STYLE(Type, name) _##name = style->_##name;
+#define ASSIGN_FROM_STYLE(Type, name) _##name = style->_##name;
     FOR_ALL_FIELDS(ASSIGN_FROM_STYLE)
-    #undef ASSIGN_FROM_STYLE
+#undef ASSIGN_FROM_STYLE
   }
   return self;
 }
 
-- (void)setStrokeWidth:(CGFloat)width
-                 color:(nullable UIColor*)color
-             doNotFill:(bool)doNotFill
+- (void)setStrokeWidth:(CGFloat)width color:(nullable UIColor *)color doNotFill:(bool)doNotFill
 {
   _strokeWidth = clampNonNegativeFloatInput(width);
   _strokeColor = color;
   _strokeButDoNotFill = doNotFill && _strokeWidth > 0;
 }
 
-- (void)setUnderlineStyle:(NSUnderlineStyle)style
-                    color:(nullable UIColor*)color
+- (void)setUnderlineStyle:(NSUnderlineStyle)style color:(nullable UIColor *)color
 {
   _underlineStyle = style;
   _underlineColor = color;
 }
 
-- (void)setStrikethroughStyle:(NSUnderlineStyle)style
-                        color:(nullable UIColor*)color
+- (void)setStrikethroughStyle:(NSUnderlineStyle)style color:(nullable UIColor *)color
 {
   _strikethroughStyle = style;
   _strikethroughColor = color;
 }
 
-- (void)setShadowOffset:(CGSize)offset
-             blurRadius:(CGFloat)blurRadius
-                  color:(nullable UIColor*)color
+- (void)setShadowOffset:(CGSize)offset blurRadius:(CGFloat)blurRadius color:(nullable UIColor *)color
 {
   _shadowOffset.width = clampFloatInput(offset.width);
   _shadowOffset.height = clampFloatInput(offset.height);
@@ -97,49 +85,59 @@ using namespace stu_label;
 @implementation STUTextHighlightStyle
 
 // Manually define getter methods, so that we don't have to declare the properties as "nonatomic".
-#define DEFINE_GETTER(Type, name) - (Type)name { return _##name; }
+#define DEFINE_GETTER(Type, name)                                                                                      \
+  -(Type)name { return _##name; }
 FOR_ALL_FIELDS(DEFINE_GETTER)
 #undef DEFINE_GETTER
 
-- (BOOL)isEqual:(id)object {
-  if (self == object) return true;
-  if (![object isKindOfClass:STUTextHighlightStyle.class]) return false;
-  STUTextHighlightStyle* const other = object;
-  if (style.flagsMask != other->style.flagsMask || style.flags != other->style.flags) return false;
-  #define IF_NOT_EQUAL_RETURN_FALSE(Type, name) if (!equal(_##name, other->_##name)) return false;
+- (BOOL)isEqual:(id)object
+{
+  if (self == object)
+    return true;
+  if (![object isKindOfClass:STUTextHighlightStyle.class])
+    return false;
+  STUTextHighlightStyle *const other = object;
+  if (style.flagsMask != other->style.flagsMask || style.flags != other->style.flags)
+    return false;
+#define IF_NOT_EQUAL_RETURN_FALSE(Type, name)                                                                          \
+  if (!equal(_##name, other->_##name))                                                                                 \
+    return false;
   FOR_ALL_FIELDS(IF_NOT_EQUAL_RETURN_FALSE)
-  #undef IF_NOT_EQUAL_RETURN_FALSE
+#undef IF_NOT_EQUAL_RETURN_FALSE
   return true;
 }
 
-- (NSUInteger)hash {
-  const auto h = hash(  static_cast<UInt64>(style.flags)
-                      | (static_cast<UInt64>(style.flagsMask) << 16)
-                      | (static_cast<UInt64>(_underlineStyle) << 32)
-                      | (static_cast<UInt64>(_strikethroughStyle) << 48),
-                      _textColor);
-                // Doesn't include most properties.
+- (NSUInteger)hash
+{
+  const auto h =
+      hash(static_cast<UInt64>(style.flags) | (static_cast<UInt64>(style.flagsMask) << 16) |
+               (static_cast<UInt64>(_underlineStyle) << 32) | (static_cast<UInt64>(_strikethroughStyle) << 48),
+           _textColor);
+  // Doesn't include most properties.
   return narrow_cast<NSUInteger>(h);
 }
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STUTextHighlightStyleBuilder*))block {
-  STUTextHighlightStyleBuilder* const builder = [[STUTextHighlightStyleBuilder alloc] init];
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STUTextHighlightStyleBuilder *))block
+{
+  STUTextHighlightStyleBuilder *const builder = [[STUTextHighlightStyleBuilder alloc] init];
   block(builder);
   return [self initWithBuilder:builder];
 }
 
-- (id)copyWithZone:(NSZone* __unused)zone {
+- (id)copyWithZone:(NSZone *__unused)zone
+{
   return self;
 }
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STUTextHighlightStyleBuilder*))block {
-  STUTextHighlightStyleBuilder* const builder = [[STUTextHighlightStyleBuilder alloc]
-                                                   initWithStyle:self];
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STUTextHighlightStyleBuilder *))block
+{
+  STUTextHighlightStyleBuilder *const builder = [[STUTextHighlightStyleBuilder alloc] initWithStyle:self];
   block(builder);
-  return [(STUTextHighlightStyle*)[self.class alloc] initWithBuilder:builder];
+  return [(STUTextHighlightStyle *)[self.class alloc] initWithBuilder:builder];
 }
 
-typedef enum : int {
+typedef enum : int
+{
   textColorIndex = 0,
   underlineColorIndex,
   strikethroughColorIndex,
@@ -151,10 +149,11 @@ typedef enum : int {
 static_assert(strokeColorIndex + 1 == ColorIndex::highlightColorCount);
 
 template <typename OutColorIndex>
-STU_INLINE
-bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
-              UIColor* __unsafe_unretained __nullable color, IndexInColorArray index,
-              OutColorIndex outColorIndex)
+STU_INLINE bool setColor(TextHighlightStyle::ColorArray &colors,
+                         bool checkIfClear,
+                         UIColor *__unsafe_unretained __nullable color,
+                         IndexInColorArray index,
+                         OutColorIndex outColorIndex)
 {
   const ColorFlags flags = !color ? ColorFlags::isClear : colorFlags(color);
   if (!color || (checkIfClear && (flags & ColorFlags::isClear))) {
@@ -177,13 +176,16 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
   return true;
 }
 
-- (instancetype)init {
+- (instancetype)init
+{
   return [self initWithBuilder:nil];
 }
-- (instancetype)initWithBuilder:(STUTextHighlightStyleBuilder* __unsafe_unretained)builder {
+- (instancetype)initWithBuilder:(STUTextHighlightStyleBuilder *__unsafe_unretained)builder
+{
   style.flagsMask = TextFlags{IntegerTraits<UnderlyingType<TextFlags>>::max};
 
-  if (!builder) return self;
+  if (!builder)
+    return self;
 
   const auto setFlags = [&](TextFlags flag, bool isPresent, bool clearIfNotPresent) {
     if (isPresent) {
@@ -194,7 +196,7 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
     style.flagsMask &= ~flag;
   };
 
-  auto& colors = style.colors;
+  auto &colors = style.colors;
 
   if (builder->_textColor) {
     _textColor = builder->_textColor;
@@ -217,8 +219,8 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
     _underlineStyle = builder->_underlineStyle;
     style.info.underline.setStyle(_underlineStyle);
     const bool hasStyle = !!style.info.underline.style();
-    const bool isNotClear = setColor(colors, true, _underlineColor, underlineColorIndex,
-                                     Out{style.info.underline.colorIndex});
+    const bool isNotClear =
+        setColor(colors, true, _underlineColor, underlineColorIndex, Out{style.info.underline.colorIndex});
     const bool hasUnderline = hasStyle && (_underlineColor == nil || isNotClear);
     setFlags(TextFlags::hasUnderline, hasUnderline, hasStyle || _underlineColor);
   }
@@ -227,20 +229,19 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
     _strikethroughStyle = builder->_strikethroughStyle;
     style.info.strikethrough.style = _strikethroughStyle;
     const bool hasStyle = style.info.strikethrough.style != StrikethroughStyle{};
-    const bool isNotClear = setColor(colors, true, _strikethroughColor, strikethroughColorIndex,
-                                     Out{style.info.strikethrough.colorIndex});
+    const bool isNotClear =
+        setColor(colors, true, _strikethroughColor, strikethroughColorIndex, Out{style.info.strikethrough.colorIndex});
     const bool hasStrikethrough = hasStyle && (_strikethroughColor == nil || isNotClear);
     setFlags(TextFlags::hasStrikethrough, hasStrikethrough, hasStyle || _strikethroughColor);
   }
-  if (builder->_shadowColor || builder->_shadowBlurRadius != 0
-      || builder->_shadowOffset.width != 0 || builder->_shadowOffset.height != 0)
-  {
+  if (builder->_shadowColor || builder->_shadowBlurRadius != 0 || builder->_shadowOffset.width != 0 ||
+      builder->_shadowOffset.height != 0) {
     _shadowColor = builder->_shadowColor;
     _shadowBlurRadius = builder->_shadowBlurRadius;
     _shadowOffset = builder->_shadowOffset;
-    UIColor* __unsafe_unretained shadowColor = _shadowColor;
+    UIColor *__unsafe_unretained shadowColor = _shadowColor;
     if (!shadowColor) {
-      static UIColor* defaultColor;
+      static UIColor *defaultColor;
       static dispatch_once_t once;
       dispatch_once_f(&once, nullptr, [](void *) {
         defaultColor = [[NSShadow alloc] init].shadowColor;
@@ -251,8 +252,7 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
       });
       shadowColor = defaultColor;
     }
-    const bool isNotClear = setColor(colors, true, shadowColor, shadowColorIndex,
-                                     Out{style.info.shadow.colorIndex});
+    const bool isNotClear = setColor(colors, true, shadowColor, shadowColorIndex, Out{style.info.shadow.colorIndex});
     if (isNotClear) {
       style.info.shadow.offsetX = narrow_cast<Float32>(_shadowOffset.width);
       style.info.shadow.offsetY = narrow_cast<Float32>(_shadowOffset.height);
@@ -261,14 +261,14 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
     setFlags(TextFlags::hasShadow, isNotClear, true);
   }
   if (builder->_background) {
-    _background  = builder->_background;
-    const bool hasBackground = setColor(colors, true, _background->_color,
-                                        backgroundColorIndex, Out{style.info.background.colorIndex})
-                            || setColor(colors, true,
-                                        _background->_borderWidth == 0
-                                        ? nil : _background->_borderColor,
-                                        backgroundBorderColorIndex,
-                                        Out{style.info.background.borderColorIndex});
+    _background = builder->_background;
+    const bool hasBackground =
+        setColor(colors, true, _background->_color, backgroundColorIndex, Out{style.info.background.colorIndex}) ||
+        setColor(colors,
+                 true,
+                 _background->_borderWidth == 0 ? nil : _background->_borderColor,
+                 backgroundBorderColorIndex,
+                 Out{style.info.background.borderColorIndex});
     if (hasBackground) {
       style.info.background.stuAttribute = _background;
     }
@@ -284,5 +284,3 @@ bool setColor(TextHighlightStyle::ColorArray& colors, bool checkIfClear,
 }
 
 @end
-
-

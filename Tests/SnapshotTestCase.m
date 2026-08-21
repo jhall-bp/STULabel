@@ -11,49 +11,49 @@ static CGColorSpaceRef grayGamma2_2;
 static CGColorSpaceRef displayP3;
 static CGColorSpaceRef extendedSRGB;
 
-static void initStaticColorSpacesOnce() {
+static void initStaticColorSpacesOnce()
+{
   static dispatch_once_t once;
   dispatch_once(&once, ^{
     sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     grayGamma2_2 = CGColorSpaceCreateWithName(kCGColorSpaceGenericGrayGamma2_2);
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wunguarded-availability"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
     if (kCGColorSpaceDisplayP3) {
       displayP3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
     }
     if (kCGColorSpaceExtendedSRGB) {
       extendedSRGB = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
     }
-    #pragma clang diagnostic pop
+#pragma clang diagnostic pop
   });
 }
 
-static inline bool isColorSpaceEqualToSpace(__nonnull CGColorSpaceRef space1,
-                                            __nonnull CGColorSpaceRef space2)
+static inline bool isColorSpaceEqualToSpace(__nonnull CGColorSpaceRef space1, __nonnull CGColorSpaceRef space2)
 {
   return space1 == space2 || CFEqual(space1, space2);
 }
 
-
-static NSString *escapeFilename(NSString *fileName) {
-  return [[[fileName stringByReplacingOccurrencesOfString:@":"  withString:@"_"]
-                     stringByReplacingOccurrencesOfString:@"/"  withString:@"_"]
-                     stringByReplacingOccurrencesOfString:@"\\" withString:@"_"];
+static NSString *escapeFilename(NSString *fileName)
+{
+  return [[[fileName stringByReplacingOccurrencesOfString:@":" withString:@"_"]
+      stringByReplacingOccurrencesOfString:@"/"
+                                withString:@"_"] stringByReplacingOccurrencesOfString:@"\\" withString:@"_"];
 }
 
-
 @implementation SnapshotTestCase {
-  NSString* _imageBaseDirectory;
-  NSString* _subpath; ///< "TestClass/testMethodName"
-  NSString* _fullpath; ///< _imageBaseDirectory / _subpath
-  NSFileManager* _fileManager;
+  NSString *_imageBaseDirectory;
+  NSString *_subpath;  ///< "TestClass/testMethodName"
+  NSString *_fullpath; ///< _imageBaseDirectory / _subpath
+  NSFileManager *_fileManager;
 
   // Assigned at the start of each checkSnapshot... method.
-  const char* _testFilePath;
+  const char *_testFilePath;
   size_t _testFileLine;
 }
 
-- (id)initWithInvocation:(NSInvocation *)invocation {
+- (id)initWithInvocation:(NSInvocation *)invocation
+{
   initStaticColorSpacesOnce();
   if ((self = [super initWithInvocation:invocation])) {
     _fileManager = NSFileManager.defaultManager;
@@ -62,23 +62,24 @@ static NSString *escapeFilename(NSString *fileName) {
     if (i.location != NSNotFound) {
       name = [name substringFromIndex:i.location + 1];
     }
-    _subpath = [escapeFilename(name) stringByAppendingPathComponent:
-                                       escapeFilename(NSStringFromSelector(invocation.selector))];
+    _subpath =
+        [escapeFilename(name) stringByAppendingPathComponent:escapeFilename(NSStringFromSelector(invocation.selector))];
   }
   return self;
 }
 
-- (void)setUp {
+- (void)setUp
+{
   self.shouldRecordSnapshotsInsteadOfCheckingThem = false;
   self.shouldUseExtendedColorSpace = false;
   self.shouldUseDrawViewHierarchyInRect = false;
   [super setUp];
 }
 
-#define fatalError(format, ...) \
-  (NSLog((format), ##__VA_ARGS__), __builtin_trap())
+#define fatalError(format, ...) (NSLog((format), ##__VA_ARGS__), __builtin_trap())
 
-- (void)setImageBaseDirectory:(NSString *)imageBaseDirectory {
+- (void)setImageBaseDirectory:(NSString *)imageBaseDirectory
+{
   if (!imageBaseDirectory) {
     fatalError(@"SnapshotTestCase.imageBaseDirectory must not be nil");
   }
@@ -86,19 +87,23 @@ static NSString *escapeFilename(NSString *fileName) {
   _fullpath = [_imageBaseDirectory stringByAppendingPathComponent:_subpath];
 }
 
-#define reportFailureOrError(isFailure, format, ...) \
-  _XCTFailureHandler(self, (isFailure), self->_testFilePath, self->_testFileLine, \
-                    _XCTFailureDescription(_XCTAssertion_Fail, 0), (format), ##__VA_ARGS__)
+#define reportFailureOrError(isFailure, format, ...)                                                                   \
+  _XCTFailureHandler(self,                                                                                             \
+                     (isFailure),                                                                                      \
+                     self->_testFilePath,                                                                              \
+                     self->_testFileLine,                                                                              \
+                     _XCTFailureDescription(_XCTAssertion_Fail, 0),                                                    \
+                     (format),                                                                                         \
+                     ##__VA_ARGS__)
 // For test failures:
 #define reportFailure(format, ...) reportFailureOrError(true, format, ##__VA_ARGS__)
 // For violated preconditions and errors that occur while we check the image:
 #define reportError(format, ...) reportFailureOrError(false, format, ##__VA_ARGS__)
 
-- (UIImage *)stu_drawImageWithSize:(CGSize)size scale:(CGFloat)scale
-                             block:(bool (^)(void))block
+- (UIImage *)stu_drawImageWithSize:(CGSize)size scale:(CGFloat)scale block:(bool (^)(void))block
 {
   assert(scale > 0);
-  const CGSize sizeInPixels = {round(size.width*scale), round(size.height*scale)};
+  const CGSize sizeInPixels = {round(size.width * scale), round(size.height * scale)};
   if (!(0 < sizeInPixels.width)) {
     reportFailure(@"The layer must have a positive width.");
     return nil;
@@ -122,25 +127,19 @@ static NSString *escapeFilename(NSString *fileName) {
   if (self.shouldUseExtendedColorSpace) {
     colorSpace = extendedSRGB;
     bitsPerComponent = 16;
-    bitmapInfo = kCGBitmapFloatComponents
-               | kCGImageByteOrder16Little
-               | kCGImageAlphaPremultipliedLast; // RGBA16
+    bitmapInfo = kCGBitmapFloatComponents | kCGImageByteOrder16Little | kCGImageAlphaPremultipliedLast; // RGBA16
   } else {
     colorSpace = sRGB;
     bitsPerComponent = 8;
-    bitmapInfo = kCGBitmapByteOrder32Little
-               | kCGImageAlphaPremultipliedFirst; // BGRA8
+    bitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst; // BGRA8
   }
-  const CGContextRef context = CGBitmapContextCreate(nil,
-                                                     (size_t)sizeInPixels.width,
-                                                     (size_t)sizeInPixels.height,
-                                                     bitsPerComponent, 0, colorSpace, bitmapInfo);
+  const CGContextRef context = CGBitmapContextCreate(
+      nil, (size_t)sizeInPixels.width, (size_t)sizeInPixels.height, bitsPerComponent, 0, colorSpace, bitmapInfo);
   if (!context) {
     reportError(@"CGBitmapContextCreate failed");
     return nil;
   }
-  CGContextConcatCTM(context, (CGAffineTransform){.a = scale, .d = -scale,
-                                                  .ty = sizeInPixels.height});
+  CGContextConcatCTM(context, (CGAffineTransform){.a = scale, .d = -scale, .ty = sizeInPixels.height});
   UIGraphicsPushContext(context);
   if (!block()) {
     return nil;
@@ -150,8 +149,7 @@ static NSString *escapeFilename(NSString *fileName) {
     reportError(@"CGBitmapContextCreateImage failed");
   }
   CGContextRelease(context);
-  UIImage * const image = [[UIImage alloc] initWithCGImage:cgImage scale:scale
-                                               orientation:UIImageOrientationUp];
+  UIImage *const image = [[UIImage alloc] initWithCGImage:cgImage scale:scale orientation:UIImageOrientationUp];
   CFRelease(cgImage);
   return image;
 }
@@ -161,13 +159,17 @@ static NSString *escapeFilename(NSString *fileName) {
                testFilePath:(const char *)testFilePath
                testFileLine:(size_t)testFileLine
 {
-  [self checkSnapshotOfView:view contentsScale:0 beforeLayoutAction:nil
-             testNameSuffix:testNameSuffix testFilePath:testFilePath testFileLine:testFileLine];
+  [self checkSnapshotOfView:view
+              contentsScale:0
+         beforeLayoutAction:nil
+             testNameSuffix:testNameSuffix
+               testFilePath:testFilePath
+               testFileLine:testFileLine];
 }
 
 - (void)checkSnapshotOfView:(UIView *)view
               contentsScale:(CGFloat)contentsScale
-         beforeLayoutAction:(nullable void (NS_NOESCAPE ^)(void))beforeLayoutAction
+         beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
              testNameSuffix:(nullable NSString *)testNameSuffix
                testFilePath:(const char *)testFilePath
                testFileLine:(size_t)testFileLine
@@ -194,7 +196,7 @@ static NSString *escapeFilename(NSString *fileName) {
         }
         [window addSubview:view];
         if (!view.translatesAutoresizingMaskIntoConstraints) {
-          UIView * const vcView = window.rootViewController.view;
+          UIView *const vcView = window.rootViewController.view;
           [NSLayoutConstraint activateConstraints:@[
             [view.centerXAnchor constraintEqualToAnchor:vcView.centerXAnchor],
             [view.centerYAnchor constraintEqualToAnchor:vcView.centerYAnchor]
@@ -213,22 +215,29 @@ static NSString *escapeFilename(NSString *fileName) {
 
     const CGRect bounds = view.bounds;
     const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
-    UIImage * const image = [self stu_drawImageWithSize:bounds.size scale:scale block:^bool(){
-      if (self->_shouldUseDrawViewHierarchyInRect) {
-        if (![view drawViewHierarchyInRect:bounds afterScreenUpdates:true]) {
-          reportError(@"drawViewHierarchyInRect failed");
-          return false;
-        }
-      } else {
-        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-      }
-      return true;
-    }];
+    UIImage *const image = [self stu_drawImageWithSize:bounds.size
+                                                 scale:scale
+                                                 block:^bool() {
+                                                   if (self->_shouldUseDrawViewHierarchyInRect) {
+                                                     if (![view drawViewHierarchyInRect:bounds
+                                                                     afterScreenUpdates:true]) {
+                                                       reportError(@"drawViewHierarchyInRect failed");
+                                                       return false;
+                                                     }
+                                                   } else {
+                                                     [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+                                                   }
+                                                   return true;
+                                                 }];
 
-    if (!image) return;
+    if (!image)
+      return;
 
-    [self checkSnapshotImage:image testNameSuffix:testNameSuffix testFilePath:testFilePath
-                testFileLine:testFileLine referenceImage:nil];
+    [self checkSnapshotImage:image
+              testNameSuffix:testNameSuffix
+                testFilePath:testFilePath
+                testFileLine:testFileLine
+              referenceImage:nil];
 
     if (needToRemoveViewFromSuperview) {
       [view removeFromSuperview];
@@ -236,16 +245,22 @@ static NSString *escapeFilename(NSString *fileName) {
   } // autoreleasepool
 }
 
-- (void)checkSnapshotOfLayer:(CALayer *)layer testNameSuffix:(NSString *)testNameSuffix
-                testFilePath:(const char *)testFilePath testFileLine:(size_t)testFileLine
+- (void)checkSnapshotOfLayer:(CALayer *)layer
+              testNameSuffix:(NSString *)testNameSuffix
+                testFilePath:(const char *)testFilePath
+                testFileLine:(size_t)testFileLine
 {
-  [self checkSnapshotOfLayer:layer contentsScale:0 beforeLayoutAction:nil
-              testNameSuffix:testNameSuffix testFilePath:testFilePath testFileLine:testFileLine];
+  [self checkSnapshotOfLayer:layer
+               contentsScale:0
+          beforeLayoutAction:nil
+              testNameSuffix:testNameSuffix
+                testFilePath:testFilePath
+                testFileLine:testFileLine];
 }
 
 - (void)checkSnapshotOfLayer:(CALayer *)layer
                contentsScale:(CGFloat)contentsScale
-          beforeLayoutAction:(nullable void (NS_NOESCAPE ^)(void))beforeLayoutAction
+          beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
               testNameSuffix:(nullable NSString *)testNameSuffix
                 testFilePath:(const char *)testFilePath
                 testFileLine:(size_t)testFileLine
@@ -279,15 +294,21 @@ static NSString *escapeFilename(NSString *fileName) {
 
     const CGRect bounds = layer.bounds;
     const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
-    UIImage * const image = [self stu_drawImageWithSize:bounds.size scale:scale block:^bool(){
-      [layer renderInContext:UIGraphicsGetCurrentContext()];
-      return true;
-    }];
+    UIImage *const image = [self stu_drawImageWithSize:bounds.size
+                                                 scale:scale
+                                                 block:^bool() {
+                                                   [layer renderInContext:UIGraphicsGetCurrentContext()];
+                                                   return true;
+                                                 }];
 
-    if (!image) return;
+    if (!image)
+      return;
 
-    [self checkSnapshotImage:image testNameSuffix:testNameSuffix testFilePath:testFilePath
-                testFileLine:testFileLine referenceImage:nil];
+    [self checkSnapshotImage:image
+              testNameSuffix:testNameSuffix
+                testFilePath:testFilePath
+                testFileLine:testFileLine
+              referenceImage:nil];
 
     if (needToRemoveLayerFromSuperlayer) {
       [layer removeFromSuperlayer];
@@ -332,10 +353,9 @@ static NSString *escapeFilename(NSString *fileName) {
 
     image = convertImageToFormatExactlyRepresentableAsPNG(image);
 
-    NSString * const escapedSuffix = suffix ? escapeFilename(suffix) : nil;
-    NSString * const path = [!escapedSuffix ? _fullpath
-                                            : [_fullpath stringByAppendingString:escapedSuffix]
-                               stringByAppendingString:@".png"];
+    NSString *const escapedSuffix = suffix ? escapeFilename(suffix) : nil;
+    NSString *const path = [!escapedSuffix ? _fullpath : [_fullpath stringByAppendingString:escapedSuffix]
+        stringByAppendingString:@".png"];
     if (_shouldRecordSnapshotsInsteadOfCheckingThem) {
       [self stu_createDirectoryIfNecesary:[path stringByDeletingLastPathComponent]];
       [self stu_savePNGImage:image path:path];
@@ -346,8 +366,9 @@ static NSString *escapeFilename(NSString *fileName) {
     if (!referenceImage) {
       if (![_fileManager fileExistsAtPath:path]) {
         reportError(@"Missing snapshot image at '%@'. Did you forget to record a reference snapshot"
-                    " by running the test with shouldRecordSnapshotsInsteadOfCheckingThem set to"
-                    " true?", path);
+                     " by running the test with shouldRecordSnapshotsInsteadOfCheckingThem set to"
+                     " true?",
+                    path);
         return;
       }
       referenceImage = [self stu_loadPNGImageAtPath:path];
@@ -356,27 +377,27 @@ static NSString *escapeFilename(NSString *fileName) {
     const CGFloat referenceImageScale = referenceImage.scale;
     if (imageScale != referenceImageScale) {
       reportFailure(@"The scale of the snapshot image (%f) is different from the scale of the"
-                    " reference image (%f)", image.scale, referenceImageScale);
+                     " reference image (%f)",
+                    image.scale,
+                    referenceImageScale);
       return;
     }
     const CGImageRef cgImage = image.CGImage;
     const CGImageRef cgReferenceImage = referenceImage.CGImage;
     const size_t width = CGImageGetWidth(cgReferenceImage);
     const size_t height = CGImageGetHeight(cgReferenceImage);
-    const bool sizeIsDifferent = width != CGImageGetWidth(cgImage)
-                              || height != CGImageGetHeight(cgImage);
+    const bool sizeIsDifferent = width != CGImageGetWidth(cgImage) || height != CGImageGetHeight(cgImage);
     UIImage *diffImage = nil;
     if (!sizeIsDifferent) {
       const CGImageRef cgDiffImage = createDiffImage(cgImage, cgReferenceImage);
       if (!cgDiffImage) { // No difference.
         return;
       }
-      diffImage = [[UIImage alloc] initWithCGImage:cgDiffImage scale:imageScale
-                                       orientation:UIImageOrientationUp];
+      diffImage = [[UIImage alloc] initWithCGImage:cgDiffImage scale:imageScale orientation:UIImageOrientationUp];
       CFRelease(cgDiffImage);
     }
     NSString *diffPath;
-    const char* const env_diffDir = getenv("IMAGE_DIFF_DIR");
+    const char *const env_diffDir = getenv("IMAGE_DIFF_DIR");
     if (env_diffDir) {
       diffPath = [[NSString alloc] initWithUTF8String:env_diffDir];
     } else {
@@ -387,63 +408,61 @@ static NSString *escapeFilename(NSString *fileName) {
       diffPath = [diffPath stringByAppendingString:escapedSuffix];
     }
     [self stu_createDirectoryIfNecesary:[diffPath stringByDeletingLastPathComponent]];
-    [self stu_savePNGImage:referenceImage
-                      path:[diffPath stringByAppendingString:@"_reference.png"]];
+    [self stu_savePNGImage:referenceImage path:[diffPath stringByAppendingString:@"_reference.png"]];
     [self stu_savePNGImage:image path:[diffPath stringByAppendingString:@"_failed.png"]];
     if (!sizeIsDifferent) {
       [self stu_savePNGImage:diffImage path:[diffPath stringByAppendingString:@"_diff.png"]];
       reportFailure(@"The snapshot is different from the reference image."
-                    " The image diff has been saved to: %@_diff.png", diffPath);
+                     " The image diff has been saved to: %@_diff.png",
+                    diffPath);
     } else {
       reportFailure(@"The size (%@) of the snapshot image is different from the size of the reference"
-                    " image (%@). Both images have been saved to: '%@(_failed|_reference).png'.",
-                    NSStringFromCGSize(image.size), NSStringFromCGSize(referenceImage.size),
+                     " image (%@). Both images have been saved to: '%@(_failed|_reference).png'.",
+                    NSStringFromCGSize(image.size),
+                    NSStringFromCGSize(referenceImage.size),
                     diffPath);
     }
-    #undef reportFailure
-    #undef reportError
+#undef reportFailure
+#undef reportError
   } // autoreleasepool
 }
 
-- (void)stu_createDirectoryIfNecesary:(NSString *)directory {
+- (void)stu_createDirectoryIfNecesary:(NSString *)directory
+{
   NSError *error;
-  if ([_fileManager createDirectoryAtPath:directory
-              withIntermediateDirectories:true attributes:nil error:&error])
-  {
+  if ([_fileManager createDirectoryAtPath:directory withIntermediateDirectories:true attributes:nil error:&error]) {
     return;
   }
-  fatalError(@"SnapshotTestCase failed to create directory '%@': %@",
-             directory, error.localizedDescription);
-
+  fatalError(@"SnapshotTestCase failed to create directory '%@': %@", directory, error.localizedDescription);
 }
 
-- (void)stu_savePNGImage:(UIImage *)image path:(NSString *)path {
+- (void)stu_savePNGImage:(UIImage *)image path:(NSString *)path
+{
   NSError *error;
   if ([UIImagePNGRepresentation(image) writeToFile:path options:NSDataWritingAtomic error:&error]) {
     return;
   }
-  fatalError(@"SnapshotTestCase failed to save image at '%@': %@",
-             path, error.localizedDescription);
+  fatalError(@"SnapshotTestCase failed to save image at '%@': %@", path, error.localizedDescription);
 }
 
-- (UIImage *)stu_loadPNGImageAtPath:(NSString *)path {
+- (UIImage *)stu_loadPNGImageAtPath:(NSString *)path
+{
   static NSDictionary *options;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    options = @{(__bridge NSString *)kCGImageSourceShouldCache: @false,
-                (__bridge NSString *)kCGImageSourceShouldAllowFloat: @true};
+    options = @{
+      (__bridge NSString *)kCGImageSourceShouldCache : @false,
+      (__bridge NSString *)kCGImageSourceShouldAllowFloat : @true
+    };
   });
 
   NSError *error;
-  NSData * const data = [NSData dataWithContentsOfFile:path options:0 error:&error];
-  const CGImageSourceRef source = !data ? nil
-                                : CGImageSourceCreateWithData((__bridge CFDataRef)(data), nil);
-  const CGImageRef image = !source ? nil
-                         : CGImageSourceCreateImageAtIndex(source, 0,
-                                                           (__bridge CFDictionaryRef)options);
+  NSData *const data = [NSData dataWithContentsOfFile:path options:0 error:&error];
+  const CGImageSourceRef source = !data ? nil : CGImageSourceCreateWithData((__bridge CFDataRef)(data), nil);
+  const CGImageRef image =
+      !source ? nil : CGImageSourceCreateImageAtIndex(source, 0, (__bridge CFDictionaryRef)options);
   if (!image) {
-    fatalError(@"SnapshotTestCase failed to open image at '%@': %@",
-               path, error.localizedDescription);
+    fatalError(@"SnapshotTestCase failed to open image at '%@': %@", path, error.localizedDescription);
   }
   const CFDictionaryRef props = CGImageSourceCopyPropertiesAtIndex(source, 0, nil);
   const CFNumberRef dpi = CFDictionaryGetValue(props, kCGImagePropertyDPIWidth);
@@ -452,35 +471,37 @@ static NSString *escapeFilename(NSString *fileName) {
     scale /= 72;
   }
   CFRelease(props);
-  UIImage * const uiImage = [[UIImage alloc] initWithCGImage:image scale:scale
-                                                 orientation:UIImageOrientationUp];
+  UIImage *const uiImage = [[UIImage alloc] initWithCGImage:image scale:scale orientation:UIImageOrientationUp];
   CFRelease(image);
   CFRelease(source);
   return uiImage;
 }
 
-typedef struct {
+typedef struct
+{
   CGColorSpaceRef colorSpace;
   CGBitmapInfo bitmapInfo;
   uint16_t bitsPerPixel;
   uint16_t bitsPerComponent;
 } BitmapFormat;
 
-static bool isBitmapFormatEqualToFormat(BitmapFormat format1, BitmapFormat format2) {
-  return format1.bitmapInfo == format2.bitmapInfo
-      && format1.bitsPerPixel == format2.bitsPerPixel
-      && format1.bitsPerComponent == format2.bitsPerComponent
-      && isColorSpaceEqualToSpace(format1.colorSpace, format2.colorSpace);
+static bool isBitmapFormatEqualToFormat(BitmapFormat format1, BitmapFormat format2)
+{
+  return format1.bitmapInfo == format2.bitmapInfo && format1.bitsPerPixel == format2.bitsPerPixel &&
+         format1.bitsPerComponent == format2.bitsPerComponent &&
+         isColorSpaceEqualToSpace(format1.colorSpace, format2.colorSpace);
 }
 
-static BitmapFormat bitmapFormatOfCGImage(CGImageRef image) {
-  return (BitmapFormat){.colorSpace       = CGImageGetColorSpace(image),
-                        .bitmapInfo       = CGImageGetBitmapInfo(image),
-                        .bitsPerPixel     = (uint16_t)CGImageGetBitsPerPixel(image),
+static BitmapFormat bitmapFormatOfCGImage(CGImageRef image)
+{
+  return (BitmapFormat){.colorSpace = CGImageGetColorSpace(image),
+                        .bitmapInfo = CGImageGetBitmapInfo(image),
+                        .bitsPerPixel = (uint16_t)CGImageGetBitsPerPixel(image),
                         .bitsPerComponent = (uint16_t)CGImageGetBitsPerComponent(image)};
 }
 
-static inline bool bitmapInfoHasNoAlphaChannel(CGBitmapInfo info) {
+static inline bool bitmapInfoHasNoAlphaChannel(CGBitmapInfo info)
+{
   switch (info & kCGBitmapAlphaInfoMask) {
   case kCGImageAlphaNone:
   case kCGImageAlphaNoneSkipFirst:
@@ -491,26 +512,27 @@ static inline bool bitmapInfoHasNoAlphaChannel(CGBitmapInfo info) {
   }
 }
 
-static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage) {
+static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage)
+{
   const CGImageRef image = uiImage.CGImage;
   const CGColorSpaceRef colorSpace = CGImageGetColorSpace(image);
-  const bool isPersistableSpace =  isColorSpaceEqualToSpace(colorSpace, sRGB)
-                                || isColorSpaceEqualToSpace(colorSpace, grayGamma2_2)
-                                || (displayP3 && isColorSpaceEqualToSpace(colorSpace, displayP3));
-  const CGBitmapInfo bitmapInfo =  CGImageGetBitmapInfo(image);
+  const bool isPersistableSpace = isColorSpaceEqualToSpace(colorSpace, sRGB) ||
+                                  isColorSpaceEqualToSpace(colorSpace, grayGamma2_2) ||
+                                  (displayP3 && isColorSpaceEqualToSpace(colorSpace, displayP3));
+  const CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(image);
   const bool hasFloatComponents = bitmapInfo & kCGBitmapFloatComponents;
   if (!hasFloatComponents && isPersistableSpace) {
     return uiImage;
   }
   const bool noAlpha = bitmapInfoHasNoAlphaChannel(bitmapInfo);
   const CGColorSpaceRef persistableSpace =
-      isPersistableSpace ? colorSpace
-    : CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelMonochrome ? grayGamma2_2
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wunguarded-availability"
-    : CGColorSpaceIsWideGamutRGB && CGColorSpaceIsWideGamutRGB(colorSpace) ? displayP3
-    #pragma clang diagnostic pop
-    : sRGB;
+      isPersistableSpace                                                 ? colorSpace
+      : CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelMonochrome ? grayGamma2_2
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+      : CGColorSpaceIsWideGamutRGB && CGColorSpaceIsWideGamutRGB(colorSpace) ? displayP3
+#pragma clang diagnostic pop
+                                                                             : sRGB;
   vImage_CGImageFormat format = {.colorSpace = persistableSpace,
                                  .bitsPerComponent = (uint32_t)CGImageGetBitsPerComponent(image),
                                  .renderingIntent = kCGRenderingIntentRelativeColorimetric};
@@ -518,15 +540,14 @@ static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage) 
     fatalError(@"SnapshotTestCase image format not supported");
   }
   if (persistableSpace == grayGamma2_2) {
-    format.bitsPerPixel = (noAlpha ? 1 : 2)*format.bitsPerComponent;
+    format.bitsPerPixel = (noAlpha ? 1 : 2) * format.bitsPerComponent;
     format.bitmapInfo = noAlpha ? 0 : (CGBitmapInfo)kCGImageAlphaLast;
   } else {
-    format.bitsPerPixel = 4*format.bitsPerComponent;
+    format.bitsPerPixel = 4 * format.bitsPerComponent;
     format.bitmapInfo = (CGBitmapInfo)(noAlpha ? kCGImageAlphaNoneSkipLast : kCGImageAlphaLast);
   }
   vImage_Buffer buffer;
-  vImage_Error error = vImageBuffer_InitWithCGImage(&buffer, &format, nil, image,
-                                                    kvImagePrintDiagnosticsToConsole);
+  vImage_Error error = vImageBuffer_InitWithCGImage(&buffer, &format, nil, image, kvImagePrintDiagnosticsToConsole);
   if (error) {
     fatalError(@"SnapshotTestCase image format conversion failed");
   }
@@ -534,39 +555,48 @@ static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage) 
   if (!newImage) {
     fatalError(@"SnapshotTestCase image format conversion failed");
   }
-  return [[UIImage alloc] initWithCGImage:newImage scale:uiImage.scale
-                              orientation:uiImage.imageOrientation];
+  return [[UIImage alloc] initWithCGImage:newImage scale:uiImage.scale orientation:uiImage.imageOrientation];
 }
 
-static bool imageDataIsEqual(size_t width, size_t height, size_t bytesPerPixel,
-                             const uint8_t *bytes1, size_t bytesPerRow1,
-                             const uint8_t *bytes2, size_t bytesPerRow2)
+static bool imageDataIsEqual(size_t width,
+                             size_t height,
+                             size_t bytesPerPixel,
+                             const uint8_t *bytes1,
+                             size_t bytesPerRow1,
+                             const uint8_t *bytes2,
+                             size_t bytesPerRow2)
 {
-  const size_t usedBytesPerRow = width*bytesPerPixel;
+  const size_t usedBytesPerRow = width * bytesPerPixel;
   if (bytesPerRow1 == bytesPerRow2) {
-    if (memcmp(bytes1, bytes2, bytesPerRow1*height) == 0) return true;
-    if (bytesPerRow1 == usedBytesPerRow) return false;
+    if (memcmp(bytes1, bytes2, bytesPerRow1 * height) == 0)
+      return true;
+    if (bytesPerRow1 == usedBytesPerRow)
+      return false;
   }
   for (size_t i = 0; i < height; ++i) {
-    if (memcmp(bytes1 + i*bytesPerRow1, bytes2 + i*bytesPerRow2, usedBytesPerRow) != 0) {
+    if (memcmp(bytes1 + i * bytesPerRow1, bytes2 + i * bytesPerRow2, usedBytesPerRow) != 0) {
       return false;
     }
   }
   return true;
 }
 
-__attribute__((always_inline))
-static inline void diffMaskLoop(size_t width, size_t height, size_t bytesPerPixel,
-                                const uint8_t *bytes1, size_t bytesPerRow1,
-                                const uint8_t *bytes2, size_t bytesPerRow2,
-                                uint8_t *outMask, size_t outMaskBytesPerRow)
+__attribute__((always_inline)) static inline void diffMaskLoop(size_t width,
+                                                               size_t height,
+                                                               size_t bytesPerPixel,
+                                                               const uint8_t *bytes1,
+                                                               size_t bytesPerRow1,
+                                                               const uint8_t *bytes2,
+                                                               size_t bytesPerRow2,
+                                                               uint8_t *outMask,
+                                                               size_t outMaskBytesPerRow)
 {
-  const size_t n = width/8;
-  const size_t r = width%8;
+  const size_t n = width / 8;
+  const size_t r = width % 8;
   for (size_t i = 0; i < height; ++i) {
-    const uint8_t *p1 = &bytes1[i*bytesPerRow1];
-    const uint8_t *p2 = &bytes2[i*bytesPerRow2];
-    uint8_t *pOut = &outMask[i*outMaskBytesPerRow];
+    const uint8_t *p1 = &bytes1[i * bytesPerRow1];
+    const uint8_t *p2 = &bytes2[i * bytesPerRow2];
+    uint8_t *pOut = &outMask[i * outMaskBytesPerRow];
     for (size_t j = 0; j < n; ++j) {
       // The *most* significant bit in the mask byte represents the first mask pixel.
       uint8_t m = __builtin_memcmp(p1, p2, bytesPerPixel) == 0;
@@ -595,20 +625,20 @@ static inline void diffMaskLoop(size_t width, size_t height, size_t bytesPerPixe
   }
 }
 
-static void freeData(void *info, const void *data __unused, size_t size __unused) {
-  free(info);
-}
-
+static void freeData(void *info, const void *data __unused, size_t size __unused) { free(info); }
 
 /// Creates a 1-bit-per-pixel mask where each bit indicates whether the corresponding pixels of the
 /// two images are identical.
-__attribute__((noinline))
-static CGImageRef createDiffMask(size_t width, size_t height, size_t bytesPerPixel,
-                                 const uint8_t* bytes1, size_t bytesPerRow1,
-                                 const uint8_t* bytes2, size_t bytesPerRow2)
+__attribute__((noinline)) static CGImageRef createDiffMask(size_t width,
+                                                           size_t height,
+                                                           size_t bytesPerPixel,
+                                                           const uint8_t *bytes1,
+                                                           size_t bytesPerRow1,
+                                                           const uint8_t *bytes2,
+                                                           size_t bytesPerRow2)
 {
-  const size_t n = ((width + 63)/64)*8; ///< Rounded up bytes per row.
-  uint8_t* const mask = malloc(height*n);
+  const size_t n = ((width + 63) / 64) * 8; ///< Rounded up bytes per row.
+  uint8_t *const mask = malloc(height * n);
   switch (bytesPerPixel) {
   case 1:
     diffMaskLoop(width, height, 1, bytes1, bytesPerRow1, bytes2, bytesPerRow2, mask, n);
@@ -631,7 +661,7 @@ static CGImageRef createDiffMask(size_t width, size_t height, size_t bytesPerPix
   default:
     __builtin_trap();
   }
-  const CGDataProviderRef dp = CGDataProviderCreateWithData(mask, mask, height*n, freeData);
+  const CGDataProviderRef dp = CGDataProviderCreateWithData(mask, mask, height * n, freeData);
   const CGImageRef image = CGImageMaskCreate(width, height, 1, 1, n, dp, nil, false);
   CFRelease(dp);
   return image;
@@ -639,8 +669,7 @@ static CGImageRef createDiffMask(size_t width, size_t height, size_t bytesPerPix
 
 /// Returns nil if the two argument images are identical, otherwise an image depicting the
 /// difference of the two images.
-static __nullable CGImageRef createDiffImage(CGImageRef image,
-                                             CGImageRef referenceImage) CF_RETURNS_RETAINED
+static __nullable CGImageRef createDiffImage(CGImageRef image, CGImageRef referenceImage) CF_RETURNS_RETAINED
 {
   const size_t width = CGImageGetWidth(referenceImage);
   const size_t height = CGImageGetHeight(referenceImage);
@@ -650,11 +679,11 @@ static __nullable CGImageRef createDiffImage(CGImageRef image,
   const BitmapFormat format = bitmapFormatOfCGImage(referenceImage);
 
   const CFDataRef rData = CGDataProviderCopyData(CGImageGetDataProvider(referenceImage));
-  const void* const rBytes = CFDataGetBytePtr(rData);
+  const void *const rBytes = CFDataGetBytePtr(rData);
   const size_t rBytesPerRow = CGImageGetBytesPerRow(referenceImage);
 
   CFDataRef data;
-  const void* bytes;
+  const void *bytes;
   size_t bytesPerRow;
   vImage_Buffer vbuffer;
   vImage_CGImageFormat vformat;
@@ -664,16 +693,13 @@ static __nullable CGImageRef createDiffImage(CGImageRef image,
     bytesPerRow = CGImageGetBytesPerRow(image);
     vbuffer.data = nil;
   } else {
-    vformat = (vImage_CGImageFormat){
-      .bitsPerComponent = format.bitsPerComponent,
-      .bitsPerPixel = format.bitsPerPixel,
-      .colorSpace = format.colorSpace,
-      .bitmapInfo = format.bitmapInfo,
-      .renderingIntent = kCGRenderingIntentRelativeColorimetric
-    };
-    const vImage_Error error = vImageBuffer_InitWithCGImage(
-                                 &vbuffer, &vformat, nil, image,
-                                 kvImagePrintDiagnosticsToConsole);
+    vformat = (vImage_CGImageFormat){.bitsPerComponent = format.bitsPerComponent,
+                                     .bitsPerPixel = format.bitsPerPixel,
+                                     .colorSpace = format.colorSpace,
+                                     .bitmapInfo = format.bitmapInfo,
+                                     .renderingIntent = kCGRenderingIntentRelativeColorimetric};
+    const vImage_Error error =
+        vImageBuffer_InitWithCGImage(&vbuffer, &vformat, nil, image, kvImagePrintDiagnosticsToConsole);
     if (error) {
       fatalError(@"SnapshotTestCase image image conversion failed");
     }
@@ -682,30 +708,32 @@ static __nullable CGImageRef createDiffImage(CGImageRef image,
     bytesPerRow = vbuffer.rowBytes;
   }
 
-  const size_t bytesPerPixel = format.bitsPerPixel/8;
-  const size_t usedBytesPerRow = width*bytesPerPixel;
-  if (format.bitsPerPixel%8 || usedBytesPerRow > MIN(bytesPerRow, rBytesPerRow)) {
+  const size_t bytesPerPixel = format.bitsPerPixel / 8;
+  const size_t usedBytesPerRow = width * bytesPerPixel;
+  if (format.bitsPerPixel % 8 || usedBytesPerRow > MIN(bytesPerRow, rBytesPerRow)) {
     fatalError(@"SnapshotTestCase image format not supported");
   }
-  const bool isEqual = imageDataIsEqual(width, height, bytesPerPixel,
-                                        bytes, bytesPerRow, rBytes, rBytesPerRow);
+  const bool isEqual = imageDataIsEqual(width, height, bytesPerPixel, bytes, bytesPerRow, rBytes, rBytesPerRow);
   CGImageRef diffImage = nil;
   if (!isEqual) {
-    const CGImageRef diffMask = createDiffMask(width, height, bytesPerPixel,
-                                               bytes, bytesPerRow, rBytes, rBytesPerRow);
+    const CGImageRef diffMask = createDiffMask(width, height, bytesPerPixel, bytes, bytesPerRow, rBytes, rBytesPerRow);
     // CGBitmapContextCreate doesn't allow 16-bit integer channels.
     const bool useFloats = format.bitsPerComponent > 8;
     const size_t bitsPerComponent = useFloats ? 16 : 8;
     // Gray + Alpha pixel formats are not supported on iOS 9.
     const CGColorSpaceRef colorSpace =
-      CGColorSpaceGetModel(format.colorSpace) == kCGColorSpaceModelMonochrome
-      && kCFCoreFoundationVersionNumber <= kCFCoreFoundationVersionNumber_iOS_9_x_Max
-      ? sRGB : format.colorSpace;
+        CGColorSpaceGetModel(format.colorSpace) == kCGColorSpaceModelMonochrome &&
+                kCFCoreFoundationVersionNumber <= kCFCoreFoundationVersionNumber_iOS_9_x_Max
+            ? sRGB
+            : format.colorSpace;
     const CGContextRef context = CGBitmapContextCreate(
-                                   nil, width, height, bitsPerComponent, 0, colorSpace,
-                                   kCGImageAlphaPremultipliedLast
-                                   | (!useFloats ? 0
-                                      : kCGBitmapFloatComponents | kCGImageByteOrder16Little));
+        nil,
+        width,
+        height,
+        bitsPerComponent,
+        0,
+        colorSpace,
+        kCGImageAlphaPremultipliedLast | (!useFloats ? 0 : kCGBitmapFloatComponents | kCGImageByteOrder16Little));
     const CGRect rect = {0, 0, width, height};
     CGContextClipToMask(context, rect, diffMask);
     CGContextDrawImage(context, rect, referenceImage);
@@ -717,9 +745,9 @@ static __nullable CGImageRef createDiffImage(CGImageRef image,
       // image for drawing the diff.
       vImage_Error error;
       const CGImageRef converted = vImageCreateCGImageFromBuffer(
-                                     &vbuffer, &vformat, nil, nil,
-                                     kvImageNoAllocate | kvImagePrintDiagnosticsToConsole, &error);
-      if (!converted) __builtin_trap();
+          &vbuffer, &vformat, nil, nil, kvImageNoAllocate | kvImagePrintDiagnosticsToConsole, &error);
+      if (!converted)
+        __builtin_trap();
       vbuffer.data = nil; // Ownership was transferred to the image.
       CGContextDrawImage(context, rect, converted);
       CFRelease(converted);

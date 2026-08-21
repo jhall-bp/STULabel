@@ -10,17 +10,18 @@
 
 @implementation STULabelPrerenderer
 
-+ (instancetype)allocWithZone:(struct _NSZone* __unused)zone {
++ (instancetype)allocWithZone:(struct _NSZone *__unused)zone
+{
   return STULabelPrerendererAlloc(self);
 }
 
 STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
-- (void)dealloc {
-  stu_label::LabelPrerenderer& p = *self->prerenderer;
+- (void)dealloc
+{
+  stu_label::LabelPrerenderer &p = *self->prerenderer;
   objc_destructInstance(self);
   stu_label::detail::labelPrerendererObjCObjectWasDestroyed(p);
 }
 STU_REENABLE_CLANG_WARNING
 
 @end
-

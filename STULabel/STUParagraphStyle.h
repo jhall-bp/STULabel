@@ -68,18 +68,16 @@ STU_EXPORT
 @interface STUParagraphStyle : NSObject <NSCopying, NSSecureCoding>
 
 - (instancetype)initWithBuilder:(nullable STUParagraphStyleBuilder *)builder
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STUParagraphStyleBuilder *builder))block
-  // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
-  // Use Swift's trailing closure syntax when calling this initializer.
-  NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STUParagraphStyleBuilder *builder))block
+    // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
+    // Use Swift's trailing closure syntax when calling this initializer.
+    NS_REFINED_FOR_SWIFT;
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STUParagraphStyleBuilder *builder))block;
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STUParagraphStyleBuilder *builder))block;
 
-- (instancetype)initWithCoder:(NSCoder *)decoder
-  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCoder:(NSCoder *)decoder NS_DESIGNATED_INITIALIZER;
 
 - (void)encodeWithCoder:(NSCoder *)encoder;
 
@@ -146,12 +144,10 @@ STU_EXPORT
 @interface STUParagraphStyleBuilder : NSObject
 
 - (instancetype)initWithParagraphStyle:(nullable STUParagraphStyle *)paragraphStyle
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 - (void)setFirstLineOffset:(CGFloat)firstLineOffset
-                      type:(STUFirstLineOffsetType)firstLineOffsetType
-  NS_REFINED_FOR_SWIFT;
+                      type:(STUFirstLineOffsetType)firstLineOffsetType NS_REFINED_FOR_SWIFT;
 
 @property (nonatomic, readonly) STUFirstLineOffsetType firstLineOffsetType NS_REFINED_FOR_SWIFT;
 
@@ -220,4 +216,3 @@ STU_EXPORT
 @end
 
 STU_ASSUME_NONNULL_AND_STRONG_END
-

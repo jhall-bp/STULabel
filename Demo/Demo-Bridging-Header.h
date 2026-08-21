@@ -4,6 +4,5 @@
 
 void CGContextSetBaseCTM(CGContextRef c, CGAffineTransform ctm);
 
-
 @interface UIFont (STU_UIFont_NSCoding) <NSSecureCoding>
 @end

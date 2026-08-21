@@ -15,15 +15,14 @@ STU_EXPORT
 @property (class, readonly) STULabelOverlayStyle *defaultStyle;
 
 - (instancetype)initWithBuilder:(nullable STULabelOverlayStyleBuilder *)builder
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+    NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBlock:(void (^ STU_NOESCAPE)(STULabelOverlayStyleBuilder *builder))block
-  // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
-  // Use Swift's trailing closure syntax when calling this initializer.
-  NS_REFINED_FOR_SWIFT;
+- (instancetype)initWithBlock:(void (^STU_NOESCAPE)(STULabelOverlayStyleBuilder *builder))block
+    // NS_SWIFT_NAME(init(_:)) // https://bugs.swift.org/browse/SR-6894
+    // Use Swift's trailing closure syntax when calling this initializer.
+    NS_REFINED_FOR_SWIFT;
 
-- (instancetype)copyWithUpdates:(void (^ STU_NOESCAPE)(STULabelOverlayStyleBuilder *builder))block;
+- (instancetype)copyWithUpdates:(void (^STU_NOESCAPE)(STULabelOverlayStyleBuilder *builder))block;
 
 @property (readonly, nullable) UIColor *color;
 
@@ -50,9 +49,7 @@ STU_EXPORT
 STU_EXPORT
 @interface STULabelOverlayStyleBuilder : NSObject
 
-- (instancetype)initWithStyle:(nullable STULabelOverlayStyle *)style
-  NS_SWIFT_NAME(init(_:))
-  NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(nullable STULabelOverlayStyle *)style NS_SWIFT_NAME(init(_:)) NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, nullable) UIColor *color;
 

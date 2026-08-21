@@ -11,7 +11,8 @@ using namespace stu_label;
 
 @implementation SortedIntervalBufferTests
 
-- (void)testAdd {
+- (void)testAdd
+{
   ThreadLocalArenaAllocator::InitialBuffer<1024> buffer;
   ThreadLocalArenaAllocator alloc{Ref{buffer}};
 

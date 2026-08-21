@@ -6,15 +6,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSAttributedString (STUDynamicTypeScaling)
 
-- (NSAttributedString *)
-    stu_copyWithFontsAdjustedForContentSizeCategory:(UIContentSizeCategory)category
-      NS_RETURNS_RETAINED;
+- (NSAttributedString *)stu_copyWithFontsAdjustedForContentSizeCategory:(UIContentSizeCategory)category
+    NS_RETURNS_RETAINED;
 @end
 
 @interface NSMutableAttributedString (STUDynamicTypeScaling)
 
-- (void)stu_adjustFontsInRange:(NSRange)range
-        forContentSizeCategory:(UIContentSizeCategory)category;
+- (void)stu_adjustFontsInRange:(NSRange)range forContentSizeCategory:(UIContentSizeCategory)category;
 
 @end
 
