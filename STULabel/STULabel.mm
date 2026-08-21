@@ -506,6 +506,7 @@ API_UNAVAILABLE(tvos)
 
 static void updateLabelLinkObserversAfterLayoutChange(STULabel* label);
 static void updateLabelLinkObserversInLabelDealloc(STULabel* label);
+static void initializeContextMenuInteraction(STULabel* label);
 
 @implementation STULabel  {
   // The layer is owned by the view and stays constant, so we can safely cache a reference.
@@ -676,6 +677,11 @@ static void initCommon(STULabel* self) {
       [delegate respondsToSelector:@selector(label:link:canBeDraggedFromPoint:)];
     _bits.delegateRespondsToDragItemForLink =
       [delegate respondsToSelector:@selector(label:dragItemForLink:)];
+  }
+  if (_bits.delegateRespondsToContextMenuConfigurationForLink
+      && !_contextMenuInteraction && (_textFrameFlags & STUTextFrameHasLink))
+  {
+    initializeContextMenuInteraction(self);
   }
 }
 
@@ -1835,7 +1841,7 @@ didDisplayTextWithFlags:(STUTextFrameFlags)textFrameFlags inRect:(CGRect)content
   [_textInteraction stu_textDidDisplay];
   updateLayoutGuides(self);
   if (textFrameFlags & STUTextFrameHasLink) {
-    if (!_contextMenuInteraction) {
+    if (_bits.delegateRespondsToContextMenuConfigurationForLink && !_contextMenuInteraction) {
       initializeContextMenuInteraction(self);
     }
     if (!_dragInteraction && _bits.dragInteractionEnabled) {
