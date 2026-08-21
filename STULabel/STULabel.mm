@@ -900,6 +900,7 @@ static STULabelBaselinesLayoutGuide* baselinesLayoutGuide(STULabel* __unsafe_unr
     const id<STULabelDelegate> delegate = _delegate;
     const bool delegateRespondsToLinkCanBeDragged = _bits.delegateRespondsToLinkCanBeDragged;
     const bool delegateRespondsToDragItemForLink = _bits.delegateRespondsToDragItemForLink;
+    STULabel* __weak weakSelf = self;
 
     _textFrameAccessibilityElement =
       [[STUTextFrameAccessibilityElement alloc]
@@ -933,6 +934,8 @@ static STULabelBaselinesLayoutGuide* baselinesLayoutGuide(STULabel* __unsafe_unr
                         }
                   linkActivationHandler:^bool(STUTextRange range, id linkValue, CGPoint point)
                         {
+                          STULabel* const label = weakSelf;
+                          if (!label) return false;
                           STUTextLink* link = [links linkClosestToPoint:point maxDistance:0];
                           if (range.type == STURangeInOriginalString
                               && (!link || link.rangeInOriginalString != range.range))
@@ -946,7 +949,7 @@ static STULabelBaselinesLayoutGuide* baselinesLayoutGuide(STULabel* __unsafe_unr
                                                    textRectArray:nil];
                           }
                           if (!link) return false;
-                          [self stu_link:link wasTappedAtPoint:point];
+                          [label stu_link:link wasTappedAtPoint:point];
                           return true;
                         }
        ];

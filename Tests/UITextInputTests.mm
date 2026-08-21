@@ -375,4 +375,15 @@
   XCTAssertEqual(recorder.callCount, 2u);
 }
 
+- (void)testAccessibilityElementDoesNotRetainLabel {
+  __weak STULabel* weakLabel;
+  @autoreleasepool {
+    STULabel* const label = [[STULabel alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
+    label.text = @"Accessible text";
+    XCTAssertNotNil(label.accessibilityElements);
+    weakLabel = label;
+  }
+  XCTAssertNil(weakLabel);
+}
+
 @end
