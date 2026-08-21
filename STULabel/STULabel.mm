@@ -553,6 +553,7 @@ static void clearCurrentLabelTouch(STULabel* label);
   STULabelLinkObserver* __unsafe_unretained _lastLinkObserver;
 @private
   __weak id<STULabelDelegate> _delegate;
+  UIColor* _backgroundColor;
   UIColor* _disabledTextColor;
   UIColor* _disabledLinkColor;
   STULabelBaselinesLayoutGuide* _baselinesLayoutGuide;
@@ -569,6 +570,7 @@ static void clearCurrentLabelTouch(STULabel* label);
   STULabelGhostingMaskLayer* _ghostingMaskLayer;
   STUTextFrameAccessibilityElement* _textFrameAccessibilityElement;
   id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
+  id<UITraitChangeRegistration> _backgroundColorTraitChangeRegistration;
   id<UITraitChangeRegistration> _userInterfaceDirectionTraitChangeRegistration;
 }
 
@@ -617,6 +619,9 @@ static void initCommon(STULabel* self) {
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = UIColor.linkColor;
 
+  self->_backgroundColorTraitChangeRegistration =
+    [self registerForTraitChanges:UITraitCollection.systemTraitsAffectingColorAppearance
+                           withAction:@selector(colorAppearanceDidChange)];
   self->_userInterfaceDirectionTraitChangeRegistration = [self registerForTraitChanges:@[UITraitLayoutDirection.class] withAction:@selector(userInterfaceDirectionDidChange:)];
 }
 
@@ -1045,7 +1050,39 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
     }
 }
 
+static void updateDisplayedBackgroundColor(STULabel* __unsafe_unretained self) {
+  self->_layer.displayedBackgroundColor =
+    [self->_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+}
+
+- (void)colorAppearanceDidChange {
+  updateDisplayedBackgroundColor(self);
+}
+
 // MARK: - Tint and disabled colors
+
+- (UIColor*)disabledTextColor {
+  return _disabledTextColor;
+}
+- (void)setDisabledTextColor:(UIColor*)disabledTextColor {
+  if (_disabledTextColor == disabledTextColor) return;
+  _disabledTextColor = disabledTextColor;
+  if (!_bits.isEnabled) {
+    _layer.overrideTextColor = disabledTextColor;
+  }
+}
+
+- (UIColor*)disabledLinkColor {
+  return _disabledLinkColor;
+}
+- (void)setDisabledLinkColor:(UIColor*)disabledLinkColor {
+  if (_disabledLinkColor == disabledLinkColor) return;
+  _disabledLinkColor = disabledLinkColor;
+  if (!_bits.isEnabled) {
+    _layer.overrideLinkColor = disabledLinkColor
+                            ?: (_bits.usesTintColorAsLinkColor ? self.tintColor : UIColor.linkColor);
+  }
+}
 
 - (bool)usesTintColorAsLinkColor {
   return _bits.usesTintColorAsLinkColor;
@@ -1975,10 +2012,12 @@ didMoveDisplayedTextToRect:(CGRect)contentBounds
 }
 
 - (UIColor*)backgroundColor {
-  return [UIColor colorWithCGColor:_layer.displayedBackgroundColor];
+  return _backgroundColor;
 }
 - (void)setBackgroundColor:(UIColor*)backgroundColor {
-  _layer.displayedBackgroundColor = backgroundColor.CGColor;
+  if (_backgroundColor == backgroundColor) return;
+  _backgroundColor = [backgroundColor copy];
+  updateDisplayedBackgroundColor(self);
 }
 
 - (NSString*)text {
