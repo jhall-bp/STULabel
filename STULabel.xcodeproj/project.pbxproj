@@ -3,15 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000000000000000000011 /* STULabel+UITextInput.h in Headers */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* STULabel+UITextInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A10000000000000000000012 /* STULabel+UITextInput.h in Headers */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* STULabel+UITextInput.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A10000000000000000000013 /* STULabel+UITextInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* STULabel+UITextInput.mm */; };
-		A10000000000000000000014 /* STULabel+UITextInput.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* STULabel+UITextInput.mm */; };
-		A10000000000000000000022 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
 		A10000000000000000000023 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
 		A10000000000000000000031 /* TextSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* TextSelectionVC.swift */; };
 		A10000000000000000000041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* SceneDelegate.swift */; };
@@ -20,46 +15,11 @@
 		A20000000000000000000007 /* STULabel in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000003 /* STULabel */; };
 		A20000000000000000000008 /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000004 /* STULabelSwift */; };
 		D40702842014EC17004E5C07 /* TextFramePerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */; };
-		D40AE31E1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */; };
-		D40AE31F1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */; };
-		D40AE3211FA4E09000E0F056 /* TextFrame-IndexConversion.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE3201FA4E09000E0F056 /* TextFrame-IndexConversion.mm */; };
-		D40AE3221FA4E09000E0F056 /* TextFrame-IndexConversion.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE3201FA4E09000E0F056 /* TextFrame-IndexConversion.mm */; };
-		D40AE3241FA4EA4200E0F056 /* Parameter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D40AE3231FA4EA4200E0F056 /* Parameter.hpp */; };
-		D40AE3251FA4EA4200E0F056 /* Parameter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D40AE3231FA4EA4200E0F056 /* Parameter.hpp */; };
-		D40AE3271FA6068F00E0F056 /* GlyphSpan.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE3261FA6068F00E0F056 /* GlyphSpan.mm */; };
-		D40AE3281FA6068F00E0F056 /* GlyphSpan.mm in Sources */ = {isa = PBXBuildFile; fileRef = D40AE3261FA6068F00E0F056 /* GlyphSpan.mm */; };
 		D40C6BCA21384C8F00743FC6 /* StaticTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40C6BC921384C8F00743FC6 /* StaticTableViewController.swift */; };
-		D40E5D562060332A00E67689 /* TextFrameHighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40E5D552060332A00E67689 /* TextFrameHighlightingTests.swift */; };
-		D4107B3B20486CCD008CA7E9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D4107B3A20486CCD008CA7E9 /* README.md */; };
-		D4134E241FB20A2300377349 /* STUBackgroundAttribute.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4134E231FB20A2300377349 /* STUBackgroundAttribute.mm */; };
-		D4134E251FB20A2300377349 /* STUBackgroundAttribute.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4134E231FB20A2300377349 /* STUBackgroundAttribute.mm */; };
-		D4134E271FB20A3E00377349 /* STUBackgroundAttribute.h in Headers */ = {isa = PBXBuildFile; fileRef = D4134E261FB20A3E00377349 /* STUBackgroundAttribute.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4134E281FB20A3E00377349 /* STUBackgroundAttribute.h in Headers */ = {isa = PBXBuildFile; fileRef = D4134E261FB20A3E00377349 /* STUBackgroundAttribute.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4134E2A1FB20AE800377349 /* STUBackgroundAttribute-Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D4134E291FB20AE800377349 /* STUBackgroundAttribute-Internal.h */; };
-		D4134E2B1FB20AE800377349 /* STUBackgroundAttribute-Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D4134E291FB20AE800377349 /* STUBackgroundAttribute-Internal.h */; };
-		D4134E2E1FB32C2100377349 /* BinarySearch.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E2D1FB32C2100377349 /* BinarySearch.hpp */; };
-		D4134E2F1FB32C2100377349 /* BinarySearch.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E2D1FB32C2100377349 /* BinarySearch.hpp */; };
-		D4154B581FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4154B571FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm */; };
-		D4154B591FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4154B571FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm */; };
-		D4154B5B1FD706E900A065BC /* SnapshotTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = D4154B5A1FD706E900A065BC /* SnapshotTestCase.m */; settings = {COMPILER_FLAGS = "-O2"; }; };
 		D4154B5C1FD706E900A065BC /* SnapshotTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = D4154B5A1FD706E900A065BC /* SnapshotTestCase.m */; settings = {COMPILER_FLAGS = "-O2"; }; };
-		D416FB29201D2333002761B4 /* NSAttributedString-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D416FB28201D2333002761B4 /* NSAttributedString-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D416FB2A201D2333002761B4 /* NSAttributedString-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D416FB28201D2333002761B4 /* NSAttributedString-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D41745F920337101001D6F4F /* LabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41745F820337101001D6F4F /* LabelView.swift */; };
-		D41745FB2033A1F9001D6F4F /* LabelParameters.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41745FA2033A1F9001D6F4F /* LabelParameters.mm */; };
-		D41745FC2033A1F9001D6F4F /* LabelParameters.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41745FA2033A1F9001D6F4F /* LabelParameters.mm */; };
-		D41A37D32030FFC900ADDE1E /* PurgeableImage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D41A37D22030FFC900ADDE1E /* PurgeableImage.hpp */; };
-		D41A37D42030FFC900ADDE1E /* PurgeableImage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D41A37D22030FFC900ADDE1E /* PurgeableImage.hpp */; };
-		D41A37D62030FFDF00ADDE1E /* PurgeableImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41A37D52030FFDF00ADDE1E /* PurgeableImage.mm */; };
-		D41A37D72030FFDF00ADDE1E /* PurgeableImage.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41A37D52030FFDF00ADDE1E /* PurgeableImage.mm */; };
-		D41B1F61210B4AA700E4203C /* STUParagraphStyle.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B5B042104DA4F00964C5C /* STUParagraphStyle.overlay.swift */; };
 		D41B1F63210BB3C400E4203C /* TextFrameOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */; };
-		D41B1F64210BB3C400E4203C /* TextFrameOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */; };
 		D41C6D21211354EF00ACF170 /* GlyphBoundsCacheTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C6D20211354EF00ACF170 /* GlyphBoundsCacheTests.mm */; };
-		D41C92AC2083CBC3002AFFF3 /* STUStartEndRange.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42382A01F926F96000B8A63 /* STUStartEndRange.overlay.swift */; };
-		D41C92AE2083CBC3002AFFF3 /* STUImageUtils.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D483EE4A202D007C005917F9 /* STUImageUtils.overlay.swift */; };
-		D41C92AF2083CBC3002AFFF3 /* STUTextFrame.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */; };
-		D41C92B02083CBC3002AFFF3 /* STUTextRectArray.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4981F021FBE33F1007E88C2 /* STUTextRectArray.overlay.swift */; };
 		D41C92C52083D1C7002AFFF3 /* DynamicTypeFontScalingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */; };
 		D41C92C62083D276002AFFF3 /* MainScreenPropertiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */; };
 		D41C92C72083D2A6002AFFF3 /* MutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4731079202E3624000CBFF1 /* MutexTests.m */; };
@@ -71,189 +31,14 @@
 		D41C930420854D15002AFFF3 /* NSFoundationSupportTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C930320854D15002AFFF3 /* NSFoundationSupportTests.mm */; };
 		D41C930620854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C930520854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D41C948620874DEC002AFFF3 /* FunctionRefTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D41C948420874DEC002AFFF3 /* FunctionRefTests.cpp */; };
-		D42029281FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm in Sources */ = {isa = PBXBuildFile; fileRef = D42029271FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm */; };
-		D42029291FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm in Sources */ = {isa = PBXBuildFile; fileRef = D42029271FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm */; };
-		D420292A1FE1635F00B1F5FC /* TextFrameLayouter.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4EAEE1B1FCB29EB0094F525 /* TextFrameLayouter.mm */; };
-		D420292B1FE1635F00B1F5FC /* TextFrameLayouter.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4EAEE1B1FCB29EB0094F525 /* TextFrameLayouter.mm */; };
 		D42119D52047615900D143A8 /* BinarySearchTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42119D42047615900D143A8 /* BinarySearchTests.cpp */; };
 		D423043821527317003E2303 /* Stats.swift in Sources */ = {isa = PBXBuildFile; fileRef = D423043721527317003E2303 /* Stats.swift */; };
-		D42382A21F926F96000B8A63 /* STUStartEndRange.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42382A01F926F96000B8A63 /* STUStartEndRange.overlay.swift */; };
-		D42382A31F926F96000B8A63 /* STUTextFrame.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */; };
-		D42383D11F92AC81000B8A63 /* NSAttributedString+STUDynamicTypeFontScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFF11F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m */; };
-		D42383D51F92AC81000B8A63 /* STUTextRectArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF41F925AF700B5B2B9 /* STUTextRectArray.mm */; };
-		D42383DB1F92AC81000B8A63 /* STUTextHighlightStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE61F925AF400B5B2B9 /* STUTextHighlightStyle.mm */; };
-		D42383DC1F92AC81000B8A63 /* STUTextAttachment.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED81F925AF200B5B2B9 /* STUTextAttachment.mm */; };
-		D42383DF1F92AC81000B8A63 /* STULabelOverlayStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF71F925AF800B5B2B9 /* STULabelOverlayStyle.mm */; };
-		D42383E21F92AC81000B8A63 /* STUTextAttributes.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED61F925AF200B5B2B9 /* STUTextAttributes.mm */; };
-		D42383E51F92AC81000B8A63 /* UIFont+STUDynamicTypeFontScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFF31F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m */; };
-		D42383E71F92AC81000B8A63 /* TextFrame-Drawing.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF61F925AF700B5B2B9 /* TextFrame-Drawing.mm */; };
-		D42383E81F92AC81000B8A63 /* STUTextFrameOptions.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE21F925AF400B5B2B9 /* STUTextFrameOptions.mm */; };
-		D42383E91F92AC81000B8A63 /* STULabelDrawingBlock.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED01F925AF200B5B2B9 /* STULabelDrawingBlock.mm */; };
-		D42383EB1F92AC81000B8A63 /* STUMainScreenProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFFD1F925BE000B5B2B9 /* STUMainScreenProperties.m */; };
-		D42383ED1F92AC81000B8A63 /* stu_mutex.c in Sources */ = {isa = PBXBuildFile; fileRef = D4B0B0011F925BE800B5B2B9 /* stu_mutex.c */; };
-		D42383EF1F92AC81000B8A63 /* STULabelPrerenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEDA1F925AF200B5B2B9 /* STULabelPrerenderer.mm */; };
-		D42383F01F92AC81000B8A63 /* STUPlaceholderObjects-no-ARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE71F925AF500B5B2B9 /* STUPlaceholderObjects-no-ARC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D42383F11F92AC81000B8A63 /* STULabel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFEA1F925B9C00B5B2B9 /* STULabel.mm */; };
-		D42383F21F92AC81000B8A63 /* STUTextFrame.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF51F925AF700B5B2B9 /* STUTextFrame.mm */; };
-		D42383F51F92AC81000B8A63 /* STUImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFFA1F925BD700B5B2B9 /* STUImageUtils.m */; };
-		D42383F61F92AC81000B8A63 /* STUTextLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED31F925AF200B5B2B9 /* STUTextLink.mm */; };
-		D42383FF1F92AC81000B8A63 /* STUTextFrameLine.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AECC1F925AF100B5B2B9 /* STUTextFrameLine.mm */; };
-		D42384011F92AC81000B8A63 /* STUTextFrameAccessibilityElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEED1F925AF600B5B2B9 /* STUTextFrameAccessibilityElement.mm */; };
-		D42384021F92AC81000B8A63 /* STULabelPrerenderer-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AECB1F925AF100B5B2B9 /* STULabelPrerenderer-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D42384031F92AC81000B8A63 /* STULabelLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEFD1F925AF800B5B2B9 /* STULabelLayer.mm */; };
-		D42384041F92AC81000B8A63 /* STUShapedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED51F925AF200B5B2B9 /* STUShapedString.mm */; };
-		D42384051F92AC81000B8A63 /* STULayerWithNullDefaultActions.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE31F925AF400B5B2B9 /* STULayerWithNullDefaultActions.m */; };
-		D42384061F92AC81000B8A63 /* STUObjCRuntimeWrappers-no-ARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0B0061F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D42384071F92AC81000B8A63 /* STULabelLayoutInfo.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEC81F925AF100B5B2B9 /* STULabelLayoutInfo.mm */; };
-		D423840C1F92AC81000B8A63 /* STULayerWithNullDefaultActions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDF1F925AF300B5B2B9 /* STULayerWithNullDefaultActions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384101F92AC81000B8A63 /* STUTextFrameLine.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEB1F925AF600B5B2B9 /* STUTextFrameLine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384111F92AC81000B8A63 /* STULabelDrawingBlock-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF81F925AF800B5B2B9 /* STULabelDrawingBlock-Internal.hpp */; };
-		D42384131F92AC81000B8A63 /* STULabelLayoutInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEF1F925AF600B5B2B9 /* STULabelLayoutInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384141F92AC81000B8A63 /* STUStartEndRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED71F925AF200B5B2B9 /* STUStartEndRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423841B1F92AC81000B8A63 /* STUTextLink.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE81F925AF500B5B2B9 /* STUTextLink.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423841E1F92AC81000B8A63 /* STULabel.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423841F1F92AC81000B8A63 /* stu_mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0B0021F925BE800B5B2B9 /* stu_mutex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384221F92AC81000B8A63 /* STULabelLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED11F925AF200B5B2B9 /* STULabelLayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384251F92AC81000B8A63 /* STUTextFrameOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEC91F925AF100B5B2B9 /* STUTextFrameOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384261F92AC81000B8A63 /* STUTextLink-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE41F925AF400B5B2B9 /* STUTextLink-Internal.hpp */; };
-		D42384281F92AC81000B8A63 /* STUTextFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFC1F925AF800B5B2B9 /* STUTextFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423842B1F92AC81000B8A63 /* STUTextHighlightStyle-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDC1F925AF300B5B2B9 /* STUTextHighlightStyle-Internal.hpp */; };
-		D423842C1F92AC81000B8A63 /* STUTextAttachment-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF01F925AF600B5B2B9 /* STUTextAttachment-Internal.hpp */; };
-		D42384321F92AC81000B8A63 /* STUShapedString.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDE1F925AF300B5B2B9 /* STUShapedString.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384331F92AC81000B8A63 /* STUTextFrame-Unsafe.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE11F925AF300B5B2B9 /* STUTextFrame-Unsafe.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384371F92AC81000B8A63 /* STUTextFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEE1F925AF600B5B2B9 /* STUTextFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423843A1F92AC81000B8A63 /* STUMainScreenProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFFE1F925BE000B5B2B9 /* STUMainScreenProperties.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423843B1F92AC81000B8A63 /* STUTextRectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEA1F925AF500B5B2B9 /* STUTextRectArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423843D1F92AC81000B8A63 /* STUImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF91F925BD600B5B2B9 /* STUImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384431F92AC81000B8A63 /* STULabelLayer-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF31F925AF700B5B2B9 /* STULabelLayer-Internal.hpp */; };
-		D42384451F92AC81000B8A63 /* STUTextHighlightStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE01F925AF300B5B2B9 /* STUTextHighlightStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423844A1F92AC81000B8A63 /* STUTextFrame-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED21F925AF200B5B2B9 /* STUTextFrame-Internal.hpp */; };
-		D423844B1F92AC81000B8A63 /* STUDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFEF1F925BC600B5B2B9 /* STUDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423844C1F92AC81000B8A63 /* STUTextAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECA1F925AF100B5B2B9 /* STUTextAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423844D1F92AC81000B8A63 /* STULabelPrerenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF91F925AF800B5B2B9 /* STULabelPrerenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384521F92AC81000B8A63 /* STUShapedString-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE51F925AF400B5B2B9 /* STUShapedString-Internal.hpp */; };
-		D42384551F92AC81000B8A63 /* STULabelPrerenderer-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFA1F925AF800B5B2B9 /* STULabelPrerenderer-Internal.hpp */; };
-		D42384591F92AC81000B8A63 /* STULabelDrawingBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECF1F925AF200B5B2B9 /* STULabelDrawingBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423845C1F92AC81000B8A63 /* STUTextFrameOptions-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFE1F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp */; };
-		D423845D1F92AC81000B8A63 /* STUTextRectArray-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF21F925AF700B5B2B9 /* STUTextRectArray-Internal.hpp */; };
-		D423845F1F92AC81000B8A63 /* NSAttributedString+STUDynamicTypeFontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF41F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384601F92AC81000B8A63 /* STUTextAttributes-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDB1F925AF300B5B2B9 /* STUTextAttributes-Internal.hpp */; };
-		D42384631F92AC81000B8A63 /* UIFont+STUDynamicTypeFontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF21F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384641F92AC81000B8A63 /* STUObjCRuntimeWrappers.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0B0051F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384681F92AC81000B8A63 /* STULabelLayoutInfo-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECD1F925AF100B5B2B9 /* STULabelLayoutInfo-Internal.hpp */; };
-		D423846D1F92AC81000B8A63 /* STUTextFrameAccessibilityElement.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFB1F925AF800B5B2B9 /* STUTextFrameAccessibilityElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D423846F1F92AC81000B8A63 /* STUTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED41F925AF200B5B2B9 /* STUTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384701F92AC81000B8A63 /* STULabelOverlayStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECE1F925AF100B5B2B9 /* STULabelOverlayStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D42384841F92AE37000B8A63 /* STULabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; };
-		D423848C1F92AFF5000B8A63 /* STULabel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */; };
-		D42384921F92B7E7000B8A63 /* STULabelSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42382981F926F2C000B8A63 /* STULabelSwift.framework */; };
-		D42384B31F9379B9000B8A63 /* Assert.m in Sources */ = {isa = PBXBuildFile; fileRef = D42384991F9379B6000B8A63 /* Assert.m */; };
-		D42384B41F9379B9000B8A63 /* Dollar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849A1F9379B7000B8A63 /* Dollar.hpp */; };
-		D42384B51F9379B9000B8A63 /* ArenaAllocator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849B1F9379B7000B8A63 /* ArenaAllocator.hpp */; };
-		D42384B61F9379B9000B8A63 /* Iterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849C1F9379B7000B8A63 /* Iterator.hpp */; };
-		D42384B71F9379B9000B8A63 /* RefCounting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849D1F9379B7000B8A63 /* RefCounting.hpp */; };
-		D42384B91F9379B9000B8A63 /* MinMax.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849F1F9379B7000B8A63 /* MinMax.hpp */; };
-		D42384BA1F9379B9000B8A63 /* Comparable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A01F9379B7000B8A63 /* Comparable.hpp */; };
-		D42384BB1F9379B9000B8A63 /* Allocation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A11F9379B7000B8A63 /* Allocation.hpp */; };
-		D42384BC1F9379B9000B8A63 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = D42384A21F9379B7000B8A63 /* Config.h */; };
-		D42384BD1F9379B9000B8A63 /* Array.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A31F9379B7000B8A63 /* Array.hpp */; };
-		D42384BE1F9379B9000B8A63 /* ScopeGuard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A41F9379B7000B8A63 /* ScopeGuard.hpp */; };
-		D42384C01F9379B9000B8A63 /* FunctionRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A61F9379B8000B8A63 /* FunctionRef.hpp */; };
-		D42384C11F9379B9000B8A63 /* Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A71F9379B8000B8A63 /* Range.hpp */; };
-		D42384C21F9379B9000B8A63 /* ArrayUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A81F9379B8000B8A63 /* ArrayUtils.hpp */; };
-		D42384C31F9379B9000B8A63 /* ArrayRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A91F9379B8000B8A63 /* ArrayRef.hpp */; };
-		D42384C41F9379B9000B8A63 /* Assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D42384AA1F9379B8000B8A63 /* Assert.h */; };
-		D42384C51F9379B9000B8A63 /* OptionsEnum.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AB1F9379B8000B8A63 /* OptionsEnum.hpp */; };
-		D42384C61F9379B9000B8A63 /* TypeTraits.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AC1F9379B8000B8A63 /* TypeTraits.hpp */; };
-		D42384C71F9379B9000B8A63 /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42384AD1F9379B9000B8A63 /* Vector.cpp */; };
-		D42384C81F9379B9000B8A63 /* ArenaAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42384AE1F9379B9000B8A63 /* ArenaAllocator.cpp */; };
-		D42384C91F9379B9000B8A63 /* Vector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AF1F9379B9000B8A63 /* Vector.hpp */; };
-		D42384CA1F9379B9000B8A63 /* Ref.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B01F9379B9000B8A63 /* Ref.hpp */; };
-		D42384CB1F9379B9000B8A63 /* InOut.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B11F9379B9000B8A63 /* InOut.hpp */; };
-		D42384CC1F9379B9000B8A63 /* Utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B21F9379B9000B8A63 /* Utility.hpp */; };
-		D42384D41F9381D6000B8A63 /* NSFoundationSupport.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384D01F938144000B8A63 /* NSFoundationSupport.hpp */; };
-		D42384D51F9381D7000B8A63 /* Allocation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A11F9379B7000B8A63 /* Allocation.hpp */; };
-		D42384D61F9381D7000B8A63 /* ArenaAllocator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849B1F9379B7000B8A63 /* ArenaAllocator.hpp */; };
-		D42384D71F9381D7000B8A63 /* ArenaAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42384AE1F9379B9000B8A63 /* ArenaAllocator.cpp */; };
-		D42384D81F9381D7000B8A63 /* Array.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A31F9379B7000B8A63 /* Array.hpp */; };
-		D42384D91F9381D7000B8A63 /* ArrayRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A91F9379B8000B8A63 /* ArrayRef.hpp */; };
-		D42384DA1F9381D7000B8A63 /* ArrayUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A81F9379B8000B8A63 /* ArrayUtils.hpp */; };
-		D42384DB1F9381D7000B8A63 /* Assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D42384AA1F9379B8000B8A63 /* Assert.h */; };
-		D42384DC1F9381D7000B8A63 /* Assert.m in Sources */ = {isa = PBXBuildFile; fileRef = D42384991F9379B6000B8A63 /* Assert.m */; };
-		D42384DD1F9381D7000B8A63 /* Comparable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A01F9379B7000B8A63 /* Comparable.hpp */; };
-		D42384DE1F9381D7000B8A63 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = D42384A21F9379B7000B8A63 /* Config.h */; };
-		D42384DF1F9381D7000B8A63 /* Dollar.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849A1F9379B7000B8A63 /* Dollar.hpp */; };
-		D42384E01F9381D7000B8A63 /* FunctionRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A61F9379B8000B8A63 /* FunctionRef.hpp */; };
-		D42384E11F9381D7000B8A63 /* NSFoundationSupport.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384D01F938144000B8A63 /* NSFoundationSupport.hpp */; };
-		D42384E21F9381D7000B8A63 /* InOut.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B11F9379B9000B8A63 /* InOut.hpp */; };
-		D42384E31F9381D7000B8A63 /* Iterator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849C1F9379B7000B8A63 /* Iterator.hpp */; };
-		D42384E41F9381D7000B8A63 /* MinMax.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849F1F9379B7000B8A63 /* MinMax.hpp */; };
-		D42384E61F9381D7000B8A63 /* OptionsEnum.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AB1F9379B8000B8A63 /* OptionsEnum.hpp */; };
-		D42384E71F9381D7000B8A63 /* Range.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A71F9379B8000B8A63 /* Range.hpp */; };
-		D42384E91F9381D7000B8A63 /* Ref.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B01F9379B9000B8A63 /* Ref.hpp */; };
-		D42384EA1F9381D7000B8A63 /* RefCounting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D423849D1F9379B7000B8A63 /* RefCounting.hpp */; };
-		D42384EB1F9381D7000B8A63 /* ScopeGuard.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384A41F9379B7000B8A63 /* ScopeGuard.hpp */; };
-		D42384EC1F9381D7000B8A63 /* TypeTraits.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AC1F9379B8000B8A63 /* TypeTraits.hpp */; };
-		D42384ED1F9381D7000B8A63 /* Utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384B21F9379B9000B8A63 /* Utility.hpp */; };
-		D42384EE1F9381D7000B8A63 /* Vector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384AF1F9379B9000B8A63 /* Vector.hpp */; };
-		D42384EF1F9381D7000B8A63 /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42384AD1F9379B9000B8A63 /* Vector.cpp */; };
-		D42384F11F939589000B8A63 /* TextFrame.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384F01F939589000B8A63 /* TextFrame.hpp */; };
-		D42384F21F939589000B8A63 /* TextFrame.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384F01F939589000B8A63 /* TextFrame.hpp */; };
-		D42384F41F9396FD000B8A63 /* STUStartEndRange-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384F31F9396FD000B8A63 /* STUStartEndRange-Internal.hpp */; };
-		D42384F51F9396FD000B8A63 /* STUStartEndRange-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D42384F31F9396FD000B8A63 /* STUStartEndRange-Internal.hpp */; };
 		D423F67220FA5B68003AE48C /* TextAttachmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D423F67120FA5B68003AE48C /* TextAttachmentTests.swift */; };
 		D424FD70209B708A00FB50BA /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D424FD6F209B708A00FB50BA /* Fonts.swift */; };
-		D42584E31FCE137800DDA412 /* ThreadLocalAllocator.mm in Sources */ = {isa = PBXBuildFile; fileRef = D42584E21FCE137800DDA412 /* ThreadLocalAllocator.mm */; };
-		D42584E41FCE137800DDA412 /* ThreadLocalAllocator.mm in Sources */ = {isa = PBXBuildFile; fileRef = D42584E21FCE137800DDA412 /* ThreadLocalAllocator.mm */; };
 		D4271105215CDA3200939123 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4271104215CDA3200939123 /* DictionaryExtension.swift */; };
-		D42E8779205041B8003C920E /* TextFrameLineBreakingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */; };
 		D4320B13212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */; };
-		D437A41D20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */; };
-		D437A41E20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */; };
 		D43E66C81FD45DD400BABD1C /* UnicodeCodePointPropertiesTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */; };
 		D43E66C91FD45DD700BABD1C /* TextLineSpansPathTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */; };
-		D43E66CD1FD464D100BABD1C /* UnicodeCodePointProperties.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */; };
-		D43E66CE1FD464D500BABD1C /* UnicodeCodePointProperties.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD81FCC6018004B0E5C /* UnicodeCodePointProperties.hpp */; };
-		D43E66CF1FD464E100BABD1C /* CoreGraphicsUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E221FB1F41200377349 /* CoreGraphicsUtils.hpp */; };
-		D43E66D01FD464E100BABD1C /* Equal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E2C1FB236DA00377349 /* Equal.hpp */; };
-		D43E66D11FD464E100BABD1C /* StyledStringRangeIteration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7851F98DB04003F81AC /* StyledStringRangeIteration.hpp */; };
-		D43E66D21FD464E100BABD1C /* TextFlags.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D40AE3291FA74F6600E0F056 /* TextFlags.hpp */; };
-		D43E66D31FD464E200BABD1C /* CoreGraphicsUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E221FB1F41200377349 /* CoreGraphicsUtils.hpp */; };
-		D43E66D41FD464E200BABD1C /* Equal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4134E2C1FB236DA00377349 /* Equal.hpp */; };
-		D43E66D51FD464E200BABD1C /* DecorationLines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA21FCC5FC4004B0E5C /* DecorationLines.hpp */; };
-		D43E66D61FD464E200BABD1C /* DecorationLines.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AA31FCC5FC4004B0E5C /* DecorationLines.mm */; };
-		D43E66D71FD464E200BABD1C /* DrawingContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA41FCC5FC4004B0E5C /* DrawingContext.hpp */; };
-		D43E66D81FD464E200BABD1C /* DrawingContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AA11FCC5FC4004B0E5C /* DrawingContext.mm */; };
-		D43E66D91FD464E200BABD1C /* SortedIntervalBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA91FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp */; };
-		D43E66DA1FD464E200BABD1C /* SortedIntervalBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AAA1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm */; };
-		D43E66DB1FD464E200BABD1C /* StyledStringRangeIteration.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7851F98DB04003F81AC /* StyledStringRangeIteration.hpp */; };
-		D43E66DC1FD464E200BABD1C /* ThreadLocalAllocator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AAD1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp */; };
-		D43E66DD1FD464E200BABD1C /* TextFlags.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D40AE3291FA74F6600E0F056 /* TextFlags.hpp */; };
-		D43E66DE1FD464E200BABD1C /* TextLineSpan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB81FCC6000004B0E5C /* TextLineSpan.hpp */; };
-		D43E66DF1FD464E200BABD1C /* TextLineSpan.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AB71FCC6000004B0E5C /* TextLineSpan.mm */; };
-		D43E66E01FD464E200BABD1C /* TextLineSpansPath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AE01FCC601A004B0E5C /* TextLineSpansPath.hpp */; };
-		D43E66E11FD464E200BABD1C /* TextLineSpansPath.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD21FCC6017004B0E5C /* TextLineSpansPath.mm */; };
-		D43E66E21FD464E200BABD1C /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB01FCC5FF0004B0E5C /* TextStyle.hpp */; };
-		D43E66E31FD464E200BABD1C /* TextStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AAF1FCC5FF0004B0E5C /* TextStyle.mm */; };
-		D43E66E41FD464E200BABD1C /* TextStyleBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB11FCC5FF1004B0E5C /* TextStyleBuffer.hpp */; };
-		D43E66E51FD464E200BABD1C /* TextStyleBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AB21FCC5FF1004B0E5C /* TextStyleBuffer.mm */; };
-		D43E66E61FD464E200BABD1C /* InputClamping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981EFF1FBC8C2A007E88C2 /* InputClamping.hpp */; };
-		D43E66EC1FD464E200BABD1C /* CoreGraphicsUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC81FCC6014004B0E5C /* CoreGraphicsUtils.mm */; };
-		D43E66F01FD464E200BABD1C /* GlyphPathIntersectionBounds.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AE11FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp */; };
-		D43E66F11FD464E200BABD1C /* GlyphPathIntersectionBounds.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD61FCC6018004B0E5C /* GlyphPathIntersectionBounds.mm */; };
-		D43E66F51FD464E200BABD1C /* STULabelGhostingMaskLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADA1FCC6018004B0E5C /* STULabelGhostingMaskLayer.h */; };
-		D43E66F61FD464E200BABD1C /* STULabelGhostingMaskLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0ABF1FCC6012004B0E5C /* STULabelGhostingMaskLayer.mm */; };
-		D43E66F71FD464E200BABD1C /* STULabelLinkOverlayLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADC1FCC6019004B0E5C /* STULabelLinkOverlayLayer.h */; };
-		D43E66F81FD464E200BABD1C /* STULabelLinkOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC11FCC6013004B0E5C /* STULabelLinkOverlayLayer.m */; };
-		D43E66F91FD464E200BABD1C /* LabelParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD11FCC6016004B0E5C /* LabelParameters.hpp */; };
-		D43E66FC1FD464E200BABD1C /* LabelRendering.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD41FCC6017004B0E5C /* LabelRendering.hpp */; };
-		D43E66FD1FD464E200BABD1C /* LabelRendering.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD91FCC6018004B0E5C /* LabelRendering.mm */; };
-		D43E66FE1FD464E200BABD1C /* STULabelSubrangeView.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD31FCC6017004B0E5C /* STULabelSubrangeView.h */; };
-		D43E66FF1FD464E200BABD1C /* STULabelSubrangeView.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0ACF1FCC6016004B0E5C /* STULabelSubrangeView.mm */; };
-		D43E67041FD464E200BABD1C /* LineTruncation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADD1FCC6019004B0E5C /* LineTruncation.hpp */; };
-		D43E67051FD464E200BABD1C /* LineTruncation.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC01FCC6013004B0E5C /* LineTruncation.mm */; };
-		D43E67061FD464E200BABD1C /* STUMediaTimingFunctionUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD71FCC6018004B0E5C /* STUMediaTimingFunctionUtils.h */; };
-		D43E67071FD464E200BABD1C /* STUPlaceholderObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADB1FCC6019004B0E5C /* STUPlaceholderObjects.h */; };
 		D4494FBF2046F4320047DD82 /* AllocationTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42AC4E22041BBEF0076CAF1 /* AllocationTests.cpp */; };
 		D4494FC02046F4320047DD82 /* ArenaAllocatorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42AC4E52041DA830076CAF1 /* ArenaAllocatorTests.cpp */; };
 		D4494FC12046F4320047DD82 /* ArrayTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D47A35202046C26B00C32FAE /* ArrayTests.cpp */; };
@@ -262,411 +47,53 @@
 		D4494FC52046F4370047DD82 /* VectorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FBC2046E93A0047DD82 /* VectorTests.cpp */; };
 		D4494FC72046F5DF0047DD82 /* TestValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FC62046F5DF0047DD82 /* TestValue.cpp */; };
 		D4494FCA2046FFD80047DD82 /* AllocatorUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FC92046FFD80047DD82 /* AllocatorUtils.cpp */; };
-		D44A5EAC1F9A2672007325B4 /* Optional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D44A5EAB1F9A2672007325B4 /* Optional.cpp */; };
-		D44A5EAD1F9A2672007325B4 /* Optional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D44A5EAB1F9A2672007325B4 /* Optional.cpp */; };
-		D44A5EB81F9A533C007325B4 /* Config.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D44A5EB71F9A533C007325B4 /* Config.hpp */; };
-		D44A5EB91F9A533C007325B4 /* Config.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D44A5EB71F9A533C007325B4 /* Config.hpp */; };
-		D44A5EBB1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D44A5EBA1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp */; };
-		D44A5EBC1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D44A5EBA1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp */; };
-		D44B5B052104DA4F00964C5C /* STUParagraphStyle.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B5B042104DA4F00964C5C /* STUParagraphStyle.overlay.swift */; };
-		D44C191D1F97C434001DFD52 /* StyledStringRangeIteration.mm in Sources */ = {isa = PBXBuildFile; fileRef = D44C191C1F97C434001DFD52 /* StyledStringRangeIteration.mm */; };
-		D44C191E1F97C434001DFD52 /* StyledStringRangeIteration.mm in Sources */ = {isa = PBXBuildFile; fileRef = D44C191C1F97C434001DFD52 /* StyledStringRangeIteration.mm */; };
-		D44F90E620E6402C00ED750B /* ShapedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44F90E520E6402C00ED750B /* ShapedStringTests.swift */; };
-		D44F90E720E6413800ED750B /* UDHR.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAB32067C2810081606C /* UDHR.swift */; };
 		D44F90E820E6413B00ED750B /* UDHR.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAB32067C2810081606C /* UDHR.swift */; };
-		D44F90E920E6414300ED750B /* udhr.html in Resources */ = {isa = PBXBuildFile; fileRef = D495DAB92067C7210081606C /* udhr.html */; };
 		D44F90EA20E6414300ED750B /* udhr.html in Resources */ = {isa = PBXBuildFile; fileRef = D495DAB92067C7210081606C /* udhr.html */; };
 		D44F90EC20E64CFF00ED750B /* Rand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2174209F68A2007E6C36 /* Rand.swift */; };
-		D44F90ED20E64D0000ED750B /* Rand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2174209F68A2007E6C36 /* Rand.swift */; };
-		D450392F202E4E6300987C41 /* DynamicTypeFontScalingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */; };
 		D45167C22016793E0015B10B /* TimingResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45167C12016793E0015B10B /* TimingResultView.swift */; };
 		D45299B42124485E00714A83 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45299B32124485E00714A83 /* Setting.swift */; };
 		D45299B92126385500714A83 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45299B82126385500714A83 /* UIColorExtension.swift */; };
-		D453E7891F993BEA003F81AC /* Optional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7881F993BE9003F81AC /* Optional.hpp */; };
-		D453E78A1F993BEA003F81AC /* Optional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7881F993BE9003F81AC /* Optional.hpp */; };
-		D4552F861FEAF3F20006974A /* NSStringRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F851FEAF3F20006974A /* NSStringRef.hpp */; };
-		D4552F871FEAF3F20006974A /* NSStringRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F851FEAF3F20006974A /* NSStringRef.hpp */; };
-		D4552F8A1FEAF53C0006974A /* NSStringRef.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4552F881FEAF53C0006974A /* NSStringRef.mm */; };
-		D4552F8F1FEC06710006974A /* NSAttributedStringRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F8C1FEC06710006974A /* NSAttributedStringRef.hpp */; };
-		D4552F901FEC06710006974A /* NSAttributedStringRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F8C1FEC06710006974A /* NSAttributedStringRef.hpp */; };
-		D4552F911FEC42B30006974A /* NSStringRef.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4552F881FEAF53C0006974A /* NSStringRef.mm */; };
-		D4552F931FED31D10006974A /* Rect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F921FED31D10006974A /* Rect.hpp */; };
-		D4552F941FED31D10006974A /* Rect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4552F921FED31D10006974A /* Rect.hpp */; };
 		D45A31F32062971A009E7E5A /* SortedIntervalBufferTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45A31F22062971A009E7E5A /* SortedIntervalBufferTests.mm */; };
 		D45A31F620645DF6009E7E5A /* HashSetTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45A31F520645DF6009E7E5A /* HashSetTests.mm */; };
 		D45F2175209F68A2007E6C36 /* Rand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2174209F68A2007E6C36 /* Rand.swift */; };
-		D45F217820A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D45F217620A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D45F217920A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D45F217620A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D45F217A20A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45F217720A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm */; };
-		D45F217B20A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45F217720A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm */; };
-		D45F217E20A1B590007E6C36 /* STUTextFrameRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D45F217D20A1B590007E6C36 /* STUTextFrameRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D45F217F20A1B590007E6C36 /* STUTextFrameRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D45F217D20A1B590007E6C36 /* STUTextFrameRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D45F218120A1E015007E6C36 /* Unretained.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D45F218020A1E015007E6C36 /* Unretained.hpp */; };
-		D45F218220A1E015007E6C36 /* Unretained.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D45F218020A1E015007E6C36 /* Unretained.hpp */; };
-		D45F218A20A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F218920A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift */; };
-		D45F218B20A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F218920A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift */; };
-		D464B2DA2039D2730027FEE4 /* MainScreenPropertiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */; };
 		D467A0831F9261E70043C7F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D467A0821F9261E70043C7F0 /* Assets.xcassets */; };
-		D467A0861F9261E70043C7F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D467A0841F9261E70043C7F0 /* LaunchScreen.storyboard */; };
-		D468096B1FB1D575006AA14D /* Once.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D468096A1FB1D575006AA14D /* Once.hpp */; };
-		D468096C1FB1D575006AA14D /* Once.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D468096A1FB1D575006AA14D /* Once.hpp */; };
-		D468096E1FB1E5A8006AA14D /* NSCoderUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D468096D1FB1E5A5006AA14D /* NSCoderUtils.hpp */; };
-		D468096F1FB1E5A8006AA14D /* NSCoderUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D468096D1FB1E5A5006AA14D /* NSCoderUtils.hpp */; };
-		D46A3CFF214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46A3CFE214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift */; };
-		D46A3D00214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46A3CFE214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift */; };
-		D46B093F1FAC8EE100375E76 /* Color.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B093E1FAC8EE100375E76 /* Color.hpp */; };
-		D46B09401FAC8EE100375E76 /* Color.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B093E1FAC8EE100375E76 /* Color.hpp */; };
-		D46B09421FAC916200375E76 /* Font.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B09411FAC916200375E76 /* Font.hpp */; };
-		D46B09431FAC916200375E76 /* Font.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B09411FAC916200375E76 /* Font.hpp */; };
-		D46B09451FAC96CA00375E76 /* Font.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B09441FAC96CA00375E76 /* Font.mm */; };
-		D46B09461FAC96CA00375E76 /* Font.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B09441FAC96CA00375E76 /* Font.mm */; };
-		D46B09481FAC9E6000375E76 /* Color.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B09471FAC9E6000375E76 /* Color.mm */; };
-		D46B09491FAC9E6000375E76 /* Color.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B09471FAC9E6000375E76 /* Color.mm */; };
-		D46B094B1FACF2F900375E76 /* HashTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B094A1FACF2F900375E76 /* HashTable.hpp */; };
-		D46B094C1FACF2F900375E76 /* HashTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B094A1FACF2F900375E76 /* HashTable.hpp */; };
-		D46B593220C07C2D00D016E2 /* STULabelTiledLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B593120C07C2D00D016E2 /* STULabelTiledLayer.mm */; };
-		D46B593320C07C2D00D016E2 /* STULabelTiledLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B593120C07C2D00D016E2 /* STULabelTiledLayer.mm */; };
-		D46B593520C14A3600D016E2 /* CoreAnimationUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B593420C14A3600D016E2 /* CoreAnimationUtils.hpp */; };
-		D46B593620C14A3600D016E2 /* CoreAnimationUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D46B593420C14A3600D016E2 /* CoreAnimationUtils.hpp */; };
-		D46B593820C14A9B00D016E2 /* CoreAnimationUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B593720C14A9B00D016E2 /* CoreAnimationUtils.mm */; };
-		D46B593920C14A9B00D016E2 /* CoreAnimationUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D46B593720C14A9B00D016E2 /* CoreAnimationUtils.mm */; };
 		D46DB171200BAD3B00E7E773 /* TableViewPerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB170200BAD3B00E7E773 /* TableViewPerformanceVC.swift */; };
 		D46DB173200BADB300E7E773 /* AutoHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB172200BADB300E7E773 /* AutoHeightTableViewCell.swift */; };
 		D46DB178200BC18300E7E773 /* AutoLayoutUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */; };
-		D4717B5220F412E80019AB9F /* STULabelSwiftExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4717B5120F412E80019AB9F /* STULabelSwiftExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4717B5320F412E80019AB9F /* STULabelSwiftExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4717B5120F412E80019AB9F /* STULabelSwiftExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4717B5C20F684D20019AB9F /* STUTextFrameWithOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4717B5B20F684D20019AB9F /* STUTextFrameWithOrigin.swift */; };
-		D4717B5D20F684D20019AB9F /* STUTextFrameWithOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4717B5B20F684D20019AB9F /* STUTextFrameWithOrigin.swift */; };
-		D471C0701FF941E30014BE97 /* AtomicEnum.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C06F1FF941E30014BE97 /* AtomicEnum.hpp */; };
-		D471C0711FF941E30014BE97 /* AtomicEnum.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C06F1FF941E30014BE97 /* AtomicEnum.hpp */; };
-		D471C0731FFA65C40014BE97 /* CancellationFlag.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C0721FFA65C40014BE97 /* CancellationFlag.hpp */; };
-		D471C0741FFA65C40014BE97 /* CancellationFlag.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C0721FFA65C40014BE97 /* CancellationFlag.hpp */; };
-		D471C0761FFA87650014BE97 /* LabelPrerenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C0751FFA87650014BE97 /* LabelPrerenderer.hpp */; };
-		D471C0771FFA87650014BE97 /* LabelPrerenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D471C0751FFA87650014BE97 /* LabelPrerenderer.hpp */; };
-		D471C0791FFA877A0014BE97 /* LabelPrerenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D471C0781FFA877A0014BE97 /* LabelPrerenderer.mm */; };
-		D471C07A1FFA877A0014BE97 /* LabelPrerenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D471C0781FFA877A0014BE97 /* LabelPrerenderer.mm */; };
-		D471C07C20000DC00014BE97 /* CancellationFlag.mm in Sources */ = {isa = PBXBuildFile; fileRef = D471C07B20000DC00014BE97 /* CancellationFlag.mm */; };
-		D471C07D20000DC00014BE97 /* CancellationFlag.mm in Sources */ = {isa = PBXBuildFile; fileRef = D471C07B20000DC00014BE97 /* CancellationFlag.mm */; };
-		D473107A202E3624000CBFF1 /* MutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4731079202E3624000CBFF1 /* MutexTests.m */; };
 		D473C97920E41AC000139FED /* TextFrameImageBoundsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D473C97820E41AC000139FED /* TextFrameImageBoundsTests.swift */; };
-		D473C97A20E41AC000139FED /* TextFrameImageBoundsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D473C97820E41AC000139FED /* TextFrameImageBoundsTests.swift */; };
-		D4764D6F20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4764D6E20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm */; };
-		D4764D7020EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4764D6E20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm */; };
 		D47ED37A20235DD00086E073 /* LabelPerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47ED37920235DD00086E073 /* LabelPerformanceVC.swift */; };
 		D47FDD632008B43C00449617 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47FDD622008B43C00449617 /* AppDelegate.swift */; };
 		D47FDD652008B7C400449617 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47FDD642008B7C400449617 /* RootViewController.swift */; };
 		D4819C53211F06D800D37514 /* TextStyleBufferTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4819C52211F06D800D37514 /* TextStyleBufferTests.mm */; };
-		D48297081FE5591300D67234 /* ShapedString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D48297071FE5591300D67234 /* ShapedString.hpp */; };
-		D48297091FE5591300D67234 /* ShapedString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D48297071FE5591300D67234 /* ShapedString.hpp */; };
-		D482970B1FE5592C00D67234 /* ShapedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D482970A1FE5592C00D67234 /* ShapedString.mm */; };
-		D482970C1FE5592C00D67234 /* ShapedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D482970A1FE5592C00D67234 /* ShapedString.mm */; };
-		D483EE4B202D007C005917F9 /* STUImageUtils.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D483EE4A202D007C005917F9 /* STUImageUtils.overlay.swift */; };
 		D48652C02023AEB6006DC1A2 /* AttributedStringUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48652BF2023AEB6006DC1A2 /* AttributedStringUtils.swift */; };
-		D486945F2038FD820014A034 /* STUTextRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D486945E2038FD820014A034 /* STUTextRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D48694602038FD820014A034 /* STUTextRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D486945E2038FD820014A034 /* STUTextRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D48694622038FDED0014A034 /* STULabelAlignment.h in Headers */ = {isa = PBXBuildFile; fileRef = D48694612038FDED0014A034 /* STULabelAlignment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D48694632038FDED0014A034 /* STULabelAlignment.h in Headers */ = {isa = PBXBuildFile; fileRef = D48694612038FDED0014A034 /* STULabelAlignment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D48798E61FE6DB1200A7A065 /* TextFrame.mm in Sources */ = {isa = PBXBuildFile; fileRef = D48798E51FE6DB1200A7A065 /* TextFrame.mm */; };
-		D48798E71FE6DB1200A7A065 /* TextFrame.mm in Sources */ = {isa = PBXBuildFile; fileRef = D48798E51FE6DB1200A7A065 /* TextFrame.mm */; };
-		D48798E91FE9494000A7A065 /* Common.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D48798E81FE9494000A7A065 /* Common.hpp */; };
-		D48798EA1FE9494000A7A065 /* Common.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D48798E81FE9494000A7A065 /* Common.hpp */; };
 		D48AC8C2205AD53A00EA3FE8 /* TapToReadMoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48AC8C1205AD53A00EA3FE8 /* TapToReadMoreVC.swift */; };
-		D49577BA1FB0BF6D00DBDBDC /* Color-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49577B91FB0BF6D00DBDBDC /* Color-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D49577BB1FB0BF6D00DBDBDC /* Color-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49577B91FB0BF6D00DBDBDC /* Color-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D495DAAF20668A5E0081606C /* TextFrameDrawingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAAE20668A5E0081606C /* TextFrameDrawingTests.swift */; };
 		D495DAB42067C2810081606C /* UDHR.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAB32067C2810081606C /* UDHR.swift */; };
 		D495DABA2067C7210081606C /* udhr.html in Resources */ = {isa = PBXBuildFile; fileRef = D495DAB92067C7210081606C /* udhr.html */; };
 		D495DABC2067EC140081606C /* UDHRViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DABB2067EC140081606C /* UDHRViewerVC.swift */; };
-		D497D6F720B708BC0009302B /* LayerVisibleBoundsObserver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D497D6F620B708BC0009302B /* LayerVisibleBoundsObserver.hpp */; };
-		D497D6F820B708BC0009302B /* LayerVisibleBoundsObserver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D497D6F620B708BC0009302B /* LayerVisibleBoundsObserver.hpp */; };
-		D497D6FA20B708D10009302B /* LayerVisibleBoundsObserver.mm in Sources */ = {isa = PBXBuildFile; fileRef = D497D6F920B708D10009302B /* LayerVisibleBoundsObserver.mm */; };
-		D497D6FB20B708D10009302B /* LayerVisibleBoundsObserver.mm in Sources */ = {isa = PBXBuildFile; fileRef = D497D6F920B708D10009302B /* LayerVisibleBoundsObserver.mm */; };
-		D4981EFA1FB8EAA8007E88C2 /* IntervalSearchTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4981EF81FB8EAA3007E88C2 /* IntervalSearchTable.mm */; };
-		D4981EFB1FB8EAA8007E88C2 /* IntervalSearchTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4981EF81FB8EAA3007E88C2 /* IntervalSearchTable.mm */; };
-		D4981EFC1FB8EAAC007E88C2 /* IntervalSearchTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981EF71FB8E8F4007E88C2 /* IntervalSearchTable.hpp */; };
-		D4981EFD1FB8EAAC007E88C2 /* IntervalSearchTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981EF71FB8E8F4007E88C2 /* IntervalSearchTable.hpp */; };
-		D4981F011FBC8C2B007E88C2 /* InputClamping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981EFF1FBC8C2A007E88C2 /* InputClamping.hpp */; };
-		D4981F031FBE33F1007E88C2 /* STUTextRectArray.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4981F021FBE33F1007E88C2 /* STUTextRectArray.overlay.swift */; };
-		D4981F061FBF1824007E88C2 /* DisplayScaleRounding.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4981F041FBF1824007E88C2 /* DisplayScaleRounding.mm */; };
-		D4981F071FBF1824007E88C2 /* DisplayScaleRounding.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4981F041FBF1824007E88C2 /* DisplayScaleRounding.mm */; };
-		D4981F081FBF1824007E88C2 /* DisplayScaleRounding.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981F051FBF1824007E88C2 /* DisplayScaleRounding.hpp */; };
-		D4981F091FBF1824007E88C2 /* DisplayScaleRounding.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4981F051FBF1824007E88C2 /* DisplayScaleRounding.hpp */; };
-		D498247521601B6F007D1DA9 /* TextAttachmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D423F67120FA5B68003AE48C /* TextAttachmentTests.swift */; };
-		D49824882162ABA9007D1DA9 /* RoundToScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49824872162ABA9007D1DA9 /* RoundToScale.swift */; };
-		D49824892162ABA9007D1DA9 /* RoundToScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49824872162ABA9007D1DA9 /* RoundToScale.swift */; };
 		D498248C2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498248B2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift */; };
-		D498248D2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498248B2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift */; };
 		D4982493216664AF007D1DA9 /* LabelAlignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4982491216664AF007D1DA9 /* LabelAlignmentTests.swift */; };
-		D4982494216664AF007D1DA9 /* LabelAlignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4982491216664AF007D1DA9 /* LabelAlignmentTests.swift */; };
-		D498249921667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249821667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift */; };
-		D498249A21667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249821667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift */; };
-		D498249C216672C7007D1DA9 /* STULabel.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249B216672C7007D1DA9 /* STULabel.overlay.swift */; };
-		D498249D216672C7007D1DA9 /* STULabel.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249B216672C7007D1DA9 /* STULabel.overlay.swift */; };
-		D498249F21667301007D1DA9 /* STULabelLayer.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249E21667301007D1DA9 /* STULabelLayer.overlay.swift */; };
-		D49824A021667301007D1DA9 /* STULabelLayer.overlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498249E21667301007D1DA9 /* STULabelLayer.overlay.swift */; };
 		D49824A1216788C0007D1DA9 /* CoreGraphicsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */; };
-		D49824A3216788C3007D1DA9 /* CoreGraphicsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */; };
-		D49890EE23E5883E00A639E0 /* DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h in Headers */ = {isa = PBXBuildFile; fileRef = D49890EC23E5883E00A639E0 /* DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */; };
-		D49890EF23E5883E00A639E0 /* UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h in Headers */ = {isa = PBXBuildFile; fileRef = D49890ED23E5883E00A639E0 /* UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */; };
 		D49C2D6421077B120018FD33 /* ParagraphStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C2D6321077B120018FD33 /* ParagraphStyleTests.swift */; };
-		D49C2D6521077B120018FD33 /* ParagraphStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C2D6321077B120018FD33 /* ParagraphStyleTests.swift */; };
 		D49CBA482149C977008F36B2 /* AutoLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA472149C977008F36B2 /* AutoLayoutTests.swift */; };
-		D49CBA492149C977008F36B2 /* AutoLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA472149C977008F36B2 /* AutoLayoutTests.swift */; };
 		D49CBA4B214B07C0008F36B2 /* SnapshotTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA4A214B07C0008F36B2 /* SnapshotTestCase.swift */; };
-		D49CBA4C214B07C0008F36B2 /* SnapshotTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA4A214B07C0008F36B2 /* SnapshotTestCase.swift */; };
 		D49CBA4D214BC711008F36B2 /* AutoLayoutUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */; };
-		D49CBA4E214BC712008F36B2 /* AutoLayoutUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */; };
-		D49F0AA51FCC5FC5004B0E5C /* DrawingContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AA11FCC5FC4004B0E5C /* DrawingContext.mm */; };
-		D49F0AA61FCC5FC5004B0E5C /* DecorationLines.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA21FCC5FC4004B0E5C /* DecorationLines.hpp */; };
-		D49F0AA71FCC5FC5004B0E5C /* DecorationLines.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AA31FCC5FC4004B0E5C /* DecorationLines.mm */; };
-		D49F0AA81FCC5FC5004B0E5C /* DrawingContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA41FCC5FC4004B0E5C /* DrawingContext.hpp */; };
-		D49F0AAB1FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AA91FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp */; };
-		D49F0AAC1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AAA1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm */; };
-		D49F0AAE1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AAD1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp */; };
-		D49F0AB31FCC5FF1004B0E5C /* TextStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AAF1FCC5FF0004B0E5C /* TextStyle.mm */; };
-		D49F0AB41FCC5FF1004B0E5C /* TextStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB01FCC5FF0004B0E5C /* TextStyle.hpp */; };
-		D49F0AB51FCC5FF1004B0E5C /* TextStyleBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB11FCC5FF1004B0E5C /* TextStyleBuffer.hpp */; };
-		D49F0AB61FCC5FF1004B0E5C /* TextStyleBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AB21FCC5FF1004B0E5C /* TextStyleBuffer.mm */; };
-		D49F0AB91FCC6001004B0E5C /* TextLineSpan.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AB71FCC6000004B0E5C /* TextLineSpan.mm */; };
-		D49F0ABA1FCC6001004B0E5C /* TextLineSpan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AB81FCC6000004B0E5C /* TextLineSpan.hpp */; };
-		D49F0AE61FCC601A004B0E5C /* STULabelGhostingMaskLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0ABF1FCC6012004B0E5C /* STULabelGhostingMaskLayer.mm */; };
-		D49F0AE71FCC601A004B0E5C /* LineTruncation.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC01FCC6013004B0E5C /* LineTruncation.mm */; };
-		D49F0AE81FCC601A004B0E5C /* STULabelLinkOverlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC11FCC6013004B0E5C /* STULabelLinkOverlayLayer.m */; };
-		D49F0AEE1FCC601A004B0E5C /* UnicodeCodePointProperties.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */; };
-		D49F0AEF1FCC601A004B0E5C /* CoreGraphicsUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AC81FCC6014004B0E5C /* CoreGraphicsUtils.mm */; };
-		D49F0AF61FCC601A004B0E5C /* STULabelSubrangeView.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0ACF1FCC6016004B0E5C /* STULabelSubrangeView.mm */; };
-		D49F0AF81FCC601A004B0E5C /* LabelParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD11FCC6016004B0E5C /* LabelParameters.hpp */; };
-		D49F0AF91FCC601A004B0E5C /* TextLineSpansPath.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD21FCC6017004B0E5C /* TextLineSpansPath.mm */; };
-		D49F0AFA1FCC601A004B0E5C /* STULabelSubrangeView.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD31FCC6017004B0E5C /* STULabelSubrangeView.h */; };
-		D49F0AFB1FCC601A004B0E5C /* LabelRendering.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD41FCC6017004B0E5C /* LabelRendering.hpp */; };
-		D49F0AFD1FCC601A004B0E5C /* GlyphPathIntersectionBounds.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD61FCC6018004B0E5C /* GlyphPathIntersectionBounds.mm */; };
-		D49F0AFE1FCC601A004B0E5C /* STUMediaTimingFunctionUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD71FCC6018004B0E5C /* STUMediaTimingFunctionUtils.h */; };
-		D49F0AFF1FCC601A004B0E5C /* UnicodeCodePointProperties.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AD81FCC6018004B0E5C /* UnicodeCodePointProperties.hpp */; };
-		D49F0B001FCC601A004B0E5C /* LabelRendering.mm in Sources */ = {isa = PBXBuildFile; fileRef = D49F0AD91FCC6018004B0E5C /* LabelRendering.mm */; };
-		D49F0B011FCC601A004B0E5C /* STULabelGhostingMaskLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADA1FCC6018004B0E5C /* STULabelGhostingMaskLayer.h */; };
-		D49F0B021FCC601A004B0E5C /* STUPlaceholderObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADB1FCC6019004B0E5C /* STUPlaceholderObjects.h */; };
-		D49F0B031FCC601A004B0E5C /* STULabelLinkOverlayLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADC1FCC6019004B0E5C /* STULabelLinkOverlayLayer.h */; };
-		D49F0B041FCC601A004B0E5C /* LineTruncation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0ADD1FCC6019004B0E5C /* LineTruncation.hpp */; };
-		D49F0B071FCC601A004B0E5C /* TextLineSpansPath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AE01FCC601A004B0E5C /* TextLineSpansPath.hpp */; };
-		D49F0B081FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D49F0AE11FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp */; };
 		D4A774BA21110B9F0083B6B9 /* UILabelWithContentInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A774B921110B9F0083B6B9 /* UILabelWithContentInsets.swift */; };
-		D4A80F4120C860BE001CD188 /* TextFrame-PointToIndex.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4020C860BE001CD188 /* TextFrame-PointToIndex.mm */; };
-		D4A80F4220C860BE001CD188 /* TextFrame-PointToIndex.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4020C860BE001CD188 /* TextFrame-PointToIndex.mm */; };
 		D4A80F4420C87B1A001CD188 /* CoreGraphicsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */; };
-		D4A80F4620C890C9001CD188 /* TextFrame-Background.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4520C890C9001CD188 /* TextFrame-Background.mm */; };
-		D4A80F4720C890C9001CD188 /* TextFrame-Background.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4520C890C9001CD188 /* TextFrame-Background.mm */; };
 		D4AAE9B020476FB300B101A2 /* HashTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4AAE9AF20476FB300B101A2 /* HashTests.mm */; };
-		D4B0AEC11F9259E600B5B2B9 /* STULabel.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AEFF1F925AF900B5B2B9 /* STULabelLayoutInfo.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEC81F925AF100B5B2B9 /* STULabelLayoutInfo.mm */; };
-		D4B0AF001F925AF900B5B2B9 /* STUTextFrameOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEC91F925AF100B5B2B9 /* STUTextFrameOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF011F925AF900B5B2B9 /* STUTextAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECA1F925AF100B5B2B9 /* STUTextAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF021F925AF900B5B2B9 /* STULabelPrerenderer-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AECB1F925AF100B5B2B9 /* STULabelPrerenderer-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D4B0AF031F925AF900B5B2B9 /* STUTextFrameLine.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AECC1F925AF100B5B2B9 /* STUTextFrameLine.mm */; };
-		D4B0AF041F925AF900B5B2B9 /* STULabelLayoutInfo-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECD1F925AF100B5B2B9 /* STULabelLayoutInfo-Internal.hpp */; };
-		D4B0AF051F925AF900B5B2B9 /* STULabelOverlayStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECE1F925AF100B5B2B9 /* STULabelOverlayStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF061F925AF900B5B2B9 /* STULabelDrawingBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AECF1F925AF200B5B2B9 /* STULabelDrawingBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF071F925AF900B5B2B9 /* STULabelDrawingBlock.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED01F925AF200B5B2B9 /* STULabelDrawingBlock.mm */; };
-		D4B0AF081F925AF900B5B2B9 /* STULabelLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED11F925AF200B5B2B9 /* STULabelLayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF091F925AF900B5B2B9 /* STUTextFrame-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED21F925AF200B5B2B9 /* STUTextFrame-Internal.hpp */; };
-		D4B0AF0A1F925AF900B5B2B9 /* STUTextLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED31F925AF200B5B2B9 /* STUTextLink.mm */; };
-		D4B0AF0B1F925AF900B5B2B9 /* STUTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED41F925AF200B5B2B9 /* STUTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF0C1F925AF900B5B2B9 /* STUShapedString.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED51F925AF200B5B2B9 /* STUShapedString.mm */; };
-		D4B0AF0D1F925AF900B5B2B9 /* STUTextAttributes.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED61F925AF200B5B2B9 /* STUTextAttributes.mm */; };
-		D4B0AF0E1F925AF900B5B2B9 /* STUStartEndRange.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AED71F925AF200B5B2B9 /* STUStartEndRange.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF0F1F925AF900B5B2B9 /* STUTextAttachment.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AED81F925AF200B5B2B9 /* STUTextAttachment.mm */; };
-		D4B0AF111F925AF900B5B2B9 /* STULabelPrerenderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEDA1F925AF200B5B2B9 /* STULabelPrerenderer.mm */; };
-		D4B0AF121F925AF900B5B2B9 /* STUTextAttributes-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDB1F925AF300B5B2B9 /* STUTextAttributes-Internal.hpp */; };
-		D4B0AF131F925AF900B5B2B9 /* STUTextHighlightStyle-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDC1F925AF300B5B2B9 /* STUTextHighlightStyle-Internal.hpp */; };
-		D4B0AF151F925AF900B5B2B9 /* STUShapedString.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDE1F925AF300B5B2B9 /* STUShapedString.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF161F925AF900B5B2B9 /* STULayerWithNullDefaultActions.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEDF1F925AF300B5B2B9 /* STULayerWithNullDefaultActions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF171F925AF900B5B2B9 /* STUTextHighlightStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE01F925AF300B5B2B9 /* STUTextHighlightStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF181F925AF900B5B2B9 /* STUTextFrame-Unsafe.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE11F925AF300B5B2B9 /* STUTextFrame-Unsafe.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF191F925AF900B5B2B9 /* STUTextFrameOptions.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE21F925AF400B5B2B9 /* STUTextFrameOptions.mm */; };
-		D4B0AF1A1F925AF900B5B2B9 /* STULayerWithNullDefaultActions.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE31F925AF400B5B2B9 /* STULayerWithNullDefaultActions.m */; };
-		D4B0AF1B1F925AF900B5B2B9 /* STUTextLink-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE41F925AF400B5B2B9 /* STUTextLink-Internal.hpp */; };
-		D4B0AF1C1F925AF900B5B2B9 /* STUShapedString-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE51F925AF400B5B2B9 /* STUShapedString-Internal.hpp */; };
-		D4B0AF1D1F925AF900B5B2B9 /* STUTextHighlightStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE61F925AF400B5B2B9 /* STUTextHighlightStyle.mm */; };
-		D4B0AF1E1F925AF900B5B2B9 /* STUPlaceholderObjects-no-ARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEE71F925AF500B5B2B9 /* STUPlaceholderObjects-no-ARC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D4B0AF1F1F925AF900B5B2B9 /* STUTextLink.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEE81F925AF500B5B2B9 /* STUTextLink.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF211F925AF900B5B2B9 /* STUTextRectArray.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEA1F925AF500B5B2B9 /* STUTextRectArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF221F925AF900B5B2B9 /* STUTextFrameLine.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEB1F925AF600B5B2B9 /* STUTextFrameLine.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF241F925AF900B5B2B9 /* STUTextFrameAccessibilityElement.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEED1F925AF600B5B2B9 /* STUTextFrameAccessibilityElement.mm */; };
-		D4B0AF251F925AF900B5B2B9 /* STUTextFlags.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEE1F925AF600B5B2B9 /* STUTextFlags.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF261F925AF900B5B2B9 /* STULabelLayoutInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEEF1F925AF600B5B2B9 /* STULabelLayoutInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF271F925AF900B5B2B9 /* STUTextAttachment-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF01F925AF600B5B2B9 /* STUTextAttachment-Internal.hpp */; };
-		D4B0AF291F925AF900B5B2B9 /* STUTextRectArray-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF21F925AF700B5B2B9 /* STUTextRectArray-Internal.hpp */; };
-		D4B0AF2A1F925AF900B5B2B9 /* STULabelLayer-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF31F925AF700B5B2B9 /* STULabelLayer-Internal.hpp */; };
-		D4B0AF2B1F925AF900B5B2B9 /* STUTextRectArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF41F925AF700B5B2B9 /* STUTextRectArray.mm */; };
-		D4B0AF2C1F925AF900B5B2B9 /* STUTextFrame.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF51F925AF700B5B2B9 /* STUTextFrame.mm */; };
-		D4B0AF2D1F925AF900B5B2B9 /* TextFrame-Drawing.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF61F925AF700B5B2B9 /* TextFrame-Drawing.mm */; };
-		D4B0AF2E1F925AF900B5B2B9 /* STULabelOverlayStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEF71F925AF800B5B2B9 /* STULabelOverlayStyle.mm */; };
-		D4B0AF2F1F925AF900B5B2B9 /* STULabelDrawingBlock-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF81F925AF800B5B2B9 /* STULabelDrawingBlock-Internal.hpp */; };
-		D4B0AF301F925AF900B5B2B9 /* STULabelPrerenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEF91F925AF800B5B2B9 /* STULabelPrerenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF311F925AF900B5B2B9 /* STULabelPrerenderer-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFA1F925AF800B5B2B9 /* STULabelPrerenderer-Internal.hpp */; };
-		D4B0AF321F925AF900B5B2B9 /* STUTextFrameAccessibilityElement.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFB1F925AF800B5B2B9 /* STUTextFrameAccessibilityElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF331F925AF900B5B2B9 /* STUTextFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFC1F925AF800B5B2B9 /* STUTextFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AF341F925AF900B5B2B9 /* STULabelLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AEFD1F925AF800B5B2B9 /* STULabelLayer.mm */; };
-		D4B0AF351F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AEFE1F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp */; };
-		D4B0AFED1F925B9D00B5B2B9 /* STULabel.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFEA1F925B9C00B5B2B9 /* STULabel.mm */; };
-		D4B0AFF01F925BC600B5B2B9 /* STUDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFEF1F925BC600B5B2B9 /* STUDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AFF51F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFF11F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m */; };
-		D4B0AFF61F925BCF00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF21F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AFF71F925BCF00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFF31F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m */; };
-		D4B0AFF81F925BCF00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF41F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AFFB1F925BD700B5B2B9 /* STUImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFF91F925BD600B5B2B9 /* STUImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0AFFC1F925BD700B5B2B9 /* STUImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFFA1F925BD700B5B2B9 /* STUImageUtils.m */; };
-		D4B0AFFF1F925BE000B5B2B9 /* STUMainScreenProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0AFFD1F925BE000B5B2B9 /* STUMainScreenProperties.m */; };
-		D4B0B0001F925BE000B5B2B9 /* STUMainScreenProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0AFFE1F925BE000B5B2B9 /* STUMainScreenProperties.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0B0031F925BE800B5B2B9 /* stu_mutex.c in Sources */ = {isa = PBXBuildFile; fileRef = D4B0B0011F925BE800B5B2B9 /* stu_mutex.c */; };
-		D4B0B0041F925BE800B5B2B9 /* stu_mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0B0021F925BE800B5B2B9 /* stu_mutex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0B0071F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h in Headers */ = {isa = PBXBuildFile; fileRef = D4B0B0051F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4B0B0081F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m in Sources */ = {isa = PBXBuildFile; fileRef = D4B0B0061F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D4B11BDE222C450300352EE3 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B11BDD222C450300352EE3 /* StringExtension.swift */; };
 		D4B11BDF222C464900352EE3 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B11BDD222C450300352EE3 /* StringExtension.swift */; };
-		D4B11BE0222C464900352EE3 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B11BDD222C450300352EE3 /* StringExtension.swift */; };
-		D4B8B228205467D800C8341D /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B8B227205467D800C8341D /* TestUtils.swift */; };
-		D4C6735E1FAE0D950047A173 /* Hash.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4C6735D1FAE0D950047A173 /* Hash.hpp */; };
-		D4C6735F1FAE0D950047A173 /* Hash.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4C6735D1FAE0D950047A173 /* Hash.hpp */; };
 		D4C8FC1E20D005A100CDA4EB /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C8FC1D20D005A000CDA4EB /* libicucore.tbd */; };
-		D4CAE0FC2104B63100DFA867 /* STUParagraphStyle-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4E753BB2104A51700FA59F0 /* STUParagraphStyle-Internal.hpp */; };
-		D4CAE0FD2104B63200DFA867 /* STUParagraphStyle-Internal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4E753BB2104A51700FA59F0 /* STUParagraphStyle-Internal.hpp */; };
 		D4CEE355202632A200803A45 /* FormCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CEE354202632A200803A45 /* FormCells.swift */; };
 		D4CEE3572026337800803A45 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CEE3562026337800803A45 /* UIViewExtension.swift */; };
-		D4D20DD320E25BD500294D57 /* NSArrayRef-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D20DD220E25BD500294D57 /* NSArrayRef-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D4D20DD420E25BD500294D57 /* NSArrayRef-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D20DD220E25BD500294D57 /* NSArrayRef-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D4D2D99F205D6E2400BBDBDB /* Kerning.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4D2D99E205D6E2400BBDBDB /* Kerning.hpp */; };
-		D4D2D9A0205D6E2400BBDBDB /* Kerning.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4D2D99E205D6E2400BBDBDB /* Kerning.hpp */; };
-		D4D2D9A2205D6EA500BBDBDB /* Kerning.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D2D9A1205D6EA400BBDBDB /* Kerning.mm */; };
-		D4D2D9A3205D6EA500BBDBDB /* Kerning.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D2D9A1205D6EA400BBDBDB /* Kerning.mm */; };
 		D4D34513203C75380092641A /* NSStringRefTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D34512203C75380092641A /* NSStringRefTests.mm */; };
 		D4D42F21203A1B9700617ADB /* DisplayScaleRounding.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D42F20203A1B9700617ADB /* DisplayScaleRounding.mm */; };
-		D4D58ED820B0B9630016AA8A /* STULabelTiledLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D58ED620B0B9630016AA8A /* STULabelTiledLayer.h */; };
-		D4D58ED920B0B9630016AA8A /* STULabelTiledLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D58ED620B0B9630016AA8A /* STULabelTiledLayer.h */; };
-		D4D58EDD20B1B8FC0016AA8A /* UniquePtr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4D58EDC20B1B8FC0016AA8A /* UniquePtr.hpp */; };
-		D4D58EDE20B1B8FC0016AA8A /* UniquePtr.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4D58EDC20B1B8FC0016AA8A /* UniquePtr.hpp */; };
-		D4D5C3DA214FC82500B34311 /* NSLayoutAnchor+STULabelSpacing.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D5C3D9214FC75200B34311 /* NSLayoutAnchor+STULabelSpacing.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4D5C3DB214FC82600B34311 /* NSLayoutAnchor+STULabelSpacing.h in Headers */ = {isa = PBXBuildFile; fileRef = D4D5C3D9214FC75200B34311 /* NSLayoutAnchor+STULabelSpacing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D4DD022E210E20A500915763 /* SwiftWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DD022D210E20A500915763 /* SwiftWrapperTests.swift */; };
-		D4DD022F210E20A500915763 /* SwiftWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DD022D210E20A500915763 /* SwiftWrapperTests.swift */; };
 		D4DD0232210E5BE300915763 /* RangeTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4DD0230210E5BE300915763 /* RangeTests.cpp */; };
 		D4DD0233210E766A00915763 /* ShapedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44F90E520E6402C00ED750B /* ShapedStringTests.swift */; };
 		D4E44B1F201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = D4E44B1E201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m */; };
-		D4E753B62104A4EB00FA59F0 /* STUParagraphStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E753B52104A4EA00FA59F0 /* STUParagraphStyle.mm */; };
-		D4E753B72104A4EB00FA59F0 /* STUParagraphStyle.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E753B52104A4EA00FA59F0 /* STUParagraphStyle.mm */; };
-		D4E753B92104A50100FA59F0 /* STUParagraphStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753B82104A50100FA59F0 /* STUParagraphStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4E753BA2104A50100FA59F0 /* STUParagraphStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753B82104A50100FA59F0 /* STUParagraphStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4E753BE2104A99D00FA59F0 /* STUTruncationScope.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753BC2104A99D00FA59F0 /* STUTruncationScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4E753BF2104A99D00FA59F0 /* STUTruncationScope.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753BC2104A99D00FA59F0 /* STUTruncationScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4E753C02104A99D00FA59F0 /* STUTruncationScope.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E753BD2104A99D00FA59F0 /* STUTruncationScope.mm */; };
-		D4E753C12104A99D00FA59F0 /* STUTruncationScope.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E753BD2104A99D00FA59F0 /* STUTruncationScope.mm */; };
-		D4E753C32104B32600FA59F0 /* STUTruncationScope-Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753C22104B32600FA59F0 /* STUTruncationScope-Internal.h */; };
-		D4E753C42104B32600FA59F0 /* STUTruncationScope-Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D4E753C22104B32600FA59F0 /* STUTruncationScope-Internal.h */; };
-		D4E76BF8201BBA2200249594 /* HashTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E76BF7201BBA2200249594 /* HashTable.mm */; };
-		D4E76BF9201BBA2200249594 /* HashTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E76BF7201BBA2200249594 /* HashTable.mm */; };
-		D4E8DBEA20DA6FE0009F4735 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D4E8DBEC20DA6FE0009F4735 /* Localizable.strings */; };
-		D4E8DC4320DA86ED009F4735 /* STULabelResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D4E8DBE220DA6F29009F4735 /* STULabelResources.bundle */; };
-		D4E8DC6820DA9D40009F4735 /* Localized.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E8DC6620DA9D40009F4735 /* Localized.mm */; };
-		D4E8DC6920DA9D40009F4735 /* Localized.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E8DC6620DA9D40009F4735 /* Localized.mm */; };
-		D4E8DC6A20DA9D40009F4735 /* Localized.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4E8DC6720DA9D40009F4735 /* Localized.hpp */; };
-		D4E8DC6B20DA9D40009F4735 /* Localized.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4E8DC6720DA9D40009F4735 /* Localized.hpp */; };
-		D4EA26A72049E3500093522E /* TextFrameTruncationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EA26A62049E3500093522E /* TextFrameTruncationTests.swift */; };
-		D4EAEE191FCB29D90094F525 /* TextFrameLayouter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4EAEE181FCB29D90094F525 /* TextFrameLayouter.hpp */; };
-		D4EAEE1A1FCB29D90094F525 /* TextFrameLayouter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4EAEE181FCB29D90094F525 /* TextFrameLayouter.hpp */; };
-		D4ED28591FA0C62C00DD135A /* Allocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4ED28581FA0C62C00DD135A /* Allocation.cpp */; };
-		D4ED285A1FA0C62C00DD135A /* Allocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4ED28581FA0C62C00DD135A /* Allocation.cpp */; };
-		D4ED285C1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED285B1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm */; };
-		D4ED285D1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED285B1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm */; };
-		D4ED285F1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED285E1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm */; };
-		D4ED28601FA1FD0E00DD135A /* TextFrameLine-Drawing.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED285E1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm */; };
-		D4ED28621FA20F2F00DD135A /* TextFrameLine-FontMetric.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED28611FA20F2F00DD135A /* TextFrameLine-FontMetric.mm */; };
-		D4ED28631FA20F2F00DD135A /* TextFrameLine-FontMetric.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED28611FA20F2F00DD135A /* TextFrameLine-FontMetric.mm */; };
-		D4ED608F1FF594CA00418E2A /* STUCancellationFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = D4ED608E1FF594CA00418E2A /* STUCancellationFlag.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4ED60901FF594CA00418E2A /* STUCancellationFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = D4ED608E1FF594CA00418E2A /* STUCancellationFlag.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D4ED60961FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED60941FF6CC1B00418E2A /* LabelRenderTask.mm */; };
-		D4ED60971FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4ED60941FF6CC1B00418E2A /* LabelRenderTask.mm */; };
-		D4ED60981FF6CC1B00418E2A /* LabelRenderTask.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4ED60951FF6CC1B00418E2A /* LabelRenderTask.hpp */; };
-		D4ED60991FF6CC1B00418E2A /* LabelRenderTask.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4ED60951FF6CC1B00418E2A /* LabelRenderTask.hpp */; };
-		D4F150821F9C276900AB1C4B /* Casts.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7861F98FA9E003F81AC /* Casts.hpp */; };
-		D4F150831F9C276900AB1C4B /* Casts.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D453E7861F98FA9E003F81AC /* Casts.hpp */; };
-		D4F150851F9CFD4400AB1C4B /* NSArrayRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4F150841F9CE96900AB1C4B /* NSArrayRef.hpp */; };
-		D4F150861F9CFD4500AB1C4B /* NSArrayRef.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4F150841F9CE96900AB1C4B /* NSArrayRef.hpp */; };
-		D4F150871F9CFD6400AB1C4B /* GlyphSpan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4F150811F9B994700AB1C4B /* GlyphSpan.hpp */; };
-		D4F150881F9CFD6500AB1C4B /* GlyphSpan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4F150811F9B994700AB1C4B /* GlyphSpan.hpp */; };
-		D4F1508D1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4F1508C1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm */; };
-		D4F1508E1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4F1508C1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D407028F2014FFDF004E5C07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4B0AEBB1F9259E600B5B2B9;
-			remoteInfo = STULabel;
-		};
-		D40702932014FFDF004E5C07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D42382971F926F2C000B8A63;
-			remoteInfo = STULabelSwift;
-		};
-		D41C92BB2083CD48002AFFF3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D42383CE1F92AC81000B8A63;
-			remoteInfo = "STULabel static";
-		};
-		D41C92BE2083CEB3002AFFF3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D42383CE1F92AC81000B8A63;
-			remoteInfo = "STULabel static";
-		};
-		D41C92C02083CEB7002AFFF3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D41C92A62083CBC3002AFFF3;
-			remoteInfo = "STULabelSwift static";
-		};
-		D42384851F92AE37000B8A63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4B0AEBB1F9259E600B5B2B9;
-			remoteInfo = STULabel;
-		};
-		D423848A1F92AFEC000B8A63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4B0AEBB1F9259E600B5B2B9;
-			remoteInfo = STULabel;
-		};
-		D42384901F92B7E0000B8A63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D42382971F926F2C000B8A63;
-			remoteInfo = STULabelSwift;
-		};
-		D4E8DC4420DA884E009F4735 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4E8DBE120DA6F29009F4735;
-			remoteInfo = STULabelResources;
-		};
-		D4E8DC4620DA8855009F4735 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D4E8DBE120DA6F29009F4735;
-			remoteInfo = STULabelResources;
-		};
 		A20000000000000000000010 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D4B0AEB31F9259E600B5B2B9 /* Project object */;
@@ -699,10 +126,6 @@
 		D413108F1F94164A00F39C3A /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		D41310901F94168400F39C3A /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		D41310911F94169200F39C3A /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		D41310921F9416A500F39C3A /* STULabel.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = STULabel.xcconfig; sourceTree = "<group>"; };
-		D41310D11F94236200F39C3A /* STULabel static.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "STULabel static.xcconfig"; sourceTree = "<group>"; };
-		D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = STULabelSwift.xcconfig; sourceTree = "<group>"; };
-		D41310D31F94247D00F39C3A /* Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Framework.xcconfig; sourceTree = "<group>"; };
 		D4134E221FB1F41200377349 /* CoreGraphicsUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CoreGraphicsUtils.hpp; sourceTree = "<group>"; };
 		D4134E231FB20A2300377349 /* STUBackgroundAttribute.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUBackgroundAttribute.mm; sourceTree = "<group>"; };
 		D4134E261FB20A3E00377349 /* STUBackgroundAttribute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUBackgroundAttribute.h; sourceTree = "<group>"; };
@@ -719,22 +142,16 @@
 		D41A37D52030FFDF00ADDE1E /* PurgeableImage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PurgeableImage.mm; sourceTree = "<group>"; };
 		D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameOptionsTests.swift; sourceTree = "<group>"; };
 		D41C6D20211354EF00ACF170 /* GlyphBoundsCacheTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GlyphBoundsCacheTests.mm; sourceTree = "<group>"; };
-		D41C92A42083CAF7002AFFF3 /* Static.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Static.xcconfig; sourceTree = "<group>"; };
-		D41C92A52083CB56002AFFF3 /* STULabelSwift static.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "STULabelSwift static.xcconfig"; sourceTree = "<group>"; };
-		D41C92B82083CBC3002AFFF3 /* STULabelSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = STULabelSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D41C930320854D15002AFFF3 /* NSFoundationSupportTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSFoundationSupportTests.mm; sourceTree = "<group>"; };
 		D41C930520854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSFoundationSupportTests-no-ARC.mm"; sourceTree = "<group>"; };
 		D41C948420874DEC002AFFF3 /* FunctionRefTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = FunctionRefTests.cpp; sourceTree = "<group>"; };
 		D42029271FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLayouter-LineBreaking.mm"; sourceTree = "<group>"; };
 		D42119D42047615900D143A8 /* BinarySearchTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = BinarySearchTests.cpp; sourceTree = "<group>"; };
 		D423043721527317003E2303 /* Stats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stats.swift; sourceTree = "<group>"; };
-		D42382981F926F2C000B8A63 /* STULabelSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = STULabelSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D423829B1F926F2C000B8A63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D42382A01F926F96000B8A63 /* STUStartEndRange.overlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STUStartEndRange.overlay.swift; sourceTree = "<group>"; };
 		D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STUTextFrame.overlay.swift; sourceTree = "<group>"; };
 		D42383C01F92A90D000B8A63 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tests/Info.plist; sourceTree = SOURCE_ROOT; };
-		D42384761F92AC81000B8A63 /* STULabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = STULabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D423847F1F92AE37000B8A63 /* DynamicFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DynamicFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D42384991F9379B6000B8A63 /* Assert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Assert.m; sourceTree = "<group>"; };
 		D423849A1F9379B7000B8A63 /* Dollar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dollar.hpp; sourceTree = "<group>"; };
 		D423849B1F9379B7000B8A63 /* ArenaAllocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArenaAllocator.hpp; sourceTree = "<group>"; };
@@ -815,7 +232,6 @@
 		D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenPropertiesTests.swift; sourceTree = "<group>"; };
 		D467A0771F9261E70043C7F0 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D467A0821F9261E70043C7F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D467A0851F9261E70043C7F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D467A0871F9261E70043C7F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D468096A1FB1D575006AA14D /* Once.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Once.hpp; sourceTree = "<group>"; };
 		D468096D1FB1E5A5006AA14D /* NSCoderUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSCoderUtils.hpp; sourceTree = "<group>"; };
@@ -918,7 +334,6 @@
 		D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreGraphicsUtils.swift; sourceTree = "<group>"; };
 		D4A80F4520C890C9001CD188 /* TextFrame-Background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-Background.mm"; sourceTree = "<group>"; };
 		D4AAE9AF20476FB300B101A2 /* HashTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HashTests.mm; sourceTree = "<group>"; };
-		D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = STULabel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabel.h; sourceTree = "<group>"; };
 		D4B0AEC01F9259E600B5B2B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4B0AEC71F925ACA00B5B2B9 /* STULabel.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = STULabel.modulemap; sourceTree = "<group>"; };
@@ -1013,10 +428,8 @@
 		D4E753BD2104A99D00FA59F0 /* STUTruncationScope.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTruncationScope.mm; sourceTree = "<group>"; };
 		D4E753C22104B32600FA59F0 /* STUTruncationScope-Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STUTruncationScope-Internal.h"; sourceTree = "<group>"; };
 		D4E76BF7201BBA2200249594 /* HashTable.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HashTable.mm; sourceTree = "<group>"; };
-		D4E8DBE220DA6F29009F4735 /* STULabelResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = STULabelResources.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4E8DBE420DA6F29009F4735 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D4E8DBEB20DA6FE0009F4735 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = STULabelResources.xcconfig; sourceTree = "<group>"; };
 		D4E8DC1F20DA85EC009F4735 /* ar */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D4E8DC2020DA85F5009F4735 /* ca */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D4E8DC2120DA85F8009F4735 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1072,37 +485,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D41C92B12083CBC3002AFFF3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42382941F926F2C000B8A63 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D423848C1F92AFF5000B8A63 /* STULabel.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42384091F92AC81000B8A63 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D423847C1F92AE37000B8A63 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D42384921F92B7E7000B8A63 /* STULabelSwift.framework in Frameworks */,
-				D42384841F92AE37000B8A63 /* STULabel.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D43E66BA1FD45DB300BABD1C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1119,20 +501,6 @@
 			files = (
 				A20000000000000000000005 /* STULabel in Frameworks */,
 				A20000000000000000000006 /* STULabelSwift in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4B0AEB81F9259E600B5B2B9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4E8DBDF20DA6F29009F4735 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1394,7 +762,6 @@
 			children = (
 				D407F00A20E5306B00922204 /* LICENSE.txt */,
 				D467A0821F9261E70043C7F0 /* Assets.xcassets */,
-				D467A0841F9261E70043C7F0 /* LaunchScreen.storyboard */,
 				D495DAB92067C7210081606C /* udhr.html */,
 			);
 			path = Resources;
@@ -1671,386 +1038,7 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		D41C92B32083CBC3002AFFF3 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42382951F926F2C000B8A63 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D423840A1F92AC81000B8A63 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D45F217920A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h in Headers */,
-				D46B09431FAC916200375E76 /* Font.hpp in Headers */,
-				D4D58EDE20B1B8FC0016AA8A /* UniquePtr.hpp in Headers */,
-				D423840C1F92AC81000B8A63 /* STULayerWithNullDefaultActions.h in Headers */,
-				D43E66D51FD464E200BABD1C /* DecorationLines.hpp in Headers */,
-				D4C6735F1FAE0D950047A173 /* Hash.hpp in Headers */,
-				D4552F941FED31D10006974A /* Rect.hpp in Headers */,
-				D42384EC1F9381D7000B8A63 /* TypeTraits.hpp in Headers */,
-				D42384D91F9381D7000B8A63 /* ArrayRef.hpp in Headers */,
-				D42384EB1F9381D7000B8A63 /* ScopeGuard.hpp in Headers */,
-				D42384101F92AC81000B8A63 /* STUTextFrameLine.h in Headers */,
-				D4D2D9A0205D6E2400BBDBDB /* Kerning.hpp in Headers */,
-				D43E67061FD464E200BABD1C /* STUMediaTimingFunctionUtils.h in Headers */,
-				D42384E21F9381D7000B8A63 /* InOut.hpp in Headers */,
-				D42384DA1F9381D7000B8A63 /* ArrayUtils.hpp in Headers */,
-				D43E66F01FD464E200BABD1C /* GlyphPathIntersectionBounds.hpp in Headers */,
-				D471C0711FF941E30014BE97 /* AtomicEnum.hpp in Headers */,
-				D497D6F820B708BC0009302B /* LayerVisibleBoundsObserver.hpp in Headers */,
-				D42384111F92AC81000B8A63 /* STULabelDrawingBlock-Internal.hpp in Headers */,
-				D4CAE0FD2104B63200DFA867 /* STUParagraphStyle-Internal.hpp in Headers */,
-				D43E66CE1FD464D500BABD1C /* UnicodeCodePointProperties.hpp in Headers */,
-				D42384131F92AC81000B8A63 /* STULabelLayoutInfo.h in Headers */,
-				D43E67041FD464E200BABD1C /* LineTruncation.hpp in Headers */,
-				D4ED60901FF594CA00418E2A /* STUCancellationFlag.h in Headers */,
-				D42384141F92AC81000B8A63 /* STUStartEndRange.h in Headers */,
-				D4134E281FB20A3E00377349 /* STUBackgroundAttribute.h in Headers */,
-				D43E66D91FD464E200BABD1C /* SortedIntervalBuffer.hpp in Headers */,
-				D48694602038FD820014A034 /* STUTextRange.h in Headers */,
-				D4E753C42104B32600FA59F0 /* STUTruncationScope-Internal.h in Headers */,
-				D4F150861F9CFD4500AB1C4B /* NSArrayRef.hpp in Headers */,
-				D43E66D41FD464E200BABD1C /* Equal.hpp in Headers */,
-				D48297091FE5591300D67234 /* ShapedString.hpp in Headers */,
-				D423841B1F92AC81000B8A63 /* STUTextLink.h in Headers */,
-				D4E753BF2104A99D00FA59F0 /* STUTruncationScope.h in Headers */,
-				D42384E61F9381D7000B8A63 /* OptionsEnum.hpp in Headers */,
-				D468096F1FB1E5A8006AA14D /* NSCoderUtils.hpp in Headers */,
-				D43E66FC1FD464E200BABD1C /* LabelRendering.hpp in Headers */,
-				D423841E1F92AC81000B8A63 /* STULabel.h in Headers */,
-				A10000000000000000000011 /* STULabel+UITextInput.h in Headers */,
-				D44A5EBC1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp in Headers */,
-				D423841F1F92AC81000B8A63 /* stu_mutex.h in Headers */,
-				D43E66DB1FD464E200BABD1C /* StyledStringRangeIteration.hpp in Headers */,
-				D4134E2B1FB20AE800377349 /* STUBackgroundAttribute-Internal.h in Headers */,
-				D4552F871FEAF3F20006974A /* NSStringRef.hpp in Headers */,
-				D453E78A1F993BEA003F81AC /* Optional.hpp in Headers */,
-				D42384221F92AC81000B8A63 /* STULabelLayer.h in Headers */,
-				D42384E91F9381D7000B8A63 /* Ref.hpp in Headers */,
-				D4E8DC6B20DA9D40009F4735 /* Localized.hpp in Headers */,
-				D42384251F92AC81000B8A63 /* STUTextFrameOptions.h in Headers */,
-				D42384261F92AC81000B8A63 /* STUTextLink-Internal.hpp in Headers */,
-				D4F150831F9C276900AB1C4B /* Casts.hpp in Headers */,
-				D42384281F92AC81000B8A63 /* STUTextFrame.h in Headers */,
-				D423842B1F92AC81000B8A63 /* STUTextHighlightStyle-Internal.hpp in Headers */,
-				D423842C1F92AC81000B8A63 /* STUTextAttachment-Internal.hpp in Headers */,
-				D4F150881F9CFD6500AB1C4B /* GlyphSpan.hpp in Headers */,
-				D471C0741FFA65C40014BE97 /* CancellationFlag.hpp in Headers */,
-				D4134E2F1FB32C2100377349 /* BinarySearch.hpp in Headers */,
-				D42384321F92AC81000B8A63 /* STUShapedString.h in Headers */,
-				D43E66E61FD464E200BABD1C /* InputClamping.hpp in Headers */,
-				D43E66E41FD464E200BABD1C /* TextStyleBuffer.hpp in Headers */,
-				D42384331F92AC81000B8A63 /* STUTextFrame-Unsafe.h in Headers */,
-				D42384371F92AC81000B8A63 /* STUTextFlags.h in Headers */,
-				D43E66D71FD464E200BABD1C /* DrawingContext.hpp in Headers */,
-				D43E66E01FD464E200BABD1C /* TextLineSpansPath.hpp in Headers */,
-				D48694632038FDED0014A034 /* STULabelAlignment.h in Headers */,
-				D42384D61F9381D7000B8A63 /* ArenaAllocator.hpp in Headers */,
-				D468096C1FB1D575006AA14D /* Once.hpp in Headers */,
-				D423843A1F92AC81000B8A63 /* STUMainScreenProperties.h in Headers */,
-				D423843B1F92AC81000B8A63 /* STUTextRectArray.h in Headers */,
-				D423843D1F92AC81000B8A63 /* STUImageUtils.h in Headers */,
-				D42384E71F9381D7000B8A63 /* Range.hpp in Headers */,
-				D43E67071FD464E200BABD1C /* STUPlaceholderObjects.h in Headers */,
-				D471C0771FFA87650014BE97 /* LabelPrerenderer.hpp in Headers */,
-				D42384EE1F9381D7000B8A63 /* Vector.hpp in Headers */,
-				D44A5EB91F9A533C007325B4 /* Config.hpp in Headers */,
-				D42384DE1F9381D7000B8A63 /* Config.h in Headers */,
-				D41A37D42030FFC900ADDE1E /* PurgeableImage.hpp in Headers */,
-				D42384431F92AC81000B8A63 /* STULabelLayer-Internal.hpp in Headers */,
-				D42384451F92AC81000B8A63 /* STUTextHighlightStyle.h in Headers */,
-				D423844A1F92AC81000B8A63 /* STUTextFrame-Internal.hpp in Headers */,
-				D43E66DC1FD464E200BABD1C /* ThreadLocalAllocator.hpp in Headers */,
-				D43E66F71FD464E200BABD1C /* STULabelLinkOverlayLayer.h in Headers */,
-				D43E66E21FD464E200BABD1C /* TextStyle.hpp in Headers */,
-				D43E66D31FD464E200BABD1C /* CoreGraphicsUtils.hpp in Headers */,
-				D423844B1F92AC81000B8A63 /* STUDefines.h in Headers */,
-				D423844C1F92AC81000B8A63 /* STUTextAttributes.h in Headers */,
-				D43E66FE1FD464E200BABD1C /* STULabelSubrangeView.h in Headers */,
-				D46B593620C14A3600D016E2 /* CoreAnimationUtils.hpp in Headers */,
-				D423844D1F92AC81000B8A63 /* STULabelPrerenderer.h in Headers */,
-				D437A41E20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */,
-				D45F218220A1E015007E6C36 /* Unretained.hpp in Headers */,
-				D4D58ED920B0B9630016AA8A /* STULabelTiledLayer.h in Headers */,
-				D45F217F20A1B590007E6C36 /* STUTextFrameRange.h in Headers */,
-				D4EAEE1A1FCB29D90094F525 /* TextFrameLayouter.hpp in Headers */,
-				D46B09401FAC8EE100375E76 /* Color.hpp in Headers */,
-				D42384DB1F9381D7000B8A63 /* Assert.h in Headers */,
-				D42384521F92AC81000B8A63 /* STUShapedString-Internal.hpp in Headers */,
-				D42384DD1F9381D7000B8A63 /* Comparable.hpp in Headers */,
-				D43E66F51FD464E200BABD1C /* STULabelGhostingMaskLayer.h in Headers */,
-				D4ED60991FF6CC1B00418E2A /* LabelRenderTask.hpp in Headers */,
-				D42384E31F9381D7000B8A63 /* Iterator.hpp in Headers */,
-				D42384551F92AC81000B8A63 /* STULabelPrerenderer-Internal.hpp in Headers */,
-				D42384591F92AC81000B8A63 /* STULabelDrawingBlock.h in Headers */,
-				D4D5C3DB214FC82600B34311 /* NSLayoutAnchor+STULabelSpacing.h in Headers */,
-				D4717B5320F412E80019AB9F /* STULabelSwiftExtensions.h in Headers */,
-				D42384ED1F9381D7000B8A63 /* Utility.hpp in Headers */,
-				D423845C1F92AC81000B8A63 /* STUTextFrameOptions-Internal.hpp in Headers */,
-				D423845D1F92AC81000B8A63 /* STUTextRectArray-Internal.hpp in Headers */,
-				D423845F1F92AC81000B8A63 /* NSAttributedString+STUDynamicTypeFontScaling.h in Headers */,
-				D42384601F92AC81000B8A63 /* STUTextAttributes-Internal.hpp in Headers */,
-				D42384631F92AC81000B8A63 /* UIFont+STUDynamicTypeFontScaling.h in Headers */,
-				D42384D81F9381D7000B8A63 /* Array.hpp in Headers */,
-				D46B094C1FACF2F900375E76 /* HashTable.hpp in Headers */,
-				D42384641F92AC81000B8A63 /* STUObjCRuntimeWrappers.h in Headers */,
-				D42384F21F939589000B8A63 /* TextFrame.hpp in Headers */,
-				D43E66DE1FD464E200BABD1C /* TextLineSpan.hpp in Headers */,
-				D42384E11F9381D7000B8A63 /* NSFoundationSupport.hpp in Headers */,
-				D40AE3251FA4EA4200E0F056 /* Parameter.hpp in Headers */,
-				D42384E41F9381D7000B8A63 /* MinMax.hpp in Headers */,
-				D42384F51F9396FD000B8A63 /* STUStartEndRange-Internal.hpp in Headers */,
-				D42384DF1F9381D7000B8A63 /* Dollar.hpp in Headers */,
-				D4981EFD1FB8EAAC007E88C2 /* IntervalSearchTable.hpp in Headers */,
-				D42384681F92AC81000B8A63 /* STULabelLayoutInfo-Internal.hpp in Headers */,
-				D42384D51F9381D7000B8A63 /* Allocation.hpp in Headers */,
-				D423846D1F92AC81000B8A63 /* STUTextFrameAccessibilityElement.h in Headers */,
-				D423846F1F92AC81000B8A63 /* STUTextAttachment.h in Headers */,
-				D4552F901FEC06710006974A /* NSAttributedStringRef.hpp in Headers */,
-				D4E753BA2104A50100FA59F0 /* STUParagraphStyle.h in Headers */,
-				D43E66F91FD464E200BABD1C /* LabelParameters.hpp in Headers */,
-				D43E66DD1FD464E200BABD1C /* TextFlags.hpp in Headers */,
-				D4981F091FBF1824007E88C2 /* DisplayScaleRounding.hpp in Headers */,
-				D42384E01F9381D7000B8A63 /* FunctionRef.hpp in Headers */,
-				D42384701F92AC81000B8A63 /* STULabelOverlayStyle.h in Headers */,
-				D48798EA1FE9494000A7A065 /* Common.hpp in Headers */,
-				D42384EA1F9381D7000B8A63 /* RefCounting.hpp in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4B0AEB91F9259E600B5B2B9 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D45F217820A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h in Headers */,
-				D46B09421FAC916200375E76 /* Font.hpp in Headers */,
-				D4D58EDD20B1B8FC0016AA8A /* UniquePtr.hpp in Headers */,
-				D4B0AF161F925AF900B5B2B9 /* STULayerWithNullDefaultActions.h in Headers */,
-				D49F0AFB1FCC601A004B0E5C /* LabelRendering.hpp in Headers */,
-				D4C6735E1FAE0D950047A173 /* Hash.hpp in Headers */,
-				D4552F931FED31D10006974A /* Rect.hpp in Headers */,
-				D4B0AF221F925AF900B5B2B9 /* STUTextFrameLine.h in Headers */,
-				D4B0AF2F1F925AF900B5B2B9 /* STULabelDrawingBlock-Internal.hpp in Headers */,
-				D4B0AF261F925AF900B5B2B9 /* STULabelLayoutInfo.h in Headers */,
-				D42384B91F9379B9000B8A63 /* MinMax.hpp in Headers */,
-				D4D2D99F205D6E2400BBDBDB /* Kerning.hpp in Headers */,
-				D4B0AF0E1F925AF900B5B2B9 /* STUStartEndRange.h in Headers */,
-				D49F0AB51FCC5FF1004B0E5C /* TextStyleBuffer.hpp in Headers */,
-				D43E66CF1FD464E100BABD1C /* CoreGraphicsUtils.hpp in Headers */,
-				D471C0701FF941E30014BE97 /* AtomicEnum.hpp in Headers */,
-				D43E66D01FD464E100BABD1C /* Equal.hpp in Headers */,
-				D497D6F720B708BC0009302B /* LayerVisibleBoundsObserver.hpp in Headers */,
-				D4981F011FBC8C2B007E88C2 /* InputClamping.hpp in Headers */,
-				D4CAE0FC2104B63100DFA867 /* STUParagraphStyle-Internal.hpp in Headers */,
-				D49F0AAE1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp in Headers */,
-				D4134E271FB20A3E00377349 /* STUBackgroundAttribute.h in Headers */,
-				D4ED608F1FF594CA00418E2A /* STUCancellationFlag.h in Headers */,
-				D4F150851F9CFD4400AB1C4B /* NSArrayRef.hpp in Headers */,
-				D4B0AF1F1F925AF900B5B2B9 /* STUTextLink.h in Headers */,
-				D48297081FE5591300D67234 /* ShapedString.hpp in Headers */,
-				D49F0B021FCC601A004B0E5C /* STUPlaceholderObjects.h in Headers */,
-				D486945F2038FD820014A034 /* STUTextRange.h in Headers */,
-				D4E753C32104B32600FA59F0 /* STUTruncationScope-Internal.h in Headers */,
-				D49F0AFA1FCC601A004B0E5C /* STULabelSubrangeView.h in Headers */,
-				D49F0AFF1FCC601A004B0E5C /* UnicodeCodePointProperties.hpp in Headers */,
-				D4B0AEC11F9259E600B5B2B9 /* STULabel.h in Headers */,
-				A10000000000000000000012 /* STULabel+UITextInput.h in Headers */,
-				D4B0B0041F925BE800B5B2B9 /* stu_mutex.h in Headers */,
-				D4E753BE2104A99D00FA59F0 /* STUTruncationScope.h in Headers */,
-				D49F0AA81FCC5FC5004B0E5C /* DrawingContext.hpp in Headers */,
-				D42384C61F9379B9000B8A63 /* TypeTraits.hpp in Headers */,
-				D49F0AA61FCC5FC5004B0E5C /* DecorationLines.hpp in Headers */,
-				D468096E1FB1E5A8006AA14D /* NSCoderUtils.hpp in Headers */,
-				D49F0ABA1FCC6001004B0E5C /* TextLineSpan.hpp in Headers */,
-				D4552F861FEAF3F20006974A /* NSStringRef.hpp in Headers */,
-				D42384C31F9379B9000B8A63 /* ArrayRef.hpp in Headers */,
-				D49F0B011FCC601A004B0E5C /* STULabelGhostingMaskLayer.h in Headers */,
-				D4B0AF081F925AF900B5B2B9 /* STULabelLayer.h in Headers */,
-				D44A5EBB1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp in Headers */,
-				D4134E2A1FB20AE800377349 /* STUBackgroundAttribute-Internal.h in Headers */,
-				D49F0AF81FCC601A004B0E5C /* LabelParameters.hpp in Headers */,
-				D49890EF23E5883E00A639E0 /* UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h in Headers */,
-				D4E8DC6A20DA9D40009F4735 /* Localized.hpp in Headers */,
-				D453E7891F993BEA003F81AC /* Optional.hpp in Headers */,
-				D4B0AF001F925AF900B5B2B9 /* STUTextFrameOptions.h in Headers */,
-				D4B0AF1B1F925AF900B5B2B9 /* STUTextLink-Internal.hpp in Headers */,
-				D4B0AF331F925AF900B5B2B9 /* STUTextFrame.h in Headers */,
-				D42384BB1F9379B9000B8A63 /* Allocation.hpp in Headers */,
-				D471C0731FFA65C40014BE97 /* CancellationFlag.hpp in Headers */,
-				D4F150821F9C276900AB1C4B /* Casts.hpp in Headers */,
-				D49F0B081FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp in Headers */,
-				D4B0AF131F925AF900B5B2B9 /* STUTextHighlightStyle-Internal.hpp in Headers */,
-				D4B0AF271F925AF900B5B2B9 /* STUTextAttachment-Internal.hpp in Headers */,
-				D49F0B041FCC601A004B0E5C /* LineTruncation.hpp in Headers */,
-				D42384CB1F9379B9000B8A63 /* InOut.hpp in Headers */,
-				D4F150871F9CFD6400AB1C4B /* GlyphSpan.hpp in Headers */,
-				D4B0AF151F925AF900B5B2B9 /* STUShapedString.h in Headers */,
-				D49F0AB41FCC5FF1004B0E5C /* TextStyle.hpp in Headers */,
-				D4134E2E1FB32C2100377349 /* BinarySearch.hpp in Headers */,
-				D48694622038FDED0014A034 /* STULabelAlignment.h in Headers */,
-				D4B0AF181F925AF900B5B2B9 /* STUTextFrame-Unsafe.h in Headers */,
-				D42384CA1F9379B9000B8A63 /* Ref.hpp in Headers */,
-				D4B0AF251F925AF900B5B2B9 /* STUTextFlags.h in Headers */,
-				D42384C11F9379B9000B8A63 /* Range.hpp in Headers */,
-				D43E66D21FD464E100BABD1C /* TextFlags.hpp in Headers */,
-				D42384B61F9379B9000B8A63 /* Iterator.hpp in Headers */,
-				D471C0761FFA87650014BE97 /* LabelPrerenderer.hpp in Headers */,
-				D468096B1FB1D575006AA14D /* Once.hpp in Headers */,
-				D42384B51F9379B9000B8A63 /* ArenaAllocator.hpp in Headers */,
-				D4B0B0001F925BE000B5B2B9 /* STUMainScreenProperties.h in Headers */,
-				D4B0AF211F925AF900B5B2B9 /* STUTextRectArray.h in Headers */,
-				D41A37D32030FFC900ADDE1E /* PurgeableImage.hpp in Headers */,
-				D4B0AFFB1F925BD700B5B2B9 /* STUImageUtils.h in Headers */,
-				D42384C01F9379B9000B8A63 /* FunctionRef.hpp in Headers */,
-				D49F0B071FCC601A004B0E5C /* TextLineSpansPath.hpp in Headers */,
-				D42384BD1F9379B9000B8A63 /* Array.hpp in Headers */,
-				D44A5EB81F9A533C007325B4 /* Config.hpp in Headers */,
-				D42384BC1F9379B9000B8A63 /* Config.h in Headers */,
-				D42384BE1F9379B9000B8A63 /* ScopeGuard.hpp in Headers */,
-				D42384B71F9379B9000B8A63 /* RefCounting.hpp in Headers */,
-				D4B0AF2A1F925AF900B5B2B9 /* STULabelLayer-Internal.hpp in Headers */,
-				D4B0AF171F925AF900B5B2B9 /* STUTextHighlightStyle.h in Headers */,
-				D46B593520C14A3600D016E2 /* CoreAnimationUtils.hpp in Headers */,
-				D49890EE23E5883E00A639E0 /* DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h in Headers */,
-				D42384C41F9379B9000B8A63 /* Assert.h in Headers */,
-				D437A41D20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp in Headers */,
-				D45F218120A1E015007E6C36 /* Unretained.hpp in Headers */,
-				D4D58ED820B0B9630016AA8A /* STULabelTiledLayer.h in Headers */,
-				D45F217E20A1B590007E6C36 /* STUTextFrameRange.h in Headers */,
-				D4B0AF091F925AF900B5B2B9 /* STUTextFrame-Internal.hpp in Headers */,
-				D4B0AFF01F925BC600B5B2B9 /* STUDefines.h in Headers */,
-				D46B093F1FAC8EE100375E76 /* Color.hpp in Headers */,
-				D43E66D11FD464E100BABD1C /* StyledStringRangeIteration.hpp in Headers */,
-				D4B0AF011F925AF900B5B2B9 /* STUTextAttributes.h in Headers */,
-				D4B0AF301F925AF900B5B2B9 /* STULabelPrerenderer.h in Headers */,
-				D4ED60981FF6CC1B00418E2A /* LabelRenderTask.hpp in Headers */,
-				D4B0AF1C1F925AF900B5B2B9 /* STUShapedString-Internal.hpp in Headers */,
-				D4981F081FBF1824007E88C2 /* DisplayScaleRounding.hpp in Headers */,
-				D42384C51F9379B9000B8A63 /* OptionsEnum.hpp in Headers */,
-				D4D5C3DA214FC82500B34311 /* NSLayoutAnchor+STULabelSpacing.h in Headers */,
-				D4717B5220F412E80019AB9F /* STULabelSwiftExtensions.h in Headers */,
-				D42384CC1F9379B9000B8A63 /* Utility.hpp in Headers */,
-				D4B0AF311F925AF900B5B2B9 /* STULabelPrerenderer-Internal.hpp in Headers */,
-				D42384BA1F9379B9000B8A63 /* Comparable.hpp in Headers */,
-				D42384D41F9381D6000B8A63 /* NSFoundationSupport.hpp in Headers */,
-				D4EAEE191FCB29D90094F525 /* TextFrameLayouter.hpp in Headers */,
-				D42384C91F9379B9000B8A63 /* Vector.hpp in Headers */,
-				D49F0AFE1FCC601A004B0E5C /* STUMediaTimingFunctionUtils.h in Headers */,
-				D4B0AF061F925AF900B5B2B9 /* STULabelDrawingBlock.h in Headers */,
-				D4B0AF351F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp in Headers */,
-				D4B0AF291F925AF900B5B2B9 /* STUTextRectArray-Internal.hpp in Headers */,
-				D46B094B1FACF2F900375E76 /* HashTable.hpp in Headers */,
-				D49F0AAB1FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp in Headers */,
-				D4B0AFF81F925BCF00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h in Headers */,
-				D4B0AF121F925AF900B5B2B9 /* STUTextAttributes-Internal.hpp in Headers */,
-				D42384F11F939589000B8A63 /* TextFrame.hpp in Headers */,
-				D40AE3241FA4EA4200E0F056 /* Parameter.hpp in Headers */,
-				D49F0B031FCC601A004B0E5C /* STULabelLinkOverlayLayer.h in Headers */,
-				D4B0AFF61F925BCF00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h in Headers */,
-				D4B0B0071F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h in Headers */,
-				D42384F41F9396FD000B8A63 /* STUStartEndRange-Internal.hpp in Headers */,
-				D4981EFC1FB8EAAC007E88C2 /* IntervalSearchTable.hpp in Headers */,
-				D4552F8F1FEC06710006974A /* NSAttributedStringRef.hpp in Headers */,
-				D4E753B92104A50100FA59F0 /* STUParagraphStyle.h in Headers */,
-				D4B0AF041F925AF900B5B2B9 /* STULabelLayoutInfo-Internal.hpp in Headers */,
-				D42384C21F9379B9000B8A63 /* ArrayUtils.hpp in Headers */,
-				D4B0AF321F925AF900B5B2B9 /* STUTextFrameAccessibilityElement.h in Headers */,
-				D4B0AF0B1F925AF900B5B2B9 /* STUTextAttachment.h in Headers */,
-				D42384B41F9379B9000B8A63 /* Dollar.hpp in Headers */,
-				D48798E91FE9494000A7A065 /* Common.hpp in Headers */,
-				D4B0AF051F925AF900B5B2B9 /* STULabelOverlayStyle.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		D41C92A62083CBC3002AFFF3 /* STULabelSwift static */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D41C92B52083CBC3002AFFF3 /* Build configuration list for PBXNativeTarget "STULabelSwift static" */;
-			buildPhases = (
-				D41C92A92083CBC3002AFFF3 /* Sources */,
-				D41C92B12083CBC3002AFFF3 /* Frameworks */,
-				D41C92B32083CBC3002AFFF3 /* Headers */,
-				D41C92B42083CBC3002AFFF3 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D41C92BC2083CD48002AFFF3 /* PBXTargetDependency */,
-			);
-			name = "STULabelSwift static";
-			productName = STULabelSwift2;
-			productReference = D41C92B82083CBC3002AFFF3 /* STULabelSwift.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		D42382971F926F2C000B8A63 /* STULabelSwift */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D423829D1F926F2C000B8A63 /* Build configuration list for PBXNativeTarget "STULabelSwift" */;
-			buildPhases = (
-				D42382931F926F2C000B8A63 /* Sources */,
-				D42382941F926F2C000B8A63 /* Frameworks */,
-				D42382951F926F2C000B8A63 /* Headers */,
-				D42382961F926F2C000B8A63 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D423848B1F92AFEC000B8A63 /* PBXTargetDependency */,
-			);
-			name = STULabelSwift;
-			productName = STULabelSwift2;
-			productReference = D42382981F926F2C000B8A63 /* STULabelSwift.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		D42383CE1F92AC81000B8A63 /* STULabel static */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D42384731F92AC81000B8A63 /* Build configuration list for PBXNativeTarget "STULabel static" */;
-			buildPhases = (
-				D42383CF1F92AC81000B8A63 /* Sources */,
-				D42384091F92AC81000B8A63 /* Frameworks */,
-				D423840A1F92AC81000B8A63 /* Headers */,
-				D42384721F92AC81000B8A63 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D4E8DC4720DA8855009F4735 /* PBXTargetDependency */,
-			);
-			name = "STULabel static";
-			productName = STULabel;
-			productReference = D42384761F92AC81000B8A63 /* STULabel.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		D423847E1F92AE37000B8A63 /* DynamicFrameworkTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D42384871F92AE37000B8A63 /* Build configuration list for PBXNativeTarget "DynamicFrameworkTests" */;
-			buildPhases = (
-				D423847B1F92AE37000B8A63 /* Sources */,
-				D423847C1F92AE37000B8A63 /* Frameworks */,
-				D423847D1F92AE37000B8A63 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D42384911F92B7E0000B8A63 /* PBXTargetDependency */,
-				D42384861F92AE37000B8A63 /* PBXTargetDependency */,
-			);
-			name = DynamicFrameworkTests;
-			productName = Tests3;
-			productReference = D423847F1F92AE37000B8A63 /* DynamicFrameworkTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		D43E66BC1FD45DB300BABD1C /* AllTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D43E66C51FD45DB300BABD1C /* Build configuration list for PBXNativeTarget "AllTests" */;
@@ -2061,14 +1049,14 @@
 			);
 			buildRules = (
 			);
-			packageProductDependencies = (
-				A20000000000000000000003 /* STULabel */,
-				A20000000000000000000004 /* STULabelSwift */,
-			);
 			dependencies = (
 				A20000000000000000000011 /* PBXTargetDependency */,
 			);
 			name = AllTests;
+			packageProductDependencies = (
+				A20000000000000000000003 /* STULabel */,
+				A20000000000000000000004 /* STULabelSwift */,
+			);
 			productName = TestsInternal;
 			productReference = D43E66BD1FD45DB300BABD1C /* AllTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -2083,52 +1071,16 @@
 			);
 			buildRules = (
 			);
+			dependencies = (
+			);
+			name = Demo;
 			packageProductDependencies = (
 				A20000000000000000000001 /* STULabel */,
 				A20000000000000000000002 /* STULabelSwift */,
 			);
-			dependencies = (
-			);
-			name = Demo;
 			productName = Demo;
 			productReference = D467A0771F9261E70043C7F0 /* Demo.app */;
 			productType = "com.apple.product-type.application";
-		};
-		D4B0AEBB1F9259E600B5B2B9 /* STULabel */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D4B0AEC41F9259E600B5B2B9 /* Build configuration list for PBXNativeTarget "STULabel" */;
-			buildPhases = (
-				D4B0AEB71F9259E600B5B2B9 /* Sources */,
-				D4B0AEB81F9259E600B5B2B9 /* Frameworks */,
-				D4B0AEB91F9259E600B5B2B9 /* Headers */,
-				D4B0AEBA1F9259E600B5B2B9 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D4E8DC4520DA884E009F4735 /* PBXTargetDependency */,
-			);
-			name = STULabel;
-			productName = STULabel;
-			productReference = D4B0AEBC1F9259E600B5B2B9 /* STULabel.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		D4E8DBE120DA6F29009F4735 /* STULabelResources */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D4E8DBE520DA6F29009F4735 /* Build configuration list for PBXNativeTarget "STULabelResources" */;
-			buildPhases = (
-				D4E8DBDE20DA6F29009F4735 /* Sources */,
-				D4E8DBDF20DA6F29009F4735 /* Frameworks */,
-				D4E8DBE020DA6F29009F4735 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = STULabelResources;
-			productName = STULabelResources;
-			productReference = D4E8DBE220DA6F29009F4735 /* STULabelResources.bundle */;
-			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
@@ -2142,20 +1094,6 @@
 				LastUpgradeCheck = 2700;
 				ORGANIZATIONNAME = STULabel;
 				TargetAttributes = {
-					D41C92A62083CBC3002AFFF3 = {
-						LastSwiftMigration = 1000;
-					};
-					D42382971F926F2C000B8A63 = {
-						CreatedOnToolsVersion = 9.1;
-						LastSwiftMigration = 1110;
-					};
-					D42383CE1F92AC81000B8A63 = {
-						LastSwiftMigration = 1000;
-					};
-					D423847E1F92AE37000B8A63 = {
-						CreatedOnToolsVersion = 9.1;
-						LastSwiftMigration = 0910;
-					};
 					D43E66BC1FD45DB300BABD1C = {
 						CreatedOnToolsVersion = 9.2;
 						LastSwiftMigration = 1000;
@@ -2163,16 +1101,6 @@
 					D467A0761F9261E70043C7F0 = {
 						CreatedOnToolsVersion = 9.1;
 						LastSwiftMigration = 1110;
-						ProvisioningStyle = Automatic;
-					};
-					D4B0AEBB1F9259E600B5B2B9 = {
-						CreatedOnToolsVersion = 9.1;
-						LastSwiftMigration = 1000;
-						ProvisioningStyle = Automatic;
-					};
-					D4E8DBE120DA6F29009F4735 = {
-						CreatedOnToolsVersion = 10.0;
-						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -2222,11 +1150,11 @@
 				vi,
 			);
 			mainGroup = D4B0AEB21F9259E600B5B2B9;
+			packageReferences = (
+				A20000000000000000000009 /* XCLocalSwiftPackageReference "." */,
+			);
 			productRefGroup = D4B0AEBD1F9259E600B5B2B9 /* Products */;
 			projectDirPath = "";
-			packageReferences = (
-				A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */,
-			);
 			projectReferences = (
 				{
 					ProductGroup = D407028B2014FFB0004E5C07 /* Products */;
@@ -2242,35 +1170,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D41C92B42083CBC3002AFFF3 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42382961F926F2C000B8A63 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42384721F92AC81000B8A63 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D423847D1F92AE37000B8A63 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D44F90E920E6414300ED750B /* udhr.html in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D43E66BB1FD45DB300BABD1C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2284,195 +1183,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D495DABA2067C7210081606C /* udhr.html in Resources */,
-				D467A0861F9261E70043C7F0 /* LaunchScreen.storyboard in Resources */,
 				D467A0831F9261E70043C7F0 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4B0AEBA1F9259E600B5B2B9 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D4107B3B20486CCD008CA7E9 /* README.md in Resources */,
-				D4E8DC4320DA86ED009F4735 /* STULabelResources.bundle in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4E8DBE020DA6F29009F4735 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D4E8DBEA20DA6FE0009F4735 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D41C92A92083CBC3002AFFF3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D498249A21667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift in Sources */,
-				D46A3D00214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift in Sources */,
-				D41C92AC2083CBC3002AFFF3 /* STUStartEndRange.overlay.swift in Sources */,
-				D498249D216672C7007D1DA9 /* STULabel.overlay.swift in Sources */,
-				D41C92AE2083CBC3002AFFF3 /* STUImageUtils.overlay.swift in Sources */,
-				D41C92AF2083CBC3002AFFF3 /* STUTextFrame.overlay.swift in Sources */,
-				D41B1F61210B4AA700E4203C /* STUParagraphStyle.overlay.swift in Sources */,
-				D45F218B20A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift in Sources */,
-				D49824892162ABA9007D1DA9 /* RoundToScale.swift in Sources */,
-				D41C92B02083CBC3002AFFF3 /* STUTextRectArray.overlay.swift in Sources */,
-				D4717B5D20F684D20019AB9F /* STUTextFrameWithOrigin.swift in Sources */,
-				D49824A021667301007D1DA9 /* STULabelLayer.overlay.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42382931F926F2C000B8A63 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D498249921667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift in Sources */,
-				D46A3CFF214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift in Sources */,
-				D42382A21F926F96000B8A63 /* STUStartEndRange.overlay.swift in Sources */,
-				D498249C216672C7007D1DA9 /* STULabel.overlay.swift in Sources */,
-				D483EE4B202D007C005917F9 /* STUImageUtils.overlay.swift in Sources */,
-				D42382A31F926F96000B8A63 /* STUTextFrame.overlay.swift in Sources */,
-				D44B5B052104DA4F00964C5C /* STUParagraphStyle.overlay.swift in Sources */,
-				D45F218A20A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift in Sources */,
-				D49824882162ABA9007D1DA9 /* RoundToScale.swift in Sources */,
-				D4981F031FBE33F1007E88C2 /* STUTextRectArray.overlay.swift in Sources */,
-				D4717B5C20F684D20019AB9F /* STUTextFrameWithOrigin.swift in Sources */,
-				D498249F21667301007D1DA9 /* STULabelLayer.overlay.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D42383CF1F92AC81000B8A63 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D416FB2A201D2333002761B4 /* NSAttributedString-no-ARC.mm in Sources */,
-				D46B593920C14A9B00D016E2 /* CoreAnimationUtils.mm in Sources */,
-				D42383D11F92AC81000B8A63 /* NSAttributedString+STUDynamicTypeFontScaling.m in Sources */,
-				D43E67051FD464E200BABD1C /* LineTruncation.mm in Sources */,
-				D41A37D72030FFDF00ADDE1E /* PurgeableImage.mm in Sources */,
-				D4134E251FB20A2300377349 /* STUBackgroundAttribute.mm in Sources */,
-				D40AE3281FA6068F00E0F056 /* GlyphSpan.mm in Sources */,
-				D42383D51F92AC81000B8A63 /* STUTextRectArray.mm in Sources */,
-				D42384EF1F9381D7000B8A63 /* Vector.cpp in Sources */,
-				D40AE31F1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */,
-				D42383DB1F92AC81000B8A63 /* STUTextHighlightStyle.mm in Sources */,
-				D482970C1FE5592C00D67234 /* ShapedString.mm in Sources */,
-				D42383DC1F92AC81000B8A63 /* STUTextAttachment.mm in Sources */,
-				D44C191E1F97C434001DFD52 /* StyledStringRangeIteration.mm in Sources */,
-				D4E753C12104A99D00FA59F0 /* STUTruncationScope.mm in Sources */,
-				D471C07D20000DC00014BE97 /* CancellationFlag.mm in Sources */,
-				D4A80F4220C860BE001CD188 /* TextFrame-PointToIndex.mm in Sources */,
-				D42383DF1F92AC81000B8A63 /* STULabelOverlayStyle.mm in Sources */,
-				D4ED28631FA20F2F00DD135A /* TextFrameLine-FontMetric.mm in Sources */,
-				D44A5EAD1F9A2672007325B4 /* Optional.cpp in Sources */,
-				D43E66EC1FD464E200BABD1C /* CoreGraphicsUtils.mm in Sources */,
-				D4154B591FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm in Sources */,
-				D43E66F61FD464E200BABD1C /* STULabelGhostingMaskLayer.mm in Sources */,
-				D42383E21F92AC81000B8A63 /* STUTextAttributes.mm in Sources */,
-				D42383E51F92AC81000B8A63 /* UIFont+STUDynamicTypeFontScaling.m in Sources */,
-				D42384D71F9381D7000B8A63 /* ArenaAllocator.cpp in Sources */,
-				D42383E71F92AC81000B8A63 /* TextFrame-Drawing.mm in Sources */,
-				D42383E81F92AC81000B8A63 /* STUTextFrameOptions.mm in Sources */,
-				D4ED285A1FA0C62C00DD135A /* Allocation.cpp in Sources */,
-				D4E76BF9201BBA2200249594 /* HashTable.mm in Sources */,
-				D43E66DA1FD464E200BABD1C /* SortedIntervalBuffer.mm in Sources */,
-				D43E66E31FD464E200BABD1C /* TextStyle.mm in Sources */,
-				D42383E91F92AC81000B8A63 /* STULabelDrawingBlock.mm in Sources */,
-				D42383EB1F92AC81000B8A63 /* STUMainScreenProperties.m in Sources */,
-				D42383ED1F92AC81000B8A63 /* stu_mutex.c in Sources */,
-				D4764D7020EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm in Sources */,
-				D43E66D81FD464E200BABD1C /* DrawingContext.mm in Sources */,
-				D42383EF1F92AC81000B8A63 /* STULabelPrerenderer.mm in Sources */,
-				D43E66E11FD464E200BABD1C /* TextLineSpansPath.mm in Sources */,
-				D42584E41FCE137800DDA412 /* ThreadLocalAllocator.mm in Sources */,
-				D42383F01F92AC81000B8A63 /* STUPlaceholderObjects-no-ARC.m in Sources */,
-				D42383F11F92AC81000B8A63 /* STULabel.mm in Sources */,
-				A10000000000000000000013 /* STULabel+UITextInput.mm in Sources */,
-				D42383F21F92AC81000B8A63 /* STUTextFrame.mm in Sources */,
-				D46B09461FAC96CA00375E76 /* Font.mm in Sources */,
-				D4ED60971FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */,
-				D49577BB1FB0BF6D00DBDBDC /* Color-no-ARC.mm in Sources */,
-				D4E8DC6920DA9D40009F4735 /* Localized.mm in Sources */,
-				D42029291FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm in Sources */,
-				D43E66FF1FD464E200BABD1C /* STULabelSubrangeView.mm in Sources */,
-				D42384DC1F9381D7000B8A63 /* Assert.m in Sources */,
-				D42383F51F92AC81000B8A63 /* STUImageUtils.m in Sources */,
-				D46B593320C07C2D00D016E2 /* STULabelTiledLayer.mm in Sources */,
-				D42383F61F92AC81000B8A63 /* STUTextLink.mm in Sources */,
-				D4F1508E1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm in Sources */,
-				D4ED285D1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm in Sources */,
-				D4D2D9A3205D6EA500BBDBDB /* Kerning.mm in Sources */,
-				D46B09491FAC9E6000375E76 /* Color.mm in Sources */,
-				D4981F071FBF1824007E88C2 /* DisplayScaleRounding.mm in Sources */,
-				D42383FF1F92AC81000B8A63 /* STUTextFrameLine.mm in Sources */,
-				D42384011F92AC81000B8A63 /* STUTextFrameAccessibilityElement.mm in Sources */,
-				D4552F8A1FEAF53C0006974A /* NSStringRef.mm in Sources */,
-				D4D20DD420E25BD500294D57 /* NSArrayRef-no-ARC.mm in Sources */,
-				D42384021F92AC81000B8A63 /* STULabelPrerenderer-no-ARC.mm in Sources */,
-				D43E66E51FD464E200BABD1C /* TextStyleBuffer.mm in Sources */,
-				D42384031F92AC81000B8A63 /* STULabelLayer.mm in Sources */,
-				D43E66CD1FD464D100BABD1C /* UnicodeCodePointProperties.mm in Sources */,
-				D40AE3221FA4E09000E0F056 /* TextFrame-IndexConversion.mm in Sources */,
-				D43E66DF1FD464E200BABD1C /* TextLineSpan.mm in Sources */,
-				D471C07A1FFA877A0014BE97 /* LabelPrerenderer.mm in Sources */,
-				D4A80F4720C890C9001CD188 /* TextFrame-Background.mm in Sources */,
-				D43E66FD1FD464E200BABD1C /* LabelRendering.mm in Sources */,
-				D42384041F92AC81000B8A63 /* STUShapedString.mm in Sources */,
-				D41745FC2033A1F9001D6F4F /* LabelParameters.mm in Sources */,
-				D45F217B20A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm in Sources */,
-				D4981EFA1FB8EAA8007E88C2 /* IntervalSearchTable.mm in Sources */,
-				D43E66F11FD464E200BABD1C /* GlyphPathIntersectionBounds.mm in Sources */,
-				D420292B1FE1635F00B1F5FC /* TextFrameLayouter.mm in Sources */,
-				D42384051F92AC81000B8A63 /* STULayerWithNullDefaultActions.m in Sources */,
-				D42384061F92AC81000B8A63 /* STUObjCRuntimeWrappers-no-ARC.m in Sources */,
-				D48798E71FE6DB1200A7A065 /* TextFrame.mm in Sources */,
-				D43E66D61FD464E200BABD1C /* DecorationLines.mm in Sources */,
-				D42384071F92AC81000B8A63 /* STULabelLayoutInfo.mm in Sources */,
-				D497D6FB20B708D10009302B /* LayerVisibleBoundsObserver.mm in Sources */,
-				D43E66F81FD464E200BABD1C /* STULabelLinkOverlayLayer.m in Sources */,
-				D4ED28601FA1FD0E00DD135A /* TextFrameLine-Drawing.mm in Sources */,
-				D4E753B72104A4EB00FA59F0 /* STUParagraphStyle.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D423847B1F92AE37000B8A63 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D4DD022F210E20A500915763 /* SwiftWrapperTests.swift in Sources */,
-				D498247521601B6F007D1DA9 /* TextAttachmentTests.swift in Sources */,
-				D464B2DA2039D2730027FEE4 /* MainScreenPropertiesTests.swift in Sources */,
-				D49CBA492149C977008F36B2 /* AutoLayoutTests.swift in Sources */,
-				D473107A202E3624000CBFF1 /* MutexTests.m in Sources */,
-				D4EA26A72049E3500093522E /* TextFrameTruncationTests.swift in Sources */,
-				D49C2D6521077B120018FD33 /* ParagraphStyleTests.swift in Sources */,
-				D49824A3216788C3007D1DA9 /* CoreGraphicsUtils.swift in Sources */,
-				D498248D2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift in Sources */,
-				D42E8779205041B8003C920E /* TextFrameLineBreakingTests.swift in Sources */,
-				D41B1F64210BB3C400E4203C /* TextFrameOptionsTests.swift in Sources */,
-				D4B8B228205467D800C8341D /* TestUtils.swift in Sources */,
-				D44F90E620E6402C00ED750B /* ShapedStringTests.swift in Sources */,
-				D4982494216664AF007D1DA9 /* LabelAlignmentTests.swift in Sources */,
-				D49CBA4C214B07C0008F36B2 /* SnapshotTestCase.swift in Sources */,
-				D473C97A20E41AC000139FED /* TextFrameImageBoundsTests.swift in Sources */,
-				D49CBA4E214BC712008F36B2 /* AutoLayoutUtils.swift in Sources */,
-				D4154B5B1FD706E900A065BC /* SnapshotTestCase.m in Sources */,
-				D44F90E720E6413800ED750B /* UDHR.swift in Sources */,
-				D450392F202E4E6300987C41 /* DynamicTypeFontScalingTests.swift in Sources */,
-				D4B11BE0222C464900352EE3 /* StringExtension.swift in Sources */,
-				D40E5D562060332A00E67689 /* TextFrameHighlightingTests.swift in Sources */,
-				D44F90ED20E64D0000ED750B /* Rand.swift in Sources */,
-				D495DAAF20668A5E0081606C /* TextFrameDrawingTests.swift in Sources */,
-				A10000000000000000000022 /* UITextInputTests.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D43E66B91FD45DB300BABD1C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2563,135 +1280,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D4B0AEB71F9259E600B5B2B9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D416FB29201D2333002761B4 /* NSAttributedString-no-ARC.mm in Sources */,
-				D46B593820C14A9B00D016E2 /* CoreAnimationUtils.mm in Sources */,
-				D4552F911FEC42B30006974A /* NSStringRef.mm in Sources */,
-				D4B0AFF51F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m in Sources */,
-				D41A37D62030FFDF00ADDE1E /* PurgeableImage.mm in Sources */,
-				D4134E241FB20A2300377349 /* STUBackgroundAttribute.mm in Sources */,
-				D40AE3271FA6068F00E0F056 /* GlyphSpan.mm in Sources */,
-				D49F0AF91FCC601A004B0E5C /* TextLineSpansPath.mm in Sources */,
-				D4B0AF2B1F925AF900B5B2B9 /* STUTextRectArray.mm in Sources */,
-				D40AE31E1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm in Sources */,
-				D4B0AF1D1F925AF900B5B2B9 /* STUTextHighlightStyle.mm in Sources */,
-				D4B0AF0F1F925AF900B5B2B9 /* STUTextAttachment.mm in Sources */,
-				D482970B1FE5592C00D67234 /* ShapedString.mm in Sources */,
-				D49F0AF61FCC601A004B0E5C /* STULabelSubrangeView.mm in Sources */,
-				D4E753C02104A99D00FA59F0 /* STUTruncationScope.mm in Sources */,
-				D42384B31F9379B9000B8A63 /* Assert.m in Sources */,
-				D4A80F4120C860BE001CD188 /* TextFrame-PointToIndex.mm in Sources */,
-				D471C07C20000DC00014BE97 /* CancellationFlag.mm in Sources */,
-				D44C191D1F97C434001DFD52 /* StyledStringRangeIteration.mm in Sources */,
-				D49F0AB91FCC6001004B0E5C /* TextLineSpan.mm in Sources */,
-				D4B0AF2E1F925AF900B5B2B9 /* STULabelOverlayStyle.mm in Sources */,
-				D44A5EAC1F9A2672007325B4 /* Optional.cpp in Sources */,
-				D4ED28621FA20F2F00DD135A /* TextFrameLine-FontMetric.mm in Sources */,
-				D4154B581FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm in Sources */,
-				D49F0AA71FCC5FC5004B0E5C /* DecorationLines.mm in Sources */,
-				D4B0AF0D1F925AF900B5B2B9 /* STUTextAttributes.mm in Sources */,
-				D4B0AFF71F925BCF00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m in Sources */,
-				D42384C71F9379B9000B8A63 /* Vector.cpp in Sources */,
-				D4B0AF2D1F925AF900B5B2B9 /* TextFrame-Drawing.mm in Sources */,
-				D4E76BF8201BBA2200249594 /* HashTable.mm in Sources */,
-				D4B0AF191F925AF900B5B2B9 /* STUTextFrameOptions.mm in Sources */,
-				D42584E31FCE137800DDA412 /* ThreadLocalAllocator.mm in Sources */,
-				D4ED28591FA0C62C00DD135A /* Allocation.cpp in Sources */,
-				D49F0AFD1FCC601A004B0E5C /* GlyphPathIntersectionBounds.mm in Sources */,
-				D4B0AF071F925AF900B5B2B9 /* STULabelDrawingBlock.mm in Sources */,
-				D4764D6F20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm in Sources */,
-				D4B0AFFF1F925BE000B5B2B9 /* STUMainScreenProperties.m in Sources */,
-				D49F0AAC1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm in Sources */,
-				D4B0B0031F925BE800B5B2B9 /* stu_mutex.c in Sources */,
-				D4B0AF111F925AF900B5B2B9 /* STULabelPrerenderer.mm in Sources */,
-				D49F0B001FCC601A004B0E5C /* LabelRendering.mm in Sources */,
-				D49F0AEE1FCC601A004B0E5C /* UnicodeCodePointProperties.mm in Sources */,
-				D4B0AF1E1F925AF900B5B2B9 /* STUPlaceholderObjects-no-ARC.m in Sources */,
-				D42384C81F9379B9000B8A63 /* ArenaAllocator.cpp in Sources */,
-				D4B0AFED1F925B9D00B5B2B9 /* STULabel.mm in Sources */,
-				A10000000000000000000014 /* STULabel+UITextInput.mm in Sources */,
-				D4ED60961FF6CC1B00418E2A /* LabelRenderTask.mm in Sources */,
-				D4E8DC6820DA9D40009F4735 /* Localized.mm in Sources */,
-				D46B09451FAC96CA00375E76 /* Font.mm in Sources */,
-				D49F0AE71FCC601A004B0E5C /* LineTruncation.mm in Sources */,
-				D42029281FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm in Sources */,
-				D4B0AF2C1F925AF900B5B2B9 /* STUTextFrame.mm in Sources */,
-				D46B593220C07C2D00D016E2 /* STULabelTiledLayer.mm in Sources */,
-				D49577BA1FB0BF6D00DBDBDC /* Color-no-ARC.mm in Sources */,
-				D4B0AFFC1F925BD700B5B2B9 /* STUImageUtils.m in Sources */,
-				D4B0AF0A1F925AF900B5B2B9 /* STUTextLink.mm in Sources */,
-				D4D2D9A2205D6EA500BBDBDB /* Kerning.mm in Sources */,
-				D4F1508D1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm in Sources */,
-				D4ED285C1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm in Sources */,
-				D49F0AEF1FCC601A004B0E5C /* CoreGraphicsUtils.mm in Sources */,
-				D49F0AE81FCC601A004B0E5C /* STULabelLinkOverlayLayer.m in Sources */,
-				D46B09481FAC9E6000375E76 /* Color.mm in Sources */,
-				D4D20DD320E25BD500294D57 /* NSArrayRef-no-ARC.mm in Sources */,
-				D4981F061FBF1824007E88C2 /* DisplayScaleRounding.mm in Sources */,
-				D49F0AB31FCC5FF1004B0E5C /* TextStyle.mm in Sources */,
-				D4B0AF031F925AF900B5B2B9 /* STUTextFrameLine.mm in Sources */,
-				D4B0AF241F925AF900B5B2B9 /* STUTextFrameAccessibilityElement.mm in Sources */,
-				D4B0AF021F925AF900B5B2B9 /* STULabelPrerenderer-no-ARC.mm in Sources */,
-				D4B0AF341F925AF900B5B2B9 /* STULabelLayer.mm in Sources */,
-				D40AE3211FA4E09000E0F056 /* TextFrame-IndexConversion.mm in Sources */,
-				D4A80F4620C890C9001CD188 /* TextFrame-Background.mm in Sources */,
-				D471C0791FFA877A0014BE97 /* LabelPrerenderer.mm in Sources */,
-				D49F0AE61FCC601A004B0E5C /* STULabelGhostingMaskLayer.mm in Sources */,
-				D41745FB2033A1F9001D6F4F /* LabelParameters.mm in Sources */,
-				D45F217A20A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm in Sources */,
-				D4B0AF0C1F925AF900B5B2B9 /* STUShapedString.mm in Sources */,
-				D49F0AA51FCC5FC5004B0E5C /* DrawingContext.mm in Sources */,
-				D4981EFB1FB8EAA8007E88C2 /* IntervalSearchTable.mm in Sources */,
-				D49F0AB61FCC5FF1004B0E5C /* TextStyleBuffer.mm in Sources */,
-				D420292A1FE1635F00B1F5FC /* TextFrameLayouter.mm in Sources */,
-				D4B0AF1A1F925AF900B5B2B9 /* STULayerWithNullDefaultActions.m in Sources */,
-				D48798E61FE6DB1200A7A065 /* TextFrame.mm in Sources */,
-				D4B0B0081F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m in Sources */,
-				D497D6FA20B708D10009302B /* LayerVisibleBoundsObserver.mm in Sources */,
-				D4B0AEFF1F925AF900B5B2B9 /* STULabelLayoutInfo.mm in Sources */,
-				D4ED285F1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm in Sources */,
-				D4E753B62104A4EB00FA59F0 /* STUParagraphStyle.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D4E8DBDE20DA6F29009F4735 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D42384861F92AE37000B8A63 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4B0AEBB1F9259E600B5B2B9 /* STULabel */;
-			targetProxy = D42384851F92AE37000B8A63 /* PBXContainerItemProxy */;
-		};
-		D423848B1F92AFEC000B8A63 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4B0AEBB1F9259E600B5B2B9 /* STULabel */;
-			targetProxy = D423848A1F92AFEC000B8A63 /* PBXContainerItemProxy */;
-		};
-		D42384911F92B7E0000B8A63 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D42382971F926F2C000B8A63 /* STULabelSwift */;
-			targetProxy = D42384901F92B7E0000B8A63 /* PBXContainerItemProxy */;
-		};
-		D4E8DC4520DA884E009F4735 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4E8DBE120DA6F29009F4735 /* STULabelResources */;
-			targetProxy = D4E8DC4420DA884E009F4735 /* PBXContainerItemProxy */;
-		};
-		D4E8DC4720DA8855009F4735 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D4E8DBE120DA6F29009F4735 /* STULabelResources */;
-			targetProxy = D4E8DC4620DA8855009F4735 /* PBXContainerItemProxy */;
-		};
 		A20000000000000000000011 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D467A0761F9261E70043C7F0 /* Demo */;
@@ -2699,45 +1290,7 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = .;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A20000000000000000000001 /* STULabel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
-			productName = STULabel;
-		};
-		A20000000000000000000002 /* STULabelSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
-			productName = STULabelSwift;
-		};
-		A20000000000000000000003 /* STULabel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
-			productName = STULabel;
-		};
-		A20000000000000000000004 /* STULabelSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "STULabel" */;
-			productName = STULabelSwift;
-		};
-/* End XCSwiftPackageProductDependency section */
-
 /* Begin PBXVariantGroup section */
-		D467A0841F9261E70043C7F0 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D467A0851F9261E70043C7F0 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 		D4E8DBEC20DA6FE0009F4735 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2785,64 +1338,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		D41C92B62083CBC3002AFFF3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41C92A52083CB56002AFFF3 /* STULabelSwift static.xcconfig */;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		D41C92B72083CBC3002AFFF3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41C92A52083CB56002AFFF3 /* STULabelSwift static.xcconfig */;
-			buildSettings = {
-			};
-			name = Release;
-		};
-		D423829E1F926F2C000B8A63 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Debug;
-		};
-		D423829F1F926F2C000B8A63 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310D21F94237400F39C3A /* STULabelSwift.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Release;
-		};
-		D42384741F92AC81000B8A63 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310D11F94236200F39C3A /* STULabel static.xcconfig */;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		D42384751F92AC81000B8A63 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310D11F94236200F39C3A /* STULabel static.xcconfig */;
-			buildSettings = {
-			};
-			name = Release;
-		};
-		D42384881F92AE37000B8A63 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D43E67111FD4A64C00BABD1C /* Tests.xcconfig */;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		D42384891F92AE37000B8A63 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D43E67111FD4A64C00BABD1C /* Tests.xcconfig */;
-			buildSettings = {
-			};
-			name = Release;
-		};
 		D43E66C61FD45DB300BABD1C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */;
@@ -2941,77 +1436,9 @@
 			};
 			name = Release;
 		};
-		D4B0AEC51F9259E600B5B2B9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310921F9416A500F39C3A /* STULabel.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Debug;
-		};
-		D4B0AEC61F9259E600B5B2B9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310921F9416A500F39C3A /* STULabel.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Release;
-		};
-		D4E8DBE620DA6F29009F4735 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Debug;
-		};
-		D4E8DBE720DA6F29009F4735 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D4E8DC1920DA8364009F4735 /* STULabelResources.xcconfig */;
-			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D41C92B52083CBC3002AFFF3 /* Build configuration list for PBXNativeTarget "STULabelSwift static" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D41C92B62083CBC3002AFFF3 /* Debug */,
-				D41C92B72083CBC3002AFFF3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D423829D1F926F2C000B8A63 /* Build configuration list for PBXNativeTarget "STULabelSwift" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D423829E1F926F2C000B8A63 /* Debug */,
-				D423829F1F926F2C000B8A63 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D42384731F92AC81000B8A63 /* Build configuration list for PBXNativeTarget "STULabel static" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D42384741F92AC81000B8A63 /* Debug */,
-				D42384751F92AC81000B8A63 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D42384871F92AE37000B8A63 /* Build configuration list for PBXNativeTarget "DynamicFrameworkTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D42384881F92AE37000B8A63 /* Debug */,
-				D42384891F92AE37000B8A63 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		D43E66C51FD45DB300BABD1C /* Build configuration list for PBXNativeTarget "AllTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3039,25 +1466,37 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D4B0AEC41F9259E600B5B2B9 /* Build configuration list for PBXNativeTarget "STULabel" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D4B0AEC51F9259E600B5B2B9 /* Debug */,
-				D4B0AEC61F9259E600B5B2B9 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D4E8DBE520DA6F29009F4735 /* Build configuration list for PBXNativeTarget "STULabelResources" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D4E8DBE620DA6F29009F4735 /* Debug */,
-				D4E8DBE720DA6F29009F4735 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A20000000000000000000009 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A20000000000000000000001 /* STULabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "." */;
+			productName = STULabel;
+		};
+		A20000000000000000000002 /* STULabelSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "." */;
+			productName = STULabelSwift;
+		};
+		A20000000000000000000003 /* STULabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "." */;
+			productName = STULabel;
+		};
+		A20000000000000000000004 /* STULabelSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference "." */;
+			productName = STULabelSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D4B0AEB31F9259E600B5B2B9 /* Project object */;
 }

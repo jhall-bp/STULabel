@@ -7,8 +7,6 @@ enum Link {
   case readLess
 }
 
-let linkColor = UIColor.link
-
 let readMoreToken = { () -> NSAttributedString in
   let token = NSMutableAttributedString()
   token.append(NSAttributedString(string: "… "))
@@ -17,15 +15,13 @@ let readMoreToken = { () -> NSAttributedString in
       string: "more",
       attributes: [
         .link: Link.readMore,
-        .foregroundColor: linkColor,
+        .foregroundColor: UIColor.link,
       ]))
-  return token.copy() as! NSAttributedString
+  return NSAttributedString(attributedString: token)
 }()
 
 class TapToReadMoreVC: UIViewController, STULabelDelegate {
-
   let label = STULabel()
-
   let label2 = STULabel()
 
   var firstRTLCharStringIndex = 0
@@ -35,11 +31,13 @@ class TapToReadMoreVC: UIViewController, STULabelDelegate {
     let scrollView = UIScrollView()
     scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     self.view = scrollView
-    scrollView.backgroundColor = UIColor.white
+    scrollView.backgroundColor = .systemBackground
     scrollView.alwaysBounceVertical = false
   }
 
   override func viewDidLoad() {
+    super.viewDidLoad()
+
     let string =
       "STULabel makes it easy to implement a “Tap to read more” feature: Just add a truncation token with a .link attribute and then expand the label's size in a `label:link:wasTappedAt:` delegate method. The link text, the link formatting and the active link overlay are all customizable. "
 
@@ -58,7 +56,7 @@ class TapToReadMoreVC: UIViewController, STULabelDelegate {
         attributes: [
           .font: font,
           .link: Link.readLess,
-          .foregroundColor: linkColor,
+          .foregroundColor: UIColor.link,
         ]))
 
     let attributedText2 = NSMutableAttributedString()
@@ -71,7 +69,7 @@ class TapToReadMoreVC: UIViewController, STULabelDelegate {
         attributes: [
           .font: font,
           .link: Link.readLess,
-          .foregroundColor: linkColor,
+          .foregroundColor: UIColor.link,
         ]))
     label.maximumNumberOfLines = 2
     label.attributedText = attributedText
@@ -107,6 +105,8 @@ class TapToReadMoreVC: UIViewController, STULabelDelegate {
   }
 
   override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
     label2NumberOfLines =
       label2.textFrame.index(
         forUTF16IndexInOriginalString:

@@ -59,7 +59,7 @@ class UDHR {
         }
       }
 
-      return str.copy() as! NSAttributedString
+      return NSAttributedString(attributedString: str)
     }
   }
 

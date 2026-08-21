@@ -522,7 +522,7 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
         display(0)
 
         let sv = SampleView()
-        sv.backgroundColor = UIColor(rgb: 0xffff4d)
+        sv.backgroundColor = .systemYellow
         sv.labelContainer = container
 
         let svl = SampleViewWithLabel(sv)
@@ -944,7 +944,7 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
 
     self.navigationItem.titleView = debugBuildTitleLabel()
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-      image: UIImage(named: "toggle-icon"),
+      image: UIImage(systemName: "gear"),
       style: .plain, target: self,
       action: #selector(showSettings))
 
@@ -1199,9 +1199,10 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
   @objc
   private func showSettings() {
     let navigationVC = UINavigationController(rootViewController: SettingsViewController(self))
-    navigationVC.modalPresentationStyle = .pageSheet
-    navigationVC.preferredTransition = .zoom { [weak self] _ in
-      self?.navigationItem.rightBarButtonItem
+    navigationVC.modalPresentationStyle = .popover
+    navigationVC.popoverPresentationController?.sourceItem = navigationItem.rightBarButtonItem
+    navigationVC.preferredTransition = .zoom { ctx in
+      ctx.sourceViewController.navigationItem.rightBarButtonItem
     }
     self.present(navigationVC, animated: true, completion: nil)
   }
@@ -1210,7 +1211,7 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
     for controller: UIPresentationController,
     traitCollection: UITraitCollection
   ) -> UIModalPresentationStyle {
-    return .none
+    return .popover
   }
 
   private class SettingsViewController: StaticTableViewController {
@@ -1237,12 +1238,12 @@ class LabelPerformanceVC: UIViewController, UIPopoverPresentationControllerDeleg
     override func viewDidLoad() {
       super.viewDidLoad()
 
-      navigationItem.title = "Settings"
+      title = "Settings"
       navigationItem.leftBarButtonItem = UIBarButtonItem(
-          systemItem: .close,
-          primaryAction: UIAction { [weak self] _ in
-              self?.dismiss(animated: true)
-          }
+        systemItem: .close,
+        primaryAction: UIAction { [weak self] _ in
+          self?.dismiss(animated: true)
+        }
       )
     }
   }

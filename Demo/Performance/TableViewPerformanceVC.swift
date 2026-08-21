@@ -77,8 +77,6 @@ let hindi = [
 
 private let isPad = UIDevice.current.userInterfaceIdiom == .pad
 
-private var greyBackgroundColor = UIColor(white: 0.95, alpha: 1)
-
 private func emojiText(index: Int) -> NSAttributedString {
   seedRand(Int32(truncatingIfNeeded: index))
 
@@ -712,7 +710,7 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
   private var allCells = NSHashTable<Cell>.weakObjects()
 
   private var labelBackgroundColor: UIColor? {
-    return testCase == .emojicalypse ? greyBackgroundColor : nil
+    return testCase == .emojicalypse ? .systemGroupedBackground : nil
   }
 
   private var labelContentInsets: UIEdgeInsets {
@@ -1363,14 +1361,25 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
+      super.viewDidLoad()
+
+      title = "Settings"
+      navigationItem.leftBarButtonItem = UIBarButtonItem(
+        systemItem: .close,
+        primaryAction: UIAction { [weak self] _ in
+          self?.dismiss(animated: true)
+        }
+      )
+
       self.tableView.alwaysBounceVertical = false
       let footerView = UIView()
-      footerView.backgroundColor = .green
+      footerView.backgroundColor = .systemGreen
       self.tableView.tableFooterView = footerView
-      self.tableView.backgroundColor = .gray
+      self.tableView.backgroundColor = .systemGroupedBackground
     }
 
     override func viewDidLayoutSubviews() {
+      super.viewDidLayoutSubviews()
       let contentSize = self.tableView.contentSize
       let preferredSize = self.parent!.preferredContentSize
       if contentSize != preferredSize {
@@ -1458,7 +1467,7 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
 
     self.navigationItem.titleView = debugBuildTitleLabel()
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-      image: UIImage(named: "toggle-icon"),
+      image: UIImage(systemName: "gear"),
       style: .plain, target: self,
       action: #selector(showSettings))
   }
@@ -1484,20 +1493,20 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
 
   @objc
   func showSettings() {
-
-    //let settingsVC = SettingsViewController()
     let navigationVC = UINavigationController(rootViewController: SettingsViewController(self))
     navigationVC.modalPresentationStyle = .popover
     navigationVC.popoverPresentationController?.barButtonItem =
       self.navigationItem.rightBarButtonItem
     navigationVC.popoverPresentationController?.delegate = self
-    navigationVC.setNavigationBarHidden(true, animated: false)
-    self.present(navigationVC, animated: false, completion: nil)
+    navigationVC.preferredTransition = .zoom { ctx in
+      ctx.sourceViewController.navigationItem.rightBarButtonItem
+    }
+    self.present(navigationVC, animated: true, completion: nil)
   }
+
   func adaptivePresentationStyle(for controller: UIPresentationController)
     -> UIModalPresentationStyle
   {
-    return .none
+    return .popover
   }
-
 }

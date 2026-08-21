@@ -27,7 +27,7 @@ class TextFramePerformanceTestCase {
     mutableString2.mutableString.replaceCharacters(in: NSRange(0..<1), with: "2")
     // Prevents trivial caching of the attribute dictionary.
     mutableString2.addAttribute(
-      .foregroundColor, value: UIColor.black,
+      .foregroundColor, value: UIColor.label,
       range: NSRange(0..<mutableString2.length))
     self.attributedString2 = NSAttributedString(attributedString: mutableString2)
 
@@ -256,7 +256,7 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
 
         let sv = UIImageView()
         sv.image = d.createImage(testCase)
-        sv.backgroundColor = UIColor(rgb: 0xffff4d)
+        sv.backgroundColor = .systemYellow
 
         let svl = SampleViewWithLabel(sv)
         svl.label.text = d.name
@@ -521,7 +521,7 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
 
     self.navigationItem.titleView = debugBuildTitleLabel()
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-      image: UIImage(named: "toggle-icon"),
+      image: UIImage(systemName: "gear"),
       style: .plain, target: self,
       action: #selector(showSettings))
 
@@ -544,7 +544,7 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
   override func loadView() {
     let scrollView = UIScrollView()
     self.view = scrollView
-    self.view.backgroundColor = UIColor.white
+    self.view.backgroundColor = .systemBackground
 
     let contentView = UIView()
     contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -571,7 +571,7 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
       contentView.addSubview(view)
       view.translatesAutoresizingMaskIntoConstraints = false
       constrain(&cs, view, .leading, eq, container, .leading)
-      constrain(&cs, view, .width, leq, container, .width)
+      constrain(&cs, view, .trailing, eq, container, .trailing)
     }
     constrain(&cs, topToBottom: views, spacing: 20, within: container)
 
@@ -768,15 +768,17 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
     navigationVC.popoverPresentationController?.barButtonItem =
       self.navigationItem.rightBarButtonItem
     navigationVC.popoverPresentationController?.delegate = self
-    navigationVC.setNavigationBarHidden(true, animated: false)
-    self.present(navigationVC, animated: false, completion: nil)
+    navigationVC.preferredTransition = .zoom { ctx in
+      ctx.sourceViewController.navigationItem.rightBarButtonItem
+    }
+    self.present(navigationVC, animated: true, completion: nil)
   }
 
   func adaptivePresentationStyle(
     for controller: UIPresentationController,
     traitCollection: UITraitCollection
   ) -> UIModalPresentationStyle {
-    return .none
+    return .popover
   }
 
   private class SettingsViewController: StaticTableViewController {
@@ -801,6 +803,17 @@ class TextFramePerformanceVC: UIViewController, UIPopoverPresentationControllerD
           ])
           return SwitchCell(text, d.enabled)
         }
+    }
+
+    override func viewDidLoad() {
+      super.viewDidLoad()
+      title = "Settings"
+      navigationItem.leftBarButtonItem = UIBarButtonItem(
+        systemItem: .close,
+        primaryAction: UIAction { [weak self] _ in
+          self?.dismiss(animated: true)
+        }
+      )
     }
   }
 }

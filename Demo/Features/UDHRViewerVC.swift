@@ -97,19 +97,19 @@ private enum RandomTextRanges: Int {
 extension RandomTextRanges: UserDefaultsStorable {}
 
 private let colors: [(name: String, value: UIColor)] = [
-  ("Black", .black),
-  ("Dark gray", .darkGray),
-  ("Gray", .gray),
-  ("Light gray", .lightGray),
-  ("Red", .red),
-  ("Green", .green),
-  ("Blue", .blue),
-  ("Cyan", .cyan),
-  ("Yellow", .yellow),
-  ("Magenta", .magenta),
-  ("Orange", .orange),
-  ("Purple", .purple),
-  ("Brown", .brown),
+  ("Black", .label),
+  ("Dark gray", .secondaryLabel),
+  ("Gray", .tertiaryLabel),
+  ("Light gray", .quaternaryLabel),
+  ("Red", .systemRed),
+  ("Green", .systemGreen),
+  ("Blue", .systemBlue),
+  ("Cyan", .systemCyan),
+  ("Yellow", .systemYellow),
+  ("Magenta", .systemPink),
+  ("Orange", .systemOrange),
+  ("Purple", .systemPurple),
+  ("Brown", .systemBrown),
 ]
 
 private let truncationModes: [(String, STULastLineTruncationMode)] = [
@@ -278,7 +278,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private let backgroundOutset = setting("background.outset", 0 as CGFloat)
   private let backgroundCornerRadius = setting("background.cornerRadus", 0 as CGFloat)
   private let backgroundBorderWidth = setting("background.borderWidth", 0 as CGFloat)
-  private let backgroundBorderColor = setting("background.borderColor", UIColor.systemFill)
+  private let backgroundBorderColor = setting("background.borderColor", UIColor.secondaryLabel)
 
   private let underlineRanges = setting("underline.ranges", nil as RandomTextRanges?)
   private var underlineStyle: NSUnderlineStyle
@@ -534,7 +534,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
     self.navigationItem.title = "Human Rights"
     self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-      image: UIImage(named: "toggle-icon"),
+      image: UIImage(systemName: "gear"),
       style: .plain, target: self,
       action: #selector(showSettings))
 
@@ -556,6 +556,8 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   }
 
   override func viewDidLoad() {
+    super.viewDidLoad()
+
     view.backgroundColor = .systemBackground
     multiLabelScrollView.contentInsetAdjustmentBehavior = .never
     largeSTULabelScrollView.contentInsetAdjustmentBehavior = .never
@@ -977,6 +979,8 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   }
 
   override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+
     if _needsTextUpdate {
       updateText(removeSavedScrollStates: false)
     }
@@ -1091,6 +1095,8 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   }
 
   override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
     let scrollView = self.scrollViewForMode(mode)
     let topInset = view.safeAreaInsets.top
     let oldTopInset = scrollView.contentInset.top
@@ -1263,10 +1269,11 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
   private func showSettings() {
     isSettingsPopoverVisible = true
     let navigationVC = UINavigationController(rootViewController: SettingsViewController(self))
-    navigationVC.modalPresentationStyle = .pageSheet
-    navigationVC.preferredTransition = .zoom { [unowned self] _ in
-      self.navigationItem.rightBarButtonItem
-  }
+    navigationVC.modalPresentationStyle = .popover
+    navigationVC.popoverPresentationController?.sourceItem = navigationItem.rightBarButtonItem
+    navigationVC.preferredTransition = .zoom { ctx in
+      ctx.sourceViewController.navigationItem.rightBarButtonItem
+    }
     self.present(navigationVC, animated: true, completion: nil)
   }
 
@@ -1274,7 +1281,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     for controller: UIPresentationController,
     traitCollection: UITraitCollection
   ) -> UIModalPresentationStyle {
-    return .none
+    return .popover
   }
 
   private class SettingsViewController: UITableViewController {
@@ -2034,18 +2041,22 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
-      navigationItem.title = "Settings"
+      super.viewDidLoad()
+
+      title = "Settings"
       navigationItem.leftBarButtonItem = UIBarButtonItem(
-          systemItem: .close,
-          primaryAction: UIAction { [weak self] _ in
-              self?.dismiss(animated: true)
-          }
+        systemItem: .close,
+        primaryAction: UIAction { [weak self] _ in
+          self?.dismiss(animated: true)
+        }
       )
 
       self.tableView.alwaysBounceVertical = false
     }
 
     override func viewDidLayoutSubviews() {
+      super.viewDidLayoutSubviews()
+
       let contentSize = self.tableView.contentSize
       let preferredSize = self.parent?.preferredContentSize
       if contentSize != preferredSize {

@@ -485,6 +485,8 @@ class SelectCell<Value>: UITableViewCell {
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
+      super.viewDidLoad()
+
       self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
       self.tableView.alwaysBounceVertical = false
       DispatchQueue.main.async {
@@ -619,7 +621,7 @@ class SubtableCell: UITableViewCell {
     footerLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
     footerLabel.adjustsFontForContentSizeCategory = true
     footerLabel.numberOfLines = 0
-    footerLabel.textColor = .gray
+    footerLabel.textColor = .secondaryLabel
   }
   @available(*, unavailable)
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -652,6 +654,7 @@ class SubtableCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
+      super.viewDidLoad()
       self.tableView.alwaysBounceVertical = false
     }
 

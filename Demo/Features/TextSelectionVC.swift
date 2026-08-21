@@ -17,7 +17,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
     super.viewDidLoad()
 
     title = "Text selection"
-    view.backgroundColor = .white
+    view.backgroundColor = .systemBackground
     configureLabels()
     configureLayout()
     updateInteractionStatus()
@@ -25,7 +25,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
 
   private func configureLabels() {
     interactionStatusLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
-    interactionStatusLabel.textColor = .darkGray
+    interactionStatusLabel.textColor = .secondaryLabel
     interactionStatusLabel.numberOfLines = 0
     interactionStatusLabel.adjustsFontForContentSizeCategory = true
 
@@ -53,7 +53,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
     label.adjustsFontForContentSizeCategory = true
     label.maximumNumberOfLines = 0
     label.contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
-    label.backgroundColor = UIColor(white: 0.95, alpha: 1)
+    label.backgroundColor = .systemGroupedBackground
   }
 
   private func configureLayout() {
@@ -92,10 +92,10 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
       contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
       contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
-      stackView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-      stackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-      stackView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-      stackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
+      stackView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+      stackView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+      stackView.topAnchor.constraint(equalTo: contentView.readableContentGuide.topAnchor),
+      stackView.bottomAnchor.constraint(equalTo: contentView.readableContentGuide.bottomAnchor),
     ])
 
     contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
@@ -134,7 +134,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
   private func sectionCaption(_ text: String) -> UILabel {
     let label = UILabel()
     label.font = UIFont.preferredFont(forTextStyle: .footnote)
-    label.textColor = .darkGray
+    label.textColor = .secondaryLabel
     label.numberOfLines = 0
     label.adjustsFontForContentSizeCategory = true
     label.text = text

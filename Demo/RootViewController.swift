@@ -7,7 +7,7 @@ func debugBuildTitleLabel() -> UILabel? {
     let label = UILabel()
     label.textAlignment = .center
     label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-    label.textColor = UIColor.red
+    label.textColor = .systemRed
     label.text = "STULabel debug build"
     return label
   #else
@@ -18,7 +18,7 @@ func debugBuildTitleLabel() -> UILabel? {
 class RootViewController: UITableViewController, UINavigationControllerDelegate {
 
   init() {
-    super.init(style: .plain)
+    super.init(style: .insetGrouped)
     self.navigationItem.title = "STULabel"
     self.navigationItem.backBarButtonItem = UIBarButtonItem(
       title: "Back", style: .plain,
@@ -96,6 +96,7 @@ class RootViewController: UITableViewController, UINavigationControllerDelegate 
   {
     let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath)
     cell.textLabel!.text = sections[indexPath.section].items[indexPath.item].title
+    cell.accessoryType = .disclosureIndicator
     return cell
   }
 

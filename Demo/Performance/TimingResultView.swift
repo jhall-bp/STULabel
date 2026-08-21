@@ -177,6 +177,10 @@ class TimingResultView<SampleView: UIView>: UIView {
     button.titleLabel!.minimumScaleFactor = 0.25
     button.addTarget(self, action: #selector(buttonTouchUpInside), for: .touchUpInside)
     self.addSubview(button)
+    registerForTraitChanges(UITraitCollection.systemTraitsAffectingColorAppearance) {
+      (self: Self, _: UITraitCollection) in
+      self.button.layer.borderColor = self.tintColor.cgColor
+    }
 
     titleLabel.adjustsFontForContentSizeCategory = true
     button.titleLabel!.adjustsFontForContentSizeCategory = true
