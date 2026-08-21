@@ -1421,18 +1421,17 @@ static NSURL *__nullable urlLinkAttribute(STUTextLink *__unsafe_unretained link)
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   _touchCount += touches.count;
-  [super touchesBegan:touches withEvent:event];
   if (!_bits.isEnabled)
-    return;
+    return [super touchesBegan:touches withEvent:event];
   if (_ghostingMaskLayer)
-    return;
+    return [super touchesBegan:touches withEvent:event];
   if (_currentTouch)
-    return; // Could happen if self.isMultipleTouchEnabled.
+    return [super touchesBegan:touches withEvent:event]; // Could happen if self.isMultipleTouchEnabled.
   UITouch *const touch = touches.anyObject;
   const CGPoint point = [touch locationInView:self];
   STUTextLink *const link = [_layer.links linkClosestToPoint:point maxDistance:_linkTouchAreaExtensionRadius];
   if (!link)
-    return;
+    return [super touchesBegan:touches withEvent:event];
   STULabelOverlayStyle *const style = _bits.delegateRespondsToOverlayStyleForActiveLink
                                           ? [_delegate label:self
                                                 overlayStyleForActiveLink:link
@@ -1449,26 +1448,23 @@ static NSURL *__nullable urlLinkAttribute(STUTextLink *__unsafe_unretained link)
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [super touchesMoved:touches withEvent:event];
   if (!_currentTouch || ![touches containsObject:_currentTouch])
-    return;
+    return [super touchesMoved:touches withEvent:event];
   updateActiveLinkOverlayIsHidden(self);
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [super touchesCancelled:touches withEvent:event];
   const size_t touchesCount = touches.count;
   STU_DEBUG_ASSERT(touchesCount <= _touchCount);
   _touchCount -= touchesCount;
   if (!_currentTouch || ![touches containsObject:_currentTouch])
-    return;
+    return [super touchesCancelled:touches withEvent:event];
   clearCurrentLabelTouch(self);
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-  [super touchesEnded:touches withEvent:event];
   const size_t touchesCount = touches.count;
   STU_DEBUG_ASSERT(touchesCount <= _touchCount);
   _touchCount -= touchesCount;
@@ -1478,7 +1474,7 @@ static NSURL *__nullable urlLinkAttribute(STUTextLink *__unsafe_unretained link)
   const CGPoint point = [_currentTouch locationInView:self];
   clearCurrentLabelTouch(self);
   if (!link)
-    return;
+    return [super touchesEnded:touches withEvent:event];
   [self stu_link:link wasTappedAtPoint:point];
 }
 
