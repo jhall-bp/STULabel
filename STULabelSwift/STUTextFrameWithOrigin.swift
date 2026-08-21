@@ -18,23 +18,28 @@ public struct STUTextFrameWithOrigin {
   public var displayScale: CGFloat? { return displayScaleOrZero > 0 ? displayScaleOrZero : nil }
 
   @inlinable
-  public init(_ shapedString: STUShapedString, stringRange: NSRange? = nil,
-              rect: CGRect, displayScale: CGFloat?, options: STUTextFrameOptions? = nil)
-  {
-    self.textFrame = STUTextFrame(shapedString, stringRange: stringRange,
-                                  size: rect.size, displayScale: displayScale, options: options)
+  public init(
+    _ shapedString: STUShapedString, stringRange: NSRange? = nil,
+    rect: CGRect, displayScale: CGFloat?, options: STUTextFrameOptions? = nil
+  ) {
+    self.textFrame = STUTextFrame(
+      shapedString, stringRange: stringRange,
+      size: rect.size, displayScale: displayScale, options: options)
     self.origin = rect.origin
     self.displayScaleOrZero = textFrame.displayScaleOrZero
   }
 
   @inlinable
-  public init?(_ shapedString: STUShapedString, stringRange: NSRange? = nil,
-               rect: CGRect, displayScale: CGFloat?, options: STUTextFrameOptions? = nil,
-               cancellationFlag: UnsafePointer<STUCancellationFlag>)
-  {
-    guard let textFrame = STUTextFrame(shapedString, stringRange: stringRange,
-                                       size: rect.size, displayScale: displayScale,
-                                       options: options, cancellationFlag: cancellationFlag)
+  public init?(
+    _ shapedString: STUShapedString, stringRange: NSRange? = nil,
+    rect: CGRect, displayScale: CGFloat?, options: STUTextFrameOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>
+  ) {
+    guard
+      let textFrame = STUTextFrame(
+        shapedString, stringRange: stringRange,
+        size: rect.size, displayScale: displayScale,
+        options: options, cancellationFlag: cancellationFlag)
     else { return nil }
     self.textFrame = textFrame
     self.origin = rect.origin
@@ -116,12 +121,12 @@ public struct STUTextFrameWithOrigin {
     return textFrame.truncatedStringUTF16Length
   }
 
-  public func attributes(at index: STUTextFrame.Index)  -> [NSAttributedString.Key : Any]? {
+  public func attributes(at index: STUTextFrame.Index) -> [NSAttributedString.Key: Any]? {
     return textFrame.attributes(at: index)
   }
 
   public func attributes(atUTF16IndexInTruncatedString index: Int)
-    -> [NSAttributedString.Key : Any]?
+    -> [NSAttributedString.Key: Any]?
   {
     return textFrame.attributes(atUTF16IndexInTruncatedString: index)
   }
@@ -137,11 +142,13 @@ public struct STUTextFrameWithOrigin {
   @inlinable
   public var indices: Range<Index> { return startIndex..<endIndex }
 
-  public func index(forUTF16IndexInOriginalString indexInOriginalString: Int,
-                    indexInTruncationToken: Int) -> Index
-  {
-    return textFrame.index(forUTF16IndexInOriginalString: indexInOriginalString,
-                           indexInTruncationToken: indexInTruncationToken)
+  public func index(
+    forUTF16IndexInOriginalString indexInOriginalString: Int,
+    indexInTruncationToken: Int
+  ) -> Index {
+    return textFrame.index(
+      forUTF16IndexInOriginalString: indexInOriginalString,
+      indexInTruncationToken: indexInTruncationToken)
   }
 
   @inlinable
@@ -170,12 +177,14 @@ public struct STUTextFrameWithOrigin {
   public func rangeOfGraphemeCluster(closestTo point: CGPoint, ignoringTrailingWhitespace: Bool)
     -> GraphemeClusterRange
   {
-    precondition(ignoringTrailingWhitespace,
-                 "Currently only ignoringTrailingWhitespace == true is supported.")
-    return textFrame.rangeOfGraphemeCluster(closestTo: point,
-                                            ignoringTrailingWhitespace: ignoringTrailingWhitespace,
-                                            frameOrigin: origin,
-                                            displayScaleOrZero: displayScaleOrZero)
+    precondition(
+      ignoringTrailingWhitespace,
+      "Currently only ignoringTrailingWhitespace == true is supported.")
+    return textFrame.rangeOfGraphemeCluster(
+      closestTo: point,
+      ignoringTrailingWhitespace: ignoringTrailingWhitespace,
+      frameOrigin: origin,
+      displayScaleOrZero: displayScaleOrZero)
   }
 
   @inlinable
@@ -203,35 +212,41 @@ public struct STUTextFrameWithOrigin {
   public typealias DrawingOptions = STUTextFrame.DrawingOptions
 
   @inlinable
-  public func draw(range: Range<Index>? = nil,
-                   options: DrawingOptions? = nil,
-                   cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
-  {
+  public func draw(
+    range: Range<Index>? = nil,
+    options: DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  ) {
     textFrame.draw(range: range, at: origin, options: options, cancellationFlag: cancellationFlag)
   }
 
   @inlinable
-  public func draw(range: Range<Index>? = nil,
-                   in context: CGContext,
-                   contextBaseCTM_d: CGFloat,
-                   pixelAlignBaselines: Bool,
-                   options: DrawingOptions? = nil,
-                   cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
-  {
-    textFrame.draw(range: range, at: origin, in: context, contextBaseCTM_d: contextBaseCTM_d,
-                   pixelAlignBaselines: pixelAlignBaselines, options: options,
-                   cancellationFlag: cancellationFlag)
+  public func draw(
+    range: Range<Index>? = nil,
+    in context: CGContext,
+    contextBaseCTM_d: CGFloat,
+    pixelAlignBaselines: Bool,
+    options: DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  ) {
+    textFrame.draw(
+      range: range, at: origin, in: context, contextBaseCTM_d: contextBaseCTM_d,
+      pixelAlignBaselines: pixelAlignBaselines, options: options,
+      cancellationFlag: cancellationFlag)
   }
 
   @inlinable
-  public func imageBounds(for range: Range<Index>? = nil,
-                          options: DrawingOptions? = nil,
-                          cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
+  public func imageBounds(
+    for range: Range<Index>? = nil,
+    options: DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  )
     -> CGRect
   {
-    return textFrame.imageBounds(for: range, frameOrigin: origin,
-                                 displayScaleOrZero: displayScaleOrZero,
-                                 options: options, cancellationFlag: cancellationFlag)
+    return textFrame.imageBounds(
+      for: range, frameOrigin: origin,
+      displayScaleOrZero: displayScaleOrZero,
+      options: options, cancellationFlag: cancellationFlag)
   }
 
   @inlinable
@@ -274,7 +289,7 @@ public struct STUTextFrameWithOrigin {
     return textFrame.lastBaseline(frameOriginY: origin.y, displayScaleOrZero: displayScaleOrZero)
   }
 
-   /// The value that the line layout algorithm would calculate for the distance between the first
+  /// The value that the line layout algorithm would calculate for the distance between the first
   /// baseline and the baseline of the (hypothetical) next line if the next line had the
   /// same typographic metrics and were in the same paragraph.
   @inlinable
@@ -317,8 +332,9 @@ public struct STUTextFrameWithOrigin {
 
   @inlinable
   public func rectsForAllLinksInTruncatedString() -> STUTextLinkArray {
-    return textFrame.rectsForAllLinksInTruncatedString(frameOrigin: origin,
-                                                       displayScaleOrZero: displayScaleOrZero)
+    return textFrame.rectsForAllLinksInTruncatedString(
+      frameOrigin: origin,
+      displayScaleOrZero: displayScaleOrZero)
   }
 
   @inlinable
@@ -331,7 +347,7 @@ public struct STUTextFrameWithOrigin {
     return Lines(textFrame, textFrameOrigin: origin, displayScaleOrZero: displayScaleOrZero)
   }
 
-  public struct Paragraphs : @MainActor RandomAccessCollection {
+  public struct Paragraphs: @MainActor RandomAccessCollection {
     public let paragraphs: STUTextFrame.Paragraphs
     public let textFrameOrigin: CGPoint
     @usableFromInline internal let displayScaleOrZero: CGFloat
@@ -340,18 +356,20 @@ public struct STUTextFrameWithOrigin {
     public var displayScale: CGFloat? { return displayScaleOrZero > 0 ? displayScaleOrZero : nil }
 
     @inlinable
-    internal init(_ paragraphs: STUTextFrame, textFrameOrigin: CGPoint,
-                  displayScaleOrZero: CGFloat)
-    {
+    internal init(
+      _ paragraphs: STUTextFrame, textFrameOrigin: CGPoint,
+      displayScaleOrZero: CGFloat
+    ) {
       self.paragraphs = STUTextFrame.Paragraphs(paragraphs)
       self.textFrameOrigin = textFrameOrigin
       self.displayScaleOrZero = displayScaleOrZero
     }
 
     @inlinable
-    public var textFrame: STUTextFrameWithOrigin  {
-      return STUTextFrameWithOrigin(paragraphs.textFrame, textFrameOrigin,
-                                    displayScaleOrZero: displayScaleOrZero)
+    public var textFrame: STUTextFrameWithOrigin {
+      return STUTextFrameWithOrigin(
+        paragraphs.textFrame, textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     @inlinable
@@ -367,12 +385,13 @@ public struct STUTextFrameWithOrigin {
 
     @inlinable
     public subscript(index: Index) -> Paragraph {
-      return Paragraph(paragraphs[index], textFrameOrigin: textFrameOrigin,
-                       displayScaleOrZero: displayScaleOrZero)
+      return Paragraph(
+        paragraphs[index], textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
   }
 
-  public struct Lines : @MainActor RandomAccessCollection {
+  public struct Lines: @MainActor RandomAccessCollection {
     public let lines: STUTextFrame.Lines
     public let textFrameOrigin: CGPoint
     @usableFromInline internal let displayScaleOrZero: CGFloat
@@ -381,16 +400,18 @@ public struct STUTextFrameWithOrigin {
     public var displayScale: CGFloat? { return displayScaleOrZero > 0 ? displayScaleOrZero : nil }
 
     @inlinable
-    internal init(_ textFrame: STUTextFrame, textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat) {
+    internal init(_ textFrame: STUTextFrame, textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat)
+    {
       self.lines = STUTextFrame.Lines(textFrame)
       self.textFrameOrigin = textFrameOrigin
       self.displayScaleOrZero = displayScaleOrZero
     }
 
     @inlinable
-    public var textFrame: STUTextFrameWithOrigin  {
-      return STUTextFrameWithOrigin(lines.textFrame, textFrameOrigin,
-                                    displayScaleOrZero: displayScaleOrZero)
+    public var textFrame: STUTextFrameWithOrigin {
+      return STUTextFrameWithOrigin(
+        lines.textFrame, textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     @inlinable
@@ -406,8 +427,9 @@ public struct STUTextFrameWithOrigin {
 
     @inlinable
     public subscript(index: Index) -> Line {
-      return Line(lines[index], textFrameOrigin: textFrameOrigin,
-                  displayScaleOrZero: displayScaleOrZero)
+      return Line(
+        lines[index], textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
   }
 
@@ -420,9 +442,10 @@ public struct STUTextFrameWithOrigin {
     public var displayScale: CGFloat? { return displayScaleOrZero > 0 ? displayScaleOrZero : nil }
 
     @inlinable
-    public init(_ paragraph: STUTextFrame.Paragraph, textFrameOrigin: CGPoint,
-                displayScale: CGFloat?)
-    {
+    public init(
+      _ paragraph: STUTextFrame.Paragraph, textFrameOrigin: CGPoint,
+      displayScale: CGFloat?
+    ) {
       self.paragraph = paragraph
       self.textFrameOrigin = textFrameOrigin
       if let displayScale = displayScale, displayScale > 0 {
@@ -433,18 +456,20 @@ public struct STUTextFrameWithOrigin {
     }
 
     @inlinable
-    internal init(_ paragraph: STUTextFrame.Paragraph, textFrameOrigin: CGPoint,
-                  displayScaleOrZero: CGFloat)
-    {
+    internal init(
+      _ paragraph: STUTextFrame.Paragraph, textFrameOrigin: CGPoint,
+      displayScaleOrZero: CGFloat
+    ) {
       self.paragraph = paragraph
       self.textFrameOrigin = textFrameOrigin
       self.displayScaleOrZero = displayScaleOrZero
     }
 
     @inlinable
-    public var textFrame: STUTextFrameWithOrigin  {
-      return STUTextFrameWithOrigin(paragraph.textFrame, textFrameOrigin,
-                                    displayScaleOrZero: displayScaleOrZero)
+    public var textFrame: STUTextFrameWithOrigin {
+      return STUTextFrameWithOrigin(
+        paragraph.textFrame, textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     /// The 0-based index of the paragraph in the text frame.
@@ -484,7 +509,7 @@ public struct STUTextFrameWithOrigin {
     /// The UTF-16 code unit length of the paragraph terminator (`"\r"`, `"\n"`, `"\r\n"` or
     /// `"\u{2029}"`). The value is between 0 and 2 (inclusive).
     @inlinable
-    public var paragraphTerminatorInOriginalStringUTF16Length: Int  {
+    public var paragraphTerminatorInOriginalStringUTF16Length: Int {
       return paragraph.paragraphTerminatorInOriginalStringUTF16Length
     }
 
@@ -595,7 +620,6 @@ public struct STUTextFrameWithOrigin {
     @inlinable
     public var displayScale: CGFloat? { return displayScaleOrZero > 0 ? displayScaleOrZero : nil }
 
-
     public init(_ line: STUTextFrame.Line, textFrameOrigin: CGPoint, displayScale: CGFloat?) {
       self.line = line
       self.textFrameOrigin = textFrameOrigin
@@ -607,16 +631,18 @@ public struct STUTextFrameWithOrigin {
     }
 
     @inlinable
-    internal init(_ line: STUTextFrame.Line, textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat) {
+    internal init(_ line: STUTextFrame.Line, textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat)
+    {
       self.line = line
       self.textFrameOrigin = textFrameOrigin
       self.displayScaleOrZero = displayScaleOrZero
     }
 
     @inlinable
-    public var textFrame: STUTextFrameWithOrigin  {
-      return STUTextFrameWithOrigin(line.textFrame, textFrameOrigin,
-                                    displayScaleOrZero: displayScaleOrZero)
+    public var textFrame: STUTextFrameWithOrigin {
+      return STUTextFrameWithOrigin(
+        line.textFrame, textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     /// The 0-based index of the line in the text frame.
@@ -640,15 +666,15 @@ public struct STUTextFrameWithOrigin {
     @inlinable
     public var isInitialLineInParagrah: Bool { return line.isInitialLineInParagraph }
 
-
     /// The 0-based index of the line's paragraph in the text frame.
     @inlinable
     public var paragraphIndex: Int { return line.paragraphIndex }
 
     @inlinable
     public var paragraph: Paragraph {
-      return Paragraph(line.paragraph, textFrameOrigin: textFrameOrigin,
-                       displayScaleOrZero: displayScaleOrZero)
+      return Paragraph(
+        line.paragraph, textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     @inlinable
@@ -661,7 +687,6 @@ public struct STUTextFrameWithOrigin {
     public var trailingWhitespaceInTruncatedStringUTF16Length: Int {
       return line.trailingWhitespaceInTruncatedStringUTF16Length
     }
-
 
     @inlinable
     public var rangeInOriginalString: NSRange { return line.rangeInOriginalString }
@@ -676,8 +701,9 @@ public struct STUTextFrameWithOrigin {
 
     @inlinable
     public var baselineOrigin: CGPoint {
-      return line.baselineOrigin(textFrameOrigin: textFrameOrigin,
-                                 displayScaleOrZero: displayScaleOrZero)
+      return line.baselineOrigin(
+        textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     @inlinable
@@ -697,8 +723,9 @@ public struct STUTextFrameWithOrigin {
 
     @inlinable
     public var typographicBounds: CGRect {
-      return line.typographicBounds(textFrameOrigin: textFrameOrigin,
-                                    displayScaleOrZero: displayScaleOrZero)
+      return line.typographicBounds(
+        textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScaleOrZero)
     }
 
     /// Indicates whether the line contains a truncation token.
@@ -717,14 +744,13 @@ public struct STUTextFrameWithOrigin {
     @inlinable
     public var hasInsertedHyphen: Bool { return line.hasInsertedHyphen }
 
-
     @inlinable
     public var paragraphBaseWritingDirection: STUWritingDirection {
       return line.paragraphBaseWritingDirection
     }
 
     @inlinable
-    public var textFlags: STUTextFlags  { return line.textFlags }
+    public var textFlags: STUTextFlags { return line.textFlags }
 
     @inlinable
     public var nonTokenTextFlags: STUTextFlags { return line.nonTokenTextFlags }

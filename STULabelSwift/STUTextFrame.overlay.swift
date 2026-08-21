@@ -2,30 +2,33 @@
 
 @_exported import STULabel
 @_exported import STULabel.SwiftExtensions
-
 import STULabel.Unsafe
 
 extension STUTextFrame {
 
   @inlinable
-  public convenience init(_ shapedString: STUShapedString, stringRange: NSRange? = nil,
-                          size: CGSize, displayScale: CGFloat?,
-                          options: STUTextFrameOptions? = nil)
-  {
-    self.init(shapedString, stringRange: stringRange ?? NSRange(0..<shapedString.length),
-              size: size, displayScaleOrZero: displayScale ?? 0, options: options,
-              cancellationFlag: nil)!
+  public convenience init(
+    _ shapedString: STUShapedString, stringRange: NSRange? = nil,
+    size: CGSize, displayScale: CGFloat?,
+    options: STUTextFrameOptions? = nil
+  ) {
+    self.init(
+      shapedString, stringRange: stringRange ?? NSRange(0..<shapedString.length),
+      size: size, displayScaleOrZero: displayScale ?? 0, options: options,
+      cancellationFlag: nil)!
   }
 
   @inlinable
-  public convenience init?(_ shapedString: STUShapedString, stringRange: NSRange? = nil,
-                           size: CGSize, displayScale: CGFloat?,
-                           options: STUTextFrameOptions? = nil,
-                           cancellationFlag: UnsafePointer<STUCancellationFlag>)
-  {
-    self.init(shapedString, stringRange: stringRange ?? NSRange(0..<shapedString.length),
-              size: size, displayScaleOrZero: displayScale ?? 0, options: options,
-              cancellationFlag: cancellationFlag)
+  public convenience init?(
+    _ shapedString: STUShapedString, stringRange: NSRange? = nil,
+    size: CGSize, displayScale: CGFloat?,
+    options: STUTextFrameOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>
+  ) {
+    self.init(
+      shapedString, stringRange: stringRange ?? NSRange(0..<shapedString.length),
+      size: size, displayScaleOrZero: displayScale ?? 0, options: options,
+      cancellationFlag: cancellationFlag)
   }
 
   /// The size that was specified when the `STUTextFrame` instance was initialized. This size can
@@ -73,43 +76,52 @@ extension STUTextFrame {
   @inlinable
   public func range(for textRange: STUTextRange) -> Range<Index> {
     return textRange.type == .rangeInOriginalString
-         ? range(forRangeInOriginalString: textRange.range)
-         : range(forRangeInTruncatedString: textRange.range)
+      ? range(forRangeInOriginalString: textRange.range)
+      : range(forRangeInTruncatedString: textRange.range)
   }
 
   @inlinable
-  public func rangeOfGraphemeCluster(closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
-                                     frameOrigin: CGPoint, displayScale: CGFloat?)
+  public func rangeOfGraphemeCluster(
+    closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
+    frameOrigin: CGPoint, displayScale: CGFloat?
+  )
     -> GraphemeClusterRange
   {
-    return rangeOfGraphemeCluster(closestTo: point,
-                                  ignoringTrailingWhitespace: ignoringTrailingWhitespace,
-                                  frameOrigin: frameOrigin,
-                                  displayScaleOrZero: displayScale ?? 0)
+    return rangeOfGraphemeCluster(
+      closestTo: point,
+      ignoringTrailingWhitespace: ignoringTrailingWhitespace,
+      frameOrigin: frameOrigin,
+      displayScaleOrZero: displayScale ?? 0)
   }
 
   /// Equivalent to the other `rangeOfGraphemeCluster` overload
   /// with `self.displayScale` as the `displayScale` argument.
   @inlinable
-  public func rangeOfGraphemeCluster(closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
-                                     frameOrigin: CGPoint)
+  public func rangeOfGraphemeCluster(
+    closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
+    frameOrigin: CGPoint
+  )
     -> GraphemeClusterRange
   {
-    return rangeOfGraphemeCluster(closestTo: point,
-                                  ignoringTrailingWhitespace: ignoringTrailingWhitespace,
-                                  frameOrigin: frameOrigin,
-                                  displayScaleOrZero: displayScaleOrZero)
+    return rangeOfGraphemeCluster(
+      closestTo: point,
+      ignoringTrailingWhitespace: ignoringTrailingWhitespace,
+      frameOrigin: frameOrigin,
+      displayScaleOrZero: displayScaleOrZero)
   }
 
   @inlinable
-  internal func rangeOfGraphemeCluster(closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
-                                       frameOrigin: CGPoint, displayScaleOrZero: CGFloat)
+  internal func rangeOfGraphemeCluster(
+    closestTo point: CGPoint, ignoringTrailingWhitespace: Bool,
+    frameOrigin: CGPoint, displayScaleOrZero: CGFloat
+  )
     -> GraphemeClusterRange
   {
-    return __rangeOfGraphemeCluster(closestTo: point,
-                                    ignoringTrailingWhitespace: ignoringTrailingWhitespace,
-                                    frameOrigin: frameOrigin,
-                                    displayScale: displayScaleOrZero)
+    return __rangeOfGraphemeCluster(
+      closestTo: point,
+      ignoringTrailingWhitespace: ignoringTrailingWhitespace,
+      frameOrigin: frameOrigin,
+      displayScale: displayScaleOrZero)
   }
 
   @inlinable
@@ -129,8 +141,9 @@ extension STUTextFrame {
     var range = NSRange()
     var token: NSAttributedString?
     var indexInToken: UInt = 0
-    __getRangeInOriginalString(&range, truncationToken: &token, indexInToken: &indexInToken,
-                               for: index)
+    __getRangeInOriginalString(
+      &range, truncationToken: &token, indexInToken: &indexInToken,
+      for: index)
     if let token = token {
       return (range, (token, Int(bitPattern: indexInToken)))
     } else {
@@ -140,7 +153,7 @@ extension STUTextFrame {
 
   @inlinable
   public var rangeOfLastTruncationToken: Range<Index> {
-    return Range<Index>(__rangeOfLastTruncationToken);
+    return Range<Index>(__rangeOfLastTruncationToken)
   }
 
   @inlinable
@@ -149,68 +162,80 @@ extension STUTextFrame {
   }
 
   @inlinable
-  public func draw(range: Range<Index>? = nil,
-                   at frameOrigin: CGPoint = .zero,
-                   options: DrawingOptions? = nil,
-                   cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
-  {
-    __draw(range: __STUTextFrameRange(range ?? self.indices),
-           at: frameOrigin, in: UIGraphicsGetCurrentContext(), contextBaseCTM_d: 0,
-           pixelAlignBaselines: true, options: options, cancellationFlag: cancellationFlag)
+  public func draw(
+    range: Range<Index>? = nil,
+    at frameOrigin: CGPoint = .zero,
+    options: DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  ) {
+    __draw(
+      range: __STUTextFrameRange(range ?? self.indices),
+      at: frameOrigin, in: UIGraphicsGetCurrentContext(), contextBaseCTM_d: 0,
+      pixelAlignBaselines: true, options: options, cancellationFlag: cancellationFlag)
   }
 
   @inlinable
-  public func draw(range: Range<Index>? = nil,
-                   at frameOrigin: CGPoint = .zero,
-                   in context: CGContext,
-                   contextBaseCTM_d: CGFloat,
-                   pixelAlignBaselines: Bool,
-                   options: DrawingOptions? = nil,
-                   cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
-  {
-    __draw(range: __STUTextFrameRange(range ?? self.indices),
-           at: frameOrigin, in: context, contextBaseCTM_d: contextBaseCTM_d,
-           pixelAlignBaselines: pixelAlignBaselines, options: options,
-           cancellationFlag: cancellationFlag)
+  public func draw(
+    range: Range<Index>? = nil,
+    at frameOrigin: CGPoint = .zero,
+    in context: CGContext,
+    contextBaseCTM_d: CGFloat,
+    pixelAlignBaselines: Bool,
+    options: DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  ) {
+    __draw(
+      range: __STUTextFrameRange(range ?? self.indices),
+      at: frameOrigin, in: context, contextBaseCTM_d: contextBaseCTM_d,
+      pixelAlignBaselines: pixelAlignBaselines, options: options,
+      cancellationFlag: cancellationFlag)
   }
 
   @inlinable
-  public func imageBounds(for range: Range<Index>? = nil,
-                          frameOrigin: CGPoint,
-                          displayScale: CGFloat?,
-                          options: STUTextFrame.DrawingOptions? = nil,
-                          cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
+  public func imageBounds(
+    for range: Range<Index>? = nil,
+    frameOrigin: CGPoint,
+    displayScale: CGFloat?,
+    options: STUTextFrame.DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  )
     -> CGRect
   {
-    return  imageBounds(for: range, frameOrigin: frameOrigin, displayScaleOrZero: displayScale ?? 0,
-                        options: options, cancellationFlag: cancellationFlag)
+    return imageBounds(
+      for: range, frameOrigin: frameOrigin, displayScaleOrZero: displayScale ?? 0,
+      options: options, cancellationFlag: cancellationFlag)
   }
 
   /// Equivalent to the other `imageBounds` overload
   /// with `self.displayScale` as the `displayScale` argument.
   @inlinable
-  public func imageBounds(for range: Range<Index>? = nil,
-                          frameOrigin: CGPoint,
-                          options: STUTextFrame.DrawingOptions? = nil,
-                          cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
+  public func imageBounds(
+    for range: Range<Index>? = nil,
+    frameOrigin: CGPoint,
+    options: STUTextFrame.DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  )
     -> CGRect
   {
-   return  imageBounds(for: range, frameOrigin: frameOrigin, displayScaleOrZero: displayScaleOrZero,
-                       options: options, cancellationFlag: cancellationFlag)
+    return imageBounds(
+      for: range, frameOrigin: frameOrigin, displayScaleOrZero: displayScaleOrZero,
+      options: options, cancellationFlag: cancellationFlag)
   }
 
   @inlinable
-  internal func imageBounds(for range: Range<Index>? = nil,
-                            frameOrigin: CGPoint,
-                            displayScaleOrZero: CGFloat,
-                            options: STUTextFrame.DrawingOptions? = nil,
-                            cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil)
+  internal func imageBounds(
+    for range: Range<Index>? = nil,
+    frameOrigin: CGPoint,
+    displayScaleOrZero: CGFloat,
+    options: STUTextFrame.DrawingOptions? = nil,
+    cancellationFlag: UnsafePointer<STUCancellationFlag>? = nil
+  )
     -> CGRect
   {
-    return  __imageBounds(__STUTextFrameRange(range ?? self.indices), frameOrigin: frameOrigin,
-                          displayScale: displayScaleOrZero, options, cancellationFlag)
+    return __imageBounds(
+      __STUTextFrameRange(range ?? self.indices), frameOrigin: frameOrigin,
+      displayScale: displayScaleOrZero, options, cancellationFlag)
   }
-
 
   /// - Note: In the returned layout info only `minX`, `maxX`, `firstBaseline` and
   ///         `lastBaseline` depend on the specified `frameOrigin`.
@@ -288,7 +313,7 @@ extension STUTextFrame {
     var firstBaseline = withExtendedLifetime(self) { data.pointee.firstBaseline }
     var lastBaseline = withExtendedLifetime(self) { data.pointee.lastBaseline }
     firstBaseline += Float64(frameOrigin.y)
-    lastBaseline  += Float64(frameOrigin.y)
+    lastBaseline += Float64(frameOrigin.y)
     if displayScaleOrZero > 0
       && (displayScaleOrZero != self.displayScaleOrZero || frameOrigin.y != 0)
     {
@@ -296,10 +321,12 @@ extension STUTextFrame {
       firstBaseline = ceilToScale(firstBaseline, scale)
       lastBaseline = ceilToScale(lastBaseline, scale)
     }
-    let minY = firstBaseline
-             - withExtendedLifetime(self) { Float64(data.pointee.firstLineHeightAboveBaseline) }
-    let maxY = lastBaseline
-             + withExtendedLifetime(self) { Float64(data.pointee.lastLineHeightBelowBaseline) }
+    let minY =
+      firstBaseline
+      - withExtendedLifetime(self) { Float64(data.pointee.firstLineHeightAboveBaseline) }
+    let maxY =
+      lastBaseline
+      + withExtendedLifetime(self) { Float64(data.pointee.lastLineHeightBelowBaseline) }
     var minX = withExtendedLifetime(self) { data.pointee.minX }
     var maxX = withExtendedLifetime(self) { data.pointee.maxX }
     minX += Float64(frameOrigin.x)
@@ -326,10 +353,11 @@ extension STUTextFrame {
 
   @inlinable
   internal func firstBaseline(frameOriginY: CGFloat, displayScaleOrZero: CGFloat) -> CGFloat {
-    let value = frameOriginY
-              + withExtendedLifetime(self) { CGFloat(self.__data.pointee.firstBaseline) }
+    let value =
+      frameOriginY
+      + withExtendedLifetime(self) { CGFloat(self.__data.pointee.firstBaseline) }
     if displayScaleOrZero > 0
-       && (displayScaleOrZero != self.displayScaleOrZero || frameOriginY != 0)
+      && (displayScaleOrZero != self.displayScaleOrZero || frameOriginY != 0)
     {
       return ceilToScale(value, displayScaleOrZero)
     }
@@ -355,10 +383,11 @@ extension STUTextFrame {
 
   @inlinable
   internal func lastBaseline(frameOriginY: CGFloat, displayScaleOrZero: CGFloat) -> CGFloat {
-    let value = frameOriginY
-              + withExtendedLifetime(self) { CGFloat(self.__data.pointee.lastBaseline) }
+    let value =
+      frameOriginY
+      + withExtendedLifetime(self) { CGFloat(self.__data.pointee.lastBaseline) }
     if displayScaleOrZero > 0
-       && (displayScaleOrZero != self.displayScaleOrZero || frameOriginY != 0)
+      && (displayScaleOrZero != self.displayScaleOrZero || frameOriginY != 0)
     {
       return ceilToScale(value, displayScaleOrZero)
     }
@@ -399,8 +428,8 @@ extension STUTextFrame {
   @inlinable
   public var lastLineHeightBelowBaselineWithoutSpacing: CGFloat {
     return withExtendedLifetime(self) {
-              CGFloat(self.__data.pointee.lastLineHeightBelowBaselineWithoutSpacing)
-           }
+      CGFloat(self.__data.pointee.lastLineHeightBelowBaselineWithoutSpacing)
+    }
   }
 
   /// The part of the last line's layout height that lies below the baseline, with only a minimal
@@ -409,8 +438,8 @@ extension STUTextFrame {
   @inlinable
   public var lastLineHeightBelowBaselineWithMinimalSpacing: CGFloat {
     return withExtendedLifetime(self) {
-              CGFloat(self.__data.pointee.lastLineHeightBelowBaselineWithMinimalSpacing)
-           }
+      CGFloat(self.__data.pointee.lastLineHeightBelowBaselineWithMinimalSpacing)
+    }
   }
 
   @inlinable
@@ -431,32 +460,36 @@ extension STUTextFrame {
   internal func rects(for range: Range<Index>, frameOrigin: CGPoint, displayScaleOrZero: CGFloat)
     -> STUTextRectArray
   {
-    return __rects(__STUTextFrameRange(range), frameOrigin: frameOrigin,
-                   displayScale: displayScaleOrZero)
+    return __rects(
+      __STUTextFrameRange(range), frameOrigin: frameOrigin,
+      displayScale: displayScaleOrZero)
   }
 
   @inlinable
   public func rectsForAllLinksInTruncatedString(frameOrigin: CGPoint, displayScale: CGFloat?)
     -> STUTextLinkArray
   {
-    return rectsForAllLinksInTruncatedString(frameOrigin: frameOrigin,
-                                             displayScaleOrZero: displayScale ?? 0)
+    return rectsForAllLinksInTruncatedString(
+      frameOrigin: frameOrigin,
+      displayScaleOrZero: displayScale ?? 0)
   }
 
   /// Equivalent to the other `rectsForAllLinksInTruncatedString` overload
   /// with `self.displayScale` as the `displayScale` argument.
   @inlinable
   public func rectsForAllLinksInTruncatedString(frameOrigin: CGPoint) -> STUTextLinkArray {
-    return rectsForAllLinksInTruncatedString(frameOrigin: frameOrigin,
-                                             displayScaleOrZero: displayScaleOrZero)
+    return rectsForAllLinksInTruncatedString(
+      frameOrigin: frameOrigin,
+      displayScaleOrZero: displayScaleOrZero)
   }
 
   @inlinable
   internal func rectsForAllLinksInTruncatedString(frameOrigin: CGPoint, displayScaleOrZero: CGFloat)
     -> STUTextLinkArray
   {
-    return __rectsForAllLinksInTruncatedString(frameOrigin: frameOrigin,
-                                               displayScale: displayScale ?? 0)
+    return __rectsForAllLinksInTruncatedString(
+      frameOrigin: frameOrigin,
+      displayScale: displayScale ?? 0)
   }
 
   @inlinable
@@ -465,7 +498,7 @@ extension STUTextFrame {
   @inlinable
   public var lines: Lines { return Lines(self) }
 
-  public struct Paragraphs : @MainActor RandomAccessCollection {
+  public struct Paragraphs: @MainActor RandomAccessCollection {
     @usableFromInline internal let textFrame: STUTextFrame
     @usableFromInline internal let textFrameParagraphs: UnsafePointer<__STUTextFrameParagraph>
     public let count: Int
@@ -497,7 +530,7 @@ extension STUTextFrame {
     }
   }
 
-  public struct Lines : @MainActor RandomAccessCollection {
+  public struct Lines: @MainActor RandomAccessCollection {
     @usableFromInline internal let textFrame: STUTextFrame
     @usableFromInline internal let textFrameLines: UnsafePointer<__STUTextFrameLine>
     public let count: Int
@@ -508,10 +541,12 @@ extension STUTextFrame {
       let (lines, count, textScaleFactor): (UnsafePointer<__STUTextFrameLine>, Int, CGFloat) =
         withExtendedLifetime(textFrame) {
           let data = textFrame.__data
-          return (__STUTextFrameDataGetLines(data),
-                  Int(data.pointee.lineCount),
-                  data.pointee.textScaleFactor)
-      }
+          return (
+            __STUTextFrameDataGetLines(data),
+            Int(data.pointee.lineCount),
+            data.pointee.textScaleFactor
+          )
+        }
       self.textFrame = textFrame
       self.textFrameLines = lines
       self.count = count
@@ -541,9 +576,10 @@ extension STUTextFrame {
     @usableFromInline internal let paragraph: UnsafePointer<__STUTextFrameParagraph>
 
     @inlinable
-    internal init(_ textFrame: STUTextFrame,
-                  _ para: UnsafePointer<__STUTextFrameParagraph>)
-    {
+    internal init(
+      _ textFrame: STUTextFrame,
+      _ para: UnsafePointer<__STUTextFrameParagraph>
+    ) {
       self.textFrame = textFrame
       self.paragraph = para
     }
@@ -589,11 +625,15 @@ extension STUTextFrame {
     public var range: Range<STUTextFrame.Index> {
       let rangeInTruncatedString = self.rangeInTruncatedString
       let lineIndexRange = self.lineIndexRange
-      return Range(uncheckedBounds:
-                     (Index(utf16IndexInTruncatedString: rangeInTruncatedString.lowerBound,
-                            lineIndex: lineIndexRange.lowerBound),
-                      Index(utf16IndexInTruncatedString: rangeInTruncatedString.upperBound,
-                            lineIndex: lineIndexRange.upperBound)))
+      return Range(
+        uncheckedBounds: (
+          Index(
+            utf16IndexInTruncatedString: rangeInTruncatedString.lowerBound,
+            lineIndex: lineIndexRange.lowerBound),
+          Index(
+            utf16IndexInTruncatedString: rangeInTruncatedString.upperBound,
+            lineIndex: lineIndexRange.upperBound)
+        ))
     }
 
     /// The range in `self.textFrame.truncatedAttributedString` corresponding to the paragraphs's
@@ -615,10 +655,10 @@ extension STUTextFrame {
     /// The UTF-16 code unit length of the paragraph terminator (`"\r"`, `"\n"`, `"\r\n"` or
     /// `"\u{2029}"`). The value is between 0 and 2 (inclusive).
     // @inlinable // swift inlining bug
-    public var paragraphTerminatorInOriginalStringUTF16Length: Int  {
+    public var paragraphTerminatorInOriginalStringUTF16Length: Int {
       return withExtendedLifetime(textFrame) {
-               return Int(paragraph.pointee.paragraphTerminatorInOriginalStringUTF16Length)
-             }
+        return Int(paragraph.pointee.paragraphTerminatorInOriginalStringUTF16Length)
+      }
     }
 
     /// The subrange of `self.rangeInOriginalString` that was replaced by a truncation token,
@@ -663,8 +703,8 @@ extension STUTextFrame {
     @inlinable
     public var truncationToken: NSAttributedString? {
       return withExtendedLifetime(textFrame) {
-               paragraph.pointee.truncationToken?.takeUnretainedValue()
-             }
+        paragraph.pointee.truncationToken?.takeUnretainedValue()
+      }
     }
 
     @inlinable
@@ -679,9 +719,11 @@ extension STUTextFrame {
       let range = self.rangeOfTruncationTokenInTruncatedString
       let lineIndexRange = self.lineIndexRange
       let lineIndex = max(lineIndexRange.lowerBound, lineIndexRange.upperBound &- 1)
-      return Range(uncheckedBounds:
-                     (Index(utf16IndexInTruncatedString: range.lowerBound, lineIndex: lineIndex),
-                      Index(utf16IndexInTruncatedString: range.upperBound, lineIndex: lineIndex)))
+      return Range(
+        uncheckedBounds: (
+          Index(utf16IndexInTruncatedString: range.lowerBound, lineIndex: lineIndex),
+          Index(utf16IndexInTruncatedString: range.upperBound, lineIndex: lineIndex)
+        ))
     }
 
     /// The range of the truncation token in the text frame's truncated string,
@@ -690,15 +732,15 @@ extension STUTextFrame {
     @inlinable
     public var rangeOfTruncationTokenInTruncatedString: NSRange {
       return withExtendedLifetime(textFrame) {
-               let start = __STUTextFrameParagraphGetStartIndexOfTruncationTokenInTruncatedString(
-                               paragraph)
-               let length = paragraph.pointee.truncationTokenUTF16Length
-               return NSRange(location: Int(start), length: Int(length))
-            }
+        let start = __STUTextFrameParagraphGetStartIndexOfTruncationTokenInTruncatedString(
+          paragraph)
+        let length = paragraph.pointee.truncationTokenUTF16Length
+        return NSRange(location: Int(start), length: Int(length))
+      }
     }
 
     @inlinable
-    public var alignment: STUParagraphAlignment  {
+    public var alignment: STUParagraphAlignment {
       return withExtendedLifetime(textFrame) { paragraph.pointee.alignment }
     }
 
@@ -708,7 +750,7 @@ extension STUTextFrame {
     }
 
     @inlinable
-    public var textFlags: STUTextFlags  {
+    public var textFlags: STUTextFlags {
       return withExtendedLifetime(textFrame) { paragraph.pointee.textFlags }
     }
 
@@ -745,7 +787,6 @@ extension STUTextFrame {
       return Lines.SubSequence(base: textFrame.lines, bounds: nonInitialLinesIndexRange)
     }
 
-
     @inlinable
     public var initialLinesLeftIndent: CGFloat {
       return withExtendedLifetime(textFrame) { paragraph.pointee.initialLinesLeftIndent }
@@ -773,9 +814,10 @@ extension STUTextFrame {
     @usableFromInline internal let textScaleFactor: CGFloat
 
     @inlinable
-    internal init(_ textFrame: STUTextFrame, _ line: UnsafePointer<__STUTextFrameLine>,
-                  textScaleFactor: CGFloat)
-    {
+    internal init(
+      _ textFrame: STUTextFrame, _ line: UnsafePointer<__STUTextFrameLine>,
+      textScaleFactor: CGFloat
+    ) {
       self.textFrame = textFrame
       self.line = line
       self.textScaleFactor = textScaleFactor
@@ -788,36 +830,36 @@ extension STUTextFrame {
     }
 
     // Indicates whether this is the first line in the text frame.
-   // @inlinable // swift inlining bug
-    public var isFirstLine: Bool  {
+    // @inlinable // swift inlining bug
+    public var isFirstLine: Bool {
       return withExtendedLifetime(textFrame) { line.pointee.lineIndex == 0 }
     }
 
     /// Indicates whether this is the last line in the text frame.
     // @inlinable // swift inlining bug
-    public var isLastLine: Bool  {
+    public var isLastLine: Bool {
       return withExtendedLifetime(textFrame) { line.pointee.isLastLine }
     }
 
     // @inlinable // swift inlining bug
-    public var isFirstLineInParagraph: Bool  {
+    public var isFirstLineInParagraph: Bool {
       return withExtendedLifetime(textFrame) { line.pointee.isFirstLineInParagraph }
     }
 
     @inlinable
     public var isLastLineInParagraph: Bool {
       return withExtendedLifetime(textFrame) {
-               line.pointee.lineIndex &+ 1
-               == __STUTextFrameLineGetParagraph(line).pointee.lineIndexRange.end
-             }
+        line.pointee.lineIndex &+ 1
+          == __STUTextFrameLineGetParagraph(line).pointee.lineIndexRange.end
+      }
     }
 
     @inlinable
     public var isInitialLineInParagraph: Bool {
       return withExtendedLifetime(textFrame) {
-               line.pointee.lineIndex
-               < __STUTextFrameLineGetParagraph(line).pointee.initialLinesEndIndex
-             }
+        line.pointee.lineIndex
+          < __STUTextFrameLineGetParagraph(line).pointee.initialLinesEndIndex
+      }
     }
 
     // The 0-based index of the line's paragraph in the text frame.
@@ -857,14 +899,14 @@ extension STUTextFrame {
     // @inlinable // swift inlining bug
     public var excisedRangeInOriginalString: NSRange? {
       return withExtendedLifetime(textFrame) {
-               if !line.pointee.hasTruncationToken { return nil }
-               let paragraph = __STUTextFrameLineGetParagraph(line)
-               return paragraph.pointee.excisedRangeInOriginalString.nsRange
-             }
+        if !line.pointee.hasTruncationToken { return nil }
+        let paragraph = __STUTextFrameLineGetParagraph(line)
+        return paragraph.pointee.excisedRangeInOriginalString.nsRange
+      }
     }
 
     // @inlinable // swift inlining bug
-    public var isFollowedByTerminatorInOriginalString: Bool  {
+    public var isFollowedByTerminatorInOriginalString: Bool {
       return withExtendedLifetime(textFrame) { line.pointee.isFollowedByTerminatorInOriginalString }
     }
 
@@ -894,32 +936,32 @@ extension STUTextFrame {
 
     @inlinable
     public var width: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.width) }
+      return withExtendedLifetime(textFrame) { textScaleFactor * CGFloat(line.pointee.width) }
     }
 
     /// The line's ascent after font substitution.
     @inlinable
     public var ascent: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.ascent) }
+      return withExtendedLifetime(textFrame) { textScaleFactor * CGFloat(line.pointee.ascent) }
     }
 
     /// The line's descent after font substitution.
     @inlinable
     public var descent: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.descent) }
+      return withExtendedLifetime(textFrame) { textScaleFactor * CGFloat(line.pointee.descent) }
     }
 
     /// The line's leading after font substitution.
     @inlinable
     public var leading: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.leading) }
+      return withExtendedLifetime(textFrame) { textScaleFactor * CGFloat(line.pointee.leading) }
     }
 
     @inlinable
-    public func typographicBounds(textFrameOrigin: CGPoint, displayScale: CGFloat?) -> CGRect
-    {
-      return typographicBounds(textFrameOrigin: textFrameOrigin,
-                               displayScaleOrZero: displayScale ?? 0)
+    public func typographicBounds(textFrameOrigin: CGPoint, displayScale: CGFloat?) -> CGRect {
+      return typographicBounds(
+        textFrameOrigin: textFrameOrigin,
+        displayScaleOrZero: displayScale ?? 0)
     }
 
     /// Equivalent to typographicBounds(textFrameOrigin: .zero, displayScale: nil)
@@ -929,23 +971,25 @@ extension STUTextFrame {
     }
 
     @inlinable
-    internal func typographicBounds(textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat) -> CGRect {
+    internal func typographicBounds(textFrameOrigin: CGPoint, displayScaleOrZero: CGFloat) -> CGRect
+    {
       return withExtendedLifetime(textFrame) {
-               let textScaleFactor_f64 = Float64(self.textScaleFactor)
-               let x = Float64(textFrameOrigin.x) + textScaleFactor_f64*line.pointee.originX
-               var y = Float64(textFrameOrigin.y) + textScaleFactor_f64*line.pointee.originY
-               if displayScaleOrZero > 0 {
-                 y = ceilToScale(y, Float64(displayScaleOrZero))
-               }
-               let width   = line.pointee.width
-               let ascent  = line.pointee.ascent
-               let descent = line.pointee.descent
-               let leading = line.pointee.leading
-               return CGRect(x: CGFloat(x),
-                             y: CGFloat(y - textScaleFactor_f64*Float64(ascent + leading/2)),
-                             width: textScaleFactor*CGFloat(width),
-                             height: textScaleFactor*CGFloat(ascent + descent + leading))
-             }
+        let textScaleFactor_f64 = Float64(self.textScaleFactor)
+        let x = Float64(textFrameOrigin.x) + textScaleFactor_f64 * line.pointee.originX
+        var y = Float64(textFrameOrigin.y) + textScaleFactor_f64 * line.pointee.originY
+        if displayScaleOrZero > 0 {
+          y = ceilToScale(y, Float64(displayScaleOrZero))
+        }
+        let width = line.pointee.width
+        let ascent = line.pointee.ascent
+        let descent = line.pointee.descent
+        let leading = line.pointee.leading
+        return CGRect(
+          x: CGFloat(x),
+          y: CGFloat(y - textScaleFactor_f64 * Float64(ascent + leading / 2)),
+          width: textScaleFactor * CGFloat(width),
+          height: textScaleFactor * CGFloat(ascent + descent + leading))
+      }
     }
 
     /// Indicates whether the line contains a truncation token.
@@ -960,8 +1004,8 @@ extension STUTextFrame {
     // @inlinable // swift inlining bug
     public var isTruncatedAsRightToLeftLine: Bool {
       return withExtendedLifetime(textFrame) {
-               line.pointee.isTruncatedAsRightToLeftLine
-             }
+        line.pointee.isTruncatedAsRightToLeftLine
+      }
     }
 
     /// Indicates whether a hyphen was inserted during line breaking.
@@ -971,22 +1015,22 @@ extension STUTextFrame {
     }
 
     // @inlinable // swift inlining bug
-    public var paragraphBaseWritingDirection: STUWritingDirection  {
+    public var paragraphBaseWritingDirection: STUWritingDirection {
       return withExtendedLifetime(textFrame) { line.pointee.paragraphBaseWritingDirection }
     }
 
     // @inlinable // swift inlining bug
-    public var textFlags: STUTextFlags  {
+    public var textFlags: STUTextFlags {
       return withExtendedLifetime(textFrame) { line.pointee.textFlags }
     }
 
     // @inlinable // swift inlining bug
-    public var nonTokenTextFlags: STUTextFlags  {
+    public var nonTokenTextFlags: STUTextFlags {
       return withExtendedLifetime(textFrame) { line.pointee.nonTokenTextFlags }
     }
 
     // @inlinable // swift inlining bug
-    public var tokenTextFlags: STUTextFlags  {
+    public var tokenTextFlags: STUTextFlags {
       return withExtendedLifetime(textFrame) { line.pointee.tokenTextFlags }
     }
 
@@ -994,13 +1038,15 @@ extension STUTextFrame {
     /// there is no token.
     @inlinable
     public var leftPartWidth: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.leftPartWidth) }
+      return withExtendedLifetime(textFrame) {
+        textScaleFactor * CGFloat(line.pointee.leftPartWidth)
+      }
     }
 
     /// The typographic width of the inserted truncation token or hyphen.
     @inlinable
     public var tokenWidth: CGFloat {
-      return withExtendedLifetime(textFrame) { textScaleFactor*CGFloat(line.pointee.tokenWidth) }
+      return withExtendedLifetime(textFrame) { textScaleFactor * CGFloat(line.pointee.tokenWidth) }
     }
 
     @inlinable
@@ -1045,7 +1091,7 @@ extension STUTextFrame.Index {
   /// This value must be less than or equal to `UInt32.max`.
   @inlinable
   public var utf16IndexInTruncatedString: Int {
-    get { return Int(__indexInTruncatedString); }
+    get { return Int(__indexInTruncatedString) }
     set { __indexInTruncatedString = UInt32(newValue) }
   }
 
@@ -1075,23 +1121,25 @@ extension STUTextFrame.Index {
   ///   - `utf16IndexInTruncatedString <= UInt32.max`
   ///   - `lineIndex <= UInt32.max`
   @inlinable
-  public init(utf16IndexInTruncatedString: Int, isIndexOfInsertedHyphen: Bool = false,
-              lineIndex: Int)
-  {
-    self = .init(isIndexOfInsertedHyphen: isIndexOfInsertedHyphen,
-                 __indexInTruncatedString: UInt32(utf16IndexInTruncatedString),
-                 __lineIndex: UInt32(lineIndex))
+  public init(
+    utf16IndexInTruncatedString: Int, isIndexOfInsertedHyphen: Bool = false,
+    lineIndex: Int
+  ) {
+    self = .init(
+      isIndexOfInsertedHyphen: isIndexOfInsertedHyphen,
+      __indexInTruncatedString: UInt32(utf16IndexInTruncatedString),
+      __lineIndex: UInt32(lineIndex))
   }
 }
 
-extension STUTextFrame.Index : @retroactive Comparable {
+extension STUTextFrame.Index: @retroactive Comparable {
   @inlinable
-  public static func ==(lhs: STUTextFrame.Index, rhs: STUTextFrame.Index) -> Bool {
+  public static func == (lhs: STUTextFrame.Index, rhs: STUTextFrame.Index) -> Bool {
     return __STUTextFrameIndexEqualToIndex(lhs, rhs)
   }
 
   @inlinable
-  public static func <(lhs: STUTextFrame.Index, rhs: STUTextFrame.Index) -> Bool {
+  public static func < (lhs: STUTextFrame.Index, rhs: STUTextFrame.Index) -> Bool {
     return __STUTextFrameIndexLessThanIndex(lhs, rhs)
   }
 }

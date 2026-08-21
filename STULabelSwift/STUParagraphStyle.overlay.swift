@@ -2,7 +2,7 @@
 
 @_exported import STULabel
 
-public enum STUFirstLineOffset : Equatable {
+public enum STUFirstLineOffset: Equatable {
   /// Offset of the first baseline from the default position.
   case offsetOfFirstBaselineFromDefault(_: CGFloat)
 
@@ -51,15 +51,15 @@ public enum STUFirstLineOffset : Equatable {
 
   public var typeAndValue: (STUFirstLineOffsetType, CGFloat) {
     switch self {
-    case      .offsetOfFirstBaselineFromDefault(let value):
+    case .offsetOfFirstBaselineFromDefault(let value):
       return (.offsetOfFirstBaselineFromDefault, value)
-    case      .offsetOfFirstBaselineFromTop(let value):
+    case .offsetOfFirstBaselineFromTop(let value):
       return (.offsetOfFirstBaselineFromTop, value)
-    case      .offsetOfFirstLineCenterFromTop(let value):
+    case .offsetOfFirstLineCenterFromTop(let value):
       return (.offsetOfFirstLineCenterFromTop, value)
-    case      .offsetOfFirstLineCapHeightCenterFromTop(let value):
+    case .offsetOfFirstLineCapHeightCenterFromTop(let value):
       return (.offsetOfFirstLineCapHeightCenterFromTop, value)
-    case      .offsetOfFirstLineXHeightCenterFromTop(let value):
+    case .offsetOfFirstLineXHeightCenterFromTop(let value):
       return (.offsetOfFirstLineXHeightCenterFromTop, value)
     }
   }
@@ -70,20 +70,19 @@ public enum STUFirstLineOffset : Equatable {
   }
   public init(_ type: STUFirstLineOffsetType, _ value: CGFloat) {
     switch type {
-    case     .offsetOfFirstBaselineFromDefault:
+    case .offsetOfFirstBaselineFromDefault:
       self = .offsetOfFirstBaselineFromDefault(value)
-    case     .offsetOfFirstBaselineFromTop:
+    case .offsetOfFirstBaselineFromTop:
       self = .offsetOfFirstBaselineFromTop(value)
-    case     .offsetOfFirstLineCenterFromTop:
+    case .offsetOfFirstLineCenterFromTop:
       self = .offsetOfFirstLineCenterFromTop(value)
-    case     .offsetOfFirstLineCapHeightCenterFromTop:
+    case .offsetOfFirstLineCapHeightCenterFromTop:
       self = .offsetOfFirstLineCapHeightCenterFromTop(value)
-    case     .offsetOfFirstLineXHeightCenterFromTop:
+    case .offsetOfFirstLineXHeightCenterFromTop:
       self = .offsetOfFirstLineXHeightCenterFromTop(value)
     }
   }
 }
-
 
 extension STUParagraphStyle {
   @inlinable
@@ -91,7 +90,6 @@ extension STUParagraphStyle {
     return STUFirstLineOffset(__firstLineOffsetType, __firstLineOffset)
   }
 }
-
 
 extension STUParagraphStyleBuilder {
   @inlinable

@@ -5,9 +5,10 @@ import STULabel.MainScreenProperties
 
 extension STUCGImageFormat {
   //  @inlinable // swift inlining bug
-  public init(_ predefinedFormat: STUCGImageFormat.Predefined,
-              _ options: STUCGImageFormat.Options = [])
-  {
+  public init(
+    _ predefinedFormat: STUCGImageFormat.Predefined,
+    _ options: STUCGImageFormat.Options = []
+  ) {
     self = __stuCGImageFormat(predefinedFormat, options)
   }
 
@@ -54,11 +55,13 @@ extension STUCGImageFormat {
 ///   - drawingBlock: This block will be called in order to draw the image.
 ///
 @inlinable
-public func stu_createCGImage(size: CGSize, scale: CGFloat = 1,
-                              backgroundColor: CGColor? = nil,
-                              _ format: STUCGImageFormat = .rgb,
-                              _ drawingBlock: (CGContext) -> ())
-         -> CGImage?
+public func stu_createCGImage(
+  size: CGSize, scale: CGFloat = 1,
+  backgroundColor: CGColor? = nil,
+  _ format: STUCGImageFormat = .rgb,
+  _ drawingBlock: (CGContext) -> Void
+)
+  -> CGImage?
 {
   return __stu_createCGImage(size, scale, backgroundColor, format, drawingBlock)
 }
@@ -89,14 +92,17 @@ public func stu_createCGImage(size: CGSize, scale: CGFloat = 1,
 ///     passing a value of 0 causes the value to be calculated automatically. If the `data`
 ///     argument is not null, this value must not be 0.
 @inlinable
-public func stu_createCGBitmapContext(widthInPixels: Int, heightInPixels: Int,
-                                      scale: CGFloat = 1,
-                                      backgroundColor: CGColor? = nil,
-                                      _ format: STUCGImageFormat = .rgb,
-                                      data: UnsafeMutableRawPointer? = nil,
-                                      bytesPerRow: Int = 0)
-         -> CGContext?
+public func stu_createCGBitmapContext(
+  widthInPixels: Int, heightInPixels: Int,
+  scale: CGFloat = 1,
+  backgroundColor: CGColor? = nil,
+  _ format: STUCGImageFormat = .rgb,
+  data: UnsafeMutableRawPointer? = nil,
+  bytesPerRow: Int = 0
+)
+  -> CGContext?
 {
-  return __stu_createCGBitmapContext(max(1, widthInPixels), max(1, heightInPixels), scale,
-                                     backgroundColor, format, data, bytesPerRow)
+  return __stu_createCGBitmapContext(
+    max(1, widthInPixels), max(1, heightInPixels), scale,
+    backgroundColor, format, data, bytesPerRow)
 }

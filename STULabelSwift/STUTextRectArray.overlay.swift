@@ -11,7 +11,7 @@ extension STUTextRectArray {
   /// greater than `maxDistance`, this method returns nil.
   @inlinable
   public func findRect(closestTo point: CGPoint, maxDistance: CGFloat)
-           -> (index: Int, distance: CGFloat)?
+    -> (index: Int, distance: CGFloat)?
   {
     let r = self.__findRectClosest(to: point, maxDistance: maxDistance)
     if r.index != NSNotFound {

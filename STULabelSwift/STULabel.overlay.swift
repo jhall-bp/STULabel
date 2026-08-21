@@ -8,4 +8,3 @@ extension STULabel {
     return STUTextFrameWithOrigin(__STULabelGetTextFrameWithOrigin(self))
   }
 }
-

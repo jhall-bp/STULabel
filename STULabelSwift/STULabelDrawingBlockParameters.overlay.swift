@@ -11,5 +11,3 @@ extension STULabelDrawingBlockParameters {
   @inlinable
   public var range: Range<STUTextFrame.Index> { return Range(__range) }
 }
-
-

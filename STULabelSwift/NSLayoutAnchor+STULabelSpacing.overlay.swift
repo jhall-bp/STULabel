@@ -20,14 +20,17 @@ extension NSLayoutYAxisAnchor {
   ///         directly. If you want to change the offset, set the value of the
   ///         `stu_labelSpacingConstraintOffset` property.
   @inlinable
-  public func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-                             to baseline: STUFirstOrLastBaseline, of label: STULabel,
-                             plusLineHeightMultipliedBy lineHeightMultiplier: CGFloat,
-                             plus offset: CGFloat = 0)
+  public func stu_constraint(
+    _ relation: NSLayoutConstraint.Relation,
+    to baseline: STUFirstOrLastBaseline, of label: STULabel,
+    plusLineHeightMultipliedBy lineHeightMultiplier: CGFloat,
+    plus offset: CGFloat = 0
+  )
     -> NSLayoutConstraint
   {
-    return __stu_constraint(relation, to: baseline, of: label,
-                            plusLineHeightMultipliedBy: lineHeightMultiplier, plus: offset)
+    return __stu_constraint(
+      relation, to: baseline, of: label,
+      plusLineHeightMultipliedBy: lineHeightMultiplier, plus: offset)
   }
 
   /// Returns a constraint that relates the anchor to a position above the specified label baseline,
@@ -48,13 +51,16 @@ extension NSLayoutYAxisAnchor {
   ///         directly. If you want to change the offset, set the value of the
   ///         `stu_labelSpacingConstraintOffset` property.
   @inlinable
-  public func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-                             toPositionAbove baseline: STUFirstOrLastBaseline, of label: STULabel,
-                             spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
+  public func stu_constraint(
+    _ relation: NSLayoutConstraint.Relation,
+    toPositionAbove baseline: STUFirstOrLastBaseline, of label: STULabel,
+    spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0
+  )
     -> NSLayoutConstraint
   {
-    return __stu_constraint(relation, toPositionAbove: baseline, of: label,
-                            spacingMultiplier: multiplier, offset: offset)
+    return __stu_constraint(
+      relation, toPositionAbove: baseline, of: label,
+      spacingMultiplier: multiplier, offset: offset)
   }
 
   /// Returns a constraint that relates the anchor to a position below the specified label baseline,
@@ -75,12 +81,15 @@ extension NSLayoutYAxisAnchor {
   ///         directly. If you want to change the offset, set the value of the
   ///         `stu_labelSpacingConstraintOffset` property.
   @inlinable
-  public func stu_constraint(_ relation: NSLayoutConstraint.Relation,
-                             toPositionBelow baseline: STUFirstOrLastBaseline, of label: STULabel,
-                             spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0)
+  public func stu_constraint(
+    _ relation: NSLayoutConstraint.Relation,
+    toPositionBelow baseline: STUFirstOrLastBaseline, of label: STULabel,
+    spacingMultiplier multiplier: CGFloat = 1, offset: CGFloat = 0
+  )
     -> NSLayoutConstraint
   {
-    return __stu_constraint(relation, toPositionBelow: baseline, of: label,
-                            spacingMultiplier: multiplier, offset: offset)
+    return __stu_constraint(
+      relation, toPositionBelow: baseline, of: label,
+      spacingMultiplier: multiplier, offset: offset)
   }
 }

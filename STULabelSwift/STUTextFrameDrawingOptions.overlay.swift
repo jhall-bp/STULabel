@@ -15,7 +15,7 @@ extension STUTextFrame.DrawingOptions {
   }
 
   @inlinable
-  public var highlightTextFrameRange: Optional<Range<STUTextFrame.Index>> {
+  public var highlightTextFrameRange: Range<STUTextFrame.Index>? {
     var range = __STUTextFrameRange()
     if __getHighlightTextFrameRange(&range) {
       return Range<STUTextFrame.Index>(range)
