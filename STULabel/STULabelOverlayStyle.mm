@@ -146,7 +146,7 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
                            b.edgeInsets = UIEdgeInsets{-2, -2, -2, -2};
                            b.cornerRadius = 4;
                            const CGFloat c = ((CGFloat)26)/255;
-                           b.color = [UIColor colorWithRed:c green:c blue:c alpha:(CGFloat)0.3];
+                           b.color = UIColor.tertiarySystemFillColor;
                            b.fadeInDuration = 0.1;
                            b.fadeOutDuration = 0.15;
                          }]));

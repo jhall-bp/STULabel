@@ -2,9 +2,8 @@
 
 import STULabelSwift
 
-private let defaultDetailLabelColor = UITableViewCell(style: .value1, reuseIdentifier: nil).detailTextLabel?.textColor!
 
-class SwitchCell : UITableViewCell, PropertyObserverProtocol {
+class SwitchCell: UITableViewCell, PropertyObserverProtocol {
 
   private let switchView = UISwitch()
 
@@ -138,18 +137,18 @@ class ButtonCell : UITableViewCell {
   }
 }
 
-protocol BinaryFloatingPointOrInt : Comparable, Codable {
+nonisolated protocol BinaryFloatingPointOrInt: Sendable, Comparable, Codable {
   init(_ value: Float64)
 
   var asFloat64: Float64 { get }
 }
 
-extension Float32 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
-extension Float64 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return self } }
-extension CGFloat : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
-extension Int : BinaryFloatingPointOrInt     { var asFloat64: Float64 { return Float64(self) } }
+nonisolated extension Float32 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
+nonisolated extension Float64 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return self } }
+nonisolated extension CGFloat : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
+nonisolated extension Int : BinaryFloatingPointOrInt     { var asFloat64: Float64 { return Float64(self) } }
 
-class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, PropertyObserverProtocol {
+final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, PropertyObserverProtocol {
 
   var title: String? {
     get { return self.textLabel!.text }
@@ -414,7 +413,7 @@ class SelectCell<Value> : UITableViewCell {
   var detailTextColor: UIColor? {
     get { return detailTextLabel?.textColor }
     set {
-      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? defaultDetailLabelColor
+      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? .secondaryLabel
     }
   }
 
@@ -574,7 +573,7 @@ class SubtableCell : UITableViewCell {
   var detailTextColor: UIColor? {
     get { return detailTextLabel?.textColor }
     set {
-      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? defaultDetailLabelColor
+      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? .secondaryLabel
     }
   }
 

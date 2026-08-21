@@ -587,12 +587,14 @@ static void updateLabelLinkObserversInLabelDealloc(STULabel* label);
 static void initCommon(STULabel* self) {
   static Class stuLabelLayerClass;
   static UIColor* disabledTextColor;
+  static UIColor* disabledLinkColor;
   static STULabelOverlayStyle* defaultLabelOverlayStyle;
   static bool dragInteractionIsEnabledByDefault;
   static dispatch_once_t once;
   dispatch_once_f(&once, nullptr, [](void *) {
     stuLabelLayerClass = STULabelLayer.class;
-    disabledTextColor = [[UIColor alloc] initWithWhite:CGFloat(0.56) alpha:1];
+    disabledTextColor = [UIColor.labelColor colorWithProminence:UIColorProminenceTertiary];
+    disabledLinkColor = [UIColor.linkColor colorWithProminence:UIColorProminenceTertiary];
     defaultLabelOverlayStyle = STULabelOverlayStyle.defaultStyle;
     dragInteractionIsEnabledByDefault = [UIDragInteraction isEnabledByDefault];
   });
@@ -605,6 +607,7 @@ static void initCommon(STULabel* self) {
   self->_linkTouchAreaExtensionRadius = 10;
   self->_accessibilityElementParagraphSeparationCharacterThreshold = 280;
   self->_disabledTextColor = disabledTextColor;
+  self->_disabledLinkColor = disabledLinkColor;
   self->_activeLinkOverlayStyle = defaultLabelOverlayStyle;
 
   self->_layer = static_cast<STULabelLayer*>([self layer]);
@@ -1367,6 +1370,7 @@ STU_INLINE void setContextMenuConfigurationLink(UIContextMenuConfiguration* conf
     configurationForMenuAtLocation:(CGPoint)location
 {
   if (!_bits.delegateRespondsToContextMenuConfigurationForLink) return nil;
+  if (!_bits.isEnabled) return nil;
   STUTextLink* const link = self.activeLink
                           ?: [_layer.links linkClosestToPoint:location
                                                   maxDistance:_linkTouchAreaExtensionRadius];
@@ -1528,8 +1532,8 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
 
 - (NSArray<UIDragItem*>*)dragInteraction:(UIDragInteraction* __unused)interaction
                 itemsForBeginningSession:(id<UIDragSession>)session
-  NS_AVAILABLE_IOS(11_0)
 {
+  if (!_bits.isEnabled) return @[];
   return [self stu_dragItemsForPoint:[session locationInView:self] session:session];
 }
 
@@ -1537,8 +1541,8 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink* _
 - (NSArray<UIDragItem*>*)dragInteraction:(UIDragInteraction* __unused)interaction
                  itemsForAddingToSession:(id<UIDragSession>)session
                         withTouchAtPoint:(CGPoint)point
-  NS_AVAILABLE_IOS(11_0)
 {
+  if (!_bits.isEnabled) return @[];
   return [self stu_dragItemsForPoint:point session:session];
 }
 

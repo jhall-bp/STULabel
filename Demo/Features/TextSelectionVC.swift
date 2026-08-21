@@ -4,6 +4,8 @@ import UIKit
 import STULabelSwift
 import SafariServices
 
+private let rightToLeftText = "‫اضغط مطولاً على هذا النصّ لتجربة المقابض."
+
 /// Demonstrates STULabel's non-editable UITextInteraction support.
 final class TextSelectionVC: UIViewController, STULabelDelegate {
   private let interactionStatusLabel = UILabel()
@@ -30,7 +32,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
     configureTextLabel(selectableTextLabel)
     selectableTextLabel.text = "Long-press this text to select a word or sentence, move the native selection handles, then copy it. Emoji 👩🏽‍💻 and composed characters stay together while selecting."
 
-    let rightToLeftText = NSMutableAttributedString("‫اضغط مطولاً على هذا النصّ لتجربة المقابض.", [.font: UIFont.preferredFont(forTextStyle: .body), .foregroundColor: UIColor.label])
+    let rightToLeftText = NSMutableAttributedString(string: rightToLeftText)
     rightToLeftText.addAttribute(.link, value: URL(string: "https://www.google.com")!, range: NSRange(location: 0, length: 5))
     configureTextLabel(rightToLeftTextLabel)
     rightToLeftTextLabel.delegate = self
@@ -63,7 +65,7 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
       rightToLeftTextLabel,
       sectionCaption("Truncated text"),
       truncatedTextLabel,
-      sectionCaption("Link text presents a context menu, so selection begins on non-link text.")
+      sectionCaption("Link text presents a context menu, so selection begins on non-link text."),
     ])
 
     scrollView.translatesAutoresizingMaskIntoConstraints = false
