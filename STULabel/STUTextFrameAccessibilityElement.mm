@@ -43,6 +43,7 @@ namespace stu_label {
     ArrayRef<const TextLineVerticalPosition> verticalPositions;
     Point<CGFloat> textFrameOrigin;
     __nullable STUTextLinkRangePredicate isDraggableLink;
+    bool linksAreEnabled;
   };
 }
 
@@ -288,6 +289,9 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
     _accessibilityTraits = UIAccessibilityTraitStaticText;
     if (fullRangeLinkValue) {
       _accessibilityTraits |= UIAccessibilityTraitLink;
+      if (!params.linksAreEnabled) {
+        _accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+      }
     }
     NSAttributedString* label = mutableAttributedSubstring
                                 ?: [params.attributedString attributedSubstringFromRange:stringRange];
@@ -336,6 +340,9 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
     }
     if (fullRangeLinkValue && !(traits & UIAccessibilityTraitButton)) {
       traits |= UIAccessibilityTraitLink;
+    }
+    if (fullRangeLinkValue && !params.linksAreEnabled) {
+      traits |= UIAccessibilityTraitNotEnabled;
     }
     _accessibilityTraits = traits;
     if (NSAttributedString* const label = attachment.accessibilityAttributedLabel) {
@@ -514,7 +521,8 @@ static UIAccessibilityCustomRotor* createLinkRotorForAccessibilityContainer(
     .scaleFactors = scaleFactors,
     .verticalPositions = verticalPositions,
     .textFrameOrigin = originInContainerSpace,
-    .isDraggableLink = isDraggableLink
+    .isDraggableLink = isDraggableLink,
+    .linksAreEnabled = linkActivationHandler != nil
   };
   NSMutableArray<STUTextFrameAccessibilitySubelement*>* const elements = [[NSMutableArray alloc]
                                                                             init];
