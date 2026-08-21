@@ -2,29 +2,36 @@
 
 import UIKit
 
-func preferredFontWithMonospacedDigits(_ textStyle: UIFont.TextStyle,
-                                       _ traitCollection: UITraitCollection? = nil)
+func preferredFontWithMonospacedDigits(
+  _ textStyle: UIFont.TextStyle,
+  _ traitCollection: UITraitCollection? = nil
+)
   -> UIFont
 {
-  let mediumTraitCollection = traitCollection?.replacing(
-    UITraitPreferredContentSizeCategory.self, value: .medium
-  ) ?? UITraitCollection(UITraitPreferredContentSizeCategory.self, value: .medium)
+  let mediumTraitCollection =
+    traitCollection?.replacing(
+      UITraitPreferredContentSizeCategory.self, value: .medium
+    ) ?? UITraitCollection(UITraitPreferredContentSizeCategory.self, value: .medium)
   let font = UIFont.preferredFont(
-               forTextStyle: textStyle,
-               compatibleWith: mediumTraitCollection)
-  let weight = (font.fontDescriptor.fontAttributes[.traits]
-                as! [UIFontDescriptor.TraitKey: Any]?)?[.weight] as! UIFont.Weight?
-  let mfont = UIFont.monospacedDigitSystemFont(ofSize: font.pointSize,
-                                               weight: weight ?? .regular)
-  return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: mfont,
-                                                           compatibleWith: traitCollection)
+    forTextStyle: textStyle,
+    compatibleWith: mediumTraitCollection)
+  let weight =
+    (font.fontDescriptor.fontAttributes[.traits]
+    as! [UIFontDescriptor.TraitKey: Any]?)?[.weight] as! UIFont.Weight?
+  let mfont = UIFont.monospacedDigitSystemFont(
+    ofSize: font.pointSize,
+    weight: weight ?? .regular)
+  return UIFontMetrics(forTextStyle: textStyle).scaledFont(
+    for: mfont,
+    compatibleWith: traitCollection)
 }
 
 nonisolated func styleName(fontName: String) -> String {
   guard let i = fontName.firstIndex(of: "-") else {
-    if fontName.hasPrefix("Damascus") {    
-      return fontName == "Damascus" ? "Regular"
-           : String(fontName.dropFirst(8))
+    if fontName.hasPrefix("Damascus") {
+      return fontName == "Damascus"
+        ? "Regular"
+        : String(fontName.dropFirst(8))
     }
     return "Regular"
   }
@@ -36,7 +43,7 @@ private func italicFontName(fontName: String) -> String {
 }
 
 private let uiFontWeights: [UIFont.Weight] = [
-  .ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black
+  .ultraLight, .thin, .light, .regular, .medium, .semibold, .bold, .heavy, .black,
 ]
 
 struct SystemFontStyle {
@@ -47,14 +54,14 @@ struct SystemFontStyle {
     let suffix = italic ? "Italic" : ""
     switch weight {
     case .ultraLight: return "Ultralight" + suffix
-    case .thin:       return "Thin" + suffix
-    case .light:      return "Light" + suffix
-    case .regular:    return "Regular" + suffix
-    case .medium:     return "Medium" + suffix
-    case .semibold:   return "Semibold" + suffix
-    case .bold:       return "Bold" + suffix
-    case .heavy:      return "Heavy" + suffix
-    case .black:      return "Black" + suffix
+    case .thin: return "Thin" + suffix
+    case .light: return "Light" + suffix
+    case .regular: return "Regular" + suffix
+    case .medium: return "Medium" + suffix
+    case .semibold: return "Semibold" + suffix
+    case .bold: return "Bold" + suffix
+    case .heavy: return "Heavy" + suffix
+    case .black: return "Black" + suffix
     default: fatalError()
     }
   }
@@ -62,18 +69,23 @@ struct SystemFontStyle {
   func font(size: CGFloat) -> UIFont {
     let font = UIFont.systemFont(ofSize: size, weight: weight)
     if !italic { return font }
-    return CTFontCreateCopyWithSymbolicTraits(font as CTFont, 0, nil,
-                                              [.italicTrait], [.italicTrait])! as UIFont
+    return CTFontCreateCopyWithSymbolicTraits(
+      font as CTFont, 0, nil,
+      [.italicTrait], [.italicTrait])! as UIFont
   }
 }
 
 let systemFontStyles: [SystemFontStyle] =
-  uiFontWeights.flatMap{ return [SystemFontStyle(weight: $0, italic: false),
-                                 SystemFontStyle(weight: $0, italic: true)] }
+  uiFontWeights.flatMap {
+    return [
+      SystemFontStyle(weight: $0, italic: false),
+      SystemFontStyle(weight: $0, italic: true),
+    ]
+  }
 
 private nonisolated let lowercaseFontWeightNames = [
   "ultralight", "thin", "light", "book", "regular", "medium",
-  "demibold", "semibold", "bold", "extrabold", "heavy", "black"
+  "demibold", "semibold", "bold", "extrabold", "heavy", "black",
 ]
 
 private nonisolated func fontSortOrder(f1: String, f2: String) -> Bool {
@@ -137,18 +149,20 @@ private nonisolated func fontSortOrder(f1: String, f2: String) -> Bool {
     s2 = "regular"
   }
 
-  switch (lowercaseFontWeightNames.firstIndex(of: s1), lowercaseFontWeightNames.firstIndex(of: s2)) {
-   case let (index1?, index2?):
-     return isCondensed1 != isCondensed2 ? isCondensed1
-          : index1 < index2
-            || (index1 == index2 && !isItalic1 && isItalic2)
-   case (_?, nil): return true
-   case (nil, _?): return false
-   case (nil, nil): return s1 < s2
+  switch (lowercaseFontWeightNames.firstIndex(of: s1), lowercaseFontWeightNames.firstIndex(of: s2))
+  {
+  case (let index1?, let index2?):
+    return isCondensed1 != isCondensed2
+      ? isCondensed1
+      : index1 < index2
+        || (index1 == index2 && !isItalic1 && isItalic2)
+  case (_?, nil): return true
+  case (nil, _?): return false
+  case (nil, nil): return s1 < s2
   }
 }
 
-struct FontStyle : Equatable {
+struct FontStyle: Equatable {
   let name: String
   let fontName: String
 
@@ -157,24 +171,25 @@ struct FontStyle : Equatable {
     self.fontName = fontName
   }
 
-  static func ==(_ lhs: FontStyle, _ rhs: FontStyle) -> Bool {
+  static func == (_ lhs: FontStyle, _ rhs: FontStyle) -> Bool {
     return lhs.fontName == rhs.fontName
   }
 }
 
-struct FontFamily : Equatable {
+struct FontFamily: Equatable {
   let name: String
   let styles: [FontStyle]
 
-  static func ==(_ lhs: FontFamily, _ rhs: FontFamily) -> Bool {
+  static func == (_ lhs: FontFamily, _ rhs: FontFamily) -> Bool {
     return lhs.name == rhs.name
   }
 }
 
 let fontFamilies: [FontFamily] =
-      UIFont.familyNames.sorted().map { familyName in
-        FontFamily(name: familyName,
-                   styles: UIFont.fontNames(forFamilyName: familyName)
-                           .sorted(by: fontSortOrder)
-                           .map { FontStyle(fontName: $0) })
-      }.filter { !$0.styles.isEmpty }
+  UIFont.familyNames.sorted().map { familyName in
+    FontFamily(
+      name: familyName,
+      styles: UIFont.fontNames(forFamilyName: familyName)
+        .sorted(by: fontSortOrder)
+        .map { FontStyle(fontName: $0) })
+  }.filter { !$0.styles.isEmpty }

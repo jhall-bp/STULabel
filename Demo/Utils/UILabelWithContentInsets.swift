@@ -4,7 +4,7 @@ import UIKit
 
 /// The Auto Layout baseline anchors don't work properly for non-zero edge insets, and other
 /// functionality may break too, particularly for attributed strings.
-class UILabelWithContentInsets : UILabel {
+class UILabelWithContentInsets: UILabel {
 
   /// Should be rounded to the display scale.
   var contentInsets: UIEdgeInsets = .zero {
@@ -24,23 +24,31 @@ class UILabelWithContentInsets : UILabel {
   var lineSpaceAdjustedHeight: CGFloat = -1
 
   override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int)
-             -> CGRect
+    -> CGRect
   {
-    var rect = CGRect(x: bounds.origin.x + contentInsets.left,
-                      y: bounds.origin.y + contentInsets.top,
-                      width: max(0, bounds.size.width - (  contentInsets.left
-                                                         + contentInsets.right)),
-                      height: max(0, bounds.size.height - (  contentInsets.top
-                                                           + contentInsets.bottom)))
+    var rect = CGRect(
+      x: bounds.origin.x + contentInsets.left,
+      y: bounds.origin.y + contentInsets.top,
+      width: max(
+        0,
+        bounds.size.width
+          - (contentInsets.left
+            + contentInsets.right)),
+      height: max(
+        0,
+        bounds.size.height
+          - (contentInsets.top
+            + contentInsets.bottom)))
     rect = super.textRect(forBounds: rect, limitedToNumberOfLines: numberOfLines)
     let innerHeight = rect.size.height
-    rect = CGRect(x: rect.origin.x - contentInsets.left,
-                  y: rect.origin.y - contentInsets.top,
-                  width: rect.size.width + (contentInsets.left + contentInsets.right),
-                  height: rect.size.height + (contentInsets.top + contentInsets.bottom))
+    rect = CGRect(
+      x: rect.origin.x - contentInsets.left,
+      y: rect.origin.y - contentInsets.top,
+      width: rect.size.width + (contentInsets.left + contentInsets.right),
+      height: rect.size.height + (contentInsets.top + contentInsets.bottom))
     if expectedLineSpacing > 0 {
-      let n = round(innerHeight/(expectedLineHeight + expectedLineSpacing))
-      if n == 1 && innerHeight >= expectedLineHeight + expectedLineSpacing/2 {
+      let n = round(innerHeight / (expectedLineHeight + expectedLineSpacing))
+      if n == 1 && innerHeight >= expectedLineHeight + expectedLineSpacing / 2 {
         rect.size.height -= expectedLineSpacing
         lineSpaceAdjustedHeight = rect.size.height
       } else {
@@ -55,12 +63,19 @@ class UILabelWithContentInsets : UILabel {
     if bounds.size.height == lineSpaceAdjustedHeight {
       bounds.size.height += expectedLineSpacing
     }
-    let innerRect = CGRect(x: bounds.origin.x + contentInsets.left,
-                           y: bounds.origin.y + contentInsets.top,
-                           width: max(0, bounds.size.width - (  contentInsets.left
-                                                              + contentInsets.right)),
-                           height: max(0, bounds.size.height - (  contentInsets.top
-                                                                + contentInsets.bottom)))
+    let innerRect = CGRect(
+      x: bounds.origin.x + contentInsets.left,
+      y: bounds.origin.y + contentInsets.top,
+      width: max(
+        0,
+        bounds.size.width
+          - (contentInsets.left
+            + contentInsets.right)),
+      height: max(
+        0,
+        bounds.size.height
+          - (contentInsets.top
+            + contentInsets.bottom)))
     super.drawText(in: innerRect)
   }
 }

@@ -18,7 +18,7 @@ struct IncremantalStatsCalculator {
   private var m2: Double = .nan
   private(set) var lastValue: Double = .nan
 
-  var variance: Double { return count <= 1 ? 0 : m2/(count - 1) }
+  var variance: Double { return count <= 1 ? 0 : m2 / (count - 1) }
 
   var stddev: Double { return sqrt(variance) }
 
@@ -37,9 +37,9 @@ struct IncremantalStatsCalculator {
     min = Swift.min(min, value)
     max = Swift.max(max, value)
     let d1 = value - mean
-    mean += d1/count
+    mean += d1 / count
     let d2 = value - mean
-    m2 += d1*d2
+    m2 += d1 * d2
     lastValue = value
   }
 

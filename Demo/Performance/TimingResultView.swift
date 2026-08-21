@@ -2,12 +2,12 @@
 
 import STULabelSwift
 
-class TimingResultView<SampleView : UIView> : UIView {
+class TimingResultView<SampleView: UIView>: UIView {
   typealias LabelView = STULabel
 
   let titleLabel = LabelView()
 
-  class SampleViewWithLabel : Equatable, Hashable {
+  class SampleViewWithLabel: Equatable, Hashable {
     let label = LabelView()
     let view: SampleView
 
@@ -21,18 +21,18 @@ class TimingResultView<SampleView : UIView> : UIView {
 
     fileprivate let layoutGuide = UILayoutGuide()
 
-    static func ==(_ lhs: SampleViewWithLabel, _ rhs: SampleViewWithLabel) -> Bool {
+    static func == (_ lhs: SampleViewWithLabel, _ rhs: SampleViewWithLabel) -> Bool {
       return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
-    
+
     func hash(into hasher: inout Hasher) {
       ObjectIdentifier(self).hash(into: &hasher)
     }
-    
+
   }
 
-  class TimingRow : UIView {
-    
+  class TimingRow: UIView {
+
     let column1Label = STULabel()
     let column2Label = STULabel()
     let secondLineLabel = STULabel()
@@ -54,8 +54,8 @@ class TimingResultView<SampleView : UIView> : UIView {
       column2Label.translatesAutoresizingMaskIntoConstraints = false
       secondLineLabel.translatesAutoresizingMaskIntoConstraints = false
       column1Label.setContentCompressionResistancePriority(
-                     column2Label.contentCompressionResistancePriority(for: .horizontal) + 1,
-                     for: .horizontal)
+        column2Label.contentCompressionResistancePriority(for: .horizontal) + 1,
+        for: .horizontal)
 
       self.addSubview(column1Label)
       self.addSubview(column2Label)
@@ -67,12 +67,14 @@ class TimingResultView<SampleView : UIView> : UIView {
       constrain(&cs, column1Label, .firstBaseline, eq, column2Label, .firstBaseline)
 
       constrain(&cs, secondLineLabel, verticallyWithin: self)
-      constrain(&cs, secondLineLabel, .firstBaseline, geq, positionBelow: column1Label, .lastBaseline,
-                spacingMultipliedBy: 0.9)
-      constrain(&cs, secondLineLabel, .firstBaseline, geq, positionBelow: column2Label, .lastBaseline,
-                spacingMultipliedBy: 0.9)
+      constrain(
+        &cs, secondLineLabel, .firstBaseline, geq, positionBelow: column1Label, .lastBaseline,
+        spacingMultipliedBy: 0.9)
+      constrain(
+        &cs, secondLineLabel, .firstBaseline, geq, positionBelow: column2Label, .lastBaseline,
+        spacingMultipliedBy: 0.9)
 
-      constrain(&cs, column1Label, .leading,   eq, secondLineLabel, .leading)
+      constrain(&cs, column1Label, .leading, eq, secondLineLabel, .leading)
       constrain(&cs, column2Label, .trailing, geq, secondLineLabel, .trailing)
 
       cs.activate()
@@ -93,7 +95,7 @@ class TimingResultView<SampleView : UIView> : UIView {
     didSet {
       removeAllConstraints()
       for sv in oldValue {
-        guard sampleViews.firstIndex(where: {$0.label == sv.label}) == nil else { continue }
+        guard sampleViews.firstIndex(where: { $0.label == sv.label }) == nil else { continue }
         sv.label.removeFromSuperview()
         sv.view.removeFromSuperview()
         self.removeLayoutGuide(sv.layoutGuide)
@@ -125,7 +127,7 @@ class TimingResultView<SampleView : UIView> : UIView {
 
   let button = UIButton(type: .system)
 
-  var onButtonTap: (() -> ())?
+  var onButtonTap: (() -> Void)?
 
   @objc private func buttonTouchUpInside() { onButtonTap?() }
 
@@ -163,8 +165,9 @@ class TimingResultView<SampleView : UIView> : UIView {
 
     button.translatesAutoresizingMaskIntoConstraints = false
     var buttonConfiguration = UIButton.Configuration.plain()
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 5, leading: 5, bottom: 5,
-                                                                 trailing: 5)
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(
+      top: 5, leading: 5, bottom: 5,
+      trailing: 5)
     button.configuration = buttonConfiguration
     button.layer.borderWidth = 1
     button.layer.cornerRadius = 5
@@ -188,14 +191,16 @@ class TimingResultView<SampleView : UIView> : UIView {
 
     var cs = [timingsColumn2MinWidthConstraint]
 
-    constrain(&cs, leadingToTrailing: [sampleViewsColumn1, sampleViewsColumn2],
-              within: sampleViewsLayoutGuide, verticalAlignment: .top)
+    constrain(
+      &cs, leadingToTrailing: [sampleViewsColumn1, sampleViewsColumn2],
+      within: sampleViewsLayoutGuide, verticalAlignment: .top)
     sampleViewsColumnSpacingConstraint = cs[cs.count - 2]
 
     constrain(&cs, sampleViewsLayoutGuide, .width, eq, 0, priority: .fittingSizeLevel)
 
-    constrain(&cs, leadingToTrailing: [timingsColumn1, timingsColumn2],
-              within: timingsLayoutGuide, verticalAlignment: .top)
+    constrain(
+      &cs, leadingToTrailing: [timingsColumn1, timingsColumn2],
+      within: timingsLayoutGuide, verticalAlignment: .top)
     constrain(&cs, timingsColumn1, .width, geq, 150, priority: .defaultLow - 1)
     timingsColumnSpacingConstraint = cs[cs.count - 2]
 
@@ -212,8 +217,10 @@ class TimingResultView<SampleView : UIView> : UIView {
   private func updateShouldPlaceLabelsAboveSampleViews() -> Bool {
     guard let superview = self.superview else { return false }
     // This is just a "quick and dirty" implementation.
-    let availableWidth = superview.bounds.width == 0 ? 0
-                       : superview.readableContentGuide.layoutFrame.width
+    let availableWidth =
+      superview.bounds.width == 0
+      ? 0
+      : superview.readableContentGuide.layoutFrame.width
     var newValue = false
     for sv in sampleViews {
       if sv.label.intrinsicContentSize.width + padding + sv.view.frame.size.width > availableWidth {
@@ -244,19 +251,20 @@ class TimingResultView<SampleView : UIView> : UIView {
     timingsColumnSpacingConstraint.constant = padding
 
     let verticalStack: [ViewOrLayoutGuide] = [
-      titleLabel, sampleViewsLayoutGuide, timingsLayoutGuide, button
+      titleLabel, sampleViewsLayoutGuide, timingsLayoutGuide, button,
     ]
 
     constrain(&cs, topToBottom: verticalStack, spacing: padding, within: margin)
     if !timingRows.isEmpty {
-      cs[cs.count - 3].constant = 2*padding // The spacing after the sample views.
+      cs[cs.count - 3].constant = 2 * padding  // The spacing after the sample views.
     }
     for item in verticalStack {
       constrain(&cs, item, leadingWithin: margin)
     }
 
-    constrain(&cs, topToBottom: sampleViews.lazy.map { $0.layoutGuide }, spacing: padding,
-              within: sampleViewsLayoutGuide)
+    constrain(
+      &cs, topToBottom: sampleViews.lazy.map { $0.layoutGuide }, spacing: padding,
+      within: sampleViewsLayoutGuide)
 
     _ = updateShouldPlaceLabelsAboveSampleViews()
 
@@ -264,14 +272,15 @@ class TimingResultView<SampleView : UIView> : UIView {
       constrain(&cs, sv.layoutGuide, toHorizontalEdgesOf: timingsLayoutGuide)
 
       if shouldPlaceLabelsAboveSampleViews {
-        constrain(&cs, topToBottom:[sv.label, sv.view], within:sv.layoutGuide,
-                  horizontalAlignment: .leading)
+        constrain(
+          &cs, topToBottom: [sv.label, sv.view], within: sv.layoutGuide,
+          horizontalAlignment: .leading)
       } else {
         constrain(&cs, sv.label, leadingWithin: sampleViewsColumn1)
-        constrain(&cs, sv.view,  leadingWithin: sampleViewsColumn2)
+        constrain(&cs, sv.view, leadingWithin: sampleViewsColumn2)
 
         constrain(&cs, sv.label, verticallyCenteredWithin: sv.layoutGuide)
-        constrain(&cs, sv.view,  verticallyCenteredWithin: sv.layoutGuide)
+        constrain(&cs, sv.view, verticallyCenteredWithin: sv.layoutGuide)
       }
     }
 

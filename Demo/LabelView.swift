@@ -2,7 +2,7 @@
 
 import STULabelSwift
 
-protocol LabelView : AnyObject {
+protocol LabelView: AnyObject {
 
   func configureForUseAsLabel()
 
@@ -16,11 +16,11 @@ protocol LabelView : AnyObject {
   var minimumTextScaleFactor: CGFloat { get set }
 }
 
-protocol LabelViewWithContentInsets : LabelView {
+protocol LabelViewWithContentInsets: LabelView {
   var contentInsets: UIEdgeInsets { get set }
 }
 
-extension STULabel : LabelViewWithContentInsets {
+extension STULabel: LabelViewWithContentInsets {
 
   func configureForUseAsLabel() {}
 
@@ -40,7 +40,7 @@ extension STULabel : LabelViewWithContentInsets {
   var supportsTextScaling: Bool { return true }
 }
 
-extension UILabel : LabelView {
+extension UILabel: LabelView {
   func configureForUseAsLabel() {}
 
   func displayIfNeeded() {
@@ -81,9 +81,9 @@ extension UILabel : LabelView {
   }
 }
 
-extension UILabelWithContentInsets : LabelViewWithContentInsets { }
+extension UILabelWithContentInsets: LabelViewWithContentInsets {}
 
-extension UITextView : LabelViewWithContentInsets {
+extension UITextView: LabelViewWithContentInsets {
 
   func configureForUseAsLabel() {
     isScrollEnabled = false

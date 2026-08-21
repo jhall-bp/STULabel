@@ -18,11 +18,12 @@ class UDHR {
     let languageCode: String
     let writingDirection: STUWritingDirection
     let title: String
-    let articles: [Article] // Includes preamble.
+    let articles: [Article]  // Includes preamble.
 
-    init(language: String, languageCode: String, writingDirection: STUWritingDirection,
-         title: String, articles: [Article])
-    {
+    init(
+      language: String, languageCode: String, writingDirection: STUWritingDirection,
+      title: String, articles: [Article]
+    ) {
       self.language = language
       self.languageCode = languageCode
       self.writingDirection = writingDirection
@@ -30,14 +31,17 @@ class UDHR {
       self.articles = articles
     }
 
-    func asAttributedString(titleAttributes: [NSAttributedString.Key: Any],
-                            bodyAttributes: [NSAttributedString.Key: Any],
-                            paragraphSeparator nl: String = "\n")
+    func asAttributedString(
+      titleAttributes: [NSAttributedString.Key: Any],
+      bodyAttributes: [NSAttributedString.Key: Any],
+      paragraphSeparator nl: String = "\n"
+    )
       -> NSAttributedString
     {
       let paraStyle = NSMutableParagraphStyle()
-      paraStyle.baseWritingDirection = self.writingDirection == .leftToRight
-                                     ? .leftToRight : .rightToLeft
+      paraStyle.baseWritingDirection =
+        self.writingDirection == .leftToRight
+        ? .leftToRight : .rightToLeft
       var titleAttributes = titleAttributes
       var bodyAttributes = bodyAttributes
       titleAttributes[.paragraphStyle] = paraStyle
@@ -67,17 +71,19 @@ class UDHR {
     let success = parser.parse()
     assert(success)
     translations = delegate.translations
-    translationsByLanguageCode = Dictionary(uniqueKeysWithValues:
-                                              translations.map({ ($0.languageCode, $0) }))
+    translationsByLanguageCode = Dictionary(
+      uniqueKeysWithValues:
+        translations.map({ ($0.languageCode, $0) }))
   }
 
-  private class ParserDelegate : NSObject, XMLParserDelegate {
+  private class ParserDelegate: NSObject, XMLParserDelegate {
 
     var currentString = String()
 
-    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?,
-                qualifiedName qName: String?, attributes attribs: [String : String] = [:])
-    {
+    func parser(
+      _ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?,
+      qualifiedName qName: String?, attributes attribs: [String: String] = [:]
+    ) {
       switch elementName {
       case "h2": break
       case "div":
@@ -92,9 +98,10 @@ class UDHR {
       currentString = ""
     }
 
-    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?,
-                qualifiedName qName: String?)
-    {
+    func parser(
+      _ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?,
+      qualifiedName qName: String?
+    ) {
       switch elementName {
       case "h2": endTranslationLanguage()
       case "div" where currentLanguage != nil:
@@ -131,8 +138,10 @@ class UDHR {
 
     private func endTranslationBody() {
       if currentArticleTitle != nil {
-        currentArticles.append(Translation.Article(title: currentArticleTitle!,
-                                                   paragraphs: currentArticleParagraphs))
+        currentArticles.append(
+          Translation.Article(
+            title: currentArticleTitle!,
+            paragraphs: currentArticleParagraphs))
         currentArticleTitle = nil
         currentArticleParagraphs = []
       }
@@ -141,14 +150,16 @@ class UDHR {
         print("Ignored empty \(currentLanguage!) translation")
         return
       }
-      translations.append(Translation(language: currentLanguage!,
-                                      languageCode: currentLanguageCode!,
-                                      writingDirection: currentWritingDirection!,
-                                      title: currentTitle!,
-                                      articles: currentArticles))
+      translations.append(
+        Translation(
+          language: currentLanguage!,
+          languageCode: currentLanguageCode!,
+          writingDirection: currentWritingDirection!,
+          title: currentTitle!,
+          articles: currentArticles))
       currentLanguage = nil
       currentLanguageCode = nil
-      currentWritingDirection  = nil
+      currentWritingDirection = nil
       currentTitle = nil
       currentArticles = []
     }
@@ -160,8 +171,10 @@ class UDHR {
 
     private func startArticleTitle() {
       if currentArticleTitle == nil { return }
-      currentArticles.append(Translation.Article(title: currentArticleTitle!,
-                                                 paragraphs: currentArticleParagraphs))
+      currentArticles.append(
+        Translation.Article(
+          title: currentArticleTitle!,
+          paragraphs: currentArticleParagraphs))
       currentArticleTitle = nil
       currentArticleParagraphs = []
     }

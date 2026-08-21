@@ -2,18 +2,17 @@
 
 import UIKit
 
-func paragraphStyle(_ configure: (NSMutableParagraphStyle) -> ()) -> NSParagraphStyle {
+func paragraphStyle(_ configure: (NSMutableParagraphStyle) -> Void) -> NSParagraphStyle {
   let style = NSMutableParagraphStyle()
   configure(style)
   return style.copy() as! NSParagraphStyle
 }
 
-let ltrParaStyle = paragraphStyle({b in b.baseWritingDirection = .leftToRight})
+let ltrParaStyle = paragraphStyle({ b in b.baseWritingDirection = .leftToRight })
 
-let rtlParaStyle = paragraphStyle({b in b.baseWritingDirection = .rightToLeft})
+let rtlParaStyle = paragraphStyle({ b in b.baseWritingDirection = .rightToLeft })
 
 typealias StringAttributes = [NSAttributedString.Key: Any]
-
 
 extension NSAttributedString {
   convenience init(_ string: String, _ attributes: [Key: Any]) {

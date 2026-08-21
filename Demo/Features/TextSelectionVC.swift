@@ -1,8 +1,8 @@
 // Copyright 2026 Stephan Tolksdorf
 
-import UIKit
 import STULabelSwift
 import SafariServices
+import UIKit
 
 private let rightToLeftText = "‫اضغط مطولاً على هذا النصّ لتجربة المقابض."
 
@@ -30,19 +30,21 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
     interactionStatusLabel.adjustsFontForContentSizeCategory = true
 
     configureTextLabel(selectableTextLabel)
-    selectableTextLabel.text = "Long-press this text to select a word or sentence, move the native selection handles, then copy it. Emoji 👩🏽‍💻 and composed characters stay together while selecting."
+    selectableTextLabel.text =
+      "Long-press this text to select a word or sentence, move the native selection handles, then copy it. Emoji 👩🏽‍💻 and composed characters stay together while selecting."
 
     let rightToLeftText = NSMutableAttributedString(string: rightToLeftText)
-    rightToLeftText.addAttribute(.link, value: URL(string: "https://www.google.com")!, range: NSRange(location: 0, length: 5))
+    rightToLeftText.addAttribute(
+      .link, value: URL(string: "https://www.google.com")!, range: NSRange(location: 0, length: 5))
     configureTextLabel(rightToLeftTextLabel)
     rightToLeftTextLabel.delegate = self
     rightToLeftTextLabel.semanticContentAttribute = .forceRightToLeft
     rightToLeftTextLabel.attributedText = rightToLeftText
 
-
     configureTextLabel(truncatedTextLabel)
     truncatedTextLabel.maximumNumberOfLines = 2
-    truncatedTextLabel.text = "Selection is based on exactly the text rendered by the label. This deliberately long sample is truncated after two lines, so hidden text is never selected or copied."
+    truncatedTextLabel.text =
+      "Selection is based on exactly the text rendered by the label. This deliberately long sample is truncated after two lines, so hidden text is never selected or copied."
   }
 
   private func configureTextLabel(_ label: STULabel) {
@@ -93,24 +95,28 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
       stackView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
       stackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
       stackView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-      stackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor)
+      stackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
     ])
 
-    contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 20, leading: 20,
-                                                                     bottom: 20, trailing: 20)
+    contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
+      top: 20, leading: 20,
+      bottom: 20, trailing: 20)
   }
 
   private func updateInteractionStatus() {
     if selectableTextLabel.textInteraction.textInteractionMode == .nonEditable {
-      interactionStatusLabel.text = "Each selectable STULabel installed UITextInteractionModeNonEditable. Long-press any sample below to select and copy its visible text."
+      interactionStatusLabel.text =
+        "Each selectable STULabel installed UITextInteractionModeNonEditable. Long-press any sample below to select and copy its visible text."
     } else {
       interactionStatusLabel.text = "UITextInteractionModeNonEditable was not installed."
     }
   }
 
-  func label(_ label: STULabel,
-             contextMenuConfigurationForLink link: STUTextLink,
-             at location: CGPoint) -> UIContextMenuConfiguration? {
+  func label(
+    _ label: STULabel,
+    contextMenuConfigurationForLink link: STUTextLink,
+    at location: CGPoint
+  ) -> UIContextMenuConfiguration? {
     guard let url = link.linkAttribute as? URL else { return nil }
     return UIContextMenuConfiguration {
       SFSafariViewController(url: url)

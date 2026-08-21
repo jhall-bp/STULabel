@@ -2,7 +2,7 @@
 
 import UIKit
 
-class StaticTableViewController : UITableViewController {
+class StaticTableViewController: UITableViewController {
   var cells = [UITableViewCell]() {
     didSet {
       tableView.reloadData()
@@ -28,8 +28,9 @@ class StaticTableViewController : UITableViewController {
     super.viewDidLayoutSubviews()
     if shouldUpdatePreferredContentSize {
       let size = tableView.contentSize
-      preferredContentSize = CGSize(width: max(size.width, minPreferredContentWidth),
-                                    height: size.height)
+      preferredContentSize = CGSize(
+        width: max(size.width, minPreferredContentWidth),
+        height: size.height)
     }
   }
 
@@ -38,7 +39,7 @@ class StaticTableViewController : UITableViewController {
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-             -> UITableViewCell
+    -> UITableViewCell
   {
     return cells[indexPath.row]
   }

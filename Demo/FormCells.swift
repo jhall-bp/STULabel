@@ -2,7 +2,6 @@
 
 import STULabelSwift
 
-
 class SwitchCell: UITableViewCell, PropertyObserverProtocol {
 
   private let switchView = UISwitch()
@@ -33,7 +32,7 @@ class SwitchCell: UITableViewCell, PropertyObserverProtocol {
     }
   }
 
-  var onValueChange: ((Bool) -> ())?
+  var onValueChange: ((Bool) -> Void)?
 
   let property: Property<Bool>?
 
@@ -83,7 +82,6 @@ class SwitchCell: UITableViewCell, PropertyObserverProtocol {
   @available(*, unavailable)
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-
   func propertyDidChange(_ property: PropertyBase) {
     assert(property === self.property)
     self.value = self.property!.value
@@ -98,7 +96,7 @@ class SwitchCell: UITableViewCell, PropertyObserverProtocol {
   }
 }
 
-class ButtonCell : UITableViewCell {
+class ButtonCell: UITableViewCell {
   private let button = UIButton(type: .system)
 
   var title: String? {
@@ -114,7 +112,7 @@ class ButtonCell : UITableViewCell {
     }
   }
 
-  var onButtonTap: (() -> ())?
+  var onButtonTap: (() -> Void)?
 
   init(_ title: String) {
     super.init(style: .value1, reuseIdentifier: nil)
@@ -143,12 +141,19 @@ nonisolated protocol BinaryFloatingPointOrInt: Sendable, Comparable, Codable {
   var asFloat64: Float64 { get }
 }
 
-nonisolated extension Float32 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
-nonisolated extension Float64 : BinaryFloatingPointOrInt { var asFloat64: Float64 { return self } }
-nonisolated extension CGFloat : BinaryFloatingPointOrInt { var asFloat64: Float64 { return Float64(self) } }
-nonisolated extension Int : BinaryFloatingPointOrInt     { var asFloat64: Float64 { return Float64(self) } }
+nonisolated extension Float32: BinaryFloatingPointOrInt {
+  var asFloat64: Float64 { return Float64(self) }
+}
+nonisolated extension Float64: BinaryFloatingPointOrInt { var asFloat64: Float64 { return self } }
+nonisolated extension CGFloat: BinaryFloatingPointOrInt {
+  var asFloat64: Float64 { return Float64(self) }
+}
+nonisolated extension Int: BinaryFloatingPointOrInt {
+  var asFloat64: Float64 { return Float64(self) }
+}
 
-final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, PropertyObserverProtocol {
+final class StepperCell<Value: BinaryFloatingPointOrInt>: UITableViewCell, PropertyObserverProtocol
+{
 
   var title: String? {
     get { return self.textLabel!.text }
@@ -200,7 +205,7 @@ final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, Prop
       stepper.stepValue = step
       if round(step) == step {
         numberFormat = "%.0f"
-      } else if round(step*10)/10 == step {
+      } else if round(step * 10) / 10 == step {
         numberFormat = "%.1f"
       } else {
         numberFormat = "%.2f"
@@ -235,13 +240,14 @@ final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, Prop
 
   var isContinuous: Bool = false
 
-  var onValueChange: ((Value) -> ())?
+  var onValueChange: ((Value) -> Void)?
 
   let property: Property<Value>?
 
-  init(_ title: String, _ range: ClosedRange<Value>, step: Value, _ property: Property<Value>,
-       unit: String = "")
-  {
+  init(
+    _ title: String, _ range: ClosedRange<Value>, step: Value, _ property: Property<Value>,
+    unit: String = ""
+  ) {
     self.range = range
     self._value = property.value
     self.unit = unit
@@ -294,7 +300,7 @@ final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, Prop
     var value = Value(self.stepper.value)
     if roundsValueToMultipleOfStepSize {
       let step = self.stepper.stepValue
-      let roundedValue = Value(round(value.asFloat64/step)*step)
+      let roundedValue = Value(round(value.asFloat64 / step) * step)
       if range.contains(roundedValue) {
         value = roundedValue
         self.stepper.value = value.asFloat64
@@ -310,7 +316,7 @@ final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, Prop
     }
   }
 
-  @objc private func touchUp()  {
+  @objc private func touchUp() {
     if delayedNotification {
       notifyObservers()
     }
@@ -366,22 +372,24 @@ final class StepperCell<Value: BinaryFloatingPointOrInt> : UITableViewCell, Prop
   private var stepper: UIStepper { return stepperContainer.stepper }
 
   private let stepperContainer = StepperContainer()
-  private class StepperContainer : UIView {
+  private class StepperContainer: UIView {
     let stepper = UIStepper()
     init() {
       let size = stepper.intrinsicContentSize
-      let x: CGFloat = 10 // padding
+      let x: CGFloat = 10  // padding
       stepper.frame = CGRect(origin: CGPoint(x: x, y: 0), size: size)
       stepper.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-      super.init(frame: CGRect(origin: .zero,
-                               size: CGSize(width: size.width + x, height: size.height)))
+      super.init(
+        frame: CGRect(
+          origin: .zero,
+          size: CGSize(width: size.width + x, height: size.height)))
       self.addSubview(stepper)
     }
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   }
 }
 
-class SelectCell<Value> : UITableViewCell {
+class SelectCell<Value>: UITableViewCell {
 
   var title: String? {
     get { return self.textLabel!.text }
@@ -413,12 +421,12 @@ class SelectCell<Value> : UITableViewCell {
   var detailTextColor: UIColor? {
     get { return detailTextLabel?.textColor }
     set {
-      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? .secondaryLabel
+      detailTextLabel?.textColor = newValue?.withAlphaComponent(2 / 3.0) ?? .secondaryLabel
     }
   }
 
   private func updateLabel() {
-     self.detailTextLabel!.text = 0 <= index && index < values.count ? values[index].name : ""
+    self.detailTextLabel!.text = 0 <= index && index < values.count ? values[index].name : ""
   }
 
   func set(values: [(name: String, value: Value)], index: Int) {
@@ -427,11 +435,11 @@ class SelectCell<Value> : UITableViewCell {
     self.index = index
   }
 
-  var valueLabelStyler: ((_ index: Int, _ value: Value, _ label: UILabel) -> ())?
+  var valueLabelStyler: ((_ index: Int, _ value: Value, _ label: UILabel) -> Void)?
 
   fileprivate(set) var property: Property<Value>?
 
-  var onIndexChange: ((_ index: Int, _ value: Value) -> ())?
+  var onIndexChange: ((_ index: Int, _ value: Value) -> Void)?
 
   required init(_ title: String, _ values: [(name: String, value: Value)], index: Int = 0) {
     precondition(0 <= index && index < values.count)
@@ -467,7 +475,7 @@ class SelectCell<Value> : UITableViewCell {
 
   private weak var tableViewController: SelectionViewController?
 
-  private class SelectionViewController : UITableViewController {
+  private class SelectionViewController: UITableViewController {
     let selectCell: SelectCell
 
     init(_ selectCell: SelectCell) {
@@ -480,8 +488,9 @@ class SelectCell<Value> : UITableViewCell {
       self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
       self.tableView.alwaysBounceVertical = false
       DispatchQueue.main.async {
-        self.tableView.scrollToRow(at: IndexPath(row: self.selectCell.index, section: 0),
-                                   at: .middle, animated: false)
+        self.tableView.scrollToRow(
+          at: IndexPath(row: self.selectCell.index, section: 0),
+          at: .middle, animated: false)
       }
     }
 
@@ -490,7 +499,7 @@ class SelectCell<Value> : UITableViewCell {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-               -> UITableViewCell
+      -> UITableViewCell
     {
       let cell = self.tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
       let index = indexPath.row
@@ -504,7 +513,7 @@ class SelectCell<Value> : UITableViewCell {
     }
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath)
-               -> IndexPath?
+      -> IndexPath?
     {
       if let oldIndexPath = tableView.indexPathForSelectedRow, oldIndexPath != indexPath {
         tableView.cellForRow(at: oldIndexPath)?.accessoryType = .none
@@ -527,7 +536,7 @@ class SelectCell<Value> : UITableViewCell {
   }
 }
 
-extension SelectCell : PropertyObserverProtocol where Value : Equatable {
+extension SelectCell: PropertyObserverProtocol where Value: Equatable {
   func setValue(_ value: Value) {
     if value == self.value { return }
     self.index = self.values.firstIndex { $0.value == value }!
@@ -539,19 +548,20 @@ extension SelectCell : PropertyObserverProtocol where Value : Equatable {
   }
 
   convenience init(_ title: String, _ values: [(name: String, value: Value)], value: Value) {
-    self.init(title, values, index: values.firstIndex { $0.value == value}!)
+    self.init(title, values, index: values.firstIndex { $0.value == value }!)
   }
 
-  convenience init(_ title: String, _ values: [(name: String, value: Value)],
-                   _ property: Property<Value>)
-  {
+  convenience init(
+    _ title: String, _ values: [(name: String, value: Value)],
+    _ property: Property<Value>
+  ) {
     self.init(title, values, value: property.value)
     self.property = property
     property.addObserver(self)
   }
 }
 
-class SubtableCell : UITableViewCell {
+class SubtableCell: UITableViewCell {
   var title: String? {
     get { return self.textLabel!.text }
     set { self.textLabel!.text = newValue }
@@ -573,12 +583,11 @@ class SubtableCell : UITableViewCell {
   var detailTextColor: UIColor? {
     get { return detailTextLabel?.textColor }
     set {
-      detailTextLabel?.textColor = newValue?.withAlphaComponent(2/3.0) ?? .secondaryLabel
+      detailTextLabel?.textColor = newValue?.withAlphaComponent(2 / 3.0) ?? .secondaryLabel
     }
   }
 
   let footerLabel = UILabel()
-
 
   private var footerCell = UITableViewCell(style: .value1, reuseIdentifier: nil)
 
@@ -596,10 +605,12 @@ class SubtableCell : UITableViewCell {
     footerContentView.addSubview(footerLabel)
     let footerContentMargins = footerContentView.layoutMarginsGuide
 
-    [constrain(footerLabel, .top, eq, footerContentMargins, .top),
-     constrain(footerLabel, .bottom, leq, footerContentMargins, .bottom),
-     constrain(footerLabel, .leading, eq, footerContentMargins, .leading),
-     constrain(footerLabel, .trailing, leq, footerContentMargins, .trailing)].activate()
+    [
+      constrain(footerLabel, .top, eq, footerContentMargins, .top),
+      constrain(footerLabel, .bottom, leq, footerContentMargins, .bottom),
+      constrain(footerLabel, .leading, eq, footerContentMargins, .leading),
+      constrain(footerLabel, .trailing, leq, footerContentMargins, .trailing),
+    ].activate()
 
     footerCell.separatorInset = .init(top: 0, left: 4096, bottom: 0, right: 0)
     footerCell.selectionStyle = .none
@@ -612,7 +623,6 @@ class SubtableCell : UITableViewCell {
   }
   @available(*, unavailable)
   required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
 
   private weak var tableViewController: SubtableViewController?
 
@@ -627,7 +637,7 @@ class SubtableCell : UITableViewCell {
     }
   }
 
-  private class SubtableViewController : UITableViewController {
+  private class SubtableViewController: UITableViewController {
     let subtableCell: SubtableCell
 
     let footer = UIView()
@@ -667,12 +677,13 @@ class SubtableCell : UITableViewCell {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-               -> UITableViewCell
+      -> UITableViewCell
     {
       let index = indexPath.row
-      let cell = index < subtableCell.cells.count
-               ? subtableCell.cells[indexPath.row]
-               : subtableCell.footerCell
+      let cell =
+        index < subtableCell.cells.count
+        ? subtableCell.cells[indexPath.row]
+        : subtableCell.footerCell
       tableView.addSubview(cell)
       return cell
     }

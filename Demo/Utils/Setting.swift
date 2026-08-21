@@ -4,7 +4,7 @@ import STULabelSwift
 
 // The classes here are *not* thread-safe.
 
-protocol PropertyObserverProtocol : AnyObject {
+protocol PropertyObserverProtocol: AnyObject {
   func propertyDidChange(_ property: PropertyBase)
 }
 
@@ -41,7 +41,7 @@ class PropertyBase {
   }
 }
 
-class Property<Value> : PropertyBase {
+class Property<Value>: PropertyBase {
   private(set) var value: Value
 
   init(_ value: Value) {
@@ -57,29 +57,29 @@ class Property<Value> : PropertyBase {
     notifyObservers()
   }
 
-  func observe(onChange: @escaping () -> ()) -> PropertyObserver<Value> {
+  func observe(onChange: @escaping () -> Void) -> PropertyObserver<Value> {
     return PropertyObserver(self, onChange: onChange)
   }
 
-  func observe(onChange: @escaping (_ newValue: Value) -> ()) -> PropertyObserver<Value> {
+  func observe(onChange: @escaping (_ newValue: Value) -> Void) -> PropertyObserver<Value> {
     return observe { [unowned self] in
       onChange(self.value)
     }
   }
 }
 
-extension Property where Value : Equatable {
+extension Property where Value: Equatable {
   func setValue(_ value: Value) {
     if self.value == value { return }
     setChangedValue(value)
   }
 }
 
-class PropertyObserver<Value> : PropertyObserverProtocol {
+class PropertyObserver<Value>: PropertyObserverProtocol {
   let property: Property<Value>
-  let onChange: () -> ()
+  let onChange: () -> Void
 
-  init(_ property: Property<Value>, onChange: @escaping () -> ()) {
+  init(_ property: Property<Value>, onChange: @escaping () -> Void) {
     self.property = property
     self.onChange = onChange
     property.addObserver(self)
@@ -95,18 +95,19 @@ class PropertyObserver<Value> : PropertyObserverProtocol {
   }
 }
 
-class ProjectedProperty<Value, ProjectedValue : Equatable>
-    : Property<ProjectedValue>, PropertyObserverProtocol
+class ProjectedProperty<Value, ProjectedValue: Equatable>: Property<ProjectedValue>,
+  PropertyObserverProtocol
 {
 
   let property: Property<Value>
   let getter: (Value) -> ProjectedValue
-  let setter: (inout Value, ProjectedValue) -> ()
+  let setter: (inout Value, ProjectedValue) -> Void
 
-  init(_ property: Property<Value>,
-       getter: @escaping (Value) -> ProjectedValue,
-       setter: @escaping (inout Value, ProjectedValue) -> ())
-  {
+  init(
+    _ property: Property<Value>,
+    getter: @escaping (Value) -> ProjectedValue,
+    setter: @escaping (inout Value, ProjectedValue) -> Void
+  ) {
     self.property = property
     self.getter = getter
     self.setter = setter
@@ -137,7 +138,7 @@ class ProjectedProperty<Value, ProjectedValue : Equatable>
     } else {
       var value = property.value
       setter(&value, newValue)
-      property.setChangedValue(value) // Will call propertyDidChange.
+      property.setChangedValue(value)  // Will call propertyDidChange.
     }
   }
 
@@ -154,26 +155,28 @@ class ProjectedProperty<Value, ProjectedValue : Equatable>
 class PropertyObserverContainer {
   private var observers = [AnyObject]()
 
-  func observe<Value>(_ property: Property<Value>, _ onChange: @escaping () -> ()) {
+  func observe<Value>(_ property: Property<Value>, _ onChange: @escaping () -> Void) {
     observers.append(property.observe(onChange: onChange))
   }
 
-  func observe<Value>(_ property: Property<Value>, _ onChange: @escaping (Value) -> ()) {
+  func observe<Value>(_ property: Property<Value>, _ onChange: @escaping (Value) -> Void) {
     observers.append(property.observe(onChange: onChange))
   }
 
-  func observe<Value, ProjectedValue: Equatable>(_ property: Property<Value>,
-                                                 _ getter: @escaping (Value) -> ProjectedValue,
-                                                 _ onChange: @escaping (ProjectedValue) -> ())
-  {
+  func observe<Value, ProjectedValue: Equatable>(
+    _ property: Property<Value>,
+    _ getter: @escaping (Value) -> ProjectedValue,
+    _ onChange: @escaping (ProjectedValue) -> Void
+  ) {
     var lastProjectedValue = getter(property.value)
-    observers.append(property.observe { value in
-      let projectedValue = getter(value)
-      if projectedValue != lastProjectedValue {
-        lastProjectedValue = projectedValue
-        onChange(projectedValue)
-      }
-    })
+    observers.append(
+      property.observe { value in
+        let projectedValue = getter(value)
+        if projectedValue != lastProjectedValue {
+          lastProjectedValue = projectedValue
+          onChange(projectedValue)
+        }
+      })
   }
 }
 
@@ -183,7 +186,7 @@ protocol UserDefaultsStorable {
   static func load(from userDefaults: UserDefaults, key: String) -> Self?
 }
 
-class Setting<Value : UserDefaultsStorable & Equatable> : Property<Value> {
+class Setting<Value: UserDefaultsStorable & Equatable>: Property<Value> {
   let id: String
   let defaultValue: Value
 
@@ -204,7 +207,7 @@ class Setting<Value : UserDefaultsStorable & Equatable> : Property<Value> {
     }
   }
 
-  var onChange: (() -> ())?
+  var onChange: (() -> Void)?
 
   override func notifyObservers() {
     if value != defaultValue {
@@ -217,26 +220,25 @@ class Setting<Value : UserDefaultsStorable & Equatable> : Property<Value> {
   }
 }
 
-
 protocol PropertyListType {}
-extension Bool       : PropertyListType {}
-extension CGFloat    : PropertyListType {}
-extension Float32    : PropertyListType {}
-extension Float64    : PropertyListType {}
-extension Int        : PropertyListType {}
-extension Int8       : PropertyListType {}
-extension Int16      : PropertyListType {}
-extension Int32      : PropertyListType {}
-extension Int64      : PropertyListType {}
-extension UInt       : PropertyListType {}
-extension UInt8      : PropertyListType {}
-extension UInt16     : PropertyListType {}
-extension UInt32     : PropertyListType {}
-extension UInt64     : PropertyListType {}
-extension String     : PropertyListType {}
-extension Data       : PropertyListType {}
-extension Array      : PropertyListType where Element : PropertyListType {}
-extension Dictionary : PropertyListType where Key : PropertyListType, Value : PropertyListType {}
+extension Bool: PropertyListType {}
+extension CGFloat: PropertyListType {}
+extension Float32: PropertyListType {}
+extension Float64: PropertyListType {}
+extension Int: PropertyListType {}
+extension Int8: PropertyListType {}
+extension Int16: PropertyListType {}
+extension Int32: PropertyListType {}
+extension Int64: PropertyListType {}
+extension UInt: PropertyListType {}
+extension UInt8: PropertyListType {}
+extension UInt16: PropertyListType {}
+extension UInt32: PropertyListType {}
+extension UInt64: PropertyListType {}
+extension String: PropertyListType {}
+extension Data: PropertyListType {}
+extension Array: PropertyListType where Element: PropertyListType {}
+extension Dictionary: PropertyListType where Key: PropertyListType, Value: PropertyListType {}
 
 // Swift doesn't support adding a protocol conformance in a protocol extension, so we first add
 // the methods in a protocol extension and then individually add the protocol conformances to
@@ -252,27 +254,26 @@ extension PropertyListType {
   }
 }
 
-extension Bool       : UserDefaultsStorable {}
-extension CGFloat    : UserDefaultsStorable {}
-extension Float32    : UserDefaultsStorable {}
-extension Float64    : UserDefaultsStorable {}
-extension Int        : UserDefaultsStorable {}
-extension Int8       : UserDefaultsStorable {}
-extension Int16      : UserDefaultsStorable {}
-extension Int32      : UserDefaultsStorable {}
-extension Int64      : UserDefaultsStorable {}
-extension UInt       : UserDefaultsStorable {}
-extension UInt8      : UserDefaultsStorable {}
-extension UInt16     : UserDefaultsStorable {}
-extension UInt32     : UserDefaultsStorable {}
-extension UInt64     : UserDefaultsStorable {}
-extension String     : UserDefaultsStorable {}
-extension Data       : UserDefaultsStorable {}
-extension Array      : UserDefaultsStorable where Element : PropertyListType {}
-extension Dictionary : UserDefaultsStorable where Key : PropertyListType, Value : PropertyListType {}
+extension Bool: UserDefaultsStorable {}
+extension CGFloat: UserDefaultsStorable {}
+extension Float32: UserDefaultsStorable {}
+extension Float64: UserDefaultsStorable {}
+extension Int: UserDefaultsStorable {}
+extension Int8: UserDefaultsStorable {}
+extension Int16: UserDefaultsStorable {}
+extension Int32: UserDefaultsStorable {}
+extension Int64: UserDefaultsStorable {}
+extension UInt: UserDefaultsStorable {}
+extension UInt8: UserDefaultsStorable {}
+extension UInt16: UserDefaultsStorable {}
+extension UInt32: UserDefaultsStorable {}
+extension UInt64: UserDefaultsStorable {}
+extension String: UserDefaultsStorable {}
+extension Data: UserDefaultsStorable {}
+extension Array: UserDefaultsStorable where Element: PropertyListType {}
+extension Dictionary: UserDefaultsStorable where Key: PropertyListType, Value: PropertyListType {}
 
-
-extension Optional : UserDefaultsStorable where Wrapped : UserDefaultsStorable {
+extension Optional: UserDefaultsStorable where Wrapped: UserDefaultsStorable {
   func save(to userDefaults: UserDefaults, key: String) {
     if let value = self {
       value.save(to: userDefaults, key: key)
@@ -281,15 +282,18 @@ extension Optional : UserDefaultsStorable where Wrapped : UserDefaultsStorable {
     }
   }
 
-  static func load(from userDefaults: UserDefaults, key: String) -> Optional<Wrapped>? {
+  static func load(from userDefaults: UserDefaults, key: String) -> Wrapped?? {
     return Wrapped.load(from: userDefaults, key: key)
   }
 }
 
 extension NSSecureCoding where Self: NSObject {
   func save(to userDefaults: UserDefaults, key: String) {
-    guard let data = try? NSKeyedArchiver.archivedData(withRootObject: self,
-                                                       requiringSecureCoding: true) else {
+    guard
+      let data = try? NSKeyedArchiver.archivedData(
+        withRootObject: self,
+        requiringSecureCoding: true)
+    else {
       return
     }
     userDefaults.set(data, forKey: key)
@@ -303,11 +307,11 @@ extension NSSecureCoding where Self: NSObject {
   }
 }
 
-extension UIColor : UserDefaultsStorable {}
+extension UIColor: UserDefaultsStorable {}
 
-extension UIFont : UserDefaultsStorable {}
+extension UIFont: UserDefaultsStorable {}
 
-extension RawRepresentable where RawValue : UserDefaultsStorable {
+extension RawRepresentable where RawValue: UserDefaultsStorable {
   func save(to userDefaults: UserDefaults, key: String) {
     rawValue.save(to: userDefaults, key: key)
   }
@@ -320,14 +324,14 @@ extension RawRepresentable where RawValue : UserDefaultsStorable {
   }
 }
 
-extension NSUnderlineStyle : UserDefaultsStorable {}
-extension STULastLineTruncationMode : UserDefaultsStorable {}
-extension STUTextLayoutMode : UserDefaultsStorable {}
-extension UIFont.TextStyle : UserDefaultsStorable {}
-extension UIContentSizeCategory : UserDefaultsStorable {}
+extension NSUnderlineStyle: UserDefaultsStorable {}
+extension STULastLineTruncationMode: UserDefaultsStorable {}
+extension STUTextLayoutMode: UserDefaultsStorable {}
+extension UIFont.TextStyle: UserDefaultsStorable {}
+extension UIContentSizeCategory: UserDefaultsStorable {}
 
-extension UDHR.Translation : Equatable, UserDefaultsStorable {
-  static func ==(_ lhs: UDHR.Translation, _ rhs: UDHR.Translation) -> Bool {
+extension UDHR.Translation: Equatable, UserDefaultsStorable {
+  static func == (_ lhs: UDHR.Translation, _ rhs: UDHR.Translation) -> Bool {
     return lhs === rhs
   }
 

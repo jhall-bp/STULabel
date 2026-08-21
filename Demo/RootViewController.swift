@@ -15,34 +15,44 @@ func debugBuildTitleLabel() -> UILabel? {
   #endif
 }
 
-
-class RootViewController : UITableViewController, UINavigationControllerDelegate {
+class RootViewController: UITableViewController, UINavigationControllerDelegate {
 
   init() {
     super.init(style: .plain)
     self.navigationItem.title = "STULabel"
-    self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain,
-                                                            target: nil, action: nil)
+    self.navigationItem.backBarButtonItem = UIBarButtonItem(
+      title: "Back", style: .plain,
+      target: nil, action: nil)
     self.tableView.cellLayoutMarginsFollowReadableWidth = true
     self.tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
-    self.sections = [Section(title: "Tests",
-                             items: [Item(title: "UDHR Viewer",      vc: UDHRViewerVC.self),
-                                     Item(title: "Tap to read more", vc: TapToReadMoreVC.self),
-                                     Item(title: "Text selection",   vc: TextSelectionVC.self)]),
-                    Section(title: "Performance",
-                             items: [Item(title: "UITableView scrolling",
-                                          vc: TableViewPerformanceVC.self),
-                                     Item(title: "Label performance",
-                                          vc: LabelPerformanceVC.self),
-                                     Item(title: "TextFrame performance",
-                                          vc: TextFramePerformanceVC.self)])]
+    self.sections = [
+      Section(
+        title: "Tests",
+        items: [
+          Item(title: "UDHR Viewer", vc: UDHRViewerVC.self),
+          Item(title: "Tap to read more", vc: TapToReadMoreVC.self),
+          Item(title: "Text selection", vc: TextSelectionVC.self),
+        ]),
+      Section(
+        title: "Performance",
+        items: [
+          Item(
+            title: "UITableView scrolling",
+            vc: TableViewPerformanceVC.self),
+          Item(
+            title: "Label performance",
+            vc: LabelPerformanceVC.self),
+          Item(
+            title: "TextFrame performance",
+            vc: TextFramePerformanceVC.self),
+        ]),
+    ]
 
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
 
   struct Item {
     let title: String
@@ -54,7 +64,7 @@ class RootViewController : UITableViewController, UINavigationControllerDelegate
     let items: [Item]
   }
 
-  class Cell : UITableViewCell {
+  class Cell: UITableViewCell {
     static let reuseIdentifier = "cell"
   }
 
@@ -76,13 +86,13 @@ class RootViewController : UITableViewController, UINavigationControllerDelegate
   }
 
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int)
-             -> String?
+    -> String?
   {
     return sections[section].title
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-             -> UITableViewCell
+    -> UITableViewCell
   {
     let cell = tableView.dequeueReusableCell(withIdentifier: Cell.reuseIdentifier, for: indexPath)
     cell.textLabel!.text = sections[indexPath.section].items[indexPath.item].title
@@ -94,9 +104,10 @@ class RootViewController : UITableViewController, UINavigationControllerDelegate
     self.navigationController?.pushViewController(item.vc.init(), animated: true)
   }
 
-  func navigationController(_ navigationController: UINavigationController,
-                            didShow viewController: UIViewController, animated: Bool)
-  {
+  func navigationController(
+    _ navigationController: UINavigationController,
+    didShow viewController: UIViewController, animated: Bool
+  ) {
     if let vc = viewController as? TableViewPerformanceVC {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
         vc.showSettings()
