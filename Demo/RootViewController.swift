@@ -20,9 +20,6 @@ class RootViewController: UITableViewController, UINavigationControllerDelegate 
   init() {
     super.init(style: .insetGrouped)
     self.navigationItem.title = "STULabel"
-    self.navigationItem.backBarButtonItem = UIBarButtonItem(
-      title: "Back", style: .plain,
-      target: nil, action: nil)
     self.tableView.cellLayoutMarginsFollowReadableWidth = true
     self.tableView.register(Cell.self, forCellReuseIdentifier: Cell.reuseIdentifier)
     self.sections = [
