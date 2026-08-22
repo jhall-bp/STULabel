@@ -6,7 +6,6 @@
 
 #import "Internal/CoreAnimationUtils.hpp"
 #import "Internal/InputClamping.hpp"
-#import "Internal/Localized.hpp"
 #import "Internal/TextLineSpansPath.hpp"
 
 #include "Internal/DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h"
@@ -188,7 +187,8 @@ struct InitParams
 {
   if (!_isDraggable || !_textFrameElement)
     return nil;
-  return @[ [[UIAccessibilityLocationDescriptor alloc] initWithName:localizedForSystemLocale(@"Drag Item")
+  NSString* localizedName = NSLocalizedStringFromTableInBundle(@"Drag Item", nil, SWIFTPM_MODULE_BUNDLE, "");
+  return @[ [[UIAccessibilityLocationDescriptor alloc] initWithName:localizedName
                                                               point:_activationPoint + _textFrameElement->_frame.origin
                                                              inView:_textFrameElement.accessibilityContainer] ];
 }
