@@ -1560,14 +1560,14 @@ STU_INLINE void setContextMenuConfigurationLink(UIContextMenuConfiguration *conf
                                          configuration:(UIContextMenuConfiguration *)configuration
                  highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier
 {
-  return [self stu_targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
+  return [self targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
 }
 
 - (nullable UITargetedPreview *)contextMenuInteraction:(UIContextMenuInteraction *)interaction
                                          configuration:(UIContextMenuConfiguration *)configuration
                  dismissalPreviewForItemWithIdentifier:(id<NSCopying>)identifier
 {
-  return [self stu_targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
+  return [self targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
 }
 
 // MARK: - UIDragInteraction
@@ -1716,7 +1716,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
   return [self stu_dragItemsForPoint:point session:session];
 }
 
-- (UITargetedDragPreview *)stu_targetedPreviewForLink:(STUTextLink *)link dragItem:(nullable UIDragItem *)dragItem
+- (nullable UITargetedDragPreview *)targetedPreviewForLink:(STUTextLink *)link dragItem:(nullable UIDragItem *)dragItem
 {
   link = [_layer.links linkMatchingLink:link];
   if (!link)
@@ -1867,7 +1867,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
                      previewForLiftingItem:(UIDragItem *)item
                                    session:(id<UIDragSession> __unused)session API_UNAVAILABLE(watchos, tvos)
 {
-  return [self stu_targetedPreviewForLink:dragItemLink(item) dragItem:item];
+  return [self targetedPreviewForLink:dragItemLink(item) dragItem:item];
 }
 
 - (UITargetedDragPreview *)dragInteraction:(UIDragInteraction *__unused)interaction
@@ -1875,7 +1875,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
                                withDefault:(UITargetedDragPreview *__unused)defaultPreview
     API_UNAVAILABLE(watchos, tvos)
 {
-  return [self stu_targetedPreviewForLink:dragItemLink(item) dragItem:item];
+  return [self targetedPreviewForLink:dragItemLink(item) dragItem:item];
 }
 
 - (void)stu_startedDragInteractionWithLink:(STUTextLink *)link

@@ -258,6 +258,12 @@ STU_EXPORT
 
 #if TARGET_OS_IOS
 @interface STULabel () <UIDragInteractionDelegate, UIContextMenuInteractionDelegate>
+
+/// Creates a targeted preview for a link, suitable for use with custom drag and context menu interactions.
+/// @param link The link to create targeted preview for.
+/// @param dragItem The drag item 
+- (nullable UITargetedDragPreview *)targetedPreviewForLink:(STUTextLink *)link dragItem:(nullable UIDragItem *)dragItem;
+
 @end
 #endif
 
