@@ -62,7 +62,8 @@ class TapToReadMoreVC: UIViewController, STULabelDelegate {
     let attributedText2 = NSMutableAttributedString()
     attributedText2.append(NSAttributedString(string: string2LTR, attributes: [.font: font]))
     firstRTLCharStringIndex = string2LTR.utf16.count
-    attributedText2.append(NSAttributedString(string: string2RTL + string2RTL, attributes: [.font: font]))
+    attributedText2.append(
+      NSAttributedString(string: string2RTL + string2RTL, attributes: [.font: font]))
     attributedText2.append(
       NSAttributedString(
         string: "less",

@@ -187,7 +187,7 @@ struct InitParams
 {
   if (!_isDraggable || !_textFrameElement)
     return nil;
-  NSString* localizedName = NSLocalizedStringFromTableInBundle(@"Drag Item", nil, SWIFTPM_MODULE_BUNDLE, "");
+  NSString *localizedName = NSLocalizedStringFromTableInBundle(@"Drag Item", nil, SWIFTPM_MODULE_BUNDLE, "");
   return @[ [[UIAccessibilityLocationDescriptor alloc] initWithName:localizedName
                                                               point:_activationPoint + _textFrameElement->_frame.origin
                                                              inView:_textFrameElement.accessibilityContainer] ];

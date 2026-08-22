@@ -1174,10 +1174,8 @@ static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 
 static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self)
 {
-  if ((self->_bits.usesTintColorAsLinkColor &&
-       (self->_bits.isEnabled || !self->_disabledLinkColor)) ||
-      self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed)
-  {
+  if ((self->_bits.usesTintColorAsLinkColor && (self->_bits.isEnabled || !self->_disabledLinkColor)) ||
+      self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed) {
     self->_layer.overrideLinkColor = self.tintColor;
   } else {
     self->_layer.overrideLinkColor = UIColor.linkColor;
