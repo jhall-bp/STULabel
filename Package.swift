@@ -17,7 +17,7 @@ let package = Package(
   targets: [
     .target(
       name: "STULabelNoARC",
-      path: "STULabel",
+      path: "Source/STULabel",
       exclude: ["Resources"],
       sources: [
         "Internal/Color-no-ARC.mm",
@@ -47,7 +47,6 @@ let package = Package(
     .target(
       name: "STULabel",
       dependencies: ["STULabelNoARC"],
-      path: "STULabel",
       exclude: [
         "STULabel.modulemap",
         "Internal/Color-no-ARC.mm",
