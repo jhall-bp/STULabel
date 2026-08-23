@@ -3,7 +3,7 @@
 BUILD_DIR := build
 DERIVED_DATA_DIR := $(BUILD_DIR)/derived_data
 
-PACKAGE_SCHEME := STULabelPackage
+PACKAGE_SCHEME := STULabel
 SIMULATOR_DESTINATION ?= platform=iOS Simulator,OS=latest,name=iPhone 17 Pro
 
 XCODEBUILD := set -o pipefail && $(shell command -v xcodebuild) \
