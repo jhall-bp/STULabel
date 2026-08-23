@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.3
 import PackageDescription
 
 let package = Package(
@@ -32,7 +32,6 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("Internal"),
         .define("STU_IMPLEMENTATION"),
-        .define("STU_USE_SAFARI_SERVICES", to: "1"),
         .define("DEBUG", .when(configuration: .debug)),
         .unsafeFlags(["-fno-objc-arc", "-fmodules"]),
       ],
@@ -56,7 +55,6 @@ let package = Package(
         "STULabelPrerenderer-no-ARC.mm",
         "STUObjCRuntimeWrappers-no-ARC.m",
       ],
-      sources: nil,
       resources: [.process("Resources")],
       publicHeadersPath: ".",
       cSettings: [
@@ -75,7 +73,6 @@ let package = Package(
       name: "STULabelSwift",
       dependencies: ["STULabel"],
       swiftSettings: [
-        .defaultIsolation(MainActor.self),
         .enableUpcomingFeature("InferIsolatedConformances"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
       ]
