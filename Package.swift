@@ -5,7 +5,10 @@ let package = Package(
   name: "STULabel",
   defaultLocalization: "en",
   platforms: [
-    .iOS("26.0"),
+    .iOS(.v26),
+    .tvOS(.v26),
+    .watchOS(.v26),
+    .macCatalyst(.v26),
   ],
   products: [
     .library(name: "STULabel", targets: ["STULabel"]),
@@ -46,8 +49,6 @@ let package = Package(
       dependencies: ["STULabelNoARC"],
       path: "STULabel",
       exclude: [
-        "Info.plist",
-        "Resources/Info.plist",
         "STULabel.modulemap",
         "Internal/Color-no-ARC.mm",
         "Internal/NSArrayRef-no-ARC.mm",
@@ -63,7 +64,6 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("Internal"),
         .define("STU_IMPLEMENTATION"),
-        .define("STU_USE_SAFARI_SERVICES", to: "1"),
         .define("DEBUG", .when(configuration: .debug)),
         .unsafeFlags(["-fobjc-arc", "-fmodules"]),
       ],
@@ -75,8 +75,6 @@ let package = Package(
     .target(
       name: "STULabelSwift",
       dependencies: ["STULabel"],
-      path: "STULabelSwift",
-      exclude: ["Info.plist"],
       swiftSettings: [
         .defaultIsolation(MainActor.self),
         .enableUpcomingFeature("InferIsolatedConformances"),
