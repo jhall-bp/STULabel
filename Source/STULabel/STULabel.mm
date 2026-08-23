@@ -1477,7 +1477,7 @@ static NSURL *__nullable urlLinkAttribute(STUTextLink *__unsafe_unretained link)
   const CGPoint point = [_currentTouch locationInView:self];
   clearCurrentLabelTouch(self);
   if (!link)
-    return [super touchesEnded:touches withEvent:event];
+    return;
   [self stu_link:link wasTappedAtPoint:point];
 }
 
