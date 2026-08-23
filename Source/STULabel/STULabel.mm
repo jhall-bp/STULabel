@@ -1472,7 +1472,7 @@ static NSURL *__nullable urlLinkAttribute(STUTextLink *__unsafe_unretained link)
   STU_DEBUG_ASSERT(touchesCount <= _touchCount);
   _touchCount -= touchesCount;
   if (!_currentTouch || ![touches containsObject:_currentTouch])
-    return;
+    return [super touchesEnded:touches withEvent:event];
   STUTextLink *const link = self.activeLink;
   const CGPoint point = [_currentTouch locationInView:self];
   clearCurrentLabelTouch(self);
