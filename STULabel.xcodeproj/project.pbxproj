@@ -3,95 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 110;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		35B2D10E30390F6F00B636D5 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 35B2D10D30390F6F00B636D5 /* AppIcon.icon */; };
-		A10000000000000000000023 /* UITextInputTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* UITextInputTests.mm */; };
-		A10000000000000000000031 /* TextSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* TextSelectionVC.swift */; };
-		A10000000000000000000041 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* SceneDelegate.swift */; };
 		A20000000000000000000005 /* STULabel in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000001 /* STULabel */; };
 		A20000000000000000000006 /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000002 /* STULabelSwift */; };
 		A20000000000000000000007 /* STULabel in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000003 /* STULabel */; };
 		A20000000000000000000008 /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A20000000000000000000004 /* STULabelSwift */; };
-		D40702842014EC17004E5C07 /* TextFramePerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */; };
-		D40C6BCA21384C8F00743FC6 /* StaticTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40C6BC921384C8F00743FC6 /* StaticTableViewController.swift */; };
-		D4154B5C1FD706E900A065BC /* SnapshotTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = D4154B5A1FD706E900A065BC /* SnapshotTestCase.m */; settings = {COMPILER_FLAGS = "-O2"; }; };
-		D41745F920337101001D6F4F /* LabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41745F820337101001D6F4F /* LabelView.swift */; };
-		D41B1F63210BB3C400E4203C /* TextFrameOptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */; };
-		D41C6D21211354EF00ACF170 /* GlyphBoundsCacheTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C6D20211354EF00ACF170 /* GlyphBoundsCacheTests.mm */; };
-		D41C92C52083D1C7002AFFF3 /* DynamicTypeFontScalingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */; };
-		D41C92C62083D276002AFFF3 /* MainScreenPropertiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */; };
-		D41C92C72083D2A6002AFFF3 /* MutexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D4731079202E3624000CBFF1 /* MutexTests.m */; };
-		D41C92C82083F35F002AFFF3 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B8B227205467D800C8341D /* TestUtils.swift */; };
-		D41C92C92083F3EF002AFFF3 /* TextFrameTruncationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EA26A62049E3500093522E /* TextFrameTruncationTests.swift */; };
-		D41C92CA2083F3F1002AFFF3 /* TextFrameLineBreakingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */; };
-		D41C92CC2083F3F7002AFFF3 /* TextFrameHighlightingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40E5D552060332A00E67689 /* TextFrameHighlightingTests.swift */; };
-		D41C92CD2083F3FA002AFFF3 /* TextFrameDrawingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAAE20668A5E0081606C /* TextFrameDrawingTests.swift */; };
-		D41C930420854D15002AFFF3 /* NSFoundationSupportTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C930320854D15002AFFF3 /* NSFoundationSupportTests.mm */; };
-		D41C930620854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D41C930520854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		D41C948620874DEC002AFFF3 /* FunctionRefTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D41C948420874DEC002AFFF3 /* FunctionRefTests.cpp */; };
-		D42119D52047615900D143A8 /* BinarySearchTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42119D42047615900D143A8 /* BinarySearchTests.cpp */; };
-		D423043821527317003E2303 /* Stats.swift in Sources */ = {isa = PBXBuildFile; fileRef = D423043721527317003E2303 /* Stats.swift */; };
-		D423F67220FA5B68003AE48C /* TextAttachmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D423F67120FA5B68003AE48C /* TextAttachmentTests.swift */; };
-		D424FD70209B708A00FB50BA /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D424FD6F209B708A00FB50BA /* Fonts.swift */; };
-		D4271105215CDA3200939123 /* DictionaryExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4271104215CDA3200939123 /* DictionaryExtension.swift */; };
-		D4320B13212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */; };
-		D43E66C81FD45DD400BABD1C /* UnicodeCodePointPropertiesTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */; };
-		D43E66C91FD45DD700BABD1C /* TextLineSpansPathTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */; };
-		D4494FBF2046F4320047DD82 /* AllocationTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42AC4E22041BBEF0076CAF1 /* AllocationTests.cpp */; };
-		D4494FC02046F4320047DD82 /* ArenaAllocatorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42AC4E52041DA830076CAF1 /* ArenaAllocatorTests.cpp */; };
-		D4494FC12046F4320047DD82 /* ArrayTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D47A35202046C26B00C32FAE /* ArrayTests.cpp */; };
-		D4494FC22046F4320047DD82 /* ArrayUtilsTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FBE2046EABE0047DD82 /* ArrayUtilsTests.cpp */; };
-		D4494FC42046F4370047DD82 /* UtilityTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D42AC4DD204176820076CAF1 /* UtilityTests.cpp */; };
-		D4494FC52046F4370047DD82 /* VectorTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FBC2046E93A0047DD82 /* VectorTests.cpp */; };
-		D4494FC72046F5DF0047DD82 /* TestValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FC62046F5DF0047DD82 /* TestValue.cpp */; };
-		D4494FCA2046FFD80047DD82 /* AllocatorUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4494FC92046FFD80047DD82 /* AllocatorUtils.cpp */; };
-		D44F90E820E6413B00ED750B /* UDHR.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAB32067C2810081606C /* UDHR.swift */; };
-		D44F90EA20E6414300ED750B /* udhr.html in Resources */ = {isa = PBXBuildFile; fileRef = D495DAB92067C7210081606C /* udhr.html */; };
-		D44F90EC20E64CFF00ED750B /* Rand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2174209F68A2007E6C36 /* Rand.swift */; };
-		D45167C22016793E0015B10B /* TimingResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45167C12016793E0015B10B /* TimingResultView.swift */; };
-		D45299B42124485E00714A83 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45299B32124485E00714A83 /* Setting.swift */; };
-		D45299B92126385500714A83 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45299B82126385500714A83 /* UIColorExtension.swift */; };
-		D45A31F32062971A009E7E5A /* SortedIntervalBufferTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45A31F22062971A009E7E5A /* SortedIntervalBufferTests.mm */; };
-		D45A31F620645DF6009E7E5A /* HashSetTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D45A31F520645DF6009E7E5A /* HashSetTests.mm */; };
-		D45F2175209F68A2007E6C36 /* Rand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45F2174209F68A2007E6C36 /* Rand.swift */; };
-		D467A0831F9261E70043C7F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D467A0821F9261E70043C7F0 /* Assets.xcassets */; };
-		D46DB171200BAD3B00E7E773 /* TableViewPerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB170200BAD3B00E7E773 /* TableViewPerformanceVC.swift */; };
-		D46DB173200BADB300E7E773 /* AutoHeightTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB172200BADB300E7E773 /* AutoHeightTableViewCell.swift */; };
-		D46DB178200BC18300E7E773 /* AutoLayoutUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */; };
-		D473C97920E41AC000139FED /* TextFrameImageBoundsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D473C97820E41AC000139FED /* TextFrameImageBoundsTests.swift */; };
-		D47ED37A20235DD00086E073 /* LabelPerformanceVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47ED37920235DD00086E073 /* LabelPerformanceVC.swift */; };
-		D47FDD632008B43C00449617 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47FDD622008B43C00449617 /* AppDelegate.swift */; };
-		D47FDD652008B7C400449617 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47FDD642008B7C400449617 /* RootViewController.swift */; };
-		D4819C53211F06D800D37514 /* TextStyleBufferTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4819C52211F06D800D37514 /* TextStyleBufferTests.mm */; };
-		D48652C02023AEB6006DC1A2 /* AttributedStringUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48652BF2023AEB6006DC1A2 /* AttributedStringUtils.swift */; };
-		D48AC8C2205AD53A00EA3FE8 /* TapToReadMoreVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48AC8C1205AD53A00EA3FE8 /* TapToReadMoreVC.swift */; };
-		D495DAB42067C2810081606C /* UDHR.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DAB32067C2810081606C /* UDHR.swift */; };
-		D495DABA2067C7210081606C /* udhr.html in Resources */ = {isa = PBXBuildFile; fileRef = D495DAB92067C7210081606C /* udhr.html */; };
-		D495DABC2067EC140081606C /* UDHRViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D495DABB2067EC140081606C /* UDHRViewerVC.swift */; };
-		D498248C2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498248B2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift */; };
-		D4982493216664AF007D1DA9 /* LabelAlignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4982491216664AF007D1DA9 /* LabelAlignmentTests.swift */; };
-		D49824A1216788C0007D1DA9 /* CoreGraphicsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */; };
-		D49C2D6421077B120018FD33 /* ParagraphStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49C2D6321077B120018FD33 /* ParagraphStyleTests.swift */; };
-		D49CBA482149C977008F36B2 /* AutoLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA472149C977008F36B2 /* AutoLayoutTests.swift */; };
-		D49CBA4B214B07C0008F36B2 /* SnapshotTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49CBA4A214B07C0008F36B2 /* SnapshotTestCase.swift */; };
-		D49CBA4D214BC711008F36B2 /* AutoLayoutUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */; };
-		D4A774BA21110B9F0083B6B9 /* UILabelWithContentInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A774B921110B9F0083B6B9 /* UILabelWithContentInsets.swift */; };
-		D4A80F4420C87B1A001CD188 /* CoreGraphicsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */; };
-		D4AAE9B020476FB300B101A2 /* HashTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4AAE9AF20476FB300B101A2 /* HashTests.mm */; };
-		D4B11BDE222C450300352EE3 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B11BDD222C450300352EE3 /* StringExtension.swift */; };
-		D4B11BDF222C464900352EE3 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B11BDD222C450300352EE3 /* StringExtension.swift */; };
 		D4C8FC1E20D005A100CDA4EB /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C8FC1D20D005A000CDA4EB /* libicucore.tbd */; };
-		D4CEE355202632A200803A45 /* FormCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CEE354202632A200803A45 /* FormCells.swift */; };
-		D4CEE3572026337800803A45 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CEE3562026337800803A45 /* UIViewExtension.swift */; };
-		D4D34513203C75380092641A /* NSStringRefTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D34512203C75380092641A /* NSStringRefTests.mm */; };
-		D4D42F21203A1B9700617ADB /* DisplayScaleRounding.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4D42F20203A1B9700617ADB /* DisplayScaleRounding.mm */; };
-		D4DD022E210E20A500915763 /* SwiftWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DD022D210E20A500915763 /* SwiftWrapperTests.swift */; };
-		D4DD0232210E5BE300915763 /* RangeTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4DD0230210E5BE300915763 /* RangeTests.cpp */; };
-		D4DD0233210E766A00915763 /* ShapedStringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44F90E520E6402C00ED750B /* ShapedStringTests.swift */; };
-		D4E44B1F201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m in Sources */ = {isa = PBXBuildFile; fileRef = D4E44B1E201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,368 +25,87 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		35B2D10D30390F6F00B636D5 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
-		35B2D111303910D800B636D5 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		A10000000000000000000001 /* STULabel+UITextInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STULabel+UITextInput.h"; sourceTree = "<group>"; };
-		A10000000000000000000002 /* STULabel+UITextInput-Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STULabel+UITextInput-Internal.h"; sourceTree = "<group>"; };
-		A10000000000000000000003 /* STULabel+UITextInput.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "STULabel+UITextInput.mm"; sourceTree = "<group>"; };
-		A10000000000000000000021 /* UITextInputTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UITextInputTests.mm; sourceTree = "<group>"; };
-		A10000000000000000000030 /* TextSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSelectionVC.swift; sourceTree = "<group>"; };
-		A10000000000000000000040 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFramePerformanceVC.swift; sourceTree = "<group>"; };
 		D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = STULabel.xcodeproj; sourceTree = "<group>"; };
-		D407F00920E52B6700922204 /* Demo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Demo.xcconfig; sourceTree = "<group>"; };
-		D407F00A20E5306B00922204 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-TruncatedAttributedString.mm"; sourceTree = "<group>"; };
-		D40AE3201FA4E09000E0F056 /* TextFrame-IndexConversion.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-IndexConversion.mm"; sourceTree = "<group>"; };
-		D40AE3231FA4EA4200E0F056 /* Parameter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parameter.hpp; sourceTree = "<group>"; };
-		D40AE3261FA6068F00E0F056 /* GlyphSpan.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GlyphSpan.mm; sourceTree = "<group>"; };
-		D40AE3291FA74F6600E0F056 /* TextFlags.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextFlags.hpp; sourceTree = "<group>"; };
-		D40C6BC921384C8F00743FC6 /* StaticTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticTableViewController.swift; sourceTree = "<group>"; };
-		D40E5D552060332A00E67689 /* TextFrameHighlightingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextFrameHighlightingTests.swift; path = Tests/TextFrameHighlightingTests.swift; sourceTree = SOURCE_ROOT; };
 		D4107B3A20486CCD008CA7E9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D411962E2054762300DDE8BB /* Tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Bridging-Header.h"; sourceTree = "<group>"; };
-		D413108F1F94164A00F39C3A /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
-		D41310901F94168400F39C3A /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
-		D41310911F94169200F39C3A /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		D4134E221FB1F41200377349 /* CoreGraphicsUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CoreGraphicsUtils.hpp; sourceTree = "<group>"; };
-		D4134E231FB20A2300377349 /* STUBackgroundAttribute.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUBackgroundAttribute.mm; sourceTree = "<group>"; };
-		D4134E261FB20A3E00377349 /* STUBackgroundAttribute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUBackgroundAttribute.h; sourceTree = "<group>"; };
-		D4134E291FB20AE800377349 /* STUBackgroundAttribute-Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STUBackgroundAttribute-Internal.h"; sourceTree = "<group>"; };
-		D4134E2C1FB236DA00377349 /* Equal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Equal.hpp; sourceTree = "<group>"; };
-		D4134E2D1FB32C2100377349 /* BinarySearch.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BinarySearch.hpp; sourceTree = "<group>"; };
-		D4154B571FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLayouter-LineTruncation.mm"; sourceTree = "<group>"; };
-		D4154B5A1FD706E900A065BC /* SnapshotTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SnapshotTestCase.m; sourceTree = "<group>"; };
-		D4154B5D1FD7070E00A065BC /* SnapshotTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SnapshotTestCase.h; sourceTree = "<group>"; };
-		D416FB28201D2333002761B4 /* NSAttributedString-no-ARC.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSAttributedString-no-ARC.mm"; sourceTree = "<group>"; };
-		D41745F820337101001D6F4F /* LabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelView.swift; sourceTree = "<group>"; };
-		D41745FA2033A1F9001D6F4F /* LabelParameters.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LabelParameters.mm; sourceTree = "<group>"; };
-		D41A37D22030FFC900ADDE1E /* PurgeableImage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PurgeableImage.hpp; sourceTree = "<group>"; };
-		D41A37D52030FFDF00ADDE1E /* PurgeableImage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PurgeableImage.mm; sourceTree = "<group>"; };
-		D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameOptionsTests.swift; sourceTree = "<group>"; };
-		D41C6D20211354EF00ACF170 /* GlyphBoundsCacheTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GlyphBoundsCacheTests.mm; sourceTree = "<group>"; };
-		D41C930320854D15002AFFF3 /* NSFoundationSupportTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSFoundationSupportTests.mm; sourceTree = "<group>"; };
-		D41C930520854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSFoundationSupportTests-no-ARC.mm"; sourceTree = "<group>"; };
-		D41C948420874DEC002AFFF3 /* FunctionRefTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = FunctionRefTests.cpp; sourceTree = "<group>"; };
-		D42029271FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLayouter-LineBreaking.mm"; sourceTree = "<group>"; };
-		D42119D42047615900D143A8 /* BinarySearchTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = BinarySearchTests.cpp; sourceTree = "<group>"; };
-		D423043721527317003E2303 /* Stats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stats.swift; sourceTree = "<group>"; };
-		D423829B1F926F2C000B8A63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D42382A01F926F96000B8A63 /* STUStartEndRange.overlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STUStartEndRange.overlay.swift; sourceTree = "<group>"; };
-		D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = STUTextFrame.overlay.swift; sourceTree = "<group>"; };
-		D42383C01F92A90D000B8A63 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tests/Info.plist; sourceTree = SOURCE_ROOT; };
-		D42384991F9379B6000B8A63 /* Assert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Assert.m; sourceTree = "<group>"; };
-		D423849A1F9379B7000B8A63 /* Dollar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dollar.hpp; sourceTree = "<group>"; };
-		D423849B1F9379B7000B8A63 /* ArenaAllocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArenaAllocator.hpp; sourceTree = "<group>"; };
-		D423849C1F9379B7000B8A63 /* Iterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Iterator.hpp; sourceTree = "<group>"; };
-		D423849D1F9379B7000B8A63 /* RefCounting.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RefCounting.hpp; sourceTree = "<group>"; };
-		D423849F1F9379B7000B8A63 /* MinMax.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MinMax.hpp; sourceTree = "<group>"; };
-		D42384A01F9379B7000B8A63 /* Comparable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Comparable.hpp; sourceTree = "<group>"; };
-		D42384A11F9379B7000B8A63 /* Allocation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Allocation.hpp; sourceTree = "<group>"; };
-		D42384A21F9379B7000B8A63 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
-		D42384A31F9379B7000B8A63 /* Array.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Array.hpp; sourceTree = "<group>"; };
-		D42384A41F9379B7000B8A63 /* ScopeGuard.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopeGuard.hpp; sourceTree = "<group>"; };
-		D42384A61F9379B8000B8A63 /* FunctionRef.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FunctionRef.hpp; sourceTree = "<group>"; };
-		D42384A71F9379B8000B8A63 /* Range.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Range.hpp; sourceTree = "<group>"; };
-		D42384A81F9379B8000B8A63 /* ArrayUtils.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayUtils.hpp; sourceTree = "<group>"; };
-		D42384A91F9379B8000B8A63 /* ArrayRef.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ArrayRef.hpp; sourceTree = "<group>"; };
-		D42384AA1F9379B8000B8A63 /* Assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Assert.h; sourceTree = "<group>"; };
-		D42384AB1F9379B8000B8A63 /* OptionsEnum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OptionsEnum.hpp; sourceTree = "<group>"; };
-		D42384AC1F9379B8000B8A63 /* TypeTraits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TypeTraits.hpp; sourceTree = "<group>"; };
-		D42384AD1F9379B9000B8A63 /* Vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector.cpp; sourceTree = "<group>"; };
-		D42384AE1F9379B9000B8A63 /* ArenaAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArenaAllocator.cpp; sourceTree = "<group>"; };
-		D42384AF1F9379B9000B8A63 /* Vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector.hpp; sourceTree = "<group>"; };
-		D42384B01F9379B9000B8A63 /* Ref.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ref.hpp; sourceTree = "<group>"; };
-		D42384B11F9379B9000B8A63 /* InOut.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InOut.hpp; sourceTree = "<group>"; };
-		D42384B21F9379B9000B8A63 /* Utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Utility.hpp; sourceTree = "<group>"; };
-		D42384D01F938144000B8A63 /* NSFoundationSupport.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSFoundationSupport.hpp; sourceTree = "<group>"; };
-		D42384F01F939589000B8A63 /* TextFrame.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextFrame.hpp; sourceTree = "<group>"; };
-		D42384F31F9396FD000B8A63 /* STUStartEndRange-Internal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "STUStartEndRange-Internal.hpp"; sourceTree = "<group>"; };
-		D423F67120FA5B68003AE48C /* TextAttachmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextAttachmentTests.swift; path = Tests/TextAttachmentTests.swift; sourceTree = SOURCE_ROOT; };
-		D424FD6F209B708A00FB50BA /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
-		D42584E21FCE137800DDA412 /* ThreadLocalAllocator.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ThreadLocalAllocator.mm; sourceTree = "<group>"; };
-		D4271104215CDA3200939123 /* DictionaryExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryExtension.swift; sourceTree = "<group>"; };
-		D42AC4DD204176820076CAF1 /* UtilityTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = UtilityTests.cpp; sourceTree = "<group>"; };
-		D42AC4DF2041782B0076CAF1 /* TestUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestUtils.hpp; sourceTree = "<group>"; };
-		D42AC4E22041BBEF0076CAF1 /* AllocationTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = AllocationTests.cpp; sourceTree = "<group>"; };
-		D42AC4E42041D23E0076CAF1 /* TestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TestUtils.h; sourceTree = "<group>"; };
-		D42AC4E52041DA830076CAF1 /* ArenaAllocatorTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ArenaAllocatorTests.cpp; sourceTree = "<group>"; };
-		D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameLineBreakingTests.swift; sourceTree = "<group>"; };
-		D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtension.swift; sourceTree = "<group>"; };
-		D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextFrameDrawingOptions.hpp; sourceTree = "<group>"; };
-		D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UnicodeCodePointPropertiesTests.mm; sourceTree = "<group>"; };
-		D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextLineSpansPathTests.mm; sourceTree = "<group>"; };
 		D43E66BD1FD45DB300BABD1C /* AllTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D43E67111FD4A64C00BABD1C /* Tests.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Tests.xcconfig; sourceTree = "<group>"; };
-		D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = AllTests.xcconfig; sourceTree = "<group>"; };
-		D4494FBB2046E1C50047DD82 /* TestValue.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TestValue.hpp; sourceTree = "<group>"; };
-		D4494FBC2046E93A0047DD82 /* VectorTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = VectorTests.cpp; sourceTree = "<group>"; };
-		D4494FBE2046EABE0047DD82 /* ArrayUtilsTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ArrayUtilsTests.cpp; sourceTree = "<group>"; };
-		D4494FC62046F5DF0047DD82 /* TestValue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestValue.cpp; sourceTree = "<group>"; };
-		D4494FC82046F97C0047DD82 /* AllocatorUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AllocatorUtils.hpp; sourceTree = "<group>"; };
-		D4494FC92046FFD80047DD82 /* AllocatorUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AllocatorUtils.cpp; sourceTree = "<group>"; };
-		D44A5EAB1F9A2672007325B4 /* Optional.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Optional.cpp; sourceTree = "<group>"; };
-		D44A5EB61F9A4C40007325B4 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		D44A5EB71F9A533C007325B4 /* Config.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Config.hpp; sourceTree = "<group>"; };
-		D44A5EBA1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextFrameCompactIndex.hpp; sourceTree = "<group>"; };
-		D44B5B042104DA4F00964C5C /* STUParagraphStyle.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STUParagraphStyle.overlay.swift; sourceTree = "<group>"; };
-		D44C191C1F97C434001DFD52 /* StyledStringRangeIteration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = StyledStringRangeIteration.mm; sourceTree = "<group>"; };
-		D44F90E520E6402C00ED750B /* ShapedStringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapedStringTests.swift; sourceTree = "<group>"; };
-		D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicTypeFontScalingTests.swift; sourceTree = "<group>"; };
-		D45167C12016793E0015B10B /* TimingResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingResultView.swift; sourceTree = "<group>"; };
-		D45299B32124485E00714A83 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
-		D45299B82126385500714A83 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
-		D453E7851F98DB04003F81AC /* StyledStringRangeIteration.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StyledStringRangeIteration.hpp; sourceTree = "<group>"; };
-		D453E7861F98FA9E003F81AC /* Casts.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Casts.hpp; sourceTree = "<group>"; };
-		D453E7881F993BE9003F81AC /* Optional.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Optional.hpp; sourceTree = "<group>"; };
-		D4552F851FEAF3F20006974A /* NSStringRef.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSStringRef.hpp; sourceTree = "<group>"; };
-		D4552F881FEAF53C0006974A /* NSStringRef.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringRef.mm; sourceTree = "<group>"; };
-		D4552F8C1FEC06710006974A /* NSAttributedStringRef.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSAttributedStringRef.hpp; sourceTree = "<group>"; };
-		D4552F921FED31D10006974A /* Rect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Rect.hpp; sourceTree = "<group>"; };
-		D45A31F22062971A009E7E5A /* SortedIntervalBufferTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SortedIntervalBufferTests.mm; sourceTree = "<group>"; };
-		D45A31F520645DF6009E7E5A /* HashSetTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HashSetTests.mm; sourceTree = "<group>"; };
-		D45F2174209F68A2007E6C36 /* Rand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rand.swift; sourceTree = "<group>"; };
-		D45F217620A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUTextFrameDrawingOptions.h; sourceTree = "<group>"; };
-		D45F217720A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextFrameDrawingOptions.mm; sourceTree = "<group>"; };
-		D45F217C20A0D4F3007E6C36 /* STUTextFrameDrawingOptions-Internal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "STUTextFrameDrawingOptions-Internal.hpp"; sourceTree = "<group>"; };
-		D45F217D20A1B590007E6C36 /* STUTextFrameRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUTextFrameRange.h; sourceTree = "<group>"; };
-		D45F218020A1E015007E6C36 /* Unretained.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Unretained.hpp; sourceTree = "<group>"; };
-		D45F218920A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STUTextFrameDrawingOptions.overlay.swift; sourceTree = "<group>"; };
-		D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenPropertiesTests.swift; sourceTree = "<group>"; };
 		D467A0771F9261E70043C7F0 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D467A0821F9261E70043C7F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D467A0871F9261E70043C7F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D468096A1FB1D575006AA14D /* Once.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Once.hpp; sourceTree = "<group>"; };
-		D468096D1FB1E5A5006AA14D /* NSCoderUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSCoderUtils.hpp; sourceTree = "<group>"; };
-		D46A3CFE214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutAnchor+STULabelSpacing.overlay.swift"; sourceTree = "<group>"; };
-		D46B093E1FAC8EE100375E76 /* Color.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Color.hpp; sourceTree = "<group>"; };
-		D46B09411FAC916200375E76 /* Font.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Font.hpp; sourceTree = "<group>"; };
-		D46B09441FAC96CA00375E76 /* Font.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Font.mm; sourceTree = "<group>"; };
-		D46B09471FAC9E6000375E76 /* Color.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Color.mm; sourceTree = "<group>"; };
-		D46B094A1FACF2F900375E76 /* HashTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HashTable.hpp; sourceTree = "<group>"; };
-		D46B593120C07C2D00D016E2 /* STULabelTiledLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelTiledLayer.mm; sourceTree = "<group>"; };
-		D46B593420C14A3600D016E2 /* CoreAnimationUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CoreAnimationUtils.hpp; sourceTree = "<group>"; };
-		D46B593720C14A9B00D016E2 /* CoreAnimationUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreAnimationUtils.mm; sourceTree = "<group>"; };
-		D46DB170200BAD3B00E7E773 /* TableViewPerformanceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewPerformanceVC.swift; sourceTree = "<group>"; };
-		D46DB172200BADB300E7E773 /* AutoHeightTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoHeightTableViewCell.swift; sourceTree = "<group>"; };
-		D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLayoutUtils.swift; sourceTree = "<group>"; };
-		D4717B5120F412E80019AB9F /* STULabelSwiftExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabelSwiftExtensions.h; sourceTree = "<group>"; };
-		D4717B5B20F684D20019AB9F /* STUTextFrameWithOrigin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STUTextFrameWithOrigin.swift; sourceTree = "<group>"; };
-		D471C06F1FF941E30014BE97 /* AtomicEnum.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AtomicEnum.hpp; sourceTree = "<group>"; };
-		D471C0721FFA65C40014BE97 /* CancellationFlag.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CancellationFlag.hpp; sourceTree = "<group>"; };
-		D471C0751FFA87650014BE97 /* LabelPrerenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LabelPrerenderer.hpp; sourceTree = "<group>"; };
-		D471C0781FFA877A0014BE97 /* LabelPrerenderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LabelPrerenderer.mm; sourceTree = "<group>"; };
-		D471C07B20000DC00014BE97 /* CancellationFlag.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CancellationFlag.mm; sourceTree = "<group>"; };
-		D4731079202E3624000CBFF1 /* MutexTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MutexTests.m; sourceTree = "<group>"; };
-		D473C97820E41AC000139FED /* TextFrameImageBoundsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameImageBoundsTests.swift; sourceTree = "<group>"; };
-		D4764D6E20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLayouter-Scaling.mm"; sourceTree = "<group>"; };
-		D47A35202046C26B00C32FAE /* ArrayTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = ArrayTests.cpp; sourceTree = "<group>"; };
-		D47ED37920235DD00086E073 /* LabelPerformanceVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelPerformanceVC.swift; sourceTree = "<group>"; };
-		D47FDD5F2008B40B00449617 /* Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-Bridging-Header.h"; sourceTree = "<group>"; };
-		D47FDD622008B43C00449617 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D47FDD642008B7C400449617 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		D4819C52211F06D800D37514 /* TextStyleBufferTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextStyleBufferTests.mm; sourceTree = "<group>"; };
-		D48297071FE5591300D67234 /* ShapedString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShapedString.hpp; sourceTree = "<group>"; };
-		D482970A1FE5592C00D67234 /* ShapedString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ShapedString.mm; sourceTree = "<group>"; };
-		D483EE4A202D007C005917F9 /* STUImageUtils.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STUImageUtils.overlay.swift; sourceTree = "<group>"; };
-		D48652BF2023AEB6006DC1A2 /* AttributedStringUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedStringUtils.swift; sourceTree = "<group>"; };
-		D486945E2038FD820014A034 /* STUTextRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUTextRange.h; sourceTree = "<group>"; };
-		D48694612038FDED0014A034 /* STULabelAlignment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabelAlignment.h; sourceTree = "<group>"; };
-		D48798E51FE6DB1200A7A065 /* TextFrame.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextFrame.mm; sourceTree = "<group>"; };
-		D48798E81FE9494000A7A065 /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
-		D48AC8C1205AD53A00EA3FE8 /* TapToReadMoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapToReadMoreVC.swift; sourceTree = "<group>"; };
-		D49577B91FB0BF6D00DBDBDC /* Color-no-ARC.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "Color-no-ARC.mm"; sourceTree = "<group>"; };
-		D495DAAE20668A5E0081606C /* TextFrameDrawingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameDrawingTests.swift; sourceTree = "<group>"; };
-		D495DAB32067C2810081606C /* UDHR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDHR.swift; sourceTree = "<group>"; };
-		D495DAB92067C7210081606C /* udhr.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = udhr.html; sourceTree = "<group>"; };
-		D495DABB2067EC140081606C /* UDHRViewerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDHRViewerVC.swift; sourceTree = "<group>"; };
-		D497D6F620B708BC0009302B /* LayerVisibleBoundsObserver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LayerVisibleBoundsObserver.hpp; sourceTree = "<group>"; };
-		D497D6F920B708D10009302B /* LayerVisibleBoundsObserver.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LayerVisibleBoundsObserver.mm; sourceTree = "<group>"; };
-		D4981EF71FB8E8F4007E88C2 /* IntervalSearchTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IntervalSearchTable.hpp; sourceTree = "<group>"; };
-		D4981EF81FB8EAA3007E88C2 /* IntervalSearchTable.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = IntervalSearchTable.mm; sourceTree = "<group>"; };
-		D4981EFF1FBC8C2A007E88C2 /* InputClamping.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = InputClamping.hpp; sourceTree = "<group>"; };
-		D4981F021FBE33F1007E88C2 /* STUTextRectArray.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STUTextRectArray.overlay.swift; sourceTree = "<group>"; };
-		D4981F041FBF1824007E88C2 /* DisplayScaleRounding.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DisplayScaleRounding.mm; sourceTree = "<group>"; };
-		D4981F051FBF1824007E88C2 /* DisplayScaleRounding.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DisplayScaleRounding.hpp; sourceTree = "<group>"; };
-		D49824872162ABA9007D1DA9 /* RoundToScale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundToScale.swift; sourceTree = "<group>"; };
-		D498248B2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFrameLayoutInfoTests.swift; sourceTree = "<group>"; };
-		D4982491216664AF007D1DA9 /* LabelAlignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelAlignmentTests.swift; sourceTree = "<group>"; };
-		D498249821667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STULabelDrawingBlockParameters.overlay.swift; sourceTree = "<group>"; };
-		D498249B216672C7007D1DA9 /* STULabel.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STULabel.overlay.swift; sourceTree = "<group>"; };
-		D498249E21667301007D1DA9 /* STULabelLayer.overlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STULabelLayer.overlay.swift; sourceTree = "<group>"; };
-		D49890EC23E5883E00A639E0 /* DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h; sourceTree = "<group>"; };
-		D49890ED23E5883E00A639E0 /* UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h; sourceTree = "<group>"; };
-		D49C2D6321077B120018FD33 /* ParagraphStyleTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParagraphStyleTests.swift; sourceTree = "<group>"; };
-		D49CBA472149C977008F36B2 /* AutoLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLayoutTests.swift; sourceTree = "<group>"; };
-		D49CBA4A214B07C0008F36B2 /* SnapshotTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotTestCase.swift; sourceTree = "<group>"; };
-		D49F0AA11FCC5FC4004B0E5C /* DrawingContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DrawingContext.mm; sourceTree = "<group>"; };
-		D49F0AA21FCC5FC4004B0E5C /* DecorationLines.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DecorationLines.hpp; sourceTree = "<group>"; };
-		D49F0AA31FCC5FC4004B0E5C /* DecorationLines.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DecorationLines.mm; sourceTree = "<group>"; };
-		D49F0AA41FCC5FC4004B0E5C /* DrawingContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DrawingContext.hpp; sourceTree = "<group>"; };
-		D49F0AA91FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SortedIntervalBuffer.hpp; sourceTree = "<group>"; };
-		D49F0AAA1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SortedIntervalBuffer.mm; sourceTree = "<group>"; };
-		D49F0AAD1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ThreadLocalAllocator.hpp; sourceTree = "<group>"; };
-		D49F0AAF1FCC5FF0004B0E5C /* TextStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextStyle.mm; sourceTree = "<group>"; };
-		D49F0AB01FCC5FF0004B0E5C /* TextStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextStyle.hpp; sourceTree = "<group>"; };
-		D49F0AB11FCC5FF1004B0E5C /* TextStyleBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextStyleBuffer.hpp; sourceTree = "<group>"; };
-		D49F0AB21FCC5FF1004B0E5C /* TextStyleBuffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextStyleBuffer.mm; sourceTree = "<group>"; };
-		D49F0AB71FCC6000004B0E5C /* TextLineSpan.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextLineSpan.mm; sourceTree = "<group>"; };
-		D49F0AB81FCC6000004B0E5C /* TextLineSpan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextLineSpan.hpp; sourceTree = "<group>"; };
-		D49F0ABF1FCC6012004B0E5C /* STULabelGhostingMaskLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelGhostingMaskLayer.mm; sourceTree = "<group>"; };
-		D49F0AC01FCC6013004B0E5C /* LineTruncation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LineTruncation.mm; sourceTree = "<group>"; };
-		D49F0AC11FCC6013004B0E5C /* STULabelLinkOverlayLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STULabelLinkOverlayLayer.m; sourceTree = "<group>"; };
-		D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UnicodeCodePointProperties.mm; sourceTree = "<group>"; };
-		D49F0AC81FCC6014004B0E5C /* CoreGraphicsUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreGraphicsUtils.mm; sourceTree = "<group>"; };
-		D49F0ACF1FCC6016004B0E5C /* STULabelSubrangeView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelSubrangeView.mm; sourceTree = "<group>"; };
-		D49F0AD11FCC6016004B0E5C /* LabelParameters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LabelParameters.hpp; sourceTree = "<group>"; };
-		D49F0AD21FCC6017004B0E5C /* TextLineSpansPath.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextLineSpansPath.mm; sourceTree = "<group>"; };
-		D49F0AD31FCC6017004B0E5C /* STULabelSubrangeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelSubrangeView.h; sourceTree = "<group>"; };
-		D49F0AD41FCC6017004B0E5C /* LabelRendering.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LabelRendering.hpp; sourceTree = "<group>"; };
-		D49F0AD61FCC6018004B0E5C /* GlyphPathIntersectionBounds.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GlyphPathIntersectionBounds.mm; sourceTree = "<group>"; };
-		D49F0AD71FCC6018004B0E5C /* STUMediaTimingFunctionUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUMediaTimingFunctionUtils.h; sourceTree = "<group>"; };
-		D49F0AD81FCC6018004B0E5C /* UnicodeCodePointProperties.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeCodePointProperties.hpp; sourceTree = "<group>"; };
-		D49F0AD91FCC6018004B0E5C /* LabelRendering.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LabelRendering.mm; sourceTree = "<group>"; };
-		D49F0ADA1FCC6018004B0E5C /* STULabelGhostingMaskLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelGhostingMaskLayer.h; sourceTree = "<group>"; };
-		D49F0ADB1FCC6019004B0E5C /* STUPlaceholderObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUPlaceholderObjects.h; sourceTree = "<group>"; };
-		D49F0ADC1FCC6019004B0E5C /* STULabelLinkOverlayLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelLinkOverlayLayer.h; sourceTree = "<group>"; };
-		D49F0ADD1FCC6019004B0E5C /* LineTruncation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineTruncation.hpp; sourceTree = "<group>"; };
-		D49F0AE01FCC601A004B0E5C /* TextLineSpansPath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TextLineSpansPath.hpp; sourceTree = "<group>"; };
-		D49F0AE11FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GlyphPathIntersectionBounds.hpp; sourceTree = "<group>"; };
-		D4A774B921110B9F0083B6B9 /* UILabelWithContentInsets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelWithContentInsets.swift; sourceTree = "<group>"; };
-		D4A80F4020C860BE001CD188 /* TextFrame-PointToIndex.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-PointToIndex.mm"; sourceTree = "<group>"; };
-		D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreGraphicsUtils.swift; sourceTree = "<group>"; };
-		D4A80F4520C890C9001CD188 /* TextFrame-Background.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-Background.mm"; sourceTree = "<group>"; };
-		D4AAE9AF20476FB300B101A2 /* HashTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HashTests.mm; sourceTree = "<group>"; };
-		D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabel.h; sourceTree = "<group>"; };
-		D4B0AEC01F9259E600B5B2B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4B0AEC71F925ACA00B5B2B9 /* STULabel.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = STULabel.modulemap; sourceTree = "<group>"; };
-		D4B0AEC81F925AF100B5B2B9 /* STULabelLayoutInfo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelLayoutInfo.mm; sourceTree = "<group>"; };
-		D4B0AEC91F925AF100B5B2B9 /* STUTextFrameOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextFrameOptions.h; sourceTree = "<group>"; };
-		D4B0AECA1F925AF100B5B2B9 /* STUTextAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextAttributes.h; sourceTree = "<group>"; };
-		D4B0AECB1F925AF100B5B2B9 /* STULabelPrerenderer-no-ARC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "STULabelPrerenderer-no-ARC.mm"; sourceTree = "<group>"; };
-		D4B0AECC1F925AF100B5B2B9 /* STUTextFrameLine.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextFrameLine.mm; sourceTree = "<group>"; };
-		D4B0AECD1F925AF100B5B2B9 /* STULabelLayoutInfo-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STULabelLayoutInfo-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AECE1F925AF100B5B2B9 /* STULabelOverlayStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelOverlayStyle.h; sourceTree = "<group>"; };
-		D4B0AECF1F925AF200B5B2B9 /* STULabelDrawingBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelDrawingBlock.h; sourceTree = "<group>"; };
-		D4B0AED01F925AF200B5B2B9 /* STULabelDrawingBlock.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelDrawingBlock.mm; sourceTree = "<group>"; };
-		D4B0AED11F925AF200B5B2B9 /* STULabelLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelLayer.h; sourceTree = "<group>"; };
-		D4B0AED21F925AF200B5B2B9 /* STUTextFrame-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextFrame-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AED31F925AF200B5B2B9 /* STUTextLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextLink.mm; sourceTree = "<group>"; };
-		D4B0AED41F925AF200B5B2B9 /* STUTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextAttachment.h; sourceTree = "<group>"; };
-		D4B0AED51F925AF200B5B2B9 /* STUShapedString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUShapedString.mm; sourceTree = "<group>"; };
-		D4B0AED61F925AF200B5B2B9 /* STUTextAttributes.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextAttributes.mm; sourceTree = "<group>"; };
-		D4B0AED71F925AF200B5B2B9 /* STUStartEndRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUStartEndRange.h; sourceTree = "<group>"; };
-		D4B0AED81F925AF200B5B2B9 /* STUTextAttachment.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = STUTextAttachment.mm; sourceTree = "<group>"; };
-		D4B0AEDA1F925AF200B5B2B9 /* STULabelPrerenderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelPrerenderer.mm; sourceTree = "<group>"; };
-		D4B0AEDB1F925AF300B5B2B9 /* STUTextAttributes-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextAttributes-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEDC1F925AF300B5B2B9 /* STUTextHighlightStyle-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextHighlightStyle-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEDE1F925AF300B5B2B9 /* STUShapedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUShapedString.h; sourceTree = "<group>"; };
-		D4B0AEDF1F925AF300B5B2B9 /* STULayerWithNullDefaultActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULayerWithNullDefaultActions.h; sourceTree = "<group>"; };
-		D4B0AEE01F925AF300B5B2B9 /* STUTextHighlightStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextHighlightStyle.h; sourceTree = "<group>"; };
-		D4B0AEE11F925AF300B5B2B9 /* STUTextFrame-Unsafe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "STUTextFrame-Unsafe.h"; sourceTree = "<group>"; };
-		D4B0AEE21F925AF400B5B2B9 /* STUTextFrameOptions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextFrameOptions.mm; sourceTree = "<group>"; };
-		D4B0AEE31F925AF400B5B2B9 /* STULayerWithNullDefaultActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STULayerWithNullDefaultActions.m; sourceTree = "<group>"; };
-		D4B0AEE41F925AF400B5B2B9 /* STUTextLink-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextLink-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEE51F925AF400B5B2B9 /* STUShapedString-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUShapedString-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEE61F925AF400B5B2B9 /* STUTextHighlightStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextHighlightStyle.mm; sourceTree = "<group>"; };
-		D4B0AEE71F925AF500B5B2B9 /* STUPlaceholderObjects-no-ARC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "STUPlaceholderObjects-no-ARC.m"; sourceTree = "<group>"; };
-		D4B0AEE81F925AF500B5B2B9 /* STUTextLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextLink.h; sourceTree = "<group>"; };
-		D4B0AEEA1F925AF500B5B2B9 /* STUTextRectArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextRectArray.h; sourceTree = "<group>"; };
-		D4B0AEEB1F925AF600B5B2B9 /* STUTextFrameLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextFrameLine.h; sourceTree = "<group>"; };
-		D4B0AEED1F925AF600B5B2B9 /* STUTextFrameAccessibilityElement.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextFrameAccessibilityElement.mm; sourceTree = "<group>"; };
-		D4B0AEEE1F925AF600B5B2B9 /* STUTextFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextFlags.h; sourceTree = "<group>"; };
-		D4B0AEEF1F925AF600B5B2B9 /* STULabelLayoutInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelLayoutInfo.h; sourceTree = "<group>"; };
-		D4B0AEF01F925AF600B5B2B9 /* STUTextAttachment-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextAttachment-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEF21F925AF700B5B2B9 /* STUTextRectArray-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextRectArray-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEF31F925AF700B5B2B9 /* STULabelLayer-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STULabelLayer-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEF41F925AF700B5B2B9 /* STUTextRectArray.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextRectArray.mm; sourceTree = "<group>"; };
-		D4B0AEF51F925AF700B5B2B9 /* STUTextFrame.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTextFrame.mm; sourceTree = "<group>"; };
-		D4B0AEF61F925AF700B5B2B9 /* TextFrame-Drawing.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrame-Drawing.mm"; sourceTree = "<group>"; };
-		D4B0AEF71F925AF800B5B2B9 /* STULabelOverlayStyle.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelOverlayStyle.mm; sourceTree = "<group>"; };
-		D4B0AEF81F925AF800B5B2B9 /* STULabelDrawingBlock-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STULabelDrawingBlock-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEF91F925AF800B5B2B9 /* STULabelPrerenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STULabelPrerenderer.h; sourceTree = "<group>"; };
-		D4B0AEFA1F925AF800B5B2B9 /* STULabelPrerenderer-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STULabelPrerenderer-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AEFB1F925AF800B5B2B9 /* STUTextFrameAccessibilityElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextFrameAccessibilityElement.h; sourceTree = "<group>"; };
-		D4B0AEFC1F925AF800B5B2B9 /* STUTextFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUTextFrame.h; sourceTree = "<group>"; };
-		D4B0AEFD1F925AF800B5B2B9 /* STULabelLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabelLayer.mm; sourceTree = "<group>"; };
-		D4B0AEFE1F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "STUTextFrameOptions-Internal.hpp"; sourceTree = "<group>"; };
-		D4B0AFEA1F925B9C00B5B2B9 /* STULabel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = STULabel.mm; sourceTree = "<group>"; };
-		D4B0AFEF1F925BC600B5B2B9 /* STUDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUDefines.h; sourceTree = "<group>"; };
-		D4B0AFF11F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+STUDynamicTypeFontScaling.m"; sourceTree = "<group>"; };
-		D4B0AFF21F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+STUDynamicTypeFontScaling.h"; sourceTree = "<group>"; };
-		D4B0AFF31F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+STUDynamicTypeFontScaling.m"; sourceTree = "<group>"; };
-		D4B0AFF41F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+STUDynamicTypeFontScaling.h"; sourceTree = "<group>"; };
-		D4B0AFF91F925BD600B5B2B9 /* STUImageUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUImageUtils.h; sourceTree = "<group>"; };
-		D4B0AFFA1F925BD700B5B2B9 /* STUImageUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STUImageUtils.m; sourceTree = "<group>"; };
-		D4B0AFFD1F925BE000B5B2B9 /* STUMainScreenProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STUMainScreenProperties.m; sourceTree = "<group>"; };
-		D4B0AFFE1F925BE000B5B2B9 /* STUMainScreenProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUMainScreenProperties.h; sourceTree = "<group>"; };
-		D4B0B0011F925BE800B5B2B9 /* stu_mutex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stu_mutex.c; sourceTree = "<group>"; };
-		D4B0B0021F925BE800B5B2B9 /* stu_mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stu_mutex.h; sourceTree = "<group>"; };
-		D4B0B0051F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STUObjCRuntimeWrappers.h; sourceTree = "<group>"; };
-		D4B0B0061F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "STUObjCRuntimeWrappers-no-ARC.m"; sourceTree = "<group>"; };
-		D4B11BDD222C450300352EE3 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
-		D4B8B227205467D800C8341D /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
-		D4C6735D1FAE0D950047A173 /* Hash.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Hash.hpp; sourceTree = "<group>"; };
 		D4C8FC1D20D005A000CDA4EB /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libicucore.tbd; sourceTree = DEVELOPER_DIR; };
-		D4CEE354202632A200803A45 /* FormCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormCells.swift; sourceTree = "<group>"; };
-		D4CEE3562026337800803A45 /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
-		D4D20DD220E25BD500294D57 /* NSArrayRef-no-ARC.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSArrayRef-no-ARC.mm"; sourceTree = "<group>"; };
-		D4D2D99E205D6E2400BBDBDB /* Kerning.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Kerning.hpp; sourceTree = "<group>"; };
-		D4D2D9A1205D6EA400BBDBDB /* Kerning.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Kerning.mm; sourceTree = "<group>"; };
-		D4D34512203C75380092641A /* NSStringRefTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSStringRefTests.mm; sourceTree = "<group>"; };
-		D4D42F20203A1B9700617ADB /* DisplayScaleRounding.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DisplayScaleRounding.mm; sourceTree = "<group>"; };
-		D4D4C209205F280B0044CAAF /* stu_label_lldb_formatters.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = stu_label_lldb_formatters.py; sourceTree = "<group>"; };
-		D4D58ED620B0B9630016AA8A /* STULabelTiledLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STULabelTiledLayer.h; sourceTree = "<group>"; };
-		D4D58EDC20B1B8FC0016AA8A /* UniquePtr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = UniquePtr.hpp; sourceTree = "<group>"; };
-		D4D5C3D9214FC75200B34311 /* NSLayoutAnchor+STULabelSpacing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSLayoutAnchor+STULabelSpacing.h"; sourceTree = "<group>"; };
-		D4DD022D210E20A500915763 /* SwiftWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftWrapperTests.swift; sourceTree = "<group>"; };
-		D4DD0230210E5BE300915763 /* RangeTests.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = RangeTests.cpp; sourceTree = "<group>"; };
-		D4E33DF923E5CB6500914298 /* Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Demo.entitlements; sourceTree = "<group>"; };
-		D4E44B1E201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "TextFramePerformanceVC-Drawing.m"; sourceTree = "<group>"; };
-		D4E44B20201CBB5600B717E9 /* TextFramePerformanceVC-Drawing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TextFramePerformanceVC-Drawing.h"; sourceTree = "<group>"; };
-		D4E753B52104A4EA00FA59F0 /* STUParagraphStyle.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUParagraphStyle.mm; sourceTree = "<group>"; };
-		D4E753B82104A50100FA59F0 /* STUParagraphStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUParagraphStyle.h; sourceTree = "<group>"; };
-		D4E753BB2104A51700FA59F0 /* STUParagraphStyle-Internal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "STUParagraphStyle-Internal.hpp"; sourceTree = "<group>"; };
-		D4E753BC2104A99D00FA59F0 /* STUTruncationScope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUTruncationScope.h; sourceTree = "<group>"; };
-		D4E753BD2104A99D00FA59F0 /* STUTruncationScope.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = STUTruncationScope.mm; sourceTree = "<group>"; };
-		D4E753C22104B32600FA59F0 /* STUTruncationScope-Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "STUTruncationScope-Internal.h"; sourceTree = "<group>"; };
-		D4E76BF7201BBA2200249594 /* HashTable.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = HashTable.mm; sourceTree = "<group>"; };
-		D4E8DBE420DA6F29009F4735 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D4EA26A62049E3500093522E /* TextFrameTruncationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextFrameTruncationTests.swift; path = Tests/TextFrameTruncationTests.swift; sourceTree = SOURCE_ROOT; };
-		D4EAEE181FCB29D90094F525 /* TextFrameLayouter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextFrameLayouter.hpp; sourceTree = "<group>"; };
-		D4EAEE1B1FCB29EB0094F525 /* TextFrameLayouter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextFrameLayouter.mm; sourceTree = "<group>"; };
-		D4ED28581FA0C62C00DD135A /* Allocation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Allocation.cpp; sourceTree = "<group>"; };
-		D4ED285B1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLine-ImageBounds.mm"; sourceTree = "<group>"; };
-		D4ED285E1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLine-Drawing.mm"; sourceTree = "<group>"; };
-		D4ED28611FA20F2F00DD135A /* TextFrameLine-FontMetric.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLine-FontMetric.mm"; sourceTree = "<group>"; };
-		D4ED608E1FF594CA00418E2A /* STUCancellationFlag.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUCancellationFlag.h; sourceTree = "<group>"; };
-		D4ED60941FF6CC1B00418E2A /* LabelRenderTask.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = LabelRenderTask.mm; sourceTree = "<group>"; };
-		D4ED60951FF6CC1B00418E2A /* LabelRenderTask.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LabelRenderTask.hpp; sourceTree = "<group>"; };
-		D4F150811F9B994700AB1C4B /* GlyphSpan.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlyphSpan.hpp; sourceTree = "<group>"; };
-		D4F150841F9CE96900AB1C4B /* NSArrayRef.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSArrayRef.hpp; sourceTree = "<group>"; };
-		D4F1508C1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "TextFrameLine-GlyphSpanIteration.mm"; sourceTree = "<group>"; };
-		D4FFD1DF1FAA200E008530BE /* stu_lldb_formatters.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = stu_lldb_formatters.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		352D7392303C654C00C34AF3 /* Exceptions for "Demo" folder in "Demo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Resources/LICENSE.txt,
+			);
+			target = D467A0761F9261E70043C7F0 /* Demo */;
+		};
+		352D7393303C654C00C34AF3 /* Exceptions for "Demo" folder in "AllTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/udhr.html,
+				UDHR.swift,
+				Utils/AutoLayoutUtils.swift,
+				Utils/CoreGraphicsUtils.swift,
+				Utils/Rand.swift,
+				Utils/StringExtension.swift,
+			);
+			target = D43E66BC1FD45DB300BABD1C /* AllTests */;
+		};
+		352D740A303C663400C34AF3 /* Exceptions for "Tests" folder in "AllTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			additionalCompilerFlagsByRelativePath = {
+				"Internal/stu/NSFoundationSupportTests-no-ARC.mm" = "-fno-objc-arc";
+				SnapshotTestCase.m = "-O2";
+			};
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D43E66BC1FD45DB300BABD1C /* AllTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		352D7369303C654B00C34AF3 /* Demo */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				352D7392303C654C00C34AF3 /* Exceptions for "Demo" folder in "Demo" target */,
+				352D7393303C654C00C34AF3 /* Exceptions for "Demo" folder in "AllTests" target */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		352D739A303C656700C34AF3 /* Configurations */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Configurations;
+			sourceTree = "<group>";
+		};
+		352D73DE303C663300C34AF3 /* Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				352D740A303C663400C34AF3 /* Exceptions for "Tests" folder in "AllTests" target */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D43E66BA1FD45DB300BABD1C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D4C8FC1E20D005A100CDA4EB /* libicucore.tbd in Frameworks */,
 				A20000000000000000000007 /* STULabel in Frameworks */,
 				A20000000000000000000008 /* STULabelSwift in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D467A0741F9261E70043C7F0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				A20000000000000000000005 /* STULabel in Frameworks */,
 				A20000000000000000000006 /* STULabelSwift in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -474,86 +113,6 @@
 		D407028B2014FFB0004E5C07 /* Products */ = {
 			isa = PBXGroup;
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D413108E1F94162A00F39C3A /* Configurations */ = {
-			isa = PBXGroup;
-			children = (
-				D413108F1F94164A00F39C3A /* Shared.xcconfig */,
-				D41310901F94168400F39C3A /* Debug.xcconfig */,
-				D41310911F94169200F39C3A /* Release.xcconfig */,
-				D43E67111FD4A64C00BABD1C /* Tests.xcconfig */,
-				D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */,
-				D407F00920E52B6700922204 /* Demo.xcconfig */,
-			);
-			path = Configurations;
-			sourceTree = "<group>";
-		};
-		D423828C1F926D19000B8A63 /* MainScreenProperties */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0AFFE1F925BE000B5B2B9 /* STUMainScreenProperties.h */,
-				D4B0AFFD1F925BE000B5B2B9 /* STUMainScreenProperties.m */,
-			);
-			name = MainScreenProperties;
-			sourceTree = "<group>";
-		};
-		D423828D1F926D44000B8A63 /* ObjCRuntimeWrappers */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0B0051F925BF000B5B2B9 /* STUObjCRuntimeWrappers.h */,
-				D4B0B0061F925BF000B5B2B9 /* STUObjCRuntimeWrappers-no-ARC.m */,
-			);
-			name = ObjCRuntimeWrappers;
-			sourceTree = "<group>";
-		};
-		D423828F1F926D6A000B8A63 /* Mutex */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0B0021F925BE800B5B2B9 /* stu_mutex.h */,
-				D4B0B0011F925BE800B5B2B9 /* stu_mutex.c */,
-			);
-			name = Mutex;
-			sourceTree = "<group>";
-		};
-		D42382901F926D73000B8A63 /* ImageUtils */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0AFF91F925BD600B5B2B9 /* STUImageUtils.h */,
-				D4B0AFFA1F925BD700B5B2B9 /* STUImageUtils.m */,
-			);
-			name = ImageUtils;
-			sourceTree = "<group>";
-		};
-		D42382911F926D91000B8A63 /* DynamicTypeFontScaling */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0AFF41F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.h */,
-				D4B0AFF11F925BCE00B5B2B9 /* NSAttributedString+STUDynamicTypeFontScaling.m */,
-				D4B0AFF21F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.h */,
-				D4B0AFF31F925BCE00B5B2B9 /* UIFont+STUDynamicTypeFontScaling.m */,
-			);
-			name = DynamicTypeFontScaling;
-			sourceTree = "<group>";
-		};
-		D42382991F926F2C000B8A63 /* STULabelSwift */ = {
-			isa = PBXGroup;
-			children = (
-				D498248A2162ABFE007D1DA9 /* Internal */,
-				D423829B1F926F2C000B8A63 /* Info.plist */,
-				D46A3CFE214559F9008A94EC /* NSLayoutAnchor+STULabelSpacing.overlay.swift */,
-				D483EE4A202D007C005917F9 /* STUImageUtils.overlay.swift */,
-				D498249B216672C7007D1DA9 /* STULabel.overlay.swift */,
-				D498249821667152007D1DA9 /* STULabelDrawingBlockParameters.overlay.swift */,
-				D498249E21667301007D1DA9 /* STULabelLayer.overlay.swift */,
-				D44B5B042104DA4F00964C5C /* STUParagraphStyle.overlay.swift */,
-				D42382A01F926F96000B8A63 /* STUStartEndRange.overlay.swift */,
-				D42382A11F926F96000B8A63 /* STUTextFrame.overlay.swift */,
-				D4717B5B20F684D20019AB9F /* STUTextFrameWithOrigin.swift */,
-				D45F218920A33D0C007E6C36 /* STUTextFrameDrawingOptions.overlay.swift */,
-				D4981F021FBE33F1007E88C2 /* STUTextRectArray.overlay.swift */,
-			);
-			path = STULabelSwift;
 			sourceTree = "<group>";
 		};
 		D423839E1F92A340000B8A63 /* Frameworks */ = {
@@ -564,192 +123,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D42383B91F92A80B000B8A63 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				D42383BA1F92A818000B8A63 /* Internal */,
-				D42383C01F92A90D000B8A63 /* Info.plist */,
-				D49CBA472149C977008F36B2 /* AutoLayoutTests.swift */,
-				D450392E202E4E6300987C41 /* DynamicTypeFontScalingTests.swift */,
-				D4982491216664AF007D1DA9 /* LabelAlignmentTests.swift */,
-				D464B2D92039D2730027FEE4 /* MainScreenPropertiesTests.swift */,
-				D4731079202E3624000CBFF1 /* MutexTests.m */,
-				D49C2D6321077B120018FD33 /* ParagraphStyleTests.swift */,
-				D44F90E520E6402C00ED750B /* ShapedStringTests.swift */,
-				D4154B5D1FD7070E00A065BC /* SnapshotTestCase.h */,
-				D4154B5A1FD706E900A065BC /* SnapshotTestCase.m */,
-				D49CBA4A214B07C0008F36B2 /* SnapshotTestCase.swift */,
-				D4DD022D210E20A500915763 /* SwiftWrapperTests.swift */,
-				D411962E2054762300DDE8BB /* Tests-Bridging-Header.h */,
-				D4B8B227205467D800C8341D /* TestUtils.swift */,
-				D423F67120FA5B68003AE48C /* TextAttachmentTests.swift */,
-				D495DAAE20668A5E0081606C /* TextFrameDrawingTests.swift */,
-				D40E5D552060332A00E67689 /* TextFrameHighlightingTests.swift */,
-				D473C97820E41AC000139FED /* TextFrameImageBoundsTests.swift */,
-				D498248B2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift */,
-				D42E8778205041B8003C920E /* TextFrameLineBreakingTests.swift */,
-				D41B1F62210BB3C400E4203C /* TextFrameOptionsTests.swift */,
-				D4EA26A62049E3500093522E /* TextFrameTruncationTests.swift */,
-				A10000000000000000000021 /* UITextInputTests.mm */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
-		D42383BA1F92A818000B8A63 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				D4FEA1232046BDDF003CA72D /* stu */,
-				D4494FC82046F97C0047DD82 /* AllocatorUtils.hpp */,
-				D42AC4E42041D23E0076CAF1 /* TestUtils.h */,
-				D4D42F20203A1B9700617ADB /* DisplayScaleRounding.mm */,
-				D4AAE9AF20476FB300B101A2 /* HashTests.mm */,
-				D45A31F520645DF6009E7E5A /* HashSetTests.mm */,
-				D4D34512203C75380092641A /* NSStringRefTests.mm */,
-				D45A31F22062971A009E7E5A /* SortedIntervalBufferTests.mm */,
-				D43E66B61FD45B8600BABD1C /* TextLineSpansPathTests.mm */,
-				D4819C52211F06D800D37514 /* TextStyleBufferTests.mm */,
-				D43E66B51FD45B8600BABD1C /* UnicodeCodePointPropertiesTests.mm */,
-				D41C6D20211354EF00ACF170 /* GlyphBoundsCacheTests.mm */,
-			);
-			path = Internal;
-			sourceTree = "<group>";
-		};
-		D42384981F93798D000B8A63 /* stu */ = {
-			isa = PBXGroup;
-			children = (
-				D4FFD1DF1FAA200E008530BE /* stu_lldb_formatters.py */,
-				D44A5EB61F9A4C40007325B4 /* module.modulemap */,
-				D42384A11F9379B7000B8A63 /* Allocation.hpp */,
-				D4ED28581FA0C62C00DD135A /* Allocation.cpp */,
-				D423849B1F9379B7000B8A63 /* ArenaAllocator.hpp */,
-				D42384AE1F9379B9000B8A63 /* ArenaAllocator.cpp */,
-				D42384A31F9379B7000B8A63 /* Array.hpp */,
-				D42384A91F9379B8000B8A63 /* ArrayRef.hpp */,
-				D42384A81F9379B8000B8A63 /* ArrayUtils.hpp */,
-				D42384AA1F9379B8000B8A63 /* Assert.h */,
-				D42384991F9379B6000B8A63 /* Assert.m */,
-				D4134E2D1FB32C2100377349 /* BinarySearch.hpp */,
-				D453E7861F98FA9E003F81AC /* Casts.hpp */,
-				D42384A01F9379B7000B8A63 /* Comparable.hpp */,
-				D42384A21F9379B7000B8A63 /* Config.h */,
-				D44A5EB71F9A533C007325B4 /* Config.hpp */,
-				D423849A1F9379B7000B8A63 /* Dollar.hpp */,
-				D42384A61F9379B8000B8A63 /* FunctionRef.hpp */,
-				D42384D01F938144000B8A63 /* NSFoundationSupport.hpp */,
-				D42384B11F9379B9000B8A63 /* InOut.hpp */,
-				D423849C1F9379B7000B8A63 /* Iterator.hpp */,
-				D423849F1F9379B7000B8A63 /* MinMax.hpp */,
-				D453E7881F993BE9003F81AC /* Optional.hpp */,
-				D44A5EAB1F9A2672007325B4 /* Optional.cpp */,
-				D42384AB1F9379B8000B8A63 /* OptionsEnum.hpp */,
-				D40AE3231FA4EA4200E0F056 /* Parameter.hpp */,
-				D42384A71F9379B8000B8A63 /* Range.hpp */,
-				D42384B01F9379B9000B8A63 /* Ref.hpp */,
-				D423849D1F9379B7000B8A63 /* RefCounting.hpp */,
-				D42384A41F9379B7000B8A63 /* ScopeGuard.hpp */,
-				D42384AC1F9379B8000B8A63 /* TypeTraits.hpp */,
-				D4D58EDC20B1B8FC0016AA8A /* UniquePtr.hpp */,
-				D42384B21F9379B9000B8A63 /* Utility.hpp */,
-				D42384AF1F9379B9000B8A63 /* Vector.hpp */,
-				D42384AD1F9379B9000B8A63 /* Vector.cpp */,
-			);
-			path = stu;
-			sourceTree = "<group>";
-		};
-		D467A0781F9261E70043C7F0 /* Demo */ = {
-			isa = PBXGroup;
-			children = (
-				D495DAB82067C5A00081606C /* Resources */,
-				D48AC8C0205AD51000EA3FE8 /* Features */,
-				D46DB176200BC16F00E7E773 /* Utils */,
-				D47FDD662008DD3500449617 /* Performance */,
-				D4E33DF923E5CB6500914298 /* Demo.entitlements */,
-				D467A0871F9261E70043C7F0 /* Info.plist */,
-				D47FDD622008B43C00449617 /* AppDelegate.swift */,
-				A10000000000000000000040 /* SceneDelegate.swift */,
-				D46DB172200BADB300E7E773 /* AutoHeightTableViewCell.swift */,
-				D47FDD5F2008B40B00449617 /* Demo-Bridging-Header.h */,
-				D4CEE354202632A200803A45 /* FormCells.swift */,
-				D41745F820337101001D6F4F /* LabelView.swift */,
-				D47FDD642008B7C400449617 /* RootViewController.swift */,
-				D495DAB32067C2810081606C /* UDHR.swift */,
-			);
-			path = Demo;
-			sourceTree = "<group>";
-		};
-		D46DB176200BC16F00E7E773 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				D48652BF2023AEB6006DC1A2 /* AttributedStringUtils.swift */,
-				D46DB177200BC18300E7E773 /* AutoLayoutUtils.swift */,
-				D4A80F4320C87B1A001CD188 /* CoreGraphicsUtils.swift */,
-				D4271104215CDA3200939123 /* DictionaryExtension.swift */,
-				D424FD6F209B708A00FB50BA /* Fonts.swift */,
-				D45F2174209F68A2007E6C36 /* Rand.swift */,
-				D45299B32124485E00714A83 /* Setting.swift */,
-				D40C6BC921384C8F00743FC6 /* StaticTableViewController.swift */,
-				D423043721527317003E2303 /* Stats.swift */,
-				D4B11BDD222C450300352EE3 /* StringExtension.swift */,
-				D45299B82126385500714A83 /* UIColorExtension.swift */,
-				D4320B12212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift */,
-				D4A774B921110B9F0083B6B9 /* UILabelWithContentInsets.swift */,
-				D4CEE3562026337800803A45 /* UIViewExtension.swift */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		D47FDD662008DD3500449617 /* Performance */ = {
-			isa = PBXGroup;
-			children = (
-				D47ED37920235DD00086E073 /* LabelPerformanceVC.swift */,
-				D46DB170200BAD3B00E7E773 /* TableViewPerformanceVC.swift */,
-				D40702832014EC17004E5C07 /* TextFramePerformanceVC.swift */,
-				D4E44B20201CBB5600B717E9 /* TextFramePerformanceVC-Drawing.h */,
-				D4E44B1E201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m */,
-				D45167C12016793E0015B10B /* TimingResultView.swift */,
-			);
-			path = Performance;
-			sourceTree = "<group>";
-		};
-		D48AC8C0205AD51000EA3FE8 /* Features */ = {
-			isa = PBXGroup;
-			children = (
-				D48AC8C1205AD53A00EA3FE8 /* TapToReadMoreVC.swift */,
-				A10000000000000000000030 /* TextSelectionVC.swift */,
-				D495DABB2067EC140081606C /* UDHRViewerVC.swift */,
-			);
-			path = Features;
-			sourceTree = "<group>";
-		};
-		D495DAB82067C5A00081606C /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				D407F00A20E5306B00922204 /* LICENSE.txt */,
-				35B2D10D30390F6F00B636D5 /* AppIcon.icon */,
-				D467A0821F9261E70043C7F0 /* Assets.xcassets */,
-				D495DAB92067C7210081606C /* udhr.html */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		D498248A2162ABFE007D1DA9 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				D49824872162ABA9007D1DA9 /* RoundToScale.swift */,
-			);
-			path = Internal;
-			sourceTree = "<group>";
-		};
 		D4B0AEB21F9259E600B5B2B9 = {
 			isa = PBXGroup;
 			children = (
 				D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */,
 				D4107B3A20486CCD008CA7E9 /* README.md */,
-				D413108E1F94162A00F39C3A /* Configurations */,
-				D4B0AEBE1F9259E600B5B2B9 /* STULabel */,
-				D42382991F926F2C000B8A63 /* STULabelSwift */,
-				D42383B91F92A80B000B8A63 /* Tests */,
-				D467A0781F9261E70043C7F0 /* Demo */,
+				352D739A303C656700C34AF3 /* Configurations */,
+				352D73DE303C663300C34AF3 /* Tests */,
+				352D7369303C654B00C34AF3 /* Demo */,
 				D4B0AEBD1F9259E600B5B2B9 /* Products */,
 				D423839E1F92A340000B8A63 /* Frameworks */,
 			);
@@ -762,241 +143,6 @@
 				D43E66BD1FD45DB300BABD1C /* AllTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D4B0AEBE1F9259E600B5B2B9 /* STULabel */ = {
-			isa = PBXGroup;
-			children = (
-				D4B0AEC71F925ACA00B5B2B9 /* STULabel.modulemap */,
-				D4D4C209205F280B0044CAAF /* stu_label_lldb_formatters.py */,
-				D4B0AEC01F9259E600B5B2B9 /* Info.plist */,
-				D4E8DBE320DA6F29009F4735 /* Resources */,
-				D42382911F926D91000B8A63 /* DynamicTypeFontScaling */,
-				D42382901F926D73000B8A63 /* ImageUtils */,
-				D423828C1F926D19000B8A63 /* MainScreenProperties */,
-				D423828F1F926D6A000B8A63 /* Mutex */,
-				D423828D1F926D44000B8A63 /* ObjCRuntimeWrappers */,
-				D4B0AF3A1F925B5C00B5B2B9 /* Internal */,
-				D4D5C3D9214FC75200B34311 /* NSLayoutAnchor+STULabelSpacing.h */,
-				D4134E261FB20A3E00377349 /* STUBackgroundAttribute.h */,
-				D4134E291FB20AE800377349 /* STUBackgroundAttribute-Internal.h */,
-				D4134E231FB20A2300377349 /* STUBackgroundAttribute.mm */,
-				D4ED608E1FF594CA00418E2A /* STUCancellationFlag.h */,
-				D4B0AFEF1F925BC600B5B2B9 /* STUDefines.h */,
-				D4B0AEBF1F9259E600B5B2B9 /* STULabel.h */,
-				A10000000000000000000001 /* STULabel+UITextInput.h */,
-				A10000000000000000000002 /* STULabel+UITextInput-Internal.h */,
-				A10000000000000000000003 /* STULabel+UITextInput.mm */,
-				D4B0AFEA1F925B9C00B5B2B9 /* STULabel.mm */,
-				D48694612038FDED0014A034 /* STULabelAlignment.h */,
-				D4B0AECF1F925AF200B5B2B9 /* STULabelDrawingBlock.h */,
-				D4B0AEF81F925AF800B5B2B9 /* STULabelDrawingBlock-Internal.hpp */,
-				D4B0AED01F925AF200B5B2B9 /* STULabelDrawingBlock.mm */,
-				D4B0AED11F925AF200B5B2B9 /* STULabelLayer.h */,
-				D4B0AEF31F925AF700B5B2B9 /* STULabelLayer-Internal.hpp */,
-				D4B0AEFD1F925AF800B5B2B9 /* STULabelLayer.mm */,
-				D4B0AEEF1F925AF600B5B2B9 /* STULabelLayoutInfo.h */,
-				D4B0AECD1F925AF100B5B2B9 /* STULabelLayoutInfo-Internal.hpp */,
-				D4B0AEC81F925AF100B5B2B9 /* STULabelLayoutInfo.mm */,
-				D4B0AECE1F925AF100B5B2B9 /* STULabelOverlayStyle.h */,
-				D4B0AEF71F925AF800B5B2B9 /* STULabelOverlayStyle.mm */,
-				D4B0AEF91F925AF800B5B2B9 /* STULabelPrerenderer.h */,
-				D4B0AEFA1F925AF800B5B2B9 /* STULabelPrerenderer-Internal.hpp */,
-				D4B0AECB1F925AF100B5B2B9 /* STULabelPrerenderer-no-ARC.mm */,
-				D4B0AEDA1F925AF200B5B2B9 /* STULabelPrerenderer.mm */,
-				D4717B5120F412E80019AB9F /* STULabelSwiftExtensions.h */,
-				D4B0AEDF1F925AF300B5B2B9 /* STULayerWithNullDefaultActions.h */,
-				D4B0AEE31F925AF400B5B2B9 /* STULayerWithNullDefaultActions.m */,
-				D4E753B82104A50100FA59F0 /* STUParagraphStyle.h */,
-				D4E753BB2104A51700FA59F0 /* STUParagraphStyle-Internal.hpp */,
-				D4E753B52104A4EA00FA59F0 /* STUParagraphStyle.mm */,
-				D4B0AEDE1F925AF300B5B2B9 /* STUShapedString.h */,
-				D4B0AEE51F925AF400B5B2B9 /* STUShapedString-Internal.hpp */,
-				D4B0AED51F925AF200B5B2B9 /* STUShapedString.mm */,
-				D4B0AED71F925AF200B5B2B9 /* STUStartEndRange.h */,
-				D42384F31F9396FD000B8A63 /* STUStartEndRange-Internal.hpp */,
-				D4B0AED41F925AF200B5B2B9 /* STUTextAttachment.h */,
-				D4B0AEF01F925AF600B5B2B9 /* STUTextAttachment-Internal.hpp */,
-				D4B0AED81F925AF200B5B2B9 /* STUTextAttachment.mm */,
-				D4B0AECA1F925AF100B5B2B9 /* STUTextAttributes.h */,
-				D4B0AEDB1F925AF300B5B2B9 /* STUTextAttributes-Internal.hpp */,
-				D4B0AED61F925AF200B5B2B9 /* STUTextAttributes.mm */,
-				D4B0AEEE1F925AF600B5B2B9 /* STUTextFlags.h */,
-				D4B0AEFC1F925AF800B5B2B9 /* STUTextFrame.h */,
-				D4B0AEE11F925AF300B5B2B9 /* STUTextFrame-Unsafe.h */,
-				D4B0AED21F925AF200B5B2B9 /* STUTextFrame-Internal.hpp */,
-				D4B0AEF51F925AF700B5B2B9 /* STUTextFrame.mm */,
-				D4B0AEFB1F925AF800B5B2B9 /* STUTextFrameAccessibilityElement.h */,
-				D4B0AEED1F925AF600B5B2B9 /* STUTextFrameAccessibilityElement.mm */,
-				D45F217620A0D1FB007E6C36 /* STUTextFrameDrawingOptions.h */,
-				D45F217C20A0D4F3007E6C36 /* STUTextFrameDrawingOptions-Internal.hpp */,
-				D45F217720A0D1FB007E6C36 /* STUTextFrameDrawingOptions.mm */,
-				D4B0AEEB1F925AF600B5B2B9 /* STUTextFrameLine.h */,
-				D4B0AECC1F925AF100B5B2B9 /* STUTextFrameLine.mm */,
-				D4B0AEC91F925AF100B5B2B9 /* STUTextFrameOptions.h */,
-				D4B0AEFE1F925AF900B5B2B9 /* STUTextFrameOptions-Internal.hpp */,
-				D4B0AEE21F925AF400B5B2B9 /* STUTextFrameOptions.mm */,
-				D45F217D20A1B590007E6C36 /* STUTextFrameRange.h */,
-				D4B0AEE01F925AF300B5B2B9 /* STUTextHighlightStyle.h */,
-				D4B0AEDC1F925AF300B5B2B9 /* STUTextHighlightStyle-Internal.hpp */,
-				D4B0AEE61F925AF400B5B2B9 /* STUTextHighlightStyle.mm */,
-				D4B0AEE81F925AF500B5B2B9 /* STUTextLink.h */,
-				D4B0AEE41F925AF400B5B2B9 /* STUTextLink-Internal.hpp */,
-				D4B0AED31F925AF200B5B2B9 /* STUTextLink.mm */,
-				D486945E2038FD820014A034 /* STUTextRange.h */,
-				D4B0AEEA1F925AF500B5B2B9 /* STUTextRectArray.h */,
-				D4B0AEF21F925AF700B5B2B9 /* STUTextRectArray-Internal.hpp */,
-				D4B0AEF41F925AF700B5B2B9 /* STUTextRectArray.mm */,
-				D4E753BC2104A99D00FA59F0 /* STUTruncationScope.h */,
-				D4E753C22104B32600FA59F0 /* STUTruncationScope-Internal.h */,
-				D4E753BD2104A99D00FA59F0 /* STUTruncationScope.mm */,
-			);
-			path = STULabel;
-			sourceTree = "<group>";
-		};
-		D4B0AF3A1F925B5C00B5B2B9 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				D42384981F93798D000B8A63 /* stu */,
-				D49890EC23E5883E00A639E0 /* DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */,
-				D49890ED23E5883E00A639E0 /* UndefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h */,
-				D471C06F1FF941E30014BE97 /* AtomicEnum.hpp */,
-				D471C0721FFA65C40014BE97 /* CancellationFlag.hpp */,
-				D471C07B20000DC00014BE97 /* CancellationFlag.mm */,
-				D46B093E1FAC8EE100375E76 /* Color.hpp */,
-				D46B09471FAC9E6000375E76 /* Color.mm */,
-				D49577B91FB0BF6D00DBDBDC /* Color-no-ARC.mm */,
-				D48798E81FE9494000A7A065 /* Common.hpp */,
-				D46B593420C14A3600D016E2 /* CoreAnimationUtils.hpp */,
-				D46B593720C14A9B00D016E2 /* CoreAnimationUtils.mm */,
-				D4134E221FB1F41200377349 /* CoreGraphicsUtils.hpp */,
-				D49F0AC81FCC6014004B0E5C /* CoreGraphicsUtils.mm */,
-				D4134E2C1FB236DA00377349 /* Equal.hpp */,
-				D49F0AA21FCC5FC4004B0E5C /* DecorationLines.hpp */,
-				D49F0AA31FCC5FC4004B0E5C /* DecorationLines.mm */,
-				D4981F051FBF1824007E88C2 /* DisplayScaleRounding.hpp */,
-				D4981F041FBF1824007E88C2 /* DisplayScaleRounding.mm */,
-				D49F0AA41FCC5FC4004B0E5C /* DrawingContext.hpp */,
-				D49F0AA11FCC5FC4004B0E5C /* DrawingContext.mm */,
-				D46B09411FAC916200375E76 /* Font.hpp */,
-				D46B09441FAC96CA00375E76 /* Font.mm */,
-				D49F0AE11FCC601A004B0E5C /* GlyphPathIntersectionBounds.hpp */,
-				D49F0AD61FCC6018004B0E5C /* GlyphPathIntersectionBounds.mm */,
-				D4F150811F9B994700AB1C4B /* GlyphSpan.hpp */,
-				D40AE3261FA6068F00E0F056 /* GlyphSpan.mm */,
-				D4C6735D1FAE0D950047A173 /* Hash.hpp */,
-				D46B094A1FACF2F900375E76 /* HashTable.hpp */,
-				D4E76BF7201BBA2200249594 /* HashTable.mm */,
-				D4981EFF1FBC8C2A007E88C2 /* InputClamping.hpp */,
-				D4D2D99E205D6E2400BBDBDB /* Kerning.hpp */,
-				D4D2D9A1205D6EA400BBDBDB /* Kerning.mm */,
-				D4981EF71FB8E8F4007E88C2 /* IntervalSearchTable.hpp */,
-				D4981EF81FB8EAA3007E88C2 /* IntervalSearchTable.mm */,
-				D49F0AD11FCC6016004B0E5C /* LabelParameters.hpp */,
-				D41745FA2033A1F9001D6F4F /* LabelParameters.mm */,
-				D4ED60951FF6CC1B00418E2A /* LabelRenderTask.hpp */,
-				D4ED60941FF6CC1B00418E2A /* LabelRenderTask.mm */,
-				D471C0751FFA87650014BE97 /* LabelPrerenderer.hpp */,
-				D471C0781FFA877A0014BE97 /* LabelPrerenderer.mm */,
-				D49F0AD41FCC6017004B0E5C /* LabelRendering.hpp */,
-				D49F0AD91FCC6018004B0E5C /* LabelRendering.mm */,
-				D497D6F620B708BC0009302B /* LayerVisibleBoundsObserver.hpp */,
-				D497D6F920B708D10009302B /* LayerVisibleBoundsObserver.mm */,
-				D49F0ADD1FCC6019004B0E5C /* LineTruncation.hpp */,
-				D49F0AC01FCC6013004B0E5C /* LineTruncation.mm */,
-				D4F150841F9CE96900AB1C4B /* NSArrayRef.hpp */,
-				D4D20DD220E25BD500294D57 /* NSArrayRef-no-ARC.mm */,
-				D468096D1FB1E5A5006AA14D /* NSCoderUtils.hpp */,
-				D4552F8C1FEC06710006974A /* NSAttributedStringRef.hpp */,
-				D416FB28201D2333002761B4 /* NSAttributedString-no-ARC.mm */,
-				D4552F851FEAF3F20006974A /* NSStringRef.hpp */,
-				D4552F881FEAF53C0006974A /* NSStringRef.mm */,
-				D41A37D22030FFC900ADDE1E /* PurgeableImage.hpp */,
-				D41A37D52030FFDF00ADDE1E /* PurgeableImage.mm */,
-				D468096A1FB1D575006AA14D /* Once.hpp */,
-				D4552F921FED31D10006974A /* Rect.hpp */,
-				D48297071FE5591300D67234 /* ShapedString.hpp */,
-				D482970A1FE5592C00D67234 /* ShapedString.mm */,
-				D49F0AA91FCC5FD0004B0E5C /* SortedIntervalBuffer.hpp */,
-				D49F0AAA1FCC5FD0004B0E5C /* SortedIntervalBuffer.mm */,
-				D453E7851F98DB04003F81AC /* StyledStringRangeIteration.hpp */,
-				D44C191C1F97C434001DFD52 /* StyledStringRangeIteration.mm */,
-				D49F0AAD1FCC5FDE004B0E5C /* ThreadLocalAllocator.hpp */,
-				D42584E21FCE137800DDA412 /* ThreadLocalAllocator.mm */,
-				D40AE3291FA74F6600E0F056 /* TextFlags.hpp */,
-				D42384F01F939589000B8A63 /* TextFrame.hpp */,
-				D48798E51FE6DB1200A7A065 /* TextFrame.mm */,
-				D4A80F4520C890C9001CD188 /* TextFrame-Background.mm */,
-				D4B0AEF61F925AF700B5B2B9 /* TextFrame-Drawing.mm */,
-				D40AE3201FA4E09000E0F056 /* TextFrame-IndexConversion.mm */,
-				D4A80F4020C860BE001CD188 /* TextFrame-PointToIndex.mm */,
-				D40AE31D1FA4D70700E0F056 /* TextFrame-TruncatedAttributedString.mm */,
-				D437A41C20A5BBC00032AFE8 /* TextFrameDrawingOptions.hpp */,
-				D4EAEE181FCB29D90094F525 /* TextFrameLayouter.hpp */,
-				D4EAEE1B1FCB29EB0094F525 /* TextFrameLayouter.mm */,
-				D42029271FE026F800B1F5FC /* TextFrameLayouter-LineBreaking.mm */,
-				D4154B571FD5F43D00A065BC /* TextFrameLayouter-LineTruncation.mm */,
-				D4764D6E20EFF91C00D04A5A /* TextFrameLayouter-Scaling.mm */,
-				D4ED285E1FA1FD0E00DD135A /* TextFrameLine-Drawing.mm */,
-				D4ED28611FA20F2F00DD135A /* TextFrameLine-FontMetric.mm */,
-				D4F1508C1F9F69CA00AB1C4B /* TextFrameLine-GlyphSpanIteration.mm */,
-				D4ED285B1FA1052B00DD135A /* TextFrameLine-ImageBounds.mm */,
-				D44A5EBA1F9A9DC3007325B4 /* TextFrameCompactIndex.hpp */,
-				D49F0AB81FCC6000004B0E5C /* TextLineSpan.hpp */,
-				D49F0AB71FCC6000004B0E5C /* TextLineSpan.mm */,
-				D49F0AE01FCC601A004B0E5C /* TextLineSpansPath.hpp */,
-				D49F0AD21FCC6017004B0E5C /* TextLineSpansPath.mm */,
-				D49F0AB01FCC5FF0004B0E5C /* TextStyle.hpp */,
-				D49F0AAF1FCC5FF0004B0E5C /* TextStyle.mm */,
-				D49F0AB11FCC5FF1004B0E5C /* TextStyleBuffer.hpp */,
-				D49F0AB21FCC5FF1004B0E5C /* TextStyleBuffer.mm */,
-				D49F0AD81FCC6018004B0E5C /* UnicodeCodePointProperties.hpp */,
-				D49F0AC71FCC6014004B0E5C /* UnicodeCodePointProperties.mm */,
-				D45F218020A1E015007E6C36 /* Unretained.hpp */,
-				D49F0ADA1FCC6018004B0E5C /* STULabelGhostingMaskLayer.h */,
-				D49F0ABF1FCC6012004B0E5C /* STULabelGhostingMaskLayer.mm */,
-				D49F0ADC1FCC6019004B0E5C /* STULabelLinkOverlayLayer.h */,
-				D49F0AC11FCC6013004B0E5C /* STULabelLinkOverlayLayer.m */,
-				D49F0AD31FCC6017004B0E5C /* STULabelSubrangeView.h */,
-				D49F0ACF1FCC6016004B0E5C /* STULabelSubrangeView.mm */,
-				D4D58ED620B0B9630016AA8A /* STULabelTiledLayer.h */,
-				D46B593120C07C2D00D016E2 /* STULabelTiledLayer.mm */,
-				D49F0AD71FCC6018004B0E5C /* STUMediaTimingFunctionUtils.h */,
-				D49F0ADB1FCC6019004B0E5C /* STUPlaceholderObjects.h */,
-				D4B0AEE71F925AF500B5B2B9 /* STUPlaceholderObjects-no-ARC.m */,
-			);
-			path = Internal;
-			sourceTree = "<group>";
-		};
-		D4E8DBE320DA6F29009F4735 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				D4E8DBE420DA6F29009F4735 /* Info.plist */,
-				35B2D111303910D800B636D5 /* Localizable.xcstrings */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		D4FEA1232046BDDF003CA72D /* stu */ = {
-			isa = PBXGroup;
-			children = (
-				D42AC4E22041BBEF0076CAF1 /* AllocationTests.cpp */,
-				D4494FC92046FFD80047DD82 /* AllocatorUtils.cpp */,
-				D42AC4E52041DA830076CAF1 /* ArenaAllocatorTests.cpp */,
-				D47A35202046C26B00C32FAE /* ArrayTests.cpp */,
-				D4494FBE2046EABE0047DD82 /* ArrayUtilsTests.cpp */,
-				D42119D42047615900D143A8 /* BinarySearchTests.cpp */,
-				D41C948420874DEC002AFFF3 /* FunctionRefTests.cpp */,
-				D41C930320854D15002AFFF3 /* NSFoundationSupportTests.mm */,
-				D41C930520854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm */,
-				D4DD0230210E5BE300915763 /* RangeTests.cpp */,
-				D42AC4DF2041782B0076CAF1 /* TestUtils.hpp */,
-				D4494FBB2046E1C50047DD82 /* TestValue.hpp */,
-				D4494FC62046F5DF0047DD82 /* TestValue.cpp */,
-				D42AC4DD204176820076CAF1 /* UtilityTests.cpp */,
-				D4494FBC2046E93A0047DD82 /* VectorTests.cpp */,
-			);
-			path = stu;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1014,6 +160,9 @@
 			);
 			dependencies = (
 				A20000000000000000000011 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				352D73DE303C663300C34AF3 /* Tests */,
 			);
 			name = AllTests;
 			packageProductDependencies = (
@@ -1034,7 +183,8 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
+			fileSystemSynchronizedGroups = (
+				352D7369303C654B00C34AF3 /* Demo */,
 			);
 			name = Demo;
 			packageProductDependencies = (
@@ -1069,7 +219,6 @@
 				};
 			};
 			buildConfigurationList = D4B0AEB61F9259E600B5B2B9 /* Build configuration list for PBXProject "STULabel" */;
-			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1113,9 +262,11 @@
 				vi,
 			);
 			mainGroup = D4B0AEB21F9259E600B5B2B9;
+			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A20000000000000000000009 /* XCLocalSwiftPackageReference "." */,
 			);
+			preferredProjectObjectVersion = 110;
 			productRefGroup = D4B0AEBD1F9259E600B5B2B9 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1135,114 +286,26 @@
 /* Begin PBXResourcesBuildPhase section */
 		D43E66BB1FD45DB300BABD1C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				D44F90EA20E6414300ED750B /* udhr.html in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D467A0751F9261E70043C7F0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				35B2D10E30390F6F00B636D5 /* AppIcon.icon in Resources */,
-				D495DABA2067C7210081606C /* udhr.html in Resources */,
-				D467A0831F9261E70043C7F0 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D43E66B91FD45DB300BABD1C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				D4494FC52046F4370047DD82 /* VectorTests.cpp in Sources */,
-				D43E66C81FD45DD400BABD1C /* UnicodeCodePointPropertiesTests.mm in Sources */,
-				D498248C2163D59B007D1DA9 /* TextFrameLayoutInfoTests.swift in Sources */,
-				D4494FC12046F4320047DD82 /* ArrayTests.cpp in Sources */,
-				D41C92CA2083F3F1002AFFF3 /* TextFrameLineBreakingTests.swift in Sources */,
-				D41C92C82083F35F002AFFF3 /* TestUtils.swift in Sources */,
-				D43E66C91FD45DD700BABD1C /* TextLineSpansPathTests.mm in Sources */,
-				D41C930420854D15002AFFF3 /* NSFoundationSupportTests.mm in Sources */,
-				D41B1F63210BB3C400E4203C /* TextFrameOptionsTests.swift in Sources */,
-				D45A31F620645DF6009E7E5A /* HashSetTests.mm in Sources */,
-				D4AAE9B020476FB300B101A2 /* HashTests.mm in Sources */,
-				D42119D52047615900D143A8 /* BinarySearchTests.cpp in Sources */,
-				D473C97920E41AC000139FED /* TextFrameImageBoundsTests.swift in Sources */,
-				D41C92CC2083F3F7002AFFF3 /* TextFrameHighlightingTests.swift in Sources */,
-				D4D34513203C75380092641A /* NSStringRefTests.mm in Sources */,
-				D41C92CD2083F3FA002AFFF3 /* TextFrameDrawingTests.swift in Sources */,
-				D4494FBF2046F4320047DD82 /* AllocationTests.cpp in Sources */,
-				D49CBA4D214BC711008F36B2 /* AutoLayoutUtils.swift in Sources */,
-				D49824A1216788C0007D1DA9 /* CoreGraphicsUtils.swift in Sources */,
-				D44F90E820E6413B00ED750B /* UDHR.swift in Sources */,
-				D41C92C92083F3EF002AFFF3 /* TextFrameTruncationTests.swift in Sources */,
-				D49CBA482149C977008F36B2 /* AutoLayoutTests.swift in Sources */,
-				D41C92C62083D276002AFFF3 /* MainScreenPropertiesTests.swift in Sources */,
-				D4DD0232210E5BE300915763 /* RangeTests.cpp in Sources */,
-				D41C6D21211354EF00ACF170 /* GlyphBoundsCacheTests.mm in Sources */,
-				D4819C53211F06D800D37514 /* TextStyleBufferTests.mm in Sources */,
-				D4494FCA2046FFD80047DD82 /* AllocatorUtils.cpp in Sources */,
-				D4494FC02046F4320047DD82 /* ArenaAllocatorTests.cpp in Sources */,
-				D44F90EC20E64CFF00ED750B /* Rand.swift in Sources */,
-				D4DD0233210E766A00915763 /* ShapedStringTests.swift in Sources */,
-				D49C2D6421077B120018FD33 /* ParagraphStyleTests.swift in Sources */,
-				D423F67220FA5B68003AE48C /* TextAttachmentTests.swift in Sources */,
-				D41C948620874DEC002AFFF3 /* FunctionRefTests.cpp in Sources */,
-				D49CBA4B214B07C0008F36B2 /* SnapshotTestCase.swift in Sources */,
-				D4D42F21203A1B9700617ADB /* DisplayScaleRounding.mm in Sources */,
-				D4982493216664AF007D1DA9 /* LabelAlignmentTests.swift in Sources */,
-				D41C930620854E05002AFFF3 /* NSFoundationSupportTests-no-ARC.mm in Sources */,
-				D4154B5C1FD706E900A065BC /* SnapshotTestCase.m in Sources */,
-				D41C92C52083D1C7002AFFF3 /* DynamicTypeFontScalingTests.swift in Sources */,
-				D45A31F32062971A009E7E5A /* SortedIntervalBufferTests.mm in Sources */,
-				D4494FC22046F4320047DD82 /* ArrayUtilsTests.cpp in Sources */,
-				D4DD022E210E20A500915763 /* SwiftWrapperTests.swift in Sources */,
-				D4494FC42046F4370047DD82 /* UtilityTests.cpp in Sources */,
-				D4494FC72046F5DF0047DD82 /* TestValue.cpp in Sources */,
-				D4B11BDF222C464900352EE3 /* StringExtension.swift in Sources */,
-				D41C92C72083D2A6002AFFF3 /* MutexTests.m in Sources */,
-				A10000000000000000000023 /* UITextInputTests.mm in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D467A0731F9261E70043C7F0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				D45F2175209F68A2007E6C36 /* Rand.swift in Sources */,
-				D4CEE355202632A200803A45 /* FormCells.swift in Sources */,
-				D4A80F4420C87B1A001CD188 /* CoreGraphicsUtils.swift in Sources */,
-				D40702842014EC17004E5C07 /* TextFramePerformanceVC.swift in Sources */,
-				D47ED37A20235DD00086E073 /* LabelPerformanceVC.swift in Sources */,
-				D4B11BDE222C450300352EE3 /* StringExtension.swift in Sources */,
-				D4E44B1F201CBB2600B717E9 /* TextFramePerformanceVC-Drawing.m in Sources */,
-				D45299B42124485E00714A83 /* Setting.swift in Sources */,
-				D4CEE3572026337800803A45 /* UIViewExtension.swift in Sources */,
-				D48AC8C2205AD53A00EA3FE8 /* TapToReadMoreVC.swift in Sources */,
-				A10000000000000000000031 /* TextSelectionVC.swift in Sources */,
-				D48652C02023AEB6006DC1A2 /* AttributedStringUtils.swift in Sources */,
-				D495DAB42067C2810081606C /* UDHR.swift in Sources */,
-				D45299B92126385500714A83 /* UIColorExtension.swift in Sources */,
-				D495DABC2067EC140081606C /* UDHRViewerVC.swift in Sources */,
-				D41745F920337101001D6F4F /* LabelView.swift in Sources */,
-				D4A774BA21110B9F0083B6B9 /* UILabelWithContentInsets.swift in Sources */,
-				D46DB178200BC18300E7E773 /* AutoLayoutUtils.swift in Sources */,
-				D4320B13212C3F0B00B12F96 /* UIEdgeInsetsExtension.swift in Sources */,
-				D40C6BCA21384C8F00743FC6 /* StaticTableViewController.swift in Sources */,
-				D45167C22016793E0015B10B /* TimingResultView.swift in Sources */,
-				D4271105215CDA3200939123 /* DictionaryExtension.swift in Sources */,
-				D423043821527317003E2303 /* Stats.swift in Sources */,
-				D46DB171200BAD3B00E7E773 /* TableViewPerformanceVC.swift in Sources */,
-				D47FDD652008B7C400449617 /* RootViewController.swift in Sources */,
-				D47FDD632008B43C00449617 /* AppDelegate.swift in Sources */,
-				A10000000000000000000041 /* SceneDelegate.swift in Sources */,
-				D424FD70209B708A00FB50BA /* Fonts.swift in Sources */,
-				D46DB173200BADB300E7E773 /* AutoHeightTableViewCell.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -1255,39 +318,44 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		D43E66C61FD45DB300BABD1C /* Debug */ = {
+		D43E66C61FD45DB300BABD1C /* Debug configuration for PBXNativeTarget "AllTests" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = AllTests.xcconfig;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		D43E66C71FD45DB300BABD1C /* Release */ = {
+		D43E66C71FD45DB300BABD1C /* Release configuration for PBXNativeTarget "AllTests" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D43E67241FD4AE1200BABD1C /* AllTests.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = AllTests.xcconfig;
 			buildSettings = {
 			};
 			name = Release;
 		};
-		D467A08A1F9261E70043C7F0 /* Debug */ = {
+		D467A08A1F9261E70043C7F0 /* Debug configuration for PBXNativeTarget "Demo" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D407F00920E52B6700922204 /* Demo.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Demo.xcconfig;
 			buildSettings = {
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
-		D467A08B1F9261E70043C7F0 /* Release */ = {
+		D467A08B1F9261E70043C7F0 /* Release configuration for PBXNativeTarget "Demo" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D407F00920E52B6700922204 /* Demo.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Demo.xcconfig;
 			buildSettings = {
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
-		D4B0AEC21F9259E600B5B2B9 /* Debug */ = {
+		D4B0AEC21F9259E600B5B2B9 /* Debug configuration for PBXProject "STULabel" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310901F94168400F39C3A /* Debug.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1321,9 +389,10 @@
 			};
 			name = Debug;
 		};
-		D4B0AEC31F9259E600B5B2B9 /* Release */ = {
+		D4B0AEC31F9259E600B5B2B9 /* Release configuration for PBXProject "STULabel" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D41310911F94169200F39C3A /* Release.xcconfig */;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Release.xcconfig;
 			buildSettings = {
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1363,28 +432,25 @@
 		D43E66C51FD45DB300BABD1C /* Build configuration list for PBXNativeTarget "AllTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D43E66C61FD45DB300BABD1C /* Debug */,
-				D43E66C71FD45DB300BABD1C /* Release */,
+				D43E66C61FD45DB300BABD1C /* Debug configuration for PBXNativeTarget "AllTests" */,
+				D43E66C71FD45DB300BABD1C /* Release configuration for PBXNativeTarget "AllTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D467A08C1F9261E70043C7F0 /* Build configuration list for PBXNativeTarget "Demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D467A08A1F9261E70043C7F0 /* Debug */,
-				D467A08B1F9261E70043C7F0 /* Release */,
+				D467A08A1F9261E70043C7F0 /* Debug configuration for PBXNativeTarget "Demo" */,
+				D467A08B1F9261E70043C7F0 /* Release configuration for PBXNativeTarget "Demo" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D4B0AEB61F9259E600B5B2B9 /* Build configuration list for PBXProject "STULabel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D4B0AEC21F9259E600B5B2B9 /* Debug */,
-				D4B0AEC31F9259E600B5B2B9 /* Release */,
+				D4B0AEC21F9259E600B5B2B9 /* Debug configuration for PBXProject "STULabel" */,
+				D4B0AEC31F9259E600B5B2B9 /* Release configuration for PBXProject "STULabel" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
@@ -1420,4 +486,5 @@
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D4B0AEB31F9259E600B5B2B9 /* Project object */;
+	validationLevel = 1;
 }
