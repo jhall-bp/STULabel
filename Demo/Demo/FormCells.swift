@@ -287,6 +287,10 @@ final class StepperCell<Value: BinaryFloatingPointOrInt>: UITableViewCell, Prope
     self.selectionStyle = .none
     self.contentView.layoutMargins.right = 10
     self.accessoryView = stepperContainer
+
+    self.registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, _) in
+      self.detailTextLabel?.font = preferredFontWithMonospacedDigits(.body, traitCollection)
+    }
   }
 
   func propertyDidChange(_ property: PropertyBase) {
@@ -328,10 +332,6 @@ final class StepperCell<Value: BinaryFloatingPointOrInt>: UITableViewCell, Prope
       property.setValue(value)
     }
     onValueChange?(value)
-  }
-
-  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    detailTextLabel?.font = preferredFontWithMonospacedDigits(.body, traitCollection)
   }
 
   private var needsDetailTextUpdate: Bool = false
