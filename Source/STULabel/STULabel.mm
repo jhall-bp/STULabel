@@ -1973,6 +1973,11 @@ static void initializeTextInteraction(STULabel *self)
   if (selectable) {
     _bits.isSelectable = true;
     [self addInteraction:self.textInteraction];
+    // STULabel handles links through the responder touch methods. Delaying ended touches in the
+    // text interaction can otherwise make a failed selection gesture interfere with a link tap.
+    for (UIGestureRecognizer *const gesture in self.textInteraction.gesturesForFailureRequirements) {
+      gesture.delaysTouchesEnded = false;
+    }
   } else {
     if (_textInteraction) {
       self.selectedTextRange = nil;
