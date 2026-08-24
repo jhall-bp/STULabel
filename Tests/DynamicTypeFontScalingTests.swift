@@ -7,17 +7,8 @@ import XCTest
 private class LabelWithOverridePreferredContentSizeCategory: UILabel {
   var preferredContentSizeCategory: UIContentSizeCategory = .unspecified {
     didSet {
-      traitCollectionDidChange(UITraitCollection(traitsFrom: [
-        super.traitCollection, UITraitCollection(preferredContentSizeCategory: oldValue)
-      ]))
+      traitOverrides.preferredContentSizeCategory = preferredContentSizeCategory
     }
-  }
-
-  override var traitCollection: UITraitCollection {
-    return UITraitCollection(traitsFrom: [
-             super.traitCollection,
-             UITraitCollection(preferredContentSizeCategory: preferredContentSizeCategory)
-           ])
   }
 }
 
