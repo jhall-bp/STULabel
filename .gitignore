@@ -4,4 +4,5 @@ xcuserdata/
 *.xccheckout
 *.xcscmblueprint
 .idea
-
+.agents/skills/
+.DS_Store
