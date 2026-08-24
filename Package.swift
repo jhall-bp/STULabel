@@ -77,6 +77,16 @@ let package = Package(
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
       ]
     ),
+    .testTarget(
+      name: "STULabelTests",
+      dependencies: ["STULabel", "STULabelSwift"],
+      swiftSettings: [
+        .defaultIsolation(MainActor.self),
+        .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+      ],
+
+    ),
   ],
   swiftLanguageModes: [.v6],
   cLanguageStandard: .gnu11,
