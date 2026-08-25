@@ -99,7 +99,10 @@ let package = Package(
         .enableUpcomingFeature("InferIsolatedConformances"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
       ],
-
+    ),
+    .testTarget(
+      name: "STULabelTestsObjC",
+      dependencies: ["STULabel"],
     ),
   ],
   swiftLanguageModes: [.v6],

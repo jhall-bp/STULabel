@@ -167,7 +167,7 @@ struct ParagraphStyleTests {
   func `Minimum baseline distance`() {
     let font = UIFont(name: "HelveticaNeue", size: 20)!
 
-    {
+    do {
       let string = NSAttributedString(
         string: "Test",
         attributes: [
@@ -182,14 +182,16 @@ struct ParagraphStyleTests {
       #expect(tf.lines.count == 1)
       expectApproximatelyEqual(
         tf.layoutBounds.height, CGFloat(30), tolerance: CGFloat(Float32(30).ulp))
-    }() {
+    }
+    do {
       let string = NSAttributedString(string: "1\u{2028}2", attributes: [.font: font])
       let tf = STUTextFrame(
         STUShapedString(string, defaultBaseWritingDirection: .leftToRight),
         size: CGSize(width: 50, height: 100), displayScale: 0)
       #expect(tf.lines.count == 2)
       #expect(tf.lines[1].baselineOrigin.y - tf.lines[0].baselineOrigin.y < 30)
-    }() {
+    }
+    do {
       let string = NSAttributedString(
         string: "1\u{2028}2",
         attributes: [
@@ -203,7 +205,8 @@ struct ParagraphStyleTests {
         size: CGSize(width: 50, height: 100), displayScale: 0)
       #expect(tf.lines.count == 2)
       #expect(tf.lines[1].baselineOrigin.y - tf.lines[0].baselineOrigin.y == 30)
-    }() {
+    }
+    do {
       let string = NSAttributedString([
         (
           "1\n",
@@ -227,7 +230,8 @@ struct ParagraphStyleTests {
         size: CGSize(width: 50, height: 100), displayScale: 0)
       #expect(tf.lines.count == 2)
       #expect(tf.lines[1].baselineOrigin.y - tf.lines[0].baselineOrigin.y == 50)
-    }() {
+    }
+    do {
       let string = NSAttributedString([
         (
           "1\n",
@@ -251,7 +255,8 @@ struct ParagraphStyleTests {
         size: CGSize(width: 50, height: 100), displayScale: 0)
       #expect(tf.lines.count == 2)
       #expect(tf.lines[1].baselineOrigin.y - tf.lines[0].baselineOrigin.y == 50)
-    }() {
+    }
+    do {
       let string = NSAttributedString([
         (
           "1\n",
@@ -277,7 +282,7 @@ struct ParagraphStyleTests {
         size: CGSize(width: 50, height: 100), displayScale: 0)
       #expect(tf.lines.count == 2)
       #expect(tf.lines[1].baselineOrigin.y - tf.lines[0].baselineOrigin.y == 40)
-    }()
+    }
   }
 
   @Test
@@ -291,7 +296,8 @@ struct ParagraphStyleTests {
 
     let string0 = NSAttributedString(
       string: "1\u{2028}2\u{2028}3\u{2028}4", attributes: [.font: font]
-    ) {
+    )
+    do {
       let tf = STUTextFrame(
         STUShapedString(string0, defaultBaseWritingDirection: .leftToRight),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -300,7 +306,7 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 0)
       #expect(tf.lines[2].baselineOrigin.x == 0)
       #expect(tf.lines[3].baselineOrigin.x == 0)
-    }()
+    }
 
     let string1 = NSAttributedString(
       string: "1\u{2028}2\u{2028}3\u{2028}4",
@@ -308,7 +314,8 @@ struct ParagraphStyleTests {
         .font: font, .paragraphStyle: paraStyle,
         .stuParagraphStyle: STUParagraphStyle(),
       ]
-    ) {
+    )
+    do {
       let tf = STUTextFrame(
         STUShapedString(string1, defaultBaseWritingDirection: .leftToRight),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -317,9 +324,9 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 3)
       #expect(tf.lines[2].baselineOrigin.x == 3)
       #expect(tf.lines[3].baselineOrigin.x == 3)
-    }()
+    }
 
-    {
+    do {
       paraStyle.alignment = .right
       let tf = STUTextFrame(
         STUShapedString(string1, defaultBaseWritingDirection: .leftToRight),
@@ -329,9 +336,9 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 50 - 13 - tf.lines[1].width)
       #expect(tf.lines[2].baselineOrigin.x == 50 - 13 - tf.lines[2].width)
       #expect(tf.lines[3].baselineOrigin.x == 50 - 13 - tf.lines[3].width)
-    }()
+    }
 
-    {
+    do {
       let tf = STUTextFrame(
         STUShapedString(string1, defaultBaseWritingDirection: .rightToLeft),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -340,7 +347,7 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 50 - 3 - tf.lines[1].width)
       #expect(tf.lines[2].baselineOrigin.x == 50 - 3 - tf.lines[2].width)
       #expect(tf.lines[3].baselineOrigin.x == 50 - 3 - tf.lines[3].width)
-    }()
+    }
 
     paraStyle.alignment = .left
     let string2 = NSAttributedString(
@@ -353,7 +360,9 @@ struct ParagraphStyleTests {
           b.initialLinesTailIndent = -11
         },
       ]
-    ) {
+    )
+
+    do {
       let tf = STUTextFrame(
         STUShapedString(string2, defaultBaseWritingDirection: .leftToRight),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -368,9 +377,10 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 5)
       #expect(tf.lines[2].baselineOrigin.x == 3)
       #expect(tf.lines[3].baselineOrigin.x == 3)
-    }()
+    }
 
-    paraStyle.alignment = .right {
+    paraStyle.alignment = .right
+    do {
       let tf = STUTextFrame(
         STUShapedString(string2, defaultBaseWritingDirection: .leftToRight),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -384,9 +394,9 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 50 - 11 - tf.lines[1].width)
       #expect(tf.lines[2].baselineOrigin.x == 50 - 13 - tf.lines[2].width)
       #expect(tf.lines[3].baselineOrigin.x == 50 - 13 - tf.lines[3].width)
-    }()
+    }
 
-    {
+    do {
       let tf = STUTextFrame(
         STUShapedString(string2, defaultBaseWritingDirection: .rightToLeft),
         size: CGSize(width: 50, height: 100), displayScale: 0)
@@ -400,6 +410,6 @@ struct ParagraphStyleTests {
       #expect(tf.lines[1].baselineOrigin.x == 50 - 5 - tf.lines[1].width)
       #expect(tf.lines[2].baselineOrigin.x == 50 - 3 - tf.lines[2].width)
       #expect(tf.lines[3].baselineOrigin.x == 50 - 3 - tf.lines[3].width)
-    }()
+    }
   }
 }
