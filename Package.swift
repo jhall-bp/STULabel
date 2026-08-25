@@ -43,10 +43,12 @@ let package = Package(
       ],
       cxxSettings: [
         .unsafeFlags(["-fno-objc-arc", "-fno-rtti", "-fcxx-modules"]),
-        .unsafeFlags(["-fno-exceptions", "-fno-objc-exceptions", "-fno-objc-arc-exceptions", "-UNDEBUG"], .when(configuration: .release)),
+        .unsafeFlags(
+          ["-fno-exceptions", "-fno-objc-exceptions", "-fno-objc-arc-exceptions", "-UNDEBUG"],
+          .when(configuration: .release)),
       ],
       linkerSettings: [
-        .unsafeFlags(["-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup"]),
+        .unsafeFlags(["-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup"])
       ]
     ),
     .target(
@@ -72,7 +74,9 @@ let package = Package(
       ],
       cxxSettings: [
         .unsafeFlags(["-fobjc-arc", "-fno-rtti", "-fcxx-modules"]),
-        .unsafeFlags(["-fno-exceptions", "-fno-objc-exceptions", "-fno-objc-arc-exceptions", "-UNDEBUG"], .when(configuration: .release)),
+        .unsafeFlags(
+          ["-fno-exceptions", "-fno-objc-exceptions", "-fno-objc-arc-exceptions", "-UNDEBUG"],
+          .when(configuration: .release)),
       ]
     ),
     .target(

@@ -1,7 +1,6 @@
 // Copyright 2018 Stephan Tolksdorf
 
 import STULabel.MainScreenProperties
-
 import Testing
 
 @MainActor

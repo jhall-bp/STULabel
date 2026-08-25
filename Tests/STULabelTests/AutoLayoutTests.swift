@@ -1,8 +1,7 @@
 // Copyright 2018 Stephan Tolksdorf
 
-import STULabelSwift
-
 import Foundation
+import STULabelSwift
 import SnapshotTesting
 import Testing
 
@@ -17,8 +16,10 @@ struct AutoLayoutTests {
 
   func newContainer(_ suffix: String = "") -> UIView {
     let container = newView("container" + suffix)
-    [constrain(container, .width, eq, 0, priority: .fittingSizeLevel),
-     constrain(container, .height, eq, 0, priority: .fittingSizeLevel)].activate()
+    [
+      constrain(container, .width, eq, 0, priority: .fittingSizeLevel),
+      constrain(container, .height, eq, 0, priority: .fittingSizeLevel),
+    ].activate()
     return container
   }
 
@@ -62,11 +63,15 @@ struct AutoLayoutTests {
     container.addSubview(labelA)
     container.addSubview(labelB)
 
-    labelA.attributedText = NSAttributedString([("Lj 1A\n", [.font: font(size: 36)]),
-                                                ("Lj 2A", [.font: font(size: 20)])])
+    labelA.attributedText = NSAttributedString([
+      ("Lj 1A\n", [.font: font(size: 36)]),
+      ("Lj 2A", [.font: font(size: 20)]),
+    ])
 
-    labelB.attributedText = NSAttributedString([("Lj 1B\n", [.font: font(size: 11.6)]),
-                                                ("Lj 2B", [.font: font(size: 23)])])
+    labelB.attributedText = NSAttributedString([
+      ("Lj 1B\n", [.font: font(size: 11.6)]),
+      ("Lj 2B", [.font: font(size: 23)]),
+    ])
 
     var cs = [NSLayoutConstraint]()
     constrain(&cs, labelA, within: container)
@@ -74,7 +79,7 @@ struct AutoLayoutTests {
     constrain(&cs, labelA, .right, eq, labelB, .left, plus: -20)
     constrain(&cs, labelA, .top, eq, container, .top, priority: .fittingSizeLevel)
 
-    cs.activate();
+    cs.activate
 
     {
       let c = constrain(labelA, .lastBaseline, eq, labelB, .firstBaseline)
@@ -83,9 +88,10 @@ struct AutoLayoutTests {
       c.isActive = false
     }()
 
-    let c = NSLayoutConstraint(item: labelA, attribute: .lastBaseline, relatedBy: .equal,
-                               toItem: labelB, attribute: .firstBaseline,
-                               multiplier: 1, constant: 0)
+    let c = NSLayoutConstraint(
+      item: labelA, attribute: .lastBaseline, relatedBy: .equal,
+      toItem: labelB, attribute: .firstBaseline,
+      multiplier: 1, constant: 0)
     c.isActive = true
     assertSnapshot(of: container, as: .image, named: "last_first")
     c.isActive = false
@@ -128,12 +134,15 @@ struct AutoLayoutTests {
 
     c0.isActive = true
 
-    labelA.attributedText = NSAttributedString([("Lj 1A\n", [.font: font(size: 36)]),
-                                                ("Lj 2A", [.font: font(size: 16)])])
+    labelA.attributedText = NSAttributedString([
+      ("Lj 1A\n", [.font: font(size: 36)]),
+      ("Lj 2A", [.font: font(size: 16)]),
+    ])
 
-    labelB.attributedText = NSAttributedString(string: "Lj 1B\n", attributes: [.font: font(size: 36)])
-    labelC.attributedText = NSAttributedString(string: "Lj 1B\n", attributes: [.font: font(size: 16)])
-
+    labelB.attributedText = NSAttributedString(
+      string: "Lj 1B\n", attributes: [.font: font(size: 36)])
+    labelC.attributedText = NSAttributedString(
+      string: "Lj 1B\n", attributes: [.font: font(size: 16)])
 
     ({
       let c = constrain(labelB, .lastBaseline, eq, positionAbove: labelC, .firstBaseline)
@@ -154,16 +163,18 @@ struct AutoLayoutTests {
     }())
 
     ({
-      let c = constrain(labelB, .lastBaseline, eq, positionAbove: labelC, .firstBaseline,
-                        spacingMultipliedBy: 2, plus: -3)
+      let c = constrain(
+        labelB, .lastBaseline, eq, positionAbove: labelC, .firstBaseline,
+        spacingMultipliedBy: 2, plus: -3)
       c.isActive = true
       defer { c.isActive = false }
       assertSnapshot(of: container, as: .image)
     }())
 
     ({
-      let c = constrain(labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
-                        spacingMultipliedBy: 1)
+      let c = constrain(
+        labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
+        spacingMultipliedBy: 1)
       c.isActive = true
       defer { c.isActive = false }
 
@@ -179,13 +190,15 @@ struct AutoLayoutTests {
       #expect(c.stu_labelSpacingConstraintOffset == 3)
       assertSnapshot(of: container, as: .image)
 
-      let c2 = constrain(labelC, .firstBaseline, leq, positionBelow: labelB, .lastBaseline,
-                        spacingMultipliedBy: 3)
+      let c2 = constrain(
+        labelC, .firstBaseline, leq, positionBelow: labelB, .lastBaseline,
+        spacingMultipliedBy: 3)
       c2.isActive = true
       defer { c2.isActive = false }
 
-      let c3 = constrain(labelC, .firstBaseline, geq, positionBelow: labelB, .lastBaseline,
-                        spacingMultipliedBy: 1.5)
+      let c3 = constrain(
+        labelC, .firstBaseline, geq, positionBelow: labelB, .lastBaseline,
+        spacingMultipliedBy: 1.5)
       c3.isActive = true
       defer { c3.isActive = false }
 
@@ -193,19 +206,23 @@ struct AutoLayoutTests {
     }())
 
     ({
-      let c = constrain(labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
-                        spacingMultipliedBy: 2, plus: 3)
+      let c = constrain(
+        labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
+        spacingMultipliedBy: 2, plus: 3)
       c.isActive = true
       defer { c.isActive = false }
       assertSnapshot(of: container, as: .image)
     }())
 
-    labelA.attributedText = NSAttributedString([("Lj 1A\n", [.font: font(size: 36)]),
-                                                ("Lj 2A", [.font: font(size: 36)])])
+    labelA.attributedText = NSAttributedString([
+      ("Lj 1A\n", [.font: font(size: 36)]),
+      ("Lj 2A", [.font: font(size: 36)]),
+    ])
 
     ({
-      let c = constrain(labelC, .firstBaseline, eq, labelB, .lastBaseline,
-                        plusLineHeightMultipliedBy: 1)
+      let c = constrain(
+        labelC, .firstBaseline, eq, labelB, .lastBaseline,
+        plusLineHeightMultipliedBy: 1)
       c.isActive = true
       defer { c.isActive = false }
 
@@ -227,11 +244,14 @@ struct AutoLayoutTests {
       let view = newView("overlay")
       container.addSubview(view)
       view.backgroundColor = UIColor.orange.withAlphaComponent(0.25)
-      [constrain(view, .height, eq, 1 / view.traitCollection.displayScale),
-       constrain(view, .leading, eq, labelC, .leading),
-       constrain(view, .width, eq, labelC, .width),
-       constrain(view, .top, eq, labelB, .lastBaseline,
-                 plusLineHeightMultipliedBy: 1, plus: -1 / view.traitCollection.displayScale)].activate()
+      [
+        constrain(view, .height, eq, 1 / view.traitCollection.displayScale),
+        constrain(view, .leading, eq, labelC, .leading),
+        constrain(view, .width, eq, labelC, .width),
+        constrain(
+          view, .top, eq, labelB, .lastBaseline,
+          plusLineHeightMultipliedBy: 1, plus: -1 / view.traitCollection.displayScale),
+      ].activate()
 
       assertSnapshot(of: container, as: .image, named: "lineHeight_1_overlay")
     }())
@@ -250,8 +270,8 @@ struct AutoLayoutTests {
       c.isActive = true
       let c2 = constrain(labelB, .firstBaseline, eq, positionAbove: labelA, .lastBaseline)
       c2.isActive = true
-      return c // Trigger destruction of labels and layout guides (because the constraint doesn't
-               // retain the items.)
+      return c  // Trigger destruction of labels and layout guides (because the constraint doesn't
+      // retain the items.)
     }
   }
 
@@ -262,11 +282,17 @@ struct AutoLayoutTests {
 
     let f = UIFont(name: "Helvetica", size: 16)!
     assert(f.leading == 0)
-    let size1 = (roundToDisplayScale(f.ascender, displayScale: container.traitCollection.displayScale) / f.ascender)*16
-    let size2 = (roundToDisplayScale(f.descender, displayScale: container.traitCollection.displayScale) / f.descender)*16
+    let size1 =
+      (roundToDisplayScale(f.ascender, displayScale: container.traitCollection.displayScale)
+        / f.ascender) * 16
+    let size2 =
+      (roundToDisplayScale(f.descender, displayScale: container.traitCollection.displayScale)
+        / f.descender) * 16
     label.attributedText = NSAttributedString(
-                             [("Lj 1\n", [.font: UIFont(name: "Helvetica", size: size1)!]),
-                              ("Lj 2", [.font: UIFont(name: "Helvetica", size: size2)!])])
+      [
+        ("Lj 1\n", [.font: UIFont(name: "Helvetica", size: size1)!]),
+        ("Lj 2", [.font: UIFont(name: "Helvetica", size: size2)!]),
+      ])
     let viewAbove = newView("above")
     viewAbove.backgroundColor = .red
     let viewBelow = newView("below")
@@ -286,10 +312,14 @@ struct AutoLayoutTests {
     constrain(&cs, viewBelow, .width, eq, label, .width)
     constrain(&cs, viewAbove, .height, eq, onePixel)
     constrain(&cs, viewBelow, .height, eq, onePixel)
-    cs.append(constrain(viewAbove.bottomAnchor, eq, positionAbove: label, .firstBaseline,
-                        plus: onePixel))
-    cs.append(constrain(viewBelow.topAnchor, eq, positionBelow: label, .lastBaseline,
-                        plus: -onePixel))
+    cs.append(
+      constrain(
+        viewAbove.bottomAnchor, eq, positionAbove: label, .firstBaseline,
+        plus: onePixel))
+    cs.append(
+      constrain(
+        viewBelow.topAnchor, eq, positionBelow: label, .lastBaseline,
+        plus: -onePixel))
     cs.activate()
 
     assertSnapshot(of: container, as: .image)

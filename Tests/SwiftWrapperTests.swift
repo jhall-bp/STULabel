@@ -1,7 +1,7 @@
 // Copyright 2018 Stephan Tolksdorf
 
-@preconcurrency import XCTest
 import STULabelSwift
+@preconcurrency import XCTest
 
 class SwiftWrapperTests: XCTestCase {
 
@@ -21,41 +21,53 @@ class SwiftWrapperTests: XCTestCase {
     XCTAssertEqual(label.textColor, .label)
 
     label.text = "Plain text"
-    XCTAssertEqual(label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
-                   defaultFont)
-    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
-                     as? UIColor, .label)
+    XCTAssertEqual(
+      label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
+      defaultFont)
+    XCTAssertEqual(
+      label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
+        as? UIColor, .label)
 
     let attributedText = NSMutableAttributedString(string: "unstyled ")
     let attributedFont = UIFont.monospacedSystemFont(ofSize: 20, weight: .regular)
     let attributedColor = UIColor.systemRed
     attributedText.append(NSAttributedString(string: "font", attributes: [.font: attributedFont]))
-    attributedText.append(NSAttributedString(string: " color",
-                                               attributes: [.foregroundColor: attributedColor]))
+    attributedText.append(
+      NSAttributedString(
+        string: " color",
+        attributes: [.foregroundColor: attributedColor]))
     label.attributedText = attributedText
 
-    XCTAssertEqual(label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
-                   defaultFont)
-    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
-                     as? UIColor, .label)
-    XCTAssertEqual(label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
-                   attributedFont)
-    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 9, effectiveRange: nil)
-                     as? UIColor, .label)
-    XCTAssertEqual(label.attributedText.attribute(.font, at: 13, effectiveRange: nil) as? UIFont,
-                   defaultFont)
-    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
-                     as? UIColor, attributedColor)
+    XCTAssertEqual(
+      label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
+      defaultFont)
+    XCTAssertEqual(
+      label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil)
+        as? UIColor, .label)
+    XCTAssertEqual(
+      label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
+      attributedFont)
+    XCTAssertEqual(
+      label.attributedText.attribute(.foregroundColor, at: 9, effectiveRange: nil)
+        as? UIColor, .label)
+    XCTAssertEqual(
+      label.attributedText.attribute(.font, at: 13, effectiveRange: nil) as? UIFont,
+      defaultFont)
+    XCTAssertEqual(
+      label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
+        as? UIColor, attributedColor)
 
     let labelFont = UIFont.systemFont(ofSize: 22, weight: .semibold)
     let labelColor = UIColor.systemGreen
     label.font = labelFont
     label.textColor = labelColor
 
-    XCTAssertEqual(label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
-                   labelFont)
-    XCTAssertEqual(label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
-                     as? UIColor, labelColor)
+    XCTAssertEqual(
+      label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont,
+      labelFont)
+    XCTAssertEqual(
+      label.attributedText.attribute(.foregroundColor, at: 13, effectiveRange: nil)
+        as? UIColor, labelColor)
   }
 
   func testSTULabelUsesLinkColorByDefault() {
@@ -73,11 +85,16 @@ class SwiftWrapperTests: XCTestCase {
   // linker error) and return the correct value in the simplest situation.
   @MainActor
   func testTextFrameParagraphAndLineProperties() {
-    let string = NSAttributedString("Test \r\n", [.font: font,
-                                              .underlineStyle: NSUnderlineStyle.single.rawValue])
-    let tf = STUTextFrame(STUShapedString(string),
-                          size: CGSize(width: 100, height: 50),
-                          displayScale: 0)
+    let string = NSAttributedString(
+      "Test \r\n",
+      [
+        .font: font,
+        .underlineStyle: NSUnderlineStyle.single.rawValue,
+      ])
+    let tf = STUTextFrame(
+      STUShapedString(string),
+      size: CGSize(width: 100, height: 50),
+      displayScale: 0)
 
     let para = tf.paragraphs[0]
     XCTAssertEqual(para.paragraphIndex, 0)
@@ -123,16 +140,22 @@ class SwiftWrapperTests: XCTestCase {
     XCTAssertEqual(line.isInitialLineInParagraph, true)
     XCTAssertEqual(line.hasInsertedHyphen, false)
     XCTAssertEqual(line.isTruncatedAsRightToLeftLine, false)
-    XCTAssertEqual(line.width,
-                   tf.rects(for: tf.indices, frameOrigin: .zero).bounds.width)
+    XCTAssertEqual(
+      line.width,
+      tf.rects(for: tf.indices, frameOrigin: .zero).bounds.width)
     XCTAssertEqual(line.baselineOrigin.x, 0)
 
-    let expectedLeading = 2*max(CGFloat(Float64(line.ascent) + Float64(line.leading)/2
-                                        - Float64(line.ascent)),
-                                CGFloat(Float64(line.descent) + Float64(line.leading)/2
-                                        - Float64(line.descent)))
+    let expectedLeading =
+      2
+      * max(
+        CGFloat(
+          Float64(line.ascent) + Float64(line.leading) / 2
+            - Float64(line.ascent)),
+        CGFloat(
+          Float64(line.descent) + Float64(line.leading) / 2
+            - Float64(line.descent)))
 
-    let expectedOriginY = CGFloat(Float32(font.ascender + expectedLeading/2))
+    let expectedOriginY = CGFloat(Float32(font.ascender + expectedLeading / 2))
     XCTAssertEqual(line.baselineOrigin.y, expectedOriginY)
 
     XCTAssertEqual(line.ascent, CGFloat(Float32(font.ascender)))

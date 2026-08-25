@@ -1,9 +1,8 @@
 // Copyright 2018 Stephan Tolksdorf
 
+import Foundation
 import STULabelSwift
 import SnapshotTesting
-
-import Foundation
 import Testing
 
 @MainActor
@@ -27,13 +26,13 @@ struct LabelAlignmentTests {
     label.maximumNumberOfLines = 1
     label.contentInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
     label.contentScaleFactor = s
-    let fontSize = 16*(16/UIFont(name: "Helvetica", size: 16)!.ascender)
+    let fontSize = 16 * (16 / UIFont(name: "Helvetica", size: 16)!.ascender)
     let font1 = UIFont(name: "Helvetica", size: fontSize)!
     label.font = font1
     label.text = "Lxj"
     var size = label.sizeThatFits(CGSize(width: 100, height: 100))
-    size.width  = ceil(size.width*1.5)
-    size.height = ceil(size.height*1.5)
+    size.width = ceil(size.width * 1.5)
+    size.height = ceil(size.height * 1.5)
     label.frame = CGRect(origin: .zero, size: size)
 
     label.drawingBlock = { p in
@@ -42,17 +41,19 @@ struct LabelAlignmentTests {
       let tf = p.textFrame
       // This also tests the layoutInfo a bit.
       let info = label.layoutInfo
-      let d = 1/info.displayScale
+      let d = 1 / info.displayScale
 
-      let offset = CGPoint(x: tf.origin.x - info.textFrameOrigin.x,
-                           y: tf.origin.y - info.textFrameOrigin.y)
+      let offset = CGPoint(
+        x: tf.origin.x - info.textFrameOrigin.x,
+        y: tf.origin.y - info.textFrameOrigin.y)
 
       var bounds = info.layoutBounds
-      bounds.origin = CGPoint(x: bounds.origin.x + offset.x,
-                              y: bounds.origin.y + offset.y)
-      bounds.origin.x -= d/2
-      bounds.origin.y -= d/2
-      bounds.size.width  += d
+      bounds.origin = CGPoint(
+        x: bounds.origin.x + offset.x,
+        y: bounds.origin.y + offset.y)
+      bounds.origin.x -= d / 2
+      bounds.origin.y -= d / 2
+      bounds.size.width += d
       bounds.size.height += d
       ctx.setStrokeColor(UIColor.green.cgColor)
       ctx.setLineWidth(d)
@@ -64,23 +65,33 @@ struct LabelAlignmentTests {
       let lastBaseline = info.lastBaseline + offset.y
 
       ctx.setFillColor(UIColor.blue.cgColor)
-      ctx.fill(CGRect(origin: CGPoint(x: firstLine.baselineOrigin.x, y: firstBaseline),
-                      size: CGSize(width: firstLine.width, height: d)))
+      ctx.fill(
+        CGRect(
+          origin: CGPoint(x: firstLine.baselineOrigin.x, y: firstBaseline),
+          size: CGSize(width: firstLine.width, height: d)))
       if tf.lines.count > 1 {
-        ctx.fill(CGRect(origin: CGPoint(x: lastLine.baselineOrigin.x, y: lastBaseline),
-                        size: CGSize(width: lastLine.width, height: d)))
+        ctx.fill(
+          CGRect(
+            origin: CGPoint(x: lastLine.baselineOrigin.x, y: lastBaseline),
+            size: CGSize(width: lastLine.width, height: d)))
       }
       ctx.setFillColor(UIColor.red.cgColor)
-      ctx.fill(CGRect(origin: CGPoint(x: firstLine.baselineOrigin.x,
-                                      y: firstBaseline
-                                         - CGFloat(info.firstLineHeightAboveBaseline) - d),
-                      size: CGSize(width: firstLine.width, height: d)))
-      ctx.fill(CGRect(origin: CGPoint(x: lastLine.baselineOrigin.x,
-                                      y: lastBaseline + CGFloat(info.lastLineHeightBelowBaseline)),
-                      size: CGSize(width: lastLine.width, height: d)))
+      ctx.fill(
+        CGRect(
+          origin: CGPoint(
+            x: firstLine.baselineOrigin.x,
+            y: firstBaseline
+              - CGFloat(info.firstLineHeightAboveBaseline) - d),
+          size: CGSize(width: firstLine.width, height: d)))
+      ctx.fill(
+        CGRect(
+          origin: CGPoint(
+            x: lastLine.baselineOrigin.x,
+            y: lastBaseline + CGFloat(info.lastLineHeightBelowBaseline)),
+          size: CGSize(width: lastLine.width, height: d)))
     }
 
-    assertSnapshot(of: label, as: .image, named: "tl") 
+    assertSnapshot(of: label, as: .image, named: "tl")
     label.textAlignment = .center
     assertSnapshot(of: label, as: .image, named: "tc")
     label.textAlignment = .right
@@ -118,13 +129,13 @@ struct LabelAlignmentTests {
     label.textAlignment = .right
     assertSnapshot(of: label, as: .image, named: "br")
 
-    let font2 = font1.withSize(fontSize/2)
+    let font2 = font1.withSize(fontSize / 2)
     label.attributedText = NSAttributedString([("Lxj\n", [.font: font1]), ("Lxj", [.font: font2])])
 
     label.maximumNumberOfLines = 0
     size = label.sizeThatFits(CGSize(width: 100, height: 100))
-    size.width  = ceil(size.width*1.5)
-    size.height = ceil(size.height*1.5)
+    size.width = ceil(size.width * 1.5)
+    size.height = ceil(size.height * 1.5)
     label.frame = CGRect(origin: .zero, size: size)
 
     label.verticalAlignment = .top

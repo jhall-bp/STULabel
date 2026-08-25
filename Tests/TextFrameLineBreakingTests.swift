@@ -1,9 +1,7 @@
 // Copyright 2018 Stephan Tolksdorf
 
 import STULabelSwift
-
 import XCTest
-
 
 class TextFrameLineBreakingTests: SnapshotTestCase {
 
@@ -15,17 +13,21 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
   }
 
   let font = UIFont(name: "HelveticaNeue", size: 18)!
-  
+
   @nonobjc
-  func textFrame(_ attributedString: NSAttributedString, width: CGFloat = 1000,
-                 _ options: STUTextFrameOptions? = nil) -> STUTextFrame
-  {
-    let options = options
-                  ?? STUTextFrameOptions { builder in builder.defaultTextAlignment = .start }
-    let frame = STUTextFrame(STUShapedString(attributedString,
-                                             defaultBaseWritingDirection: .leftToRight),
-                             size: CGSize(width: width, height: 10000), displayScale: displayScale,
-                             options: options)
+  func textFrame(
+    _ attributedString: NSAttributedString, width: CGFloat = 1000,
+    _ options: STUTextFrameOptions? = nil
+  ) -> STUTextFrame {
+    let options =
+      options
+      ?? STUTextFrameOptions { builder in builder.defaultTextAlignment = .start }
+    let frame = STUTextFrame(
+      STUShapedString(
+        attributedString,
+        defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: width, height: 10000), displayScale: displayScale,
+      options: options)
     return frame
   }
 
@@ -47,16 +49,18 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
 
   func image(_ textFrame: STUTextFrame) -> UIImage {
     var bounds = textFrame.layoutBounds
-    bounds.origin.x    = floor(bounds.origin.x*2)/2
-    bounds.origin.y    = floor(bounds.origin.y*2)/2
-    bounds.size.width  = ceil(bounds.size.width*2)/2
-    bounds.size.height = ceil(bounds.size.height*2)/2
+    bounds.origin.x = floor(bounds.origin.x * 2) / 2
+    bounds.origin.y = floor(bounds.origin.y * 2) / 2
+    bounds.size.width = ceil(bounds.size.width * 2) / 2
+    bounds.size.height = ceil(bounds.size.height * 2) / 2
     bounds = bounds.insetBy(dx: -5, dy: -5)
-    return createImage(bounds.size, scale: displayScale, backgroundColor: .white, .grayscale,
-           { context in
-             textFrame.draw(at: -bounds.origin, in: context, contextBaseCTM_d: 1,
-                            pixelAlignBaselines: true)
-           })
+    return createImage(
+      bounds.size, scale: displayScale, backgroundColor: .white, .grayscale,
+      { context in
+        textFrame.draw(
+          at: -bounds.origin, in: context, contextBaseCTM_d: 1,
+          pixelAlignBaselines: true)
+      })
   }
 
   func testEmptyLines() {
@@ -83,7 +87,7 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(5..<9))
       XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 0)
       XCTAssertEqual(lines[1].width, width)
-    }();
+    }()
     {
       let width = typographicWidth("Tes")
       let f = textFrame("Test\r\n", width: width)
@@ -95,7 +99,7 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(3..<4))
       XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 2)
       XCTAssertEqual(lines[1].width, typographicWidth("t"))
-    }();
+    }()
   }
 
   func testLineBreaksForZeroWidthFrames() {
@@ -106,7 +110,7 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[0].rangeInOriginalString, NSRange(0..<1))
       XCTAssertEqual(lines[0].width, typographicWidth("T"))
       XCTAssertEqual(lines[0].trailingWhitespaceInTruncatedStringUTF16Length, 1)
-    }();
+    }()
     {
       let f = textFrame("Te😀  \n", width: 0)
       let lines = f.lines
@@ -118,7 +122,7 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[2].rangeInOriginalString, NSRange(2..<4))
       XCTAssertEqual(lines[2].width, typographicWidth("😀"))
       XCTAssertEqual(lines[2].trailingWhitespaceInTruncatedStringUTF16Length, 3)
-    }();
+    }()
   }
 
   func testSoftHyphen() {
@@ -171,7 +175,7 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
     XCTAssert(lines[0].hasInsertedHyphen)
     XCTAssertEqual(lines[0].rangeInOriginalString, NSRange(0..<5))
     XCTAssertEqual(lines[0].trailingWhitespaceInTruncatedStringUTF16Length, 0)
-    XCTAssertEqual(lines[0].width, width, accuracy: width*(CGFloat(Float32.ulpOfOne)))
+    XCTAssertEqual(lines[0].width, width, accuracy: width * (CGFloat(Float32.ulpOfOne)))
     XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(5..<7))
     XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 0)
     // The vertical hyphen position isn't yet optimal.
@@ -179,14 +183,14 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
   }
 
   func testHyphenInMiddleOfLeftToRightRightToLeftLine() {
-    let width = typographicWidth("Test:") +  CGFloat(32.8464851 as Float32)
+    let width = typographicWidth("Test:") + CGFloat(32.8464851 as Float32)
     let f = textFrame("Test:دامي\u{00AD}دى", width: width + 0.01)
     let lines = f.lines
     XCTAssertEqual(lines.count, 2)
     XCTAssert(lines[0].hasInsertedHyphen)
     XCTAssertEqual(lines[0].rangeInOriginalString, NSRange(0..<10))
     XCTAssertEqual(lines[0].trailingWhitespaceInTruncatedStringUTF16Length, 0)
-    XCTAssertEqual(lines[0].width, width, accuracy: width*(CGFloat(Float32.ulpOfOne)))
+    XCTAssertEqual(lines[0].width, width, accuracy: width * (CGFloat(Float32.ulpOfOne)))
     XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(10..<12))
     XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 0)
     self.checkSnapshotImage(image(f))
@@ -233,8 +237,9 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.hyphenationFactor = 1
 
-    string.addAttributes([.font: font, .paragraphStyle: paraStyle],
-                         range: NSRange(0..<string.length))
+    string.addAttributes(
+      [.font: font, .paragraphStyle: paraStyle],
+      range: NSRange(0..<string.length))
 
     let width = typographicWidth("bettle")
     let f = textFrame(string, width: width)
@@ -308,15 +313,17 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
     let partialWidth = typographicWidth("test")
     let fullWidth = typographicWidth("test success")
     let frameWidth = fullWidth - 0.01
-    let threshold = partialWidth/frameWidth
+    let threshold = partialWidth / frameWidth
 
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.hyphenationFactor = Float32(threshold + 0.01)
-    
 
-    let string = NSAttributedString("test success",
-                                     [.font: font, .paragraphStyle: paraStyle,
-                                      .stuHyphenationLocaleIdentifier: "en_US"]);
+    let string = NSAttributedString(
+      "test success",
+      [
+        .font: font, .paragraphStyle: paraStyle,
+        .stuHyphenationLocaleIdentifier: "en_US",
+      ])
 
     {
       let f = textFrame(string, width: frameWidth)
@@ -330,9 +337,9 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(8..<12))
       XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 0)
       XCTAssertEqual(lines[1].width, typographicWidth("cess"))
-    }();
+    }()
 
-    paraStyle.hyphenationFactor = Float32(threshold - 0.01);
+    paraStyle.hyphenationFactor = Float32(threshold - 0.01)
     {
       let f = textFrame(string, width: frameWidth)
       let lines = f.lines
@@ -345,31 +352,38 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
       XCTAssertEqual(lines[1].rangeInOriginalString, NSRange(5..<12))
       XCTAssertEqual(lines[1].trailingWhitespaceInTruncatedStringUTF16Length, 0)
       XCTAssertEqual(lines[1].width, typographicWidth("success"))
-    }();
+    }()
   }
 
   func testFinderBasedHyphenation() {
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.hyphenationFactor = 1
     paraStyle.baseWritingDirection = .leftToRight
-    let attributedString = NSAttributedString(string: "\n🐉✊🏿🌈",
-                                              attributes: [.font: font,
-                                                           .paragraphStyle: paraStyle])
-                           .copy() as! NSAttributedString
+    let attributedString =
+      NSAttributedString(
+        string: "\n🐉✊🏿🌈",
+        attributes: [
+          .font: font,
+          .paragraphStyle: paraStyle,
+        ]
+      )
+      .copy() as! NSAttributedString
     var counter = 0
     let options = STUTextFrameOptions { builder in
-      builder.lastHyphenationLocationInRangeFinder = { (attributedStringArg, range)
-                                                    -> STUHyphenationLocation in
+      builder.lastHyphenationLocationInRangeFinder = {
+        (attributedStringArg, range)
+          -> STUHyphenationLocation in
         XCTAssertEqual(attributedStringArg, attributedString)
         let string = attributedString.string
         let index = string.index(string.endIndex, offsetBy: -counter)
         counter += 1
         XCTAssertEqual(range, NSRange(1..<index._utf16Offset(in: string)))
-        return STUHyphenationLocation(index: string.index(before: index)._utf16Offset(in: string),
-                                      hyphen: UnicodeScalar("🤯").value,
-                                      options: [])
+        return STUHyphenationLocation(
+          index: string.index(before: index)._utf16Offset(in: string),
+          hyphen: UnicodeScalar("🤯").value,
+          options: [])
       }
-    };
+    }
 
     let f = textFrame(attributedString, width: typographicWidth("🐉✊🏿🌈") - 0.1, options)
     let lines = f.lines
@@ -392,10 +406,12 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
   func testLTRJustification() {
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.alignment = .justified
-    let string = NSMutableAttributedString("Test TestTest",
-                                           [.font: font, .paragraphStyle: paraStyle])
-    string.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue,
-                        range: NSRange(2..<3))
+    let string = NSMutableAttributedString(
+      "Test TestTest",
+      [.font: font, .paragraphStyle: paraStyle])
+    string.addAttribute(
+      .underlineStyle, value: NSUnderlineStyle.single.rawValue,
+      range: NSRange(2..<3))
     let width = typographicWidth("TestTest")
     let f = textFrame(string, width: width)
     self.checkSnapshotImage(image(f))
@@ -404,10 +420,12 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
   func testRTLJustification() {
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.alignment = .justified
-    let string = NSMutableAttributedString("הבדיקה הבדיקההבדיקה",
-                                           [.font: font, .paragraphStyle: paraStyle])
-    string.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue,
-                        range: NSRange(4..<5))
+    let string = NSMutableAttributedString(
+      "הבדיקה הבדיקההבדיקה",
+      [.font: font, .paragraphStyle: paraStyle])
+    string.addAttribute(
+      .underlineStyle, value: NSUnderlineStyle.single.rawValue,
+      range: NSRange(4..<5))
     let width = typographicWidth("הבדיקההבדיקה")
     let f = textFrame(string, width: width)
     self.checkSnapshotImage(image(f))
@@ -416,10 +434,12 @@ class TextFrameLineBreakingTests: SnapshotTestCase {
   func testJustificationWithHyphenInLeftToRightRightToLeftLine() {
     let paraStyle = NSMutableParagraphStyle()
     paraStyle.alignment = .justified
-    let string = NSMutableAttributedString("Test: اخ\u{00AD}تباراختباراختبار",
-                                           [.font: font, .paragraphStyle: paraStyle])
-    string.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue,
-                        range: NSRange(6..<7))
+    let string = NSMutableAttributedString(
+      "Test: اخ\u{00AD}تباراختباراختبار",
+      [.font: font, .paragraphStyle: paraStyle])
+    string.addAttribute(
+      .underlineStyle, value: NSUnderlineStyle.single.rawValue,
+      range: NSRange(6..<7))
     let f = textFrame(string, width: typographicWidth("اختباراختباراختبار"))
     self.checkSnapshotImage(image(f))
   }

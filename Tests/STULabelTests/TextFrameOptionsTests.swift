@@ -1,6 +1,5 @@
-import STULabelSwift
-
 import Foundation
+import STULabelSwift
 import Testing
 
 @MainActor
@@ -9,8 +8,9 @@ struct TextFrameOptionsTests {
   func initializers() {
     let opts0 = STUTextFrameOptions()
     #expect(opts0.textLayoutMode == .default)
-    #expect(opts0.defaultTextAlignment ==
-                   STUDefaultTextAlignment(rawValue: stu_defaultBaseWritingDirection().rawValue)!)
+    #expect(
+      opts0.defaultTextAlignment == STUDefaultTextAlignment(
+        rawValue: stu_defaultBaseWritingDirection().rawValue)!)
     #expect(opts0.maximumNumberOfLines == 0)
     #expect(opts0.lastLineTruncationMode == .end)
     #expect(opts0.truncationToken == nil)
@@ -21,8 +21,9 @@ struct TextFrameOptionsTests {
 
     let opts0b = STUTextFrameOptions { builder in }
     #expect(opts0b.textLayoutMode == .default)
-    #expect(opts0b.defaultTextAlignment ==
-                   STUDefaultTextAlignment(rawValue: stu_defaultBaseWritingDirection().rawValue)!)
+    #expect(
+      opts0b.defaultTextAlignment == STUDefaultTextAlignment(
+        rawValue: stu_defaultBaseWritingDirection().rawValue)!)
     #expect(opts0b.maximumNumberOfLines == 0)
     #expect(opts0b.lastLineTruncationMode == .end)
     #expect(opts0b.truncationToken == nil)
@@ -110,7 +111,8 @@ struct TextFrameOptionsTests {
     builder.minimumTextScaleFactor = 0.5
     #expect(builder.minimumTextScaleFactor == 0.5)
 
-    builder.textScalingBaselineAdjustment = unsafeBitCast(UInt8(255), to: STUBaselineAdjustment.self)
+    builder.textScalingBaselineAdjustment = unsafeBitCast(
+      UInt8(255), to: STUBaselineAdjustment.self)
     #expect(builder.textScalingBaselineAdjustment == .none)
 
     builder.textScaleFactorStepSize = 0
