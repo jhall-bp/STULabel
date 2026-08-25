@@ -1,23 +1,20 @@
 // Copyright 2018 Stephan Tolksdorf
 
 import STULabelSwift
+import SnapshotTesting
 
-import XCTest
+import Foundation
+import Testing
 
-// Note: We're using ../Demo/Utils/AutoLayoutUtils.swift here.
-
-class LabelAlignmentTests: SnapshotTestCase {
-  override func setUp() {
-    super.setUp()
-    self.imageBaseDirectory = pathRelativeToCurrentSourceDir("ReferenceImages")
+@MainActor
+struct LabelAlignmentTests {
+  @Test
+  func `Alignment`() {
+    assertAlignment(useContentSublayer: false)
+    assertAlignment(useContentSublayer: true)
   }
 
-  func testAlignment() {
-    self.testAlignment(useContentSublayer: false)
-    self.testAlignment(useContentSublayer: true)
-  }
-
-  func testAlignment(useContentSublayer: Bool) {
+  func assertAlignment(useContentSublayer: Bool) {
     let s: CGFloat = 4
     let label = STULabel()
     if useContentSublayer {
@@ -47,10 +44,12 @@ class LabelAlignmentTests: SnapshotTestCase {
       let info = label.layoutInfo
       let d = 1/info.displayScale
 
-      let offset = tf.origin - info.textFrameOrigin
+      let offset = CGPoint(x: tf.origin.x - info.textFrameOrigin.x,
+                           y: tf.origin.y - info.textFrameOrigin.y)
 
       var bounds = info.layoutBounds
-      bounds.origin += offset
+      bounds.origin = CGPoint(x: bounds.origin.x + offset.x,
+                              y: bounds.origin.y + offset.y)
       bounds.origin.x -= d/2
       bounds.origin.y -= d/2
       bounds.size.width  += d
@@ -81,43 +80,43 @@ class LabelAlignmentTests: SnapshotTestCase {
                       size: CGSize(width: lastLine.width, height: d)))
     }
 
-    checkSnapshot(of: label, contentsScale: s, suffix: "_tl")
+    assertSnapshot(of: label, as: .image, named: "tl") 
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_tc")
+    assertSnapshot(of: label, as: .image, named: "tc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_tr")
+    assertSnapshot(of: label, as: .image, named: "tr")
 
     label.verticalAlignment = .center
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_cl")
+    assertSnapshot(of: label, as: .image, named: "cl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_cc")
+    assertSnapshot(of: label, as: .image, named: "cc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_cr")
+    assertSnapshot(of: label, as: .image, named: "cr")
 
     label.verticalAlignment = .centerXHeight
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_xl")
+    assertSnapshot(of: label, as: .image, named: "xl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_xc")
+    assertSnapshot(of: label, as: .image, named: "xc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_xr")
+    assertSnapshot(of: label, as: .image, named: "xr")
 
     label.verticalAlignment = .centerCapHeight
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_al")
+    assertSnapshot(of: label, as: .image, named: "al")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_ac")
+    assertSnapshot(of: label, as: .image, named: "ac")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_ar")
+    assertSnapshot(of: label, as: .image, named: "ar")
 
     label.verticalAlignment = .bottom
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_bl")
+    assertSnapshot(of: label, as: .image, named: "bl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_bc")
+    assertSnapshot(of: label, as: .image, named: "bc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_br")
+    assertSnapshot(of: label, as: .image, named: "br")
 
     let font2 = font1.withSize(fontSize/2)
     label.attributedText = NSAttributedString([("Lxj\n", [.font: font1]), ("Lxj", [.font: font2])])
@@ -130,43 +129,43 @@ class LabelAlignmentTests: SnapshotTestCase {
 
     label.verticalAlignment = .top
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_tl")
+    assertSnapshot(of: label, as: .image, named: "2_tl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_tc")
+    assertSnapshot(of: label, as: .image, named: "2_tc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_tr")
+    assertSnapshot(of: label, as: .image, named: "2_tr")
 
     label.verticalAlignment = .center
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_cl")
+    assertSnapshot(of: label, as: .image, named: "2_cl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_cc")
+    assertSnapshot(of: label, as: .image, named: "2_cc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_cr")
+    assertSnapshot(of: label, as: .image, named: "2_cr")
 
     label.verticalAlignment = .centerXHeight
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_xl")
+    assertSnapshot(of: label, as: .image, named: "2_xl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_xc")
+    assertSnapshot(of: label, as: .image, named: "2_xc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_xr")
+    assertSnapshot(of: label, as: .image, named: "2_xr")
 
     label.verticalAlignment = .centerCapHeight
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_al")
+    assertSnapshot(of: label, as: .image, named: "2_al")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_ac")
+    assertSnapshot(of: label, as: .image, named: "2_ac")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_ar")
+    assertSnapshot(of: label, as: .image, named: "2_ar")
 
     label.verticalAlignment = .bottom
     label.textAlignment = .left
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_bl")
+    assertSnapshot(of: label, as: .image, named: "2_bl")
     label.textAlignment = .center
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_bc")
+    assertSnapshot(of: label, as: .image, named: "2_bc")
     label.textAlignment = .right
-    checkSnapshot(of: label, contentsScale: s, suffix: "_2_br")
+    assertSnapshot(of: label, as: .image, named: "2_br")
   }
 
 }

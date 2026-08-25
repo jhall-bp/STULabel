@@ -4,12 +4,6 @@ import STULabelSwift
 
 import XCTest
 
-extension NSAttributedString {
-  convenience init(_ string: String, _ attributes: StringAttributes) {
-    self.init(string: string, attributes: attributes)
-  }
-}
-
 
 class TextFrameLineBreakingTests: SnapshotTestCase {
 

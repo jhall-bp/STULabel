@@ -3,6 +3,7 @@
 
 import STULabel.ImageUtils
 import STULabelSwift
+import Foundation
 
 typealias StringAttributes = [NSAttributedString.Key: Any]
 
@@ -10,7 +11,7 @@ extension NSAttributedString {
   convenience init(_ strings: [(String, StringAttributes)], _ attributes: StringAttributes = [:]) {
     let string = NSMutableAttributedString()
     for (str, attr) in strings {
-      string.append(NSAttributedString(str, attr))
+      string.append(NSAttributedString(string: str, attributes: attr))
     }
     string.addAttributes(attributes, range: NSRange(0..<string.length))
     self.init(attributedString: string)
@@ -61,21 +62,21 @@ func ceilToScale(_ rect: CGRect, _ scale: CGFloat) -> CGRect {
 }
 
 
-public func XCTAssertEqual<T>(_ expression1: @autoclosure () throws -> T,
-                                _ expression2: @autoclosure () -> T,
-                                accuracyInULP: T,
-                                file: StaticString = #file, line: UInt = #line) where T : FloatingPoint
-{
-  let value2 = expression2()
-  XCTAssertEqual(try expression1(), value2, accuracy: accuracyInULP*value2.ulp, file: file, line: line)
-}
-
-public func XCTAssertEqual(_ expression1: @autoclosure () throws -> CGFloat,
-                           _ expression2: @autoclosure () -> CGFloat,
-                           accuracyInFloat32ULP: CGFloat,
-                           file: StaticString = #file, line: UInt = #line)
-{
-  let value2 = expression2()
-  XCTAssertEqual(try expression1(), value2, accuracy: accuracyInFloat32ULP*CGFloat(Float32(value2).ulp),
-                 file: file, line: line)
-}
+//public func XCTAssertEqual<T>(_ expression1: @autoclosure () throws -> T,
+//                                _ expression2: @autoclosure () -> T,
+//                                accuracyInULP: T,
+//                                file: StaticString = #file, line: UInt = #line) where T : FloatingPoint
+//{
+//  let value2 = expression2()
+//  XCTAssertEqual(try expression1(), value2, accuracy: accuracyInULP*value2.ulp, file: file, line: line)
+//}
+//
+//public func XCTAssertEqual(_ expression1: @autoclosure () throws -> CGFloat,
+//                           _ expression2: @autoclosure () -> CGFloat,
+//                           accuracyInFloat32ULP: CGFloat,
+//                           file: StaticString = #file, line: UInt = #line)
+//{
+//  let value2 = expression2()
+//  XCTAssertEqual(try expression1(), value2, accuracy: accuracyInFloat32ULP*CGFloat(Float32(value2).ulp),
+//                 file: file, line: line)
+//}

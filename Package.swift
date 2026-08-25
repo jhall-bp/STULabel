@@ -14,6 +14,12 @@ let package = Package(
     .library(name: "STULabel", targets: ["STULabel"]),
     .library(name: "STULabelSwift", targets: ["STULabelSwift"]),
   ],
+  dependencies: [
+    .package(
+      url: "https://github.com/pointfreeco/swift-snapshot-testing",
+      from: "1.19.4",
+    )
+  ],
   targets: [
     .target(
       name: "STULabelNoARC",
@@ -79,7 +85,11 @@ let package = Package(
     ),
     .testTarget(
       name: "STULabelTests",
-      dependencies: ["STULabel", "STULabelSwift"],
+      dependencies: [
+        "STULabel",
+        "STULabelSwift",
+        .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+      ],
       swiftSettings: [
         .defaultIsolation(MainActor.self),
         .enableUpcomingFeature("InferIsolatedConformances"),
