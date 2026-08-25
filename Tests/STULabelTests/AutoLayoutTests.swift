@@ -78,15 +78,14 @@ struct AutoLayoutTests {
     constrain(&cs, labelB, within: container)
     constrain(&cs, labelA, .right, eq, labelB, .left, plus: -20)
     constrain(&cs, labelA, .top, eq, container, .top, priority: .fittingSizeLevel)
+    cs.activate()
 
-    cs.activate
-
-    {
+    do {
       let c = constrain(labelA, .lastBaseline, eq, labelB, .firstBaseline)
       c.isActive = true
       assertSnapshot(of: container, as: .image, named: "last_first")
       c.isActive = false
-    }()
+    }
 
     let c = NSLayoutConstraint(
       item: labelA, attribute: .lastBaseline, relatedBy: .equal,
@@ -96,14 +95,14 @@ struct AutoLayoutTests {
     assertSnapshot(of: container, as: .image, named: "last_first")
     c.isActive = false
 
-    {
+    do {
       let c = constrain(labelA, .firstBaseline, eq, labelB, .lastBaseline)
       c.isActive = true
       assertSnapshot(of: container, as: .image, named: "first_last")
 
       swap(&labelA.attributedText, &labelB.attributedText)
       assertSnapshot(of: container, as: .image, named: "swapped_first_last")
-    }()
+    }
   }
 
   @Test
@@ -144,7 +143,7 @@ struct AutoLayoutTests {
     labelC.attributedText = NSAttributedString(
       string: "Lj 1B\n", attributes: [.font: font(size: 16)])
 
-    ({
+    do {
       let c = constrain(labelB, .lastBaseline, eq, positionAbove: labelC, .firstBaseline)
       c.isActive = true
       defer { c.isActive = false }
@@ -160,18 +159,18 @@ struct AutoLayoutTests {
       c.stu_labelSpacingConstraintOffset = -3
       #expect(c.stu_labelSpacingConstraintOffset == -3)
       assertSnapshot(of: container, as: .image)
-    }())
+    }
 
-    ({
+    do {
       let c = constrain(
         labelB, .lastBaseline, eq, positionAbove: labelC, .firstBaseline,
         spacingMultipliedBy: 2, plus: -3)
       c.isActive = true
       defer { c.isActive = false }
       assertSnapshot(of: container, as: .image)
-    }())
+    }
 
-    ({
+    do {
       let c = constrain(
         labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
         spacingMultipliedBy: 1)
@@ -203,23 +202,23 @@ struct AutoLayoutTests {
       defer { c3.isActive = false }
 
       assertSnapshot(of: container, as: .image)
-    }())
+    }
 
-    ({
+    do {
       let c = constrain(
         labelC, .firstBaseline, eq, positionBelow: labelB, .lastBaseline,
         spacingMultipliedBy: 2, plus: 3)
       c.isActive = true
       defer { c.isActive = false }
       assertSnapshot(of: container, as: .image)
-    }())
+    }
 
     labelA.attributedText = NSAttributedString([
       ("Lj 1A\n", [.font: font(size: 36)]),
       ("Lj 2A", [.font: font(size: 36)]),
     ])
 
-    ({
+    do {
       let c = constrain(
         labelC, .firstBaseline, eq, labelB, .lastBaseline,
         plusLineHeightMultipliedBy: 1)
@@ -254,7 +253,7 @@ struct AutoLayoutTests {
       ].activate()
 
       assertSnapshot(of: container, as: .image, named: "lineHeight_1_overlay")
-    }())
+    }
   }
 
   @Test

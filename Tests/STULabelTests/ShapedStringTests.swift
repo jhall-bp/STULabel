@@ -1,6 +1,6 @@
 // Copyright 2018 Stephan Tolksdorf
 
-import CoreText
+@preconcurrency import CoreText
 import Foundation
 import STULabelSwift
 import Testing
