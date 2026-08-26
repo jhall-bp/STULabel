@@ -63,7 +63,7 @@ class UDHR {
   }
 
   fileprivate init() {
-    let url = Bundle(for: type(of: self)).url(forResource: "udhr", withExtension: "html")!
+    let url = Bundle.module.url(forResource: "udhr", withExtension: "html")!
     let parser = XMLParser(contentsOf: url)!
     let delegate = ParserDelegate()
     parser.delegate = delegate
