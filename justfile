@@ -16,6 +16,11 @@ lto_flags := if env_var_or_default("LTO", "") == "" { "" } else { "LLVM_LTO=" + 
 default:
     @just --list
 
+format:
+    swift format --recursive --in-place . \
+    && find . \( -name '*.h' -o -name '*.m' -o -name '*.mm' -o -name '*.c' -o -name '*.cc' -o -name '*.cpp' \) \
+          -exec xcrun clang-format -i {} +
+
 # Print the resolved Swift package manifest.
 package-graph:
     swift package dump-package
