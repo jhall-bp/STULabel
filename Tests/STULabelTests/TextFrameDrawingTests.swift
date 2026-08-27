@@ -57,7 +57,7 @@ struct TextFrameDrawingTests {
       let cgImage = stu_createCGImage(
         size: imageSize, scale: displayScale,
         backgroundColor: UIColor.white.cgColor,
-        STUCGImageFormat(.rgb, [.withoutAlphaChannel]),
+        STUCGImageFormat(.grayscale, [.withoutAlphaChannel]),
         { context in
           #expect(context.ctm.d == -2)
           frame.draw(in: context, contextBaseCTM_d: 1, pixelAlignBaselines: true)
@@ -124,7 +124,7 @@ struct TextFrameDrawingTests {
   }
 
   @Test
-  func `Drawing into a PDF context`() {
+  func `Drawing into a PDF context`() throws {
     let font = UIFont(name: "HelveticaNeue", size: 18)!
     let attributedString = NSAttributedString(
       string: "Apple",
@@ -142,28 +142,28 @@ struct TextFrameDrawingTests {
       width: ceil(layoutBounds.maxX + 2 * m),
       height: ceil(layoutBounds.maxY + 2 * m))
     let data = NSMutableData()
-    do {
-      UIGraphicsBeginPDFContextToData(data, CGRect(origin: .zero, size: size), nil)
-      UIGraphicsBeginPDFPage()
-      let cgContext = UIGraphicsGetCurrentContext()!
-      frame.draw(
-        at: CGPoint(x: m, y: m),
-        in: cgContext, contextBaseCTM_d: 0, pixelAlignBaselines: false)
-      UIGraphicsEndPDFContext()
-    }
+    UIGraphicsBeginPDFContextToData(data, CGRect(origin: .zero, size: size), nil)
+    UIGraphicsBeginPDFPage()
+    let cgContext = try #require(UIGraphicsGetCurrentContext())
+    frame.draw(
+      at: CGPoint(x: m, y: m),
+      in: cgContext, contextBaseCTM_d: 0, pixelAlignBaselines: false)
+    UIGraphicsEndPDFContext()
 
-    let pdfPage = CGPDFDocument(CGDataProvider(data: data)!)!.page(at: 1)!
+    let pdfDataProvider = try #require(CGDataProvider(data: data))
+    let pdfDocument = try #require(CGPDFDocument(pdfDataProvider))
+    let pdfPage = try #require(pdfDocument.page(at: 1))
 
     // Compare generated PDF with reference by comparing images rendered at a high resolution.
 
-    let pdfCGImage = stu_createCGImage(
-      size: size, scale: -20,
-      backgroundColor: UIColor.white.cgColor,
-      STUCGImageFormat(.grayscale, [.withoutAlphaChannel]),
-      { context in
-        context.drawPDFPage(pdfPage)
-      })!
-
+    let pdfCGImage = try #require(
+      stu_createCGImage(
+        size: size, scale: -20,
+        backgroundColor: UIColor.white.cgColor,
+        STUCGImageFormat(.rgb, [.withoutAlphaChannel]),
+        { context in
+          context.drawPDFPage(pdfPage)
+        }))
     let pdfImage = UIImage(cgImage: pdfCGImage, scale: 1, orientation: .up)
 
     assertSnapshot(of: pdfImage, as: .image)
