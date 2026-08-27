@@ -8,6 +8,13 @@
 
 using namespace stu_label;
 
+static bool systemICUUsesSameUnicodeDataVersion()
+{
+  UVersionInfo version;
+  u_getUnicodeVersion(version);
+  return version[0] == CodePointProperties::unicodeDataVersionMajor;
+}
+
 @interface UnicodeCodePointPropertiesTests : XCTestCase
 @end
 @implementation UnicodeCodePointPropertiesTests
@@ -50,6 +57,7 @@ using namespace stu_label;
 
 - (void)testIsRegionalIndicator
 {
+  XCTAssert(systemICUUsesSameUnicodeDataVersion(), @"system ICU uses a different Unicode data version");
   for (UChar32 cp = 0; cp < UCHAR_MAX_VALUE + 4; ++cp) {
     XCTAssertEqual(
         isRegionalIndicator((Char32)cp), u_hasBinaryProperty(cp, UCHAR_REGIONAL_INDICATOR), @"code point 0x%x", cp);
@@ -59,14 +67,13 @@ using namespace stu_label;
 
 - (void)testIsUnicodeWhitespace
 {
+  XCTAssert(systemICUUsesSameUnicodeDataVersion(), @"system ICU uses a different Unicode data version");
   for (uint32_t cp = 0; cp <= UINT16_MAX; ++cp) {
     const bool expected = u_hasBinaryProperty((UChar32)cp, UCHAR_WHITE_SPACE);
     XCTAssertEqual(isUnicodeWhitespace((Char32)cp), expected, @"code point 0x%x", cp);
   }
 }
 
-// This library uses the Unicode 11 data, which corresponds to the data of the system ICU library
-// in iOS 12 (>= beta 3).
 - (void)testIsNotIgnorableWithCodePoint:(uint32_t)cp
 {
   const bool ignorable = u_hasBinaryProperty((UChar32)cp, UCHAR_DEFAULT_IGNORABLE_CODE_POINT) ||
@@ -85,6 +92,7 @@ using namespace stu_label;
 
 - (void)testIsNotIgnorableAndNotWhitespaceWithCodePoint
 {
+  XCTAssert(systemICUUsesSameUnicodeDataVersion(), @"system ICU uses a different Unicode data version");
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testIsNotIgnorableAndNotWhitespaceWithCodePoint:i];
     [self testIsNotIgnorableWithCodePoint:i];
@@ -123,6 +131,7 @@ using namespace stu_label;
 
 - (void)testBidiStrongType
 {
+  XCTAssert(systemICUUsesSameUnicodeDataVersion(), @"system ICU uses a different Unicode data version");
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testBidiStrongTypeOfCodePoint:i];
   }
@@ -141,6 +150,7 @@ static GraphemeClusterCategory graphemeClusterCategoryFromICU(Char32 cp);
 
 - (void)testGraphemeClusterCategory
 {
+  XCTAssert(systemICUUsesSameUnicodeDataVersion(), @"system ICU uses a different Unicode data version");
   for (uint32_t i = 0; i < UCHAR_MAX_VALUE + 4; ++i) {
     [self testGraphemeClusterCategoryOfCodePoint:i];
   }

@@ -6,7 +6,8 @@ build_dir := "build"
 derived_data_dir := build_dir / "derived_data"
 workspace := ".swiftpm/xcode/package.xcworkspace"
 scheme := "STULabel-Package"
-simulator_destination := env_var_or_default("SIMULATOR_DESTINATION", "platform=iOS Simulator,OS=latest,name=iPhone 17 Pro")
+unicode_version := "17.0.0"
+simulator_destination := env_var_or_default("SIMULATOR_DESTINATION", "platform=iOS Simulator,OS=27.0,name=iPhone 17 Pro")
 xcodebuild := "xcodebuild -workspace " + workspace + " -scheme " + scheme + " -quiet -derivedDataPath " + derived_data_dir
 xcode_build_settings := "CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO"
 lto_flags := if env_var_or_default("LTO", "") == "" { "" } else { "LLVM_LTO=" + env_var_or_default("LTO", "") }
@@ -49,3 +50,9 @@ test-fast: build-for-testing
 # Remove Xcode build products and test results.
 clean:
     {{ xcodebuild }} clean {{ xcode_build_settings }} {{ lto_flags }}
+
+generate-unicode-code-point-properties:
+    uv run Scripts/generate_unicode_code_point_properties.py \
+          --unicode-version {{ unicode_version }} \
+          --verify-tail \
+          --output Source/STULabel/Internal/UnicodeCodePointProperties.generated.inc

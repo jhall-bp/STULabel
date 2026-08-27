@@ -65,11 +65,14 @@ struct CodePointProperties {
 
   CodePointProperties() = default;
 
+  // Used by the ICU comparison tests to avoid comparing different UCD versions.
+  static const UInt8 unicodeDataVersionMajor;
+
   STU_INLINE
   explicit CodePointProperties(Char32 codePoint) {
     if (STU_LIKELY(codePoint < 0xD800)) {
-      const UInt i0 = codePoint >> 4;
-      const UInt i1 = (codePoint & 15) + (static_cast<UInt>(indices[i0]) << 4);
+      const UInt i0 = codePoint >> 5;
+      const UInt i1 = (codePoint & 31) + (static_cast<UInt>(indices[i0]) << 5);
       bits = data1[i1];
     } else {
       bits = lookupCodePointGreaterThanD7FF(codePoint);
@@ -99,11 +102,11 @@ private:
   static UInt8 lookupCodePointGreaterThanD7FF(Char32 codePoint) noexcept
                  __attribute__((const));
 
-  static const UInt8 indices[3456];
-  static const UInt8 data1[3904];
-  static const UInt8 indices1[592];
-  static const UInt8 indices2[1312];
-  static const UInt8 data2[1312];
+  static const UInt8 indices[];
+  static const UInt8 data1[];
+  static const UInt8 indices1[];
+  static const UInt8 indices2[];
+  static const UInt8 data2[];
 };
 
 inline GraphemeClusterCategory graphemeClusterCategory(Char32 cp) {
