@@ -28,14 +28,17 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Install just
+        run: brew install just
+
       - name: Validate Swift package graph
-        run: make package-graph
+        run: just package-graph
 
       - name: Build package-backed Demo
-        run: make build
+        run: just build
 
       - name: Run simulator regression suite
-        run: make test
+        run: just test
 
       - name: Upload Xcode test logs
         if: ${{ !cancelled() }}
