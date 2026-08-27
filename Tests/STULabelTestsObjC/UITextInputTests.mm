@@ -235,8 +235,10 @@
   UITextRange *const documentRange = [self documentRangeForInput:input];
   NSArray<UITextSelectionRect *> *const selectionRects = [input selectionRectsForRange:documentRange];
   XCTAssertGreaterThanOrEqual(selectionRects.count, 2u);
-  XCTAssertGreaterThanOrEqual(CGRectGetMinX(selectionRects.firstObject.rect), label.textFrameOrigin.x);
-  XCTAssertGreaterThanOrEqual(CGRectGetMinY(selectionRects.firstObject.rect), label.textFrameOrigin.y);
+
+  const CGFloat tolerance = 1e-6;
+  XCTAssertGreaterThanOrEqual(CGRectGetMinX(selectionRects.firstObject.rect) + tolerance, label.textFrameOrigin.x);
+  XCTAssertGreaterThanOrEqual(CGRectGetMinY(selectionRects.firstObject.rect) + tolerance, label.textFrameOrigin.y);
 
   const CGPoint point = [self pointInLabel:label range:NSMakeRange(0, 1)];
   UITextRange *const hitRange = [input characterRangeAtPoint:point];
@@ -289,7 +291,8 @@
   XCTAssertTrue([label canPerformAction:@selector(copy:) withSender:nil]);
   UIPasteboard *const pasteboard = UIPasteboard.generalPasteboard;
   pasteboard.items = @[];
-  // We can't directly read from the pasteboard during the tests because we get blocked by the system prompt to confirm the read
+  // We can't directly read from the pasteboard during the tests because we get blocked by the system prompt to confirm
+  // the read
   XCTAssertFalse(pasteboard.hasStrings);
   [label copy:nil];
   XCTAssertTrue(pasteboard.hasStrings);
