@@ -385,6 +385,11 @@ static STUTextAttachmentColorInfo attachmentColorInfoForColorSpace(CGColorSpaceR
   encode(coder, @"image", _image);
 }
 
++ (BOOL)supportsSecureCoding
+{
+  return true;
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)decoder
 {
   if ((self = [super initWithCoder:decoder])) {
