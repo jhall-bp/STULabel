@@ -8,27 +8,22 @@ using namespace stu;
 
 TEST_CASE_START(FunctionRefTests)
 
-static Int add3(Int value) {
-  return value + 3;
-}
+static Int add3(Int value) { return value + 3; }
 
-static Int add4_noexcept(Int value) noexcept {
-  return value + 4;
-}
+static Int add4_noexcept(Int value) noexcept { return value + 4; }
 
-class Add {
+class Add
+{
   Int addend_;
 
 public:
-  explicit Add(Int addend) : addend_{addend} {
-  }
+  explicit Add(Int addend) : addend_{addend} {}
 
-  Int operator()(Int value) const noexcept {
-    return addend_ + value;
-  }
+  Int operator()(Int value) const noexcept { return addend_ + value; }
 };
 
-TEST(Basics) {
+TEST(Basics)
+{
   static_assert(!isDefaultConstructible<FunctionRef<Int(Int)>>);
   {
     FunctionRef<Int(Int)> f = add3;
@@ -54,7 +49,8 @@ TEST(Basics) {
 #endif
 }
 
-TEST(OptionalFunctionrRef) {
+TEST(OptionalFunctionrRef)
+{
   Optional<FunctionRef<Int(Int)>> opt;
   CHECK(!opt);
   CHECK(opt == none);

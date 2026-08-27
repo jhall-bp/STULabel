@@ -17,7 +17,8 @@ using namespace stu;
 
 TEST_CASE_START(VectorTests)
 
-TEST(Append) {
+TEST(Append)
+{
   const auto test = [&](auto &vector) {
     for (int i = 1; i <= 16; ++i) {
       vector.append(i);
@@ -43,7 +44,8 @@ TEST(Append) {
   }
 }
 
-TEST(AppendArray) {
+TEST(AppendArray)
+{
   const auto test = [&](auto &vector) {
     vector.append(ArrayRef<int>());
     CHECK_EQ(vector.count(), 0);
@@ -76,16 +78,17 @@ TEST(AppendArray) {
   }
 }
 
-struct ValueWithUninitializedConstructor {
+struct ValueWithUninitializedConstructor
+{
   int value;
-  /* implicit */ ValueWithUninitializedConstructor(Uninitialized) : value{-123} {
-  }
+  /* implicit */ ValueWithUninitializedConstructor(Uninitialized) : value{-123} {}
 };
 
 template <typename T>
 using DecltypeAppendRepeatedUninitialized = decltype(declval<Vector<T>>().append(repeat(uninitialized, 1)));
 
-TEST(AppendUninitialized) {
+TEST(AppendUninitialized)
+{
   static_assert(canApply<DecltypeAppendRepeatedUninitialized, int>);
   static_assert(!canApply<DecltypeAppendRepeatedUninitialized, ValueWithUninitializedConstructor>);
   using Alloc = MoveOnlyAllocatorRef;
@@ -114,7 +117,8 @@ TEST(AppendUninitialized) {
   CHECK_EQ(vector.capacity(), 10);
 }
 
-TEST(Insert) {
+TEST(Insert)
+{
   using Alloc = MoveOnlyAllocatorRef;
   Vector<int, 0, Alloc> vector(Alloc::create());
 #if STU_ASSERT_MAY_THROW
@@ -149,19 +153,20 @@ TEST(Insert) {
 #endif
 }
 
-struct TestValueWithDestructor {
+struct TestValueWithDestructor
+{
   Int value;
 
-  TestValueWithDestructor(Int value) : value{value} {
-  }
-  ~TestValueWithDestructor() {
-    value = -123;
-  }
+  TestValueWithDestructor(Int value) : value{value} {}
+  ~TestValueWithDestructor() { value = -123; }
 };
 
-template <> struct stu::IsBitwiseMovable<TestValueWithDestructor> : stu::True {};
+template <> struct stu::IsBitwiseMovable<TestValueWithDestructor> : stu::True
+{
+};
 
-TEST(RemoveLast) {
+TEST(RemoveLast)
+{
   using Alloc = MoveOnlyAllocatorRef;
   Vector<TestValueWithDestructor, 0, Alloc> vector(Alloc::create());
 #if STU_ASSERT_MAY_THROW
@@ -199,7 +204,8 @@ TEST(RemoveLast) {
 #endif
 }
 
-TEST(RemoveRange) {
+TEST(RemoveRange)
+{
   using Alloc = MoveOnlyAllocatorRef;
   Vector<TestValueWithDestructor, 0, Alloc> vector(Alloc::create());
   vector.removeRange({0, 0});
@@ -235,7 +241,8 @@ TEST(RemoveRange) {
 #endif
 }
 
-TEST(SetCapacity) {
+TEST(SetCapacity)
+{
   Vector<int> vector;
 #if STU_ASSERT_MAY_THROW
   CHECK_FAILS_ASSERT(vector.setCapacity(-1));
@@ -277,7 +284,8 @@ TEST(SetCapacity) {
   vector.trimFreeCapacity(5);
 }
 
-TEST(EmbeddedAndExternalStorage) {
+TEST(EmbeddedAndExternalStorage)
+{
   const auto test = [&](auto &vector) {
     CHECK_EQ(vector.capacity(), 3);
     const auto *const p = vector.begin();
@@ -348,7 +356,8 @@ TEST(EmbeddedAndExternalStorage) {
   }
 }
 
-TEST(MoveConstructor) {
+TEST(MoveConstructor)
+{
 
   using Alloc = MoveOnlyAllocatorRef;
   {
@@ -410,7 +419,8 @@ TEST(MoveConstructor) {
   }
 }
 
-TEST(MoveToArray) {
+TEST(MoveToArray)
+{
   // TODO: Use explicit lambda template parameter when Xcode supports that.
   auto test = [&](Int n, auto &&vector) {
     using Alloc = RemoveReference<decltype(vector.allocator())>;

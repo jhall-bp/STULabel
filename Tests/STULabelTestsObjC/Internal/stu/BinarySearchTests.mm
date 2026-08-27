@@ -10,7 +10,8 @@ using namespace stu;
 
 TEST_CASE_START(BinarySearchTests)
 
-TEST(BinarySearch) {
+TEST(BinarySearch)
+{
   for (int i = 0; i < 256; ++i) {
     Vector<Int, 9> vector;
     for (int j = 0; j < 8; ++j) {

@@ -10,7 +10,8 @@ using namespace stu;
 
 TEST_CASE_START(UtilityTests)
 
-TEST(ArrayLength) {
+TEST(ArrayLength)
+{
   {
     const int array[3] = {};
     static_assert(arrayLength(array) == 3);
@@ -22,17 +23,17 @@ TEST(ArrayLength) {
     static_assert(STU_ARRAY_LENGTH(array) == 3);
   }
   {
-    struct Wrapper {
+    struct Wrapper
+    {
       int array[3];
-      void test() {
-        static_assert(STU_ARRAY_LENGTH(array) == 3);
-      }
+      void test() { static_assert(STU_ARRAY_LENGTH(array) == 3); }
     };
     Wrapper().test();
   }
 }
 
-template <typename UInt> constexpr int countLeadingZeroBits_generic(UInt value) {
+template <typename UInt> constexpr int countLeadingZeroBits_generic(UInt value)
+{
   static_assert(IntegerTraits<UInt>::isUnsigned);
   if (value == 0)
     return IntegerTraits<UInt>::bits;
@@ -44,7 +45,8 @@ template <typename UInt> constexpr int countLeadingZeroBits_generic(UInt value) 
   return result;
 }
 
-TEST(CountLeadingZeroBits) {
+TEST(CountLeadingZeroBits)
+{
   // TODO: Use explicit template parameter once Xcode's clang supports it.
   const auto test = [&](auto zero) {
     using T = decltype(zero);
@@ -75,7 +77,8 @@ TEST(CountLeadingZeroBits) {
   test(UInt64{});
 }
 
-TEST(IsPowerOfTwo) {
+TEST(IsPowerOfTwo)
+{
   static_assert(isPowerOfTwo(1) == true);
   static_assert(isPowerOfTwo(-2) == false);
   static_assert(isPowerOfTwo(0) == false);
@@ -93,7 +96,8 @@ TEST(IsPowerOfTwo) {
   static_assert(isPowerOfTwo(1ull << 63) == true);
 }
 
-TEST(RoundUpToPowerOfTwo) {
+TEST(RoundUpToPowerOfTwo)
+{
   static_assert(roundUpToPowerOfTwo(0u) == 0u);
   static_assert(roundUpToPowerOfTwo(1u) == 1u);
   static_assert(roundUpToPowerOfTwo(2u) == 2u);
@@ -116,7 +120,8 @@ TEST(RoundUpToPowerOfTwo) {
   static_assert(roundUpToPowerOfTwo(UINT64_MAX) == UINT64_MAX);
 }
 
-TEST(RoundDownToMultipleOf) {
+TEST(RoundDownToMultipleOf)
+{
   static_assert(roundDownToMultipleOf<8>(0) == 0);
   static_assert(roundDownToMultipleOf<8>(1) == 0);
   static_assert(roundDownToMultipleOf<8>(7) == 0);
@@ -140,7 +145,8 @@ TEST(RoundDownToMultipleOf) {
   static_assert(roundDownToMultipleOf<8>(INT_MIN) == INT_MIN);
 }
 
-TEST(RoundUpToMultipleOf) {
+TEST(RoundUpToMultipleOf)
+{
   static_assert(roundUpToMultipleOf<8>(0) == 0);
   static_assert(roundUpToMultipleOf<8>(1) == 8);
   static_assert(roundUpToMultipleOf<8>(7) == 8);
@@ -163,7 +169,8 @@ TEST(RoundUpToMultipleOf) {
   static_assert(roundUpToMultipleOf<8>(INT_MIN) == INT_MIN);
 }
 
-TEST(IsAligned) {
+TEST(IsAligned)
+{
   UInt n = 0;
   CHECK(isAligned<UInt>(&n));
   CHECK(isAligned<alignof(UInt)>(&n));

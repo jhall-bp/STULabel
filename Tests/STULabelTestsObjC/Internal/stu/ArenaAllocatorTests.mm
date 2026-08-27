@@ -8,7 +8,8 @@ using namespace stu;
 
 TEST_CASE_START(ArenaAllocatorTests)
 
-TEST(ZeroBuffer) {
+TEST(ZeroBuffer)
+{
   ArenaAllocator<>::InitialBuffer<0> buffer;
   ArenaAllocator<> alloc{Ref{buffer}};
   CHECK_EQ(alloc.freeCapacityInCurrentBuffer<Byte>(), 0);
@@ -20,7 +21,8 @@ TEST(ZeroBuffer) {
   CHECK_EQ(alloc.freeCapacityInCurrentBuffer<Byte>(), 4096 - minAllocationGap);
 }
 
-TEST(AllocateDeallocate) {
+TEST(AllocateDeallocate)
+{
   const Int bufferSize = 64;
   ArenaAllocator<>::InitialBuffer<bufferSize> buffer;
   ArenaAllocator<> alloc{Ref{buffer}};
@@ -89,7 +91,8 @@ TEST(AllocateDeallocate) {
 #endif
 }
 
-TEST(IncreaseDecreaseCapacity) {
+TEST(IncreaseDecreaseCapacity)
+{
   const Int bufferSize = 64;
   const Int minAllocationGap = ArenaAllocator<>::minAllocationGap;
   ArenaAllocator<>::InitialBuffer<bufferSize> buffer;

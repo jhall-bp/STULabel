@@ -25,7 +25,8 @@ TEST(FixedArray) {
 }
  */
 
-TEST(AllocatedArray) {
+TEST(AllocatedArray)
+{
   {
     Array<TestValue> array;
     CHECK_EQ(array.begin(), nullptr);
@@ -69,10 +70,14 @@ TEST(AllocatedArray) {
 #if !STU_NO_EXCEPTIONS
     {
       static int countDown = 5;
-      struct Exception : std::exception {};
-      struct Value : TestValue {
+      struct Exception : std::exception
+      {
+      };
+      struct Value : TestValue
+      {
         using TestValue::TestValue;
-        Value(const Value &other) : TestValue(other) {
+        Value(const Value &other) : TestValue(other)
+        {
           if (--countDown == 0) {
             throw Exception();
           }

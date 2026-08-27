@@ -8,7 +8,8 @@ using namespace stu;
 
 TEST_CASE_START(RangeTests)
 
-TEST(Range) {
+TEST(Range)
+{
   {
     Range<Int32> r{1, 2};
     r += 1;

@@ -14,7 +14,8 @@ using namespace stu::array_utils;
 
 TEST_CASE_START(ArrayUtils)
 
-TEST(DestroyArray) {
+TEST(DestroyArray)
+{
   TestValue *values = Malloc().allocate<TestValue>(3);
   for (int i = 0; i < 3; ++i) {
     new (values + i) TestValue(i + 1);
@@ -26,7 +27,8 @@ TEST(DestroyArray) {
   Malloc().deallocate(values, 3);
 }
 
-TEST(DeleteArray) {
+TEST(DeleteArray)
+{
   auto test = [&](auto alloc) {
     TestValue *values = alloc.get().template allocate<TestValue>(3);
     for (int i = 0; i < 3; ++i) {
@@ -42,7 +44,8 @@ TEST(DeleteArray) {
   CHECK_EQ(MoveOnlyAllocatorRef::Allocator::instance.allocationCount(), 0);
 }
 
-TEST(InitializeArray) {
+TEST(InitializeArray)
+{
   {
     std::tuple<Int, Int> array[3];
     initializeArray(array, 3);
@@ -91,9 +94,13 @@ TEST(InitializeArray) {
 #if !STU_NO_EXCEPTIONS
   {
     static int countDown = 3;
-    struct Exception : std::exception {};
-    struct Value : TestValue {
-      Value(int value) : TestValue{value} {
+    struct Exception : std::exception
+    {
+    };
+    struct Value : TestValue
+    {
+      Value(int value) : TestValue{value}
+      {
         if (--countDown == 0)
           throw Exception{};
       };
@@ -112,7 +119,8 @@ TEST(InitializeArray) {
 #endif
 }
 
-TEST(CopyConstructArray) {
+TEST(CopyConstructArray)
+{
   {
     int *const newArray = nullptr;
     CHECK_EQ(copyConstructArray((const int *)nullptr, 0, newArray), newArray);

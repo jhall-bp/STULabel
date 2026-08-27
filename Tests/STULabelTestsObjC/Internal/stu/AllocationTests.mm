@@ -11,7 +11,8 @@ using namespace stu;
 TEST_CASE_START(AllocationTests)
 
 #if STU_ASSERT_MAY_THROW
-TEST(AllocatorBasePreconditionAssert) {
+TEST(AllocatorBasePreconditionAssert)
+{
   ValidatingMalloc allocator;
   #if !STU_NO_EXCEPTIONS
   CHECK_THROWS_BAD_ALLOC(allocator.allocate(maxValue<UInt> / 2 + 1));
@@ -29,7 +30,8 @@ TEST(AllocatorBasePreconditionAssert) {
 }
 #endif
 
-TEST(Malloc) {
+TEST(Malloc)
+{
   static_assert(isAllocator<Malloc>);
   static_assert(isAllocatorRef<Malloc>);
   ValidatingMalloc allocator;
