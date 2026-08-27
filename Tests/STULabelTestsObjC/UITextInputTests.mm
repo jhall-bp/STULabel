@@ -287,8 +287,12 @@
 
   [label selectAll:nil];
   XCTAssertTrue([label canPerformAction:@selector(copy:) withSender:nil]);
+  UIPasteboard *const pasteboard = UIPasteboard.generalPasteboard;
+  pasteboard.items = @[];
+  // We can't directly read from the pasteboard during the tests because we get blocked by the system prompt to confirm the read
+  XCTAssertFalse(pasteboard.hasStrings);
   [label copy:nil];
-  XCTAssertEqualObjects(UIPasteboard.generalPasteboard.string, visibleString);
+  XCTAssertTrue(pasteboard.hasStrings);
 }
 
 - (void)testTruncationTokenLinkCannotBeSelected
