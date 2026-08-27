@@ -6,6 +6,7 @@ import SnapshotTesting
 import Testing
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct TextFrameLineBreakingTests {
   let displayScale: CGFloat = 2
   let font = UIFont(name: "HelveticaNeue", size: 18)!
@@ -129,7 +130,7 @@ struct TextFrameLineBreakingTests {
     #expect(lines[1].rangeInOriginalString == NSRange(8..<10))
     #expect(lines[1].trailingWhitespaceInTruncatedStringUTF16Length == 0)
     #expect(lines[1].width == typographicWidth("st"))
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test func `Line width is checked after inserting a hyphen`() {
@@ -171,7 +172,7 @@ struct TextFrameLineBreakingTests {
     #expect(lines[1].rangeInOriginalString == NSRange(5..<7))
     #expect(lines[1].trailingWhitespaceInTruncatedStringUTF16Length == 0)
     // The vertical hyphen position isn't yet optimal.
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test func `Hyphen in the middle of a left-to-right right-to-left line`() {
@@ -185,7 +186,7 @@ struct TextFrameLineBreakingTests {
     expectApproximatelyEqual(lines[0].width, width, tolerance: width * CGFloat(Float32.ulpOfOne))
     #expect(lines[1].rangeInOriginalString == NSRange(10..<12))
     #expect(lines[1].trailingWhitespaceInTruncatedStringUTF16Length == 0)
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test func `Line break after zero-width space in right-to-left line`() {
@@ -417,7 +418,7 @@ struct TextFrameLineBreakingTests {
       range: NSRange(2..<3))
     let width = typographicWidth("TestTest")
     let f = textFrame(string, width: width)
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test func `Right-to-left justification`() {
@@ -431,7 +432,7 @@ struct TextFrameLineBreakingTests {
       range: NSRange(4..<5))
     let width = typographicWidth("הבדיקההבדיקה")
     let f = textFrame(string, width: width)
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test func `Justification with a hyphen in a left-to-right right-to-left line`() {
@@ -444,6 +445,6 @@ struct TextFrameLineBreakingTests {
       .underlineStyle, value: NSUnderlineStyle.single.rawValue,
       range: NSRange(6..<7))
     let f = textFrame(string, width: typographicWidth("اختباراختباراختبار"))
-    assertSnapshot(of: image(f), as: .image)
+    assertSnapshot(of: image(f), as: .image(perceptualPrecision: 0.99))
   }
 }

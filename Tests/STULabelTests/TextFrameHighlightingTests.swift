@@ -6,6 +6,7 @@ import Testing
 import UIKit
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct TextFrameHighlightingTests {
   let displayScale: CGFloat = 2
 

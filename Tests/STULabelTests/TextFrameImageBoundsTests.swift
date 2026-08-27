@@ -7,6 +7,7 @@ import Testing
 import UIKit
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct TextFrameImageBoundsTests {
   @Test
   func `CTRun and CTLine image bounds do not account for stroke and underline decorations`() {

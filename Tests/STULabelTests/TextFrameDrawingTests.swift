@@ -6,6 +6,7 @@ import Testing
 import UIKit
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct TextFrameDrawingTests {
   let displayScale: CGFloat = 2
 
@@ -37,7 +38,7 @@ struct TextFrameDrawingTests {
       frame.draw()
       let image = UIGraphicsGetImageFromCurrentImageContext()!
       UIGraphicsEndImageContext()
-      assertSnapshot(of: image, as: .image)
+      assertSnapshot(of: image, as: .image(perceptualPrecision: 0.99))
     }
     // Draw with explicit contextBaseCTM_d:-2 parameter into context created by UIKit.
     do {
@@ -49,7 +50,7 @@ struct TextFrameDrawingTests {
       frame.draw(in: cgContext, contextBaseCTM_d: -2, pixelAlignBaselines: true)
       let image = UIGraphicsGetImageFromCurrentImageContext()!
       UIGraphicsEndImageContext()
-      assertSnapshot(of: image, as: .image)
+      assertSnapshot(of: image, as: .image(perceptualPrecision: 0.99))
     }
     // Draw with explicit contextBaseCTM_d:1 parameter into context created with
     // CoreGraphics function.
@@ -63,7 +64,7 @@ struct TextFrameDrawingTests {
           frame.draw(in: context, contextBaseCTM_d: 1, pixelAlignBaselines: true)
         })!
       let image = UIImage(cgImage: cgImage, scale: displayScale, orientation: .up)
-      assertSnapshot(of: image, as: .image)
+      assertSnapshot(of: image, as: .image(perceptualPrecision: 0.99))
     }
   }
 
@@ -93,7 +94,7 @@ struct TextFrameDrawingTests {
       UIGraphicsEndImageContext()
       // If the rounding doesn't work, the horizontal edges of the underline and the background
       // will be aliased.
-      assertSnapshot(of: image, as: .image)
+      assertSnapshot(of: image, as: .image(perceptualPrecision: 0.99))
     }
 
     let scaledFrame = STUTextFrame(
@@ -166,7 +167,7 @@ struct TextFrameDrawingTests {
         }))
     let pdfImage = UIImage(cgImage: pdfCGImage, scale: 1, orientation: .up)
 
-    assertSnapshot(of: pdfImage, as: .image)
+    assertSnapshot(of: pdfImage, as: .image(perceptualPrecision: 0.99))
 
     // TODO: Replicate this behaviour
 

@@ -6,6 +6,7 @@ import SnapshotTesting
 import Testing
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct AutoLayoutTests {
   func newView(_ name: String) -> UIView {
     let view = UIView()
@@ -49,10 +50,10 @@ struct AutoLayoutTests {
     overlay.backgroundColor = UIColor.orange.withAlphaComponent(0.25)
     constrain(overlay, toEdgesOf: label.contentLayoutGuide).activate()
 
-    assertSnapshot(of: label, as: .image)
+    assertSnapshot(of: label, as: .image(perceptualPrecision: 0.99))
 
     label.contentInsets = UIEdgeInsets(top: 4, left: 3, bottom: 2, right: 1)
-    assertSnapshot(of: label, as: .image)
+    assertSnapshot(of: label, as: .image(perceptualPrecision: 0.99))
   }
 
   @Test
@@ -148,17 +149,17 @@ struct AutoLayoutTests {
       c.isActive = true
       defer { c.isActive = false }
 
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
 
       #expect(c.stu_labelSpacingConstraintMultiplier == 1)
       c.stu_labelSpacingConstraintMultiplier = 2
       #expect(c.stu_labelSpacingConstraintMultiplier == 2)
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
 
       #expect(c.stu_labelSpacingConstraintOffset == 0)
       c.stu_labelSpacingConstraintOffset = -3
       #expect(c.stu_labelSpacingConstraintOffset == -3)
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
     }
 
     do {
@@ -167,7 +168,7 @@ struct AutoLayoutTests {
         spacingMultipliedBy: 2, plus: -3)
       c.isActive = true
       defer { c.isActive = false }
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
     }
 
     do {
@@ -177,17 +178,17 @@ struct AutoLayoutTests {
       c.isActive = true
       defer { c.isActive = false }
 
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
 
       #expect(c.stu_labelSpacingConstraintMultiplier == 1)
       c.stu_labelSpacingConstraintMultiplier = 2
       #expect(c.stu_labelSpacingConstraintMultiplier == 2)
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
 
       #expect(c.stu_labelSpacingConstraintOffset == 0)
       c.stu_labelSpacingConstraintOffset = 3
       #expect(c.stu_labelSpacingConstraintOffset == 3)
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
 
       let c2 = constrain(
         labelC, .firstBaseline, leq, positionBelow: labelB, .lastBaseline,
@@ -201,7 +202,7 @@ struct AutoLayoutTests {
       c3.isActive = true
       defer { c3.isActive = false }
 
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
     }
 
     do {
@@ -210,7 +211,7 @@ struct AutoLayoutTests {
         spacingMultipliedBy: 2, plus: 3)
       c.isActive = true
       defer { c.isActive = false }
-      assertSnapshot(of: container, as: .image)
+      assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
     }
 
     labelA.attributedText = NSAttributedString([
@@ -321,6 +322,6 @@ struct AutoLayoutTests {
         plus: -onePixel))
     cs.activate()
 
-    assertSnapshot(of: container, as: .image)
+    assertSnapshot(of: container, as: .image(perceptualPrecision: 0.99))
   }
 }

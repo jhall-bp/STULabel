@@ -6,6 +6,7 @@ import SnapshotTesting
 import Testing
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct LabelAlignmentTests {
   @Test
   func `Alignment`() {

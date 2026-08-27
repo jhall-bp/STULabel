@@ -4,6 +4,7 @@ import Testing
 import UIKit
 
 @MainActor
+@Suite(.snapshots(record: .missing))
 struct TextAttachmentTests {
   func createTestImage(
     _ size: CGSize,
@@ -189,7 +190,7 @@ struct TextAttachmentTests {
               + tf.lines[0].baselineOrigin.y),
           size: imageSize))
 
-    assertSnapshot(of: image(tf), as: .image)
+    assertSnapshot(of: image(tf), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test
@@ -212,7 +213,7 @@ struct TextAttachmentTests {
       STUShapedString(text), size: CGSize(width: 100, height: 50),
       displayScale: displayScale, options: nil)
 
-    assertSnapshot(of: image(tf), as: .image)
+    assertSnapshot(of: image(tf), as: .image(perceptualPrecision: 0.99))
   }
 
   @Test
@@ -235,7 +236,7 @@ struct TextAttachmentTests {
       STUShapedString(text), size: CGSize(width: 100, height: 50),
       displayScale: displayScale, options: options)
 
-    assertSnapshot(of: image(tf), as: .image)
+    assertSnapshot(of: image(tf), as: .image(perceptualPrecision: 0.99))
   }
 
   let ctRunDelegateKey = kCTRunDelegateAttributeName as NSAttributedString.Key

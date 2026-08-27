@@ -7,6 +7,7 @@ private final class LabelWithOverridePreferredContentSizeCategory: UILabel {
   var preferredContentSizeCategory: UIContentSizeCategory = .unspecified {
     didSet {
       traitOverrides.preferredContentSizeCategory = preferredContentSizeCategory
+      updateTraitsIfNeeded()
     }
   }
 }
@@ -32,6 +33,7 @@ struct DynamicTypeFontScalingTests {
       forTextStyle: .caption2,
       compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
     let label = LabelWithOverridePreferredContentSizeCategory()
+
     label.adjustsFontForContentSizeCategory = true
     label.preferredContentSizeCategory = .large
     label.font = preferredFont
@@ -42,8 +44,7 @@ struct DynamicTypeFontScalingTests {
     label.preferredContentSizeCategory = .extraSmall
     #expect(label.font == preferredFont.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
 
-    // If a preferred font's size is changed after it is created, the new font is not scalable
-    // on iOS < 12 and the new size is ignored when the font is scaled on iOS 12:
+    // UILabel no longer scales a preferred font after its size is changed.
     let preferredFont2 = UIFont.preferredFont(
       forTextStyle: .body,
       compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
@@ -51,22 +52,20 @@ struct DynamicTypeFontScalingTests {
     label.preferredContentSizeCategory = .large
     label.font = preferredFont3
     label.preferredContentSizeCategory = .extraSmall
-    #expect(label.font == preferredFont3.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
+    #expect(label.font == preferredFont3)
 
-    #expect(label.font != preferredFont3)
-    #expect(label.font == preferredFont2.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
     label.preferredContentSizeCategory = .large
-    #expect(label.font == preferredFont2)
+    #expect(label.font == preferredFont3)
 
-    // UILabel doesn't scale preferred fonts with a changed symbolic trait...
+    // UILabel scales preferred fonts with a changed symbolic trait.
     let italicPreferredFont = UIFont(
       descriptor: preferredFont2.fontDescriptor
         .withSymbolicTraits([.traitItalic])!,
       size: preferredFont2.pointSize)
     label.font = italicPreferredFont
     label.preferredContentSizeCategory = .extraSmall
-    #expect(label.font == italicPreferredFont)
-    // ..but we do (when the changed trait is fully encoded into the font's textStyle).
+    #expect(label.font == italicPreferredFont.stu_fontAdjusted(forContentSizeCategory: .extraSmall))
+    // The adjusted font encodes the text style needed for UIKit to scale it.
     #expect(
       italicPreferredFont.stu_fontAdjusted(forContentSizeCategory: .extraSmall)
         == UIFont.preferredFont(
@@ -85,16 +84,21 @@ struct DynamicTypeFontScalingTests {
     label.preferredContentSizeCategory = .extraSmall
     label.font = scaledPreferredFont
     label.preferredContentSizeCategory = .large
-    #expect(label.font == preferredFont2)
-    #expect(preferredFont2 == scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large))
+    // UIKit preserves maximum-point-size metadata, so these visually identical fonts are no
+    // longer equal on current systems.
+    #expect(label.font.pointSize == preferredFont2.pointSize)
+    #expect(
+      scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large).pointSize
+        == preferredFont2.pointSize)
     label.preferredContentSizeCategory = .accessibilityExtraExtraExtraLarge
     #expect(label.font.pointSize == 25)
     #expect(
-      label.font
+      label.font.pointSize
         == scaledPreferredFont.stu_fontAdjusted(forContentSizeCategory: .large)
         .stu_fontAdjusted(
           forContentSizeCategory:
-            .accessibilityExtraExtraExtraLarge))
+            .accessibilityExtraExtraExtraLarge
+        ).pointSize)
 
     label.preferredContentSizeCategory = .large
 

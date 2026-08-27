@@ -5,7 +5,6 @@ import Testing
 
 @MainActor
 struct MainScreenPropertiesTests {
-
   @Test
   func `Display scale for trait collection`() {
     let traitCollection = UITraitCollection(displayScale: 2)
