@@ -45,9 +45,6 @@ let package = Package(
           ["-fno-exceptions", "-fno-objc-exceptions", "-fno-objc-arc-exceptions", "-UNDEBUG"],
           .when(configuration: .release)),
       ],
-      linkerSettings: [
-        .unsafeFlags(["-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup"])
-      ]
     ),
     .target(
       name: "STULabel",
