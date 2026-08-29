@@ -17,15 +17,8 @@ static void initStaticColorSpacesOnce()
   dispatch_once(&once, ^{
     sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     grayGamma2_2 = CGColorSpaceCreateWithName(kCGColorSpaceGenericGrayGamma2_2);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-    if (kCGColorSpaceDisplayP3) {
-      displayP3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
-    }
-    if (kCGColorSpaceExtendedSRGB) {
-      extendedSRGB = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
-    }
-#pragma clang diagnostic pop
+    displayP3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+    extendedSRGB = CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB);
   });
 }
 
@@ -155,11 +148,13 @@ static NSString *escapeFilename(NSString *fileName)
 }
 
 - (void)checkSnapshotOfView:(UIView *)view
+              inWindowScene:(UIWindowScene *)windowScene
              testNameSuffix:(NSString *)testNameSuffix
                testFilePath:(const char *)testFilePath
                testFileLine:(size_t)testFileLine
 {
   [self checkSnapshotOfView:view
+              inWindowScene:windowScene
               contentsScale:0
          beforeLayoutAction:nil
              testNameSuffix:testNameSuffix
@@ -168,6 +163,7 @@ static NSString *escapeFilename(NSString *fileName)
 }
 
 - (void)checkSnapshotOfView:(UIView *)view
+              inWindowScene:(UIWindowScene *)windowScene
               contentsScale:(CGFloat)contentsScale
          beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
              testNameSuffix:(nullable NSString *)testNameSuffix
@@ -179,27 +175,27 @@ static NSString *escapeFilename(NSString *fileName)
 
   @autoreleasepool {
     UIWindow *window = view.window;
-    bool needToRemoveViewFromSuperview = false;
-    if (!window) {
-      if ([view isKindOfClass:UIWindow.class]) {
-        window = (UIWindow *)view;
-      } else {
-        window = UIApplication.sharedApplication.keyWindow;
-        if (!window) {
-          window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-          window.rootViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-          window.hidden = false;
-        } else {
-          needToRemoveViewFromSuperview = true;
-        }
-        [window addSubview:view];
-        if (!view.translatesAutoresizingMaskIntoConstraints) {
-          UIView *const vcView = window.rootViewController.view;
-          [NSLayoutConstraint activateConstraints:@[
-            [view.centerXAnchor constraintEqualToAnchor:vcView.centerXAnchor],
-            [view.centerYAnchor constraintEqualToAnchor:vcView.centerYAnchor]
-          ]];
-        }
+    if ([view isKindOfClass:UIWindow.class]) {
+      window = (UIWindow *)view;
+    }
+    if (window && window.windowScene != windowScene) {
+      reportError(@"The snapshot view belongs to a different window scene");
+      return;
+    }
+
+    const bool didHostView = window == nil;
+    if (didHostView) {
+      window = [[UIWindow alloc] initWithWindowScene:windowScene];
+      window.rootViewController = [UIViewController new];
+      window.hidden = false;
+
+      UIView *const hostView = window.rootViewController.view;
+      [hostView addSubview:view];
+      if (!view.translatesAutoresizingMaskIntoConstraints) {
+        [NSLayoutConstraint activateConstraints:@[
+          [view.centerXAnchor constraintEqualToAnchor:hostView.centerXAnchor],
+          [view.centerYAnchor constraintEqualToAnchor:hostView.centerYAnchor]
+        ]];
       }
     }
     if (contentsScale > 0) {
@@ -209,10 +205,11 @@ static NSString *escapeFilename(NSString *fileName)
       beforeLayoutAction();
     }
 
-    [view.superview layoutIfNeeded];
+    [window layoutIfNeeded];
+    [view layoutIfNeeded];
 
     const CGRect bounds = view.bounds;
-    const CGFloat scale = contentsScale > 0 ? contentsScale : window.screen.scale;
+    const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
     UIImage *const image = [self stu_drawImageWithSize:bounds.size
                                                  scale:scale
                                                  block:^bool() {
@@ -228,27 +225,28 @@ static NSString *escapeFilename(NSString *fileName)
                                                    return true;
                                                  }];
 
-    if (!image)
-      return;
-
-    [self checkSnapshotImage:image
-              testNameSuffix:testNameSuffix
-                testFilePath:testFilePath
-                testFileLine:testFileLine
-              referenceImage:nil];
-
-    if (needToRemoveViewFromSuperview) {
+    if (didHostView) {
       [view removeFromSuperview];
+    }
+
+    if (image) {
+      [self checkSnapshotImage:image
+                testNameSuffix:testNameSuffix
+                  testFilePath:testFilePath
+                  testFileLine:testFileLine
+                referenceImage:nil];
     }
   } // autoreleasepool
 }
 
 - (void)checkSnapshotOfLayer:(CALayer *)layer
+               inWindowScene:(UIWindowScene *)windowScene
               testNameSuffix:(NSString *)testNameSuffix
                 testFilePath:(const char *)testFilePath
                 testFileLine:(size_t)testFileLine
 {
   [self checkSnapshotOfLayer:layer
+               inWindowScene:windowScene
                contentsScale:0
           beforeLayoutAction:nil
               testNameSuffix:testNameSuffix
@@ -257,6 +255,7 @@ static NSString *escapeFilename(NSString *fileName)
 }
 
 - (void)checkSnapshotOfLayer:(CALayer *)layer
+               inWindowScene:(UIWindowScene *)windowScene
                contentsScale:(CGFloat)contentsScale
           beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
               testNameSuffix:(nullable NSString *)testNameSuffix
@@ -267,17 +266,15 @@ static NSString *escapeFilename(NSString *fileName)
   _testFileLine = testFileLine;
 
   @autoreleasepool {
-    bool needToRemoveLayerFromSuperlayer = false;
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    if (!window) {
-      window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-      window.rootViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-      window.hidden = false;
-    } else {
-      needToRemoveLayerFromSuperlayer = true;
+    if (layer.superlayer) {
+      reportError(@"The snapshot layer must not already have a superlayer");
+      return;
     }
 
-    [window.layer addSublayer:layer];
+    UIWindow *const window = [[UIWindow alloc] initWithWindowScene:windowScene];
+    window.rootViewController = [UIViewController new];
+    window.hidden = false;
+    [window.rootViewController.view.layer addSublayer:layer];
 
     if (contentsScale > 0) {
       layer.contentsScale = contentsScale;
@@ -289,7 +286,7 @@ static NSString *escapeFilename(NSString *fileName)
     [layer.superlayer layoutIfNeeded];
 
     const CGRect bounds = layer.bounds;
-    const CGFloat scale = contentsScale > 0 ? contentsScale : window.screen.scale;
+    const CGFloat scale = contentsScale > 0 ? contentsScale : window.traitCollection.displayScale;
     UIImage *const image = [self stu_drawImageWithSize:bounds.size
                                                  scale:scale
                                                  block:^bool() {
@@ -297,17 +294,14 @@ static NSString *escapeFilename(NSString *fileName)
                                                    return true;
                                                  }];
 
-    if (!image)
-      return;
+    [layer removeFromSuperlayer];
 
-    [self checkSnapshotImage:image
-              testNameSuffix:testNameSuffix
-                testFilePath:testFilePath
-                testFileLine:testFileLine
-              referenceImage:nil];
-
-    if (needToRemoveLayerFromSuperlayer) {
-      [layer removeFromSuperlayer];
+    if (image) {
+      [self checkSnapshotImage:image
+                testNameSuffix:testNameSuffix
+                  testFilePath:testFilePath
+                  testFileLine:testFileLine
+                referenceImage:nil];
     }
   } // autoreleasepool
 }
@@ -524,11 +518,8 @@ static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage)
   const CGColorSpaceRef persistableSpace =
       isPersistableSpace                                                 ? colorSpace
       : CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelMonochrome ? grayGamma2_2
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-      : CGColorSpaceIsWideGamutRGB && CGColorSpaceIsWideGamutRGB(colorSpace) ? displayP3
-#pragma clang diagnostic pop
-                                                                             : sRGB;
+      : CGColorSpaceIsWideGamutRGB(colorSpace)                            ? displayP3
+                                                                          : sRGB;
   vImage_CGImageFormat format = {.colorSpace = persistableSpace,
                                  .bitsPerComponent = (uint32_t)CGImageGetBitsPerComponent(image),
                                  .renderingIntent = kCGRenderingIntentRelativeColorimetric};
@@ -716,19 +707,13 @@ static __nullable CGImageRef createDiffImage(CGImageRef image, CGImageRef refere
     // CGBitmapContextCreate doesn't allow 16-bit integer channels.
     const bool useFloats = format.bitsPerComponent > 8;
     const size_t bitsPerComponent = useFloats ? 16 : 8;
-    // Gray + Alpha pixel formats are not supported on iOS 9.
-    const CGColorSpaceRef colorSpace =
-        CGColorSpaceGetModel(format.colorSpace) == kCGColorSpaceModelMonochrome &&
-                kCFCoreFoundationVersionNumber <= kCFCoreFoundationVersionNumber_iOS_9_x_Max
-            ? sRGB
-            : format.colorSpace;
     const CGContextRef context = CGBitmapContextCreate(
         nil,
         width,
         height,
         bitsPerComponent,
         0,
-        colorSpace,
+        format.colorSpace,
         kCGImageAlphaPremultipliedLast | (!useFloats ? 0 : kCGBitmapFloatComponents | kCGImageByteOrder16Little));
     const CGRect rect = {0, 0, width, height};
     CGContextClipToMask(context, rect, diffMask);

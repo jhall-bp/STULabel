@@ -172,11 +172,9 @@ The Auto Layout support for `UILabel` and `UITextView`  in UIKit makes extensive
   
 - Returning a `STULabel` from an `viewForFirstBaselineLayout` or `viewForFirstBaselineLayout` property will not have the desired effect due to UIKit private API limitations. However, if you override `firstBaselineAnchor` and `lastBaselineAnchor` instead and pass on the respective anchors from the label subview, baseline constraints should work as expected.
   
-- The system spacing contraints introduced in iOS 11 that you can create e.g. with `constraint(equalToSystemSpacingBelow:multiplier:)` will not work properly with `STULabel` views, because they rely on private UIKit APIs. (The exact behaviour of these constraints is undocumented. The iOS 12 implementation calculates a spacing that depends only on the font of the first character of any involved label. Any other font and any paragraph style is ignored.)
+- System spacing constraints created with APIs such as `constraint(equalToSystemSpacingBelow:multiplier:)` do not work properly with `STULabel` views because they rely on private UIKit behavior.
   
   As a replacement for the vertical system spacing constraints, STULabel provides `NSLayoutYAxisAnchor` extension methods that allow you to create constraints relative to the exact line heights of the involved `STULabel` views, see [`NSLayoutAnchor+STULabelSpacing.overlay.swift`](STULabelSwift/NSLayoutAnchor+STULabelSpacing.overlay.swift) or [`NSLayoutAnchor+STULabelSpacing.h`](STULabel/NSLayoutAnchor+STULabelSpacing.h).
-  
-- On iOS 9 creating a baseline constraint directly with `NSLayoutConstraint.init` will not work properly if it involves a `STULabel` view. You can work around this limitation by creating the constraint with the help of a layout anchor instead. iOS 10 and later iOS versions don't have this issue because the `NSLayoutConstraint` initializer automatically fetches the respective layout anchors.
   
 ### Line height
 
@@ -265,7 +263,7 @@ underline thickness is calculated based both on the original font and the substi
 
 ### Other limitations
 
-- On iOS 13 and later, set `label.selectable = true` to enable non-editable native text selection.
+- Set `label.selectable = true` to enable non-editable native text selection.
   Selection and Copy operate on the currently displayed text, including non-link truncation-token
   content. A link in a truncation token, such as a "more" control, is not selectable. Existing
   link context menus take precedence, so selection must begin outside a link. Implement

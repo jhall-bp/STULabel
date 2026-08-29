@@ -289,7 +289,7 @@ final class StepperCell<Value: BinaryFloatingPointOrInt>: UITableViewCell, Prope
     self.accessoryView = stepperContainer
 
     self.registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (self: Self, _) in
-      self.detailTextLabel?.font = preferredFontWithMonospacedDigits(.body, traitCollection)
+      self.detailTextLabel?.font = preferredFontWithMonospacedDigits(.body, self.traitCollection)
     }
   }
 

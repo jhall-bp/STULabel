@@ -714,10 +714,8 @@ static void addElementsForRangeThatMayContainLinks(
   }
   [array insertObject:textElement atIndex:index];
   if (createRotorLinks) {
-    STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
     textElement.accessibilityCustomRotors = @[ createLinkRotorForAccessibilityContainer(
         params.textFrameAccessibilityElement, range(index + 1, Count{linkCount})) ];
-    STU_REENABLE_CLANG_WARNING
   }
 }
 

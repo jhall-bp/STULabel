@@ -23,11 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp NS_REQUIRES_SUPER;
 
 - (void)checkSnapshotOfView:(UIView *)view
+              inWindowScene:(UIWindowScene *)windowScene
              testNameSuffix:(nullable NSString *)testNameSuffix
                testFilePath:(const char *)testFilePath
                testFileLine:(size_t)testFileLine __attribute__((__availability__(swift, unavailable)));
 
 - (void)checkSnapshotOfView:(UIView *)view
+              inWindowScene:(UIWindowScene *)windowScene
               contentsScale:(CGFloat)scale
          beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
              testNameSuffix:(nullable NSString *)testNameSuffix
@@ -35,11 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
                testFileLine:(size_t)testFileLine NS_REFINED_FOR_SWIFT;
 
 - (void)checkSnapshotOfLayer:(CALayer *)CALayer
+               inWindowScene:(UIWindowScene *)windowScene
               testNameSuffix:(nullable NSString *)testNameSuffix
                 testFilePath:(const char *)testFilePath
                 testFileLine:(size_t)testFileLine __attribute__((__availability__(swift, unavailable)));
 
 - (void)checkSnapshotOfLayer:(CALayer *)CALayer
+               inWindowScene:(UIWindowScene *)windowScene
                contentsScale:(CGFloat)scale
           beforeLayoutAction:(nullable void(NS_NOESCAPE ^)(void))beforeLayoutAction
               testNameSuffix:(nullable NSString *)testNameSuffix
@@ -59,17 +63,19 @@ NS_ASSUME_NONNULL_END
 #define PATH_RELATIVE_TO_CURRENT_SOURCE_FILE_DIR(path)                                                                 \
   [[[NSString stringWithUTF8String:__FILE__] stringByDeletingLastPathComponent] stringByAppendingPathComponent:(path)]
 
-#define CHECK_VIEW_SNAPSHOT(view, testNameSuffixStringOrNil)                                                           \
+#define CHECK_VIEW_SNAPSHOT(view, windowScene, testNameSuffixStringOrNil)                                              \
   [self checkSnapshotOfView:(view)                                                                                     \
-             testNameSuffix:(testNameSuffixStringOrNil)testFilePath:__FILE__                                           \
-               testFileLine:__LINE__                                                                                   \
-             referenceImage:nil]
+              inWindowScene:(windowScene)                                                                              \
+             testNameSuffix:(testNameSuffixStringOrNil)                                                                \
+               testFilePath:__FILE__                                                                                   \
+               testFileLine:__LINE__]
 
-#define CHECK_LAYER_SNAPSHOT(layer, testNameSuffixStringOrNil)                                                         \
+#define CHECK_LAYER_SNAPSHOT(layer, windowScene, testNameSuffixStringOrNil)                                            \
   [self checkSnapshotOfLayer:(layer)                                                                                   \
-              testNameSuffix:(testNameSuffixStringOrNil)testFilePath:__FILE__                                          \
-                testFileLine:__LINE__                                                                                  \
-              referenceImage:nil]
+               inWindowScene:(windowScene)                                                                             \
+              testNameSuffix:(testNameSuffixStringOrNil)                                                               \
+                testFilePath:__FILE__                                                                                  \
+                testFileLine:__LINE__]
 
 #define CHECK_SNAPSHOT_IMAGE(image, testNameSuffixStringOrNil)                                                         \
   [self checkSnapshotImage:(image)                                                                                     \

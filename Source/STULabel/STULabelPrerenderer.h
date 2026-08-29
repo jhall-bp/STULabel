@@ -12,9 +12,7 @@ typedef NS_OPTIONS(uint8_t, STULabelPrerendererSizeOptions) {
   STUShrinkLabelHeightToFit = 2
 };
 
-STU_DISABLE_CLANG_WARNING("-Wunguarded-availability-new")
 typedef NSDirectionalEdgeInsets STUDirectionalEdgeInsets;
-STU_REENABLE_CLANG_WARNING
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 

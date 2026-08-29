@@ -997,13 +997,11 @@ static STULabelBaselinesLayoutGuide *baselinesLayoutGuide(STULabel *__unsafe_unr
                            return isDefaultDraggableLinkValue(linkValue);
                          }
                          if (STUTextLink *const link = [links linkClosestToPoint:point maxDistance:0]) {
-                           STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
                            if (delegateRespondsToLinkCanBeDragged) {
                              return [delegate label:self link:link canBeDraggedFromPoint:point];
                            } else {
                              return [delegate label:self dragItemForLink:link] != nil;
                            }
-                           STU_REENABLE_CLANG_WARNING
                          }
                          return false;
                        }

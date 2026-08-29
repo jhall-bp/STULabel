@@ -6,7 +6,7 @@
 
 STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 
-/// Enables native, non-editable text selection for @c STULabel on iOS 13 and later.
+/// Enables native, non-editable text selection for @c STULabel.
 ///
 /// The text exposed through @c UITextInput is the label's currently displayed, possibly
 /// truncated string. Editing operations are not supported.

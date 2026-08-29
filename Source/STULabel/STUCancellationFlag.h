@@ -13,10 +13,6 @@ STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 ///  @c STUCancellationFlag values are NOT reference-counted. You must manually ensure that a
 ///  @c STUCancellationFlag instance remains valid and is not moved in memory while it is being
 ///  used.
-/// @warning
-///  Swift 4 does not support using @c STUCancellationFlag and similar C structs wrapping atomic
-///  variables directly in Swift properties or local variables,
-///  see https://twitter.com/jckarter/status/962776179269775360
 typedef struct STUCancellationFlag {
   _Atomic(bool) isCancelled;
 } STUCancellationFlag;

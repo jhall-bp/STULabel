@@ -25,8 +25,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Require Xcode 26
+        run: |
+          xcode_version="$(xcodebuild -version)"
+          echo "$xcode_version"
+          grep -q '^Xcode 26\.' <<< "$xcode_version"
 
       - name: Install just
         run: brew install just
@@ -34,7 +37,7 @@ jobs:
       - name: Validate Swift package graph
         run: just package-graph
 
-      - name: Build package-backed Demo
+      - name: Build package and consumers
         run: just build
 
       - name: Run simulator regression suite
@@ -45,6 +48,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: xcode-test-logs
-          path: build/derived_data/Logs/Test
+          path: build/package/Logs/Test
           if-no-files-found: warn
           retention-days: 7

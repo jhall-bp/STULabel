@@ -107,11 +107,9 @@ static void initCommon(STUTextAttachment *__unsafe_unretained self)
       encode(coder, @STU_STRINGIZE(name), string);                                                                     \
     }                                                                                                                  \
   }
-    STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
     ENCODE(accessibilityLabel, accessibilityAttributedLabel)
     ENCODE(accessibilityHint, accessibilityAttributedHint)
     ENCODE(accessibilityValue, accessibilityAttributedValue)
-    STU_REENABLE_CLANG_WARNING
 #undef ENCODE
     if (NSString *const string = self.accessibilityLanguage) {
       encode(coder, @"accessibilityLanguage", string);
@@ -149,11 +147,9 @@ static void initCommon(STUTextAttachment *__unsafe_unretained self)
       self.attributedName = attributedString;                                                                          \
     }                                                                                                                  \
   }
-    STU_DISABLE_CLANG_WARNING("-Wunguarded-availability")
     DECODE(accessibilityLabel, accessibilityAttributedLabel)
     DECODE(accessibilityHint, accessibilityAttributedHint)
     DECODE(accessibilityValue, accessibilityAttributedValue)
-    STU_REENABLE_CLANG_WARNING
     {
       NSString *string = nil;
       decode(coder, @"accessibilityLanguage", Out{string});
@@ -292,12 +288,9 @@ static STUTextAttachmentColorInfo attachmentColorInfoForColorSpace(CGColorSpaceR
   default:
     break;
   }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-  if (&CGColorSpaceIsWideGamutRGB && CGColorSpaceIsWideGamutRGB(colorSpace)) {
+  if (CGColorSpaceIsWideGamutRGB(colorSpace)) {
     return STUTextAttachmentUsesExtendedColors;
   }
-#pragma clang diagnostic pop
   return STUTextAttachmentColorInfo{};
 }
 

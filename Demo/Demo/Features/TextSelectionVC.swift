@@ -120,14 +120,14 @@ final class TextSelectionVC: UIViewController, STULabelDelegate {
     guard let url = link.linkAttribute as? URL else { return nil }
     return UIContextMenuConfiguration {
       SFSafariViewController(url: url)
-    } actionProvider: { _ in
+    } actionProvider: { defaultActions in
       let open = UIAction(title: "Open", image: UIImage(systemName: "safari")) { _ in
         UIApplication.shared.open(url)
       }
       let copy = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
         UIPasteboard.general.url = url
       }
-      return UIMenu(children: [open, copy])
+      return UIMenu(children: defaultActions + [open, copy])
     }
   }
 

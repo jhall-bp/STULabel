@@ -4,33 +4,14 @@
 
 #import "stu/ArenaAllocator.hpp"
 
-#if !TARGET_OS_SIMULATOR || TARGET_RT_64_BIT
-  #define STU_HAS_THREAD_LOCAL 1
-#else
-  // https://twitter.com/gparker/status/921133893406748672
-  #define STU_HAS_THREAD_LOCAL 0
-#endif
-
-#if !STU_HAS_THREAD_LOCAL
-  #import <pthread.h>
-#endif
-
 namespace stu_label {
 
 class ThreadLocalArenaAllocator : public ArenaAllocator<> {
-#if STU_HAS_THREAD_LOCAL
   static thread_local ThreadLocalArenaAllocator* instance_pointer;
-#else
-  static const pthread_key_t instance_key;
-#endif
 public:
   STU_INLINE_T
   static ThreadLocalArenaAllocator* instance() {
-  #if STU_HAS_THREAD_LOCAL
     return instance_pointer;
-  #else
-    return static_cast<ThreadLocalArenaAllocator*>(pthread_getspecific(instance_key));
-  #endif
   }
 
   template <auto size>
@@ -39,19 +20,11 @@ public:
   : ArenaAllocator(buffer)
   {
     STU_ASSERT(ThreadLocalArenaAllocator::instance() == nullptr);
-  #if STU_HAS_THREAD_LOCAL
     ThreadLocalArenaAllocator::instance_pointer = this;
-  #else
-    pthread_setspecific(instance_key, this);
-  #endif
   }
 
   ~ThreadLocalArenaAllocator() {
-  #if STU_HAS_THREAD_LOCAL
     ThreadLocalArenaAllocator::instance_pointer = nullptr;
-  #else
-    pthread_setspecific(instance_key, nullptr);
-  #endif
   }
 
   ThreadLocalArenaAllocator(const ThreadLocalArenaAllocator&) = delete;

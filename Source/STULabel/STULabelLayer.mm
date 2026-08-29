@@ -1038,10 +1038,8 @@ public:
 
   void setContentsFormat(NSString *__unsafe_unretained contentsFormat)
   {
-    if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *)) {
-      layerContentsFormat_ = contentsImageFormat(contentsFormat, unknownCGImageFormat);
-      super_setContentsFormat(contentsFormat);
-    }
+    layerContentsFormat_ = contentsImageFormat(contentsFormat, unknownCGImageFormat);
+    super_setContentsFormat(contentsFormat);
   }
 
   void setContentsGravity(NSString *__unsafe_unretained gravity)
@@ -1357,9 +1355,7 @@ private:
         super_setOpaque(renderInfo.isOpaque);
       }
       if (renderInfo.imageFormat != layerContentsFormat_) {
-        if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *)) {
-          setContentsImageFormat(self, renderInfo.imageFormat);
-        }
+        setContentsImageFormat(self, renderInfo.imageFormat);
       }
       super_display();
     } else if (renderInfo.mode != LabelRenderMode::tiledSublayer) {

@@ -155,7 +155,6 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   const size_t index = (size_t)stuCategory - 1;
 
   static Class weakFontReferenceClass;
-  static bool fontMetricsIsAvailable;
 
   STU_DISABLE_CLANG_WARNING("-Wgnu-folding-constant")
   static dispatch_once_t onces[STUContentSizeCategoryCount - 1];
@@ -168,7 +167,6 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
     nsStringClass = NSString.class;
     weakFontReferenceClass = STUWeakFontReference.class;
     atomic_store_explicit(&canScaleNonPreferredFonts, true, memory_order_relaxed);
-    fontMetricsIsAvailable = true;
   });
   dispatch_once(&onces[index], ^{
     traitCollections[index] = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:category];
@@ -194,7 +192,7 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   const bool isPreferredFont = style && [style hasPrefix:@"UICTFontTextStyle"];
   CGFloat sizeForScaling = 0;
   if (!isPreferredFont) {
-    if (!fontMetricsIsAvailable || !(style = stringForFontKey(self, @"textStyleForScaling")) // assignment
+    if (!(style = stringForFontKey(self, @"textStyleForScaling")) // assignment
         || !floatForFontKey(self, @"pointSizeForScaling", &sizeForScaling) || !(sizeForScaling > 0)) {
     FontCanNotBeScaled:
       if (atomic_load_explicit(&canScaleNonPreferredFonts, memory_order_relaxed)) {
@@ -210,20 +208,16 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   if (!font)
     goto FontCanNotBeScaled;
 
-  if (fontMetricsIsAvailable) {
-    STU_DISABLE_CLANG_WARNING("-Wunguarded-availability-new")
-    CGFloat maxSize = 0;
-    if (!floatForFontKey(self, @"maximumPointSizeAfterScaling", &maxSize)) {
-      if (!isPreferredFont)
-        goto FontCanNotBeScaled;
-    }
-    if (!isPreferredFont || maxSize > 0) {
-      UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
-      font = [metrics scaledFontForFont:font
-                       maximumPointSize:maxSize
-          compatibleWithTraitCollection:traitCollections[index]];
-    }
-    STU_REENABLE_CLANG_WARNING
+  CGFloat maxSize = 0;
+  if (!floatForFontKey(self, @"maximumPointSizeAfterScaling", &maxSize)) {
+    if (!isPreferredFont)
+      goto FontCanNotBeScaled;
+  }
+  if (!isPreferredFont || maxSize > 0) {
+    UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
+    font = [metrics scaledFontForFont:font
+                   maximumPointSize:maxSize
+      compatibleWithTraitCollection:traitCollections[index]];
   }
 
   if (!weakRef) {

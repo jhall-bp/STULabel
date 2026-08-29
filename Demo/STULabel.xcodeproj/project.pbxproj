@@ -6,23 +6,18 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A2000000000000000000000A /* STULabelSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A2000000000000000000000B /* STULabelSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		352D7630303C6DBA00C34AF3 /* Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Demo.entitlements; sourceTree = "<group>"; };
 		352D7633303C6DBA00C34AF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		352D7692303C6EFD00C34AF3 /* Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Demo.entitlements; sourceTree = "<group>"; };
-		352D7693303C6EFD00C34AF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		352D7780303C6F7600C34AF3 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = STULabel.xcodeproj; sourceTree = "<group>"; };
-		D4C8FC1D20D005A000CDA4EB /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.4.sdk/usr/lib/libicucore.tbd; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		352D739A303C656700C34AF3 /* Configurations */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Configurations;
-			sourceTree = "<group>";
-		};
-		352D772B303C6F1F00C34AF3 /* Configurations */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Configurations;
 			sourceTree = "<group>";
@@ -38,37 +33,20 @@
 		352D777D303C6F7600C34AF3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				A2000000000000000000000A /* STULabelSwift in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D407028B2014FFB0004E5C07 /* Products */ = {
-			isa = PBXGroup;
-			name = Products;
-			sourceTree = "<group>";
-		};
-		D423839E1F92A340000B8A63 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				D4C8FC1D20D005A000CDA4EB /* libicucore.tbd */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		D4B0AEB21F9259E600B5B2B9 = {
 			isa = PBXGroup;
 			children = (
-				D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */,
 				352D7633303C6DBA00C34AF3 /* Info.plist */,
-				352D772B303C6F1F00C34AF3 /* Configurations */,
-				352D7692303C6EFD00C34AF3 /* Demo.entitlements */,
-				352D7693303C6EFD00C34AF3 /* Info.plist */,
 				352D7630303C6DBA00C34AF3 /* Demo.entitlements */,
 				352D739A303C656700C34AF3 /* Configurations */,
 				352D781E303C6FF900C34AF3 /* Demo */,
 				D4B0AEBD1F9259E600B5B2B9 /* Products */,
-				D423839E1F92A340000B8A63 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,6 +75,9 @@
 				352D781E303C6FF900C34AF3 /* Demo */,
 			);
 			name = Demo;
+			packageProductDependencies = (
+				A2000000000000000000000B /* STULabelSwift */,
+			);
 			productName = Demo;
 			productReference = 352D7780303C6F7600C34AF3 /* Demo.app */;
 			productType = "com.apple.product-type.application";
@@ -109,12 +90,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				DefaultBuildSystemTypeForWorkspace = Latest;
-				LastSwiftUpdateCheck = 2700;
-				LastUpgradeCheck = 2700;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
 				ORGANIZATIONNAME = STULabel;
 				TargetAttributes = {
 					352D777F303C6F7600C34AF3 = {
-						CreatedOnToolsVersion = 27.0;
+						CreatedOnToolsVersion = 26.0;
 					};
 				};
 			};
@@ -166,15 +147,9 @@
 			packageReferences = (
 				A20000000000000000000009 /* XCLocalSwiftPackageReference ".." */,
 			);
-			preferredProjectObjectVersion = 110;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = D4B0AEBD1F9259E600B5B2B9 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = D407028B2014FFB0004E5C07 /* Products */;
-					ProjectRef = D407028A2014FFB0004E5C07 /* STULabel.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				352D777F303C6F7600C34AF3 /* Demo */,
@@ -201,6 +176,8 @@
 /* Begin XCBuildConfiguration section */
 		352D7789303C6F7600C34AF3 /* Debug configuration for PBXNativeTarget "Demo" */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Demo.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -208,7 +185,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -223,7 +199,6 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -232,13 +207,11 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -247,9 +220,6 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.halleygen.Demo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -257,13 +227,14 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		352D778A303C6F7600C34AF3 /* Release configuration for PBXNativeTarget "Demo" */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 352D739A303C656700C34AF3 /* Configurations */;
+			baseConfigurationReferenceRelativePath = Demo.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -271,7 +242,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -286,16 +256,13 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -303,16 +270,12 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.halleygen.Demo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -419,6 +382,14 @@
 			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A2000000000000000000000B /* STULabelSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A20000000000000000000009 /* XCLocalSwiftPackageReference ".." */;
+			productName = STULabelSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D4B0AEB31F9259E600B5B2B9 /* Project object */;
 	validationLevel = 1;
