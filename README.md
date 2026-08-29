@@ -1,6 +1,6 @@
 
 [![CI](https://github.com/jhall-bp/STULabel/actions/workflows/ci.yml/badge.svg)](https://github.com/jhall-bp/STULabel/actions/workflows/ci.yml)
-[![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg?style=flat)](https://swift.org)
+[![Swift 6.3](https://img.shields.io/badge/Swift-6.3-orange.svg?style=flat)](https://swift.org)
 ![Platform](https://img.shields.io/badge/platform-iOS%2026%2B-blue.svg?style=flat)
 [![License](https://img.shields.io/badge/license-2--clause%20BSD-blue.svg?style=flat)](https://github.com/stephan-tolksdorf/STULabel/blob/master/LICENSE.txt)
 [![Twitter](https://img.shields.io/badge/twitter-@s_tolksdorf-blue.svg)](http://twitter.com/s_tolksdorf)
@@ -62,7 +62,7 @@ The STULabel library incorporates data derived from the Unicode Character Databa
 
 ### Swift Package Manager
 
-STULabel supports iOS 26 and Swift 6.2. In Xcode, choose **File → Add Package Dependencies…**, enter `https://github.com/stephan-tolksdorf/STULabel.git`, and add the `STULabelSwift` product to your application target.
+STULabel supports iOS 26 and Swift 6.3. In Xcode, choose **File → Add Package Dependencies…**, enter `https://github.com/jhall-bp/STULabel.git`, and add the `STULabelSwift` product to your application target.
 
 ```swift
 import STULabelSwift
