@@ -17,16 +17,14 @@
 
 - (void)testTargetTraitsAreCurrentWhenShapingAndRendering
 {
-  UITraitCollection *const targetTraits =
-      [UITraitCollection traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
-        traits.userInterfaceStyle = UIUserInterfaceStyleDark;
-        traits.preferredContentSizeCategory = UIContentSizeCategoryAccessibilityLarge;
-      }];
-  UITraitCollection *const outerTraits =
-      [UITraitCollection traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
-        traits.userInterfaceStyle = UIUserInterfaceStyleLight;
-        traits.preferredContentSizeCategory = UIContentSizeCategorySmall;
-      }];
+  UITraitCollection *const targetTraits = [UITraitCollection traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
+    traits.userInterfaceStyle = UIUserInterfaceStyleDark;
+    traits.preferredContentSizeCategory = UIContentSizeCategoryAccessibilityLarge;
+  }];
+  UITraitCollection *const outerTraits = [UITraitCollection traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
+    traits.userInterfaceStyle = UIUserInterfaceStyleLight;
+    traits.preferredContentSizeCategory = UIContentSizeCategorySmall;
+  }];
 
   __block UIUserInterfaceStyle shapingStyle = UIUserInterfaceStyleUnspecified;
   __block UIContentSizeCategory shapingContentSizeCategory;
@@ -43,22 +41,20 @@
     return UIColor.whiteColor;
   }];
   __block UIContentSizeCategory layoutContentSizeCategory;
-  UIColor *const truncationTokenColor =
-      [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
-        layoutContentSizeCategory = traits.preferredContentSizeCategory;
-        return UIColor.whiteColor;
-      }];
+  UIColor *const truncationTokenColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
+    layoutContentSizeCategory = traits.preferredContentSizeCategory;
+    return UIColor.whiteColor;
+  }];
 
-  STULabelPrerenderer *const prerenderer =
-      [[STULabelPrerenderer alloc] initWithTraitCollection:targetTraits];
+  STULabelPrerenderer *const prerenderer = [[STULabelPrerenderer alloc] initWithTraitCollection:targetTraits];
   [prerenderer setSize:CGSize{50, 30} contentInsets:UIEdgeInsetsZero options:0];
   prerenderer.attributedText =
       [[NSAttributedString alloc] initWithString:@"This text must be truncated"
-                                      attributes:@{NSForegroundColorAttributeName: attributedColor}];
+                                      attributes:@{NSForegroundColorAttributeName : attributedColor}];
   prerenderer.maximumNumberOfLines = 1;
   prerenderer.truncationToken =
       [[NSAttributedString alloc] initWithString:@"…"
-                                      attributes:@{NSForegroundColorAttributeName: truncationTokenColor}];
+                                      attributes:@{NSForegroundColorAttributeName : truncationTokenColor}];
   prerenderer.overrideTextColor = overrideColor;
 
   dispatch_queue_t const queue = dispatch_queue_create("STULabel.PrerendererTraitTests", nullptr);
@@ -89,17 +85,15 @@
   __block UIContentSizeCategory renderingContentSizeCategory;
   UIColor *const color = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
     renderingContentSizeCategory = traits.preferredContentSizeCategory;
-    const bool isAccessibilityLarge = [traits.preferredContentSizeCategory
-        isEqualToString:UIContentSizeCategoryAccessibilityLarge];
+    const bool isAccessibilityLarge =
+        [traits.preferredContentSizeCategory isEqualToString:UIContentSizeCategoryAccessibilityLarge];
     return isAccessibilityLarge ? UIColor.whiteColor : UIColor.blackColor;
   }];
 
-  STULabelPrerenderer *const prerenderer =
-      [[STULabelPrerenderer alloc] initWithTraitCollection:prerendererTraits];
+  STULabelPrerenderer *const prerenderer = [[STULabelPrerenderer alloc] initWithTraitCollection:prerendererTraits];
   [prerenderer setSize:label.bounds.size contentInsets:UIEdgeInsetsZero options:0];
-  prerenderer.attributedText =
-      [[NSAttributedString alloc] initWithString:@"Test"
-                                      attributes:@{NSForegroundColorAttributeName: color}];
+  prerenderer.attributedText = [[NSAttributedString alloc] initWithString:@"Test"
+                                                               attributes:@{NSForegroundColorAttributeName : color}];
   [prerenderer render];
   XCTAssertEqualObjects(renderingContentSizeCategory, UIContentSizeCategoryAccessibilityLarge);
 

@@ -107,9 +107,8 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
 
 - (NSUInteger)hash
 {
-  const auto h = hash(static_cast<UInt64>(_underlineStyle) |
-                          (static_cast<UInt64>(_strikethroughStyle) << 32),
-                      _textColor);
+  const auto h =
+      hash(static_cast<UInt64>(_underlineStyle) | (static_cast<UInt64>(_strikethroughStyle) << 32), _textColor);
   // Doesn't include most properties.
   return narrow_cast<NSUInteger>(h);
 }
@@ -227,11 +226,8 @@ static TextHighlightStyle resolvedStyle(STUTextHighlightStyle *__unsafe_unretain
   if (self->_strikethroughColor || self->_strikethroughStyle) {
     style.info.strikethrough.style = self->_strikethroughStyle;
     const bool hasStyle = style.info.strikethrough.style != StrikethroughStyle{};
-    const bool isNotClear = setColor(colors,
-                                     true,
-                                     self->_strikethroughColor,
-                                     strikethroughColorIndex,
-                                     Out{style.info.strikethrough.colorIndex});
+    const bool isNotClear = setColor(
+        colors, true, self->_strikethroughColor, strikethroughColorIndex, Out{style.info.strikethrough.colorIndex});
     const bool hasStrikethrough = hasStyle && (self->_strikethroughColor == nil || isNotClear);
     setFlags(TextFlags::hasStrikethrough, hasStrikethrough, hasStyle || self->_strikethroughColor);
   }
@@ -260,11 +256,8 @@ static TextHighlightStyle resolvedStyle(STUTextHighlightStyle *__unsafe_unretain
   }
   if (self->_background) {
     const bool hasBackground =
-        setColor(colors,
-                 true,
-                 self->_background->_color,
-                 backgroundColorIndex,
-                 Out{style.info.background.colorIndex}) ||
+        setColor(
+            colors, true, self->_background->_color, backgroundColorIndex, Out{style.info.background.colorIndex}) ||
         setColor(colors,
                  true,
                  self->_background->_borderWidth == 0 ? nil : self->_background->_borderColor,

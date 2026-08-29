@@ -216,8 +216,8 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   if (!isPreferredFont || maxSize > 0) {
     UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
     font = [metrics scaledFontForFont:font
-                   maximumPointSize:maxSize
-      compatibleWithTraitCollection:traitCollections[index]];
+                     maximumPointSize:maxSize
+        compatibleWithTraitCollection:traitCollections[index]];
   }
 
   if (!weakRef) {

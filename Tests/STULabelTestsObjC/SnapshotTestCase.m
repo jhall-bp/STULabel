@@ -515,11 +515,11 @@ static UIImage *convertImageToFormatExactlyRepresentableAsPNG(UIImage *uiImage)
     return uiImage;
   }
   const bool noAlpha = bitmapInfoHasNoAlphaChannel(bitmapInfo);
-  const CGColorSpaceRef persistableSpace =
-      isPersistableSpace                                                 ? colorSpace
-      : CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelMonochrome ? grayGamma2_2
-      : CGColorSpaceIsWideGamutRGB(colorSpace)                            ? displayP3
-                                                                          : sRGB;
+  const CGColorSpaceRef persistableSpace = isPersistableSpace ? colorSpace
+                                           : CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelMonochrome
+                                               ? grayGamma2_2
+                                           : CGColorSpaceIsWideGamutRGB(colorSpace) ? displayP3
+                                                                                    : sRGB;
   vImage_CGImageFormat format = {.colorSpace = persistableSpace,
                                  .bitsPerComponent = (uint32_t)CGImageGetBitsPerComponent(image),
                                  .renderingIntent = kCGRenderingIntentRelativeColorimetric};

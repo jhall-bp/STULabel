@@ -1167,7 +1167,9 @@ public:
     } else {
       params_.setSize_afterBaseAssignment_alreadyCeiledToScale(ceilToScale(prerenderer.size(), params_.displayScale()));
       if (traitCollection_) {
-        [traitCollection_ performAsCurrentTraitCollection:^{ updateTextFrameInfo(); }];
+        [traitCollection_ performAsCurrentTraitCollection:^{
+          updateTextFrameInfo();
+        }];
       } else {
         updateTextFrameInfo();
       }
@@ -1220,7 +1222,9 @@ public:
   void display()
   {
     if (traitCollection_) {
-      [traitCollection_ performAsCurrentTraitCollection:^{ displayInCurrentTraitCollection(); }];
+      [traitCollection_ performAsCurrentTraitCollection:^{
+        displayInCurrentTraitCollection();
+      }];
     } else {
       displayInCurrentTraitCollection();
     }
@@ -1291,20 +1295,28 @@ private:
     params_.freezeDrawingOptions();
     const dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
     if (textFrameInfoIsValidForCurrentSize_) {
-      task_ = LabelRenderTask::dispatchAsync(
-          queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
-          textFrame_, textFrameInfo_, textFrameOrigin_);
+      task_ = LabelRenderTask::dispatchAsync(queue,
+                                             *this,
+                                             traitCollection_,
+                                             params_,
+                                             allowExtendedRGBBitmapFormat,
+                                             textFrame_,
+                                             textFrameInfo_,
+                                             textFrameOrigin_);
     } else {
       textFrameOptionsIsPrivate_ = false;
       if (!shapedString_) {
         updateAttributedStringIfNecessary();
-        task_ = LabelTextShapingAndLayoutAndRenderTask::dispatchAsync(
-            queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
-            textFrameOptions_, attributedString_);
+        task_ = LabelTextShapingAndLayoutAndRenderTask::dispatchAsync(queue,
+                                                                      *this,
+                                                                      traitCollection_,
+                                                                      params_,
+                                                                      allowExtendedRGBBitmapFormat,
+                                                                      textFrameOptions_,
+                                                                      attributedString_);
       } else {
         task_ = LabelLayoutAndRenderTask::dispatchAsync(
-            queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
-            textFrameOptions_, shapedString_);
+            queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat, textFrameOptions_, shapedString_);
       }
     }
   }

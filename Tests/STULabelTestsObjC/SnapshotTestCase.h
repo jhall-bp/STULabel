@@ -65,16 +65,12 @@ NS_ASSUME_NONNULL_END
 
 #define CHECK_VIEW_SNAPSHOT(view, windowScene, testNameSuffixStringOrNil)                                              \
   [self checkSnapshotOfView:(view)                                                                                     \
-              inWindowScene:(windowScene)                                                                              \
-             testNameSuffix:(testNameSuffixStringOrNil)                                                                \
-               testFilePath:__FILE__                                                                                   \
+              inWindowScene:(windowScene)testNameSuffix:(testNameSuffixStringOrNil)testFilePath:__FILE__               \
                testFileLine:__LINE__]
 
 #define CHECK_LAYER_SNAPSHOT(layer, windowScene, testNameSuffixStringOrNil)                                            \
   [self checkSnapshotOfLayer:(layer)                                                                                   \
-               inWindowScene:(windowScene)                                                                             \
-              testNameSuffix:(testNameSuffixStringOrNil)                                                               \
-                testFilePath:__FILE__                                                                                  \
+               inWindowScene:(windowScene)testNameSuffix:(testNameSuffixStringOrNil)testFilePath:__FILE__              \
                 testFileLine:__LINE__]
 
 #define CHECK_SNAPSHOT_IMAGE(image, testNameSuffixStringOrNil)                                                         \

@@ -8,18 +8,18 @@ let package = Package(
     .macCatalyst(.v26),
   ],
   products: [
-    .library(name: "STULabelConsumer", targets: ["STULabelConsumer"]),
+    .library(name: "STULabelConsumer", targets: ["STULabelConsumer"])
   ],
   dependencies: [
-    .package(name: "STULabel", path: "../.."),
+    .package(name: "STULabel", path: "../..")
   ],
   targets: [
     .target(
       name: "STULabelConsumer",
       dependencies: [
-        .product(name: "STULabelSwift", package: "STULabel"),
+        .product(name: "STULabelSwift", package: "STULabel")
       ]
-    ),
+    )
   ],
   swiftLanguageModes: [.v6]
 )

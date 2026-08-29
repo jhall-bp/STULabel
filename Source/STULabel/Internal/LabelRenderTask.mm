@@ -40,7 +40,8 @@ void LabelRenderTask::abandonedByLabel(LabelLayer &label)
 void LabelTextShapingAndLayoutAndRenderTask ::createShapedString(const STUCancellationFlag *__nullable cancellationFlag)
 {
   const auto create = ^{
-    shapedString_ = STUShapedStringCreate(nil, attributedString_, params_.defaultBaseWritingDirection, cancellationFlag);
+    shapedString_ =
+        STUShapedStringCreate(nil, attributedString_, params_.defaultBaseWritingDirection, cancellationFlag);
   };
   if (traitCollection_) {
     [traitCollection_ performAsCurrentTraitCollection:create];
@@ -77,7 +78,9 @@ void LabelLayoutAndRenderTask::createTextFrame()
 void LabelRenderTask::renderImage(const STUCancellationFlag *__nullable cancellationFlag)
 {
   if (traitCollection_) {
-    [traitCollection_ performAsCurrentTraitCollection:^{ renderImageInCurrentTraitCollection(cancellationFlag); }];
+    [traitCollection_ performAsCurrentTraitCollection:^{
+      renderImageInCurrentTraitCollection(cancellationFlag);
+    }];
   } else {
     renderImageInCurrentTraitCollection(cancellationFlag);
   }

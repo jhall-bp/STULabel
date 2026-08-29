@@ -25,7 +25,7 @@ typedef struct stu_mutex {
     .unfair_lock = OS_UNFAIR_LOCK_INIT                                                                                 \
   }
 
-static STU_INLINE void stu_mutex_destroy(stu_mutex *__nonnull) { /* do nothing */
+static STU_INLINE void stu_mutex_destroy(stu_mutex *__nonnull mutex) { /* do nothing */
 }
 
 static STU_INLINE bool stu_mutex_trylock(stu_mutex *__nonnull mutex) {
