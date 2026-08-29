@@ -628,6 +628,7 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
     prerenderer.clipsContentToBounds = true
     prerenderer.maximumNumberOfLines = 0
     prerenderer.backgroundColor = labelBackgroundColor?.cgColor
+    prerenderer.displayScale = displayScale
 
     let text: NSAttributedString
     switch testCase {
