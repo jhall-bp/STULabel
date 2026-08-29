@@ -31,8 +31,17 @@ STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 ///
 STU_EXPORT
 @interface STULabelPrerenderer : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 @interface STULabelPrerenderer (Interface)
+
+/// Initializes a prerenderer for the specified target trait environment.
+///
+/// The trait collection is preserved and made current while text is shaped and rendered. Pass the
+/// target label's current trait collection.
+- (instancetype)initWithTraitCollection:(UITraitCollection *)traitCollection;
 
 // Calling one of the render methods freezes this object.
 @property (nonatomic, readonly) bool isFrozen;
@@ -106,11 +115,8 @@ STU_EXPORT
     directionalContentInsets:(STUDirectionalEdgeInsets)contentInsets
                      options:(STULabelPrerendererSizeOptions)options;
 
-/// Default value: 1. Set this to the target label's @c traitCollection.displayScale before rendering.
+/// The value is initialized from the target trait collection.
 @property (nonatomic) CGFloat displayScale;
-
-/// Configures display-dependent rendering options from the target label's trait collection.
-- (void)configureForTraitCollection:(UITraitCollection *)traitCollection;
 
 @property (nonatomic) STULabelVerticalAlignment verticalAlignment;
 

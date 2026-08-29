@@ -102,7 +102,7 @@ TempBackgroundSegments::TempBackgroundSegments(const TextFrame &textFrame,
           FirstLastRange<const TaggedStringRange &> ranges) { // clang analyzer bug?
         const TextStyle::BackgroundInfo &info =
             ranges.last.styleWasOverridden() && (styleOverride->flags & TextFlags::hasBackground)
-                ? styleOverride->highlightStyle->info.background
+                ? styleOverride->highlightStyle()->info.background
                 : *ranges.last.nonOverriddenStyle()->backgroundInfo();
         const STUBackgroundAttribute *__unsafe_unretained const attrib =
             (ranges.last.tag & 1) ? nil : (__bridge STUBackgroundAttribute *)reinterpret_cast<void *>(ranges.last.tag);

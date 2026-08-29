@@ -72,32 +72,28 @@ public:
   }
 
   TextFlags overrideColorFlags(bool textHasLink) const {
-    TextFlags flags = overrideTextColor_.textFlags();
+    TextFlags flags = Color{overrideTextUIColor_}.textFlags();
     if (textHasLink) {
-      flags |= overrideLinkColor_.textFlags();
+      flags |= Color{overrideLinkUIColor_}.textFlags();
     }
     return flags;
   }
 
   TextFlags overrideColorsTextFlagsMask() const { return overrideColorsTextFlagsMask_; }
 
-  ColorRef overrideTextColor() const { return overrideTextColor_; }
   Unretained<UIColor* __nullable> overrideTextUIColor() const { return overrideTextUIColor_; }
 
   void setOverrideTextColor(UIColor* __unsafe_unretained color) {
     checkNotFrozen();
     overrideTextUIColor_ = color;
-    overrideTextColor_ = Color{color};
     setOverrideColorsMaskFlag(detail::everyRunFlag, color != nil);
   }
 
-  ColorRef overrideLinkColor() const { return overrideLinkColor_; }
   Unretained<UIColor* __nullable> overrideLinkUIColor() const { return overrideLinkUIColor_; }
 
   void setOverrideLinkColor(UIColor* __unsafe_unretained color) {
     checkNotFrozen();
     overrideLinkUIColor_ = color;
-    overrideLinkColor_ = Color{color};
     setOverrideColorsMaskFlag(TextFlags::hasLink, color != nil);
   }
 
@@ -125,8 +121,6 @@ private:
     STUTextFrameRange highlightTextFrameRange_;
     STUTextRange highlightTextRange_{NSRange{0, NSUIntegerMax}, STURangeInOriginalString};
   };
-  Color overrideTextColor_;
-  Color overrideLinkColor_;
   STUTextHighlightStyle* highlightStyle_; // arc
   UIColor* overrideTextUIColor_; // arc
   UIColor* overrideLinkUIColor_; // arc

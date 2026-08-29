@@ -314,6 +314,16 @@ static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabel *self, CG
                                                  displayScale:self.layer.contentsScale];
 }
 
+static NSUInteger stringIndexClosestToX(STUTextFrameGraphemeClusterRange cluster, CGFloat x)
+{
+  const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
+  if (range.length == 0)
+    return range.location;
+  const CGFloat midX = CGRectGetMidX(cluster.bounds);
+  const bool onTrailingHalf = cluster.writingDirection == STUWritingDirectionLeftToRight ? x >= midX : x <= midX;
+  return onTrailingHalf ? NSMaxRange(range) : range.location;
+}
+
 static NSWritingDirection writingDirectionAtPoint(STULabel *self, CGPoint point)
 {
   return (NSWritingDirection)clusterClosestToPoint(self, point).writingDirection;
@@ -395,8 +405,7 @@ positionOnAdjacentLine(STULabel *self, NSUInteger index, CGRect caret, UITextLay
   const CGFloat xOffset = x < 0 ? 0 : x > targetLine->width ? targetLine->width : x;
   const STUTextFrameGraphemeClusterRange cluster =
       STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(targetLine, xOffset);
-  const NSRange clusterRange = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
-  return direction == UITextLayoutDirectionUp ? clusterRange.location : NSMaxRange(clusterRange);
+  return stringIndexClosestToX(cluster, xOffset);
 }
 
 static NSUInteger
@@ -733,13 +742,7 @@ characterRangeInDirection(STULabel *self, NSString *string, NSUInteger index, UI
 {
   textInputString(self);
   const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(self, point);
-  const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
-  if (range.length == 0)
-    return textPosition(range.location);
-  const CGFloat midX = CGRectGetMidX(cluster.bounds);
-  const bool onTrailingHalf =
-      cluster.writingDirection == STUWritingDirectionLeftToRight ? point.x >= midX : point.x <= midX;
-  return textPosition(onTrailingHalf ? NSMaxRange(range) : range.location);
+  return textPosition(stringIndexClosestToX(cluster, point.x));
 }
 
 - (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point withinRange:(UITextRange *)range

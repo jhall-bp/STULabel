@@ -101,7 +101,7 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame *__unsafe_u
     TextFrameDrawingOptions &options = params.drawingOptions->impl;
     TextFlags extraFlags = options.overrideColorFlags(frameFlags & STUTextFrameHasLink);
     if (params.isEffectivelyHighlighted()) {
-      extraFlags |= options.highlightStyle().unretained->style.flags;
+      extraFlags |= [options.highlightStyle().unretained stu_resolvedStyle].flags;
     }
     return frameFlags | static_cast<STUTextFrameFlags>(extraFlags);
   }();

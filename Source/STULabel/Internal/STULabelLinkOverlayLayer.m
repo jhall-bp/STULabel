@@ -62,10 +62,14 @@ typedef void (^FadeCompletion)(STULabelLinkOverlayLayer *__nonnull);
   if (style == _style)
     return;
   _style = style;
-  self.strokeColor = style.borderColor.CGColor;
   self.lineWidth = style.borderWidth;
-  self.fillColor = style.color.CGColor;
   [self setNeedsDisplay];
+}
+
+- (void)updateColorsForTraitCollection:(UITraitCollection *)traitCollection
+{
+  self.strokeColor = [_style.borderColor resolvedColorWithTraitCollection:traitCollection].CGColor;
+  self.fillColor = [_style.color resolvedColorWithTraitCollection:traitCollection].CGColor;
 }
 
 - (void)display

@@ -549,4 +549,3 @@ UIEdgeInsets roundAndClampEdgeInsetsForSize(UIEdgeInsets edgeInsets, CGSize size
 
 } // namespace stu_label
 
-

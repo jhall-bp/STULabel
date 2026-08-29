@@ -10,8 +10,9 @@
 
 - (void)stu_didMoveToWindow:(UIWindow*)window;
 
-- (void)stu_setTraitDisplayScale:(CGFloat)displayScale
-                    displayGamut:(UIDisplayGamut)displayGamut;
+- (void)stu_setTraitCollection:(UITraitCollection*)traitCollection;
+
+- (void)stu_updateColorAppearanceForTraitCollection:(UITraitCollection*)traitCollection;
 
 @property (nonatomic, setter=stu_setAlwaysUsesContentSublayer:) bool stu_alwaysUsesContentSublayer;
 

@@ -585,7 +585,7 @@ static void updateLayoutGuides(STULabel *label);
   STULabelGhostingMaskLayer *_ghostingMaskLayer;
   STUTextFrameAccessibilityElement *_textFrameAccessibilityElement;
   id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
-  id<UITraitChangeRegistration> _backgroundColorTraitChangeRegistration;
+  id<UITraitChangeRegistration> _colorAppearanceTraitChangeRegistration;
   id<UITraitChangeRegistration> _displayPropertiesTraitChangeRegistration;
   id<UITraitChangeRegistration> _userInterfaceDirectionTraitChangeRegistration;
 }
@@ -637,12 +637,12 @@ static void initCommon(STULabel *self)
   self->_layer = static_cast<STULabelLayer *>([self layer]);
   STU_CHECK([self->_layer isKindOfClass:stuLabelLayerClass]);
   UITraitCollection *const traits = self.traitCollection;
-  [self->_layer stu_setTraitDisplayScale:traits.displayScale displayGamut:traits.displayGamut];
+  [self->_layer stu_setTraitCollection:traits];
   self->_layer.contentsScale = traits.displayScale;
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = UIColor.linkColor;
 
-  self->_backgroundColorTraitChangeRegistration =
+  self->_colorAppearanceTraitChangeRegistration =
       [self registerForTraitChanges:UITraitCollection.systemTraitsAffectingColorAppearance
                          withAction:@selector(colorAppearanceDidChange)];
   self->_displayPropertiesTraitChangeRegistration =
@@ -1112,7 +1112,7 @@ static void updateDisplayedBackgroundColor(STULabel *__unsafe_unretained self)
 static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 {
   UITraitCollection *const traits = self.traitCollection;
-  [self->_layer stu_setTraitDisplayScale:traits.displayScale displayGamut:traits.displayGamut];
+  [self->_layer stu_setTraitCollection:traits];
   self->_layer.contentsScale = traits.displayScale;
 }
 
@@ -1124,7 +1124,12 @@ static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 
 - (void)colorAppearanceDidChange
 {
+  UITraitCollection *const traits = self.traitCollection;
+  [_layer stu_updateColorAppearanceForTraitCollection:traits];
   updateDisplayedBackgroundColor(self);
+  if (_bits.hasActiveLinkOverlayLayer) {
+    [(STULabelLinkOverlayLayer *)_activeLinkOrOverlayLayer updateColorsForTraitCollection:traits];
+  }
 }
 
 // MARK: - Tint and disabled colors
@@ -1279,6 +1284,7 @@ static void addActiveLinkOverlay(STULabel *self, STULabelOverlayStyle *style, ST
     overlay.overlayStyle = style;
     overlay.link = link;
   }
+  [overlay updateColorsForTraitCollection:self.traitCollection];
   if (self->_bits.activeLinkOverlayIsHidden != hidden) {
     self->_bits.activeLinkOverlayIsHidden = hidden;
     overlay.hidden = hidden;
@@ -2356,6 +2362,7 @@ static void initializeTextInteraction(STULabel *self)
 
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer
 {
+  [_layer stu_setTraitCollection:self.traitCollection];
   const LabelParameters &params = STULabelLayerGetParams(_layer);
   UIColor *const overrideTextColor = params.overrideTextColor().unretained;
   UIColor *const overrideLinkColor = params.overrideLinkColor().unretained;

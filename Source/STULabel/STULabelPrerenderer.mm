@@ -9,6 +9,15 @@ using namespace stu_label;
 
 @implementation STULabelPrerenderer (Interface)
 
+- (instancetype)initWithTraitCollection:(UITraitCollection *)traitCollection
+{
+  self = [super init];
+  if (self) {
+    prerenderer->setTraitCollection(traitCollection);
+  }
+  return self;
+}
+
 - (bool)isFrozen
 {
   return prerenderer->isFrozen();
@@ -117,12 +126,6 @@ using namespace stu_label;
 - (void)setDisplayScale:(CGFloat)scale
 {
   prerenderer->setDisplayScale(scale);
-}
-
-- (void)configureForTraitCollection:(UITraitCollection *)traitCollection
-{
-  self.displayScale = traitCollection.displayScale;
-  self.neverUsesExtendedRGBBitmapFormat = traitCollection.displayGamut == UIDisplayGamutSRGB;
 }
 
 - (STULabelVerticalAlignment)verticalAlignment

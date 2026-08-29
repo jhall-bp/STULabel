@@ -39,28 +39,51 @@ void LabelRenderTask::abandonedByLabel(LabelLayer &label)
 
 void LabelTextShapingAndLayoutAndRenderTask ::createShapedString(const STUCancellationFlag *__nullable cancellationFlag)
 {
-  shapedString_ = STUShapedStringCreate(nil, attributedString_, params_.defaultBaseWritingDirection, cancellationFlag);
+  const auto create = ^{
+    shapedString_ = STUShapedStringCreate(nil, attributedString_, params_.defaultBaseWritingDirection, cancellationFlag);
+  };
+  if (traitCollection_) {
+    [traitCollection_ performAsCurrentTraitCollection:create];
+  } else {
+    create();
+  }
 }
 
 void LabelLayoutAndRenderTask::createTextFrame()
 {
-  STU_DEBUG_ASSERT(shapedString_ && !textFrame_ && !links_);
-  textFrame_ = STUTextFrameCreateWithShapedString(
-      nil, shapedString_, params_.maxTextFrameSize(), params_.displayScale(), textFrameOptions_);
-  const TextFrame &textFrame = textFrameRef(textFrame_);
-  textFrameInfo_ = labelTextFrameInfo(textFrame, params_.verticalAlignment, params_.displayScale());
-  if (sizeOptions_) {
-    params_.shrinkSizeToFitTextBounds(textFrameInfo_.layoutBounds, sizeOptions_);
-  }
-  textFrameOriginInLayer_ = textFrameOriginInLayer(textFrameInfo_, params_);
-  if ((textFrameInfo_.flags & STUTextFrameHasLink) &&
-      (type_ == Type::prerender || params_.releasesTextFrameAfterRendering)) {
-    links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
-        textFrame, textFrameOriginInLayer_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
+  const auto create = ^{
+    STU_DEBUG_ASSERT(shapedString_ && !textFrame_ && !links_);
+    textFrame_ = STUTextFrameCreateWithShapedString(
+        nil, shapedString_, params_.maxTextFrameSize(), params_.displayScale(), textFrameOptions_);
+    const TextFrame &textFrame = textFrameRef(textFrame_);
+    textFrameInfo_ = labelTextFrameInfo(textFrame, params_.verticalAlignment, params_.displayScale());
+    if (sizeOptions_) {
+      params_.shrinkSizeToFitTextBounds(textFrameInfo_.layoutBounds, sizeOptions_);
+    }
+    textFrameOriginInLayer_ = textFrameOriginInLayer(textFrameInfo_, params_);
+    if ((textFrameInfo_.flags & STUTextFrameHasLink) &&
+        (type_ == Type::prerender || params_.releasesTextFrameAfterRendering)) {
+      links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
+          textFrame, textFrameOriginInLayer_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
+    }
+  };
+  if (traitCollection_) {
+    [traitCollection_ performAsCurrentTraitCollection:create];
+  } else {
+    create();
   }
 }
 
 void LabelRenderTask::renderImage(const STUCancellationFlag *__nullable cancellationFlag)
+{
+  if (traitCollection_) {
+    [traitCollection_ performAsCurrentTraitCollection:^{ renderImageInCurrentTraitCollection(cancellationFlag); }];
+  } else {
+    renderImageInCurrentTraitCollection(cancellationFlag);
+  }
+}
+
+void LabelRenderTask::renderImageInCurrentTraitCollection(const STUCancellationFlag *__nullable cancellationFlag)
 {
   STU_DEBUG_ASSERT(textFrame_);
   if (params_.releasesShapedStringAfterRendering && type_ != Type::render) {
@@ -92,6 +115,7 @@ void LabelTextShapingAndLayoutAndRenderTask::run(void *taskPointer)
   }
   task.taskStoppedAfterBeingCancelled();
 }
+
 void LabelLayoutAndRenderTask::run(void *taskPointer)
 {
   auto &task = *down_cast<LabelLayoutAndRenderTask *>(taskPointer);
@@ -103,6 +127,7 @@ void LabelLayoutAndRenderTask::run(void *taskPointer)
   }
   task.taskStoppedAfterBeingCancelled();
 }
+
 void LabelRenderTask::run(void *taskPointer)
 {
   auto &task = *down_cast<LabelRenderTask *>(taskPointer);

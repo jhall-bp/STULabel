@@ -124,6 +124,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer>
   CGSize size_;
   UIEdgeInsets contentInsets_;
   LabelParameters params_;
+  UITraitCollection *traitCollection_{};
   CGFloat traitDisplayScale_{0};
   DisplayScale sizeThatFitsDisplayScale_{DisplayScale::one()};
 
@@ -225,13 +226,28 @@ private:
   }
 
 public:
-  void setTraitDisplayProperties(CGFloat displayScale, UIDisplayGamut displayGamut)
+  void setTraitCollection(UITraitCollection *__unsafe_unretained traitCollection)
   {
+    traitCollection_ = traitCollection;
+    const CGFloat displayScale = traitCollection.displayScale;
+    const UIDisplayGamut displayGamut = traitCollection.displayGamut;
     traitDisplayScale_ = clampDisplayScaleInput(displayScale);
     if (displayGamut_ != displayGamut && hasContent_) {
       [self setNeedsDisplay];
     }
     displayGamut_ = displayGamut;
+  }
+
+  void updateColorAppearance(UITraitCollection *__unsafe_unretained traitCollection)
+  {
+    setTraitCollection(traitCollection);
+    if (shapedString_) {
+      shapedString_ = nil;
+    }
+    if (!isInvalidated_) {
+      invalidateLayout_slowPath_main(false);
+      [self setNeedsDisplay];
+    }
   }
 
   /// MARK: - STULabelLayerDelegate
@@ -1099,6 +1115,7 @@ public:
     STU_CHECK_MSG(prerenderer.isFrozen() || !displaysAsynchronously_,
                   "You must call one of the render methods on the STULabelPrerenderer instance before"
                   " passing it to a STULabel(Layer) with displaysAsynchronously=true.");
+    const bool renderingTraitsMatch = !traitCollection_ || prerenderer.renderingTraitsMatch(traitCollection_);
     if (!isInvalidated_) {
       invalidateLayout_slowPath_main(false);
       shapedString_ = nil;
@@ -1111,7 +1128,7 @@ public:
     isInvalidated_ = false;
     attributedString_ = prerenderer.attributedString();
     stringIsEmpty_ = prerenderer.stringIsEmpty();
-    if (!prerenderer.stringIsEmpty() && prerenderer.hasShapedString()) {
+    if (renderingTraitsMatch && !prerenderer.stringIsEmpty() && prerenderer.hasShapedString()) {
       shapedString_ = prerenderer.shapedString().unretained;
     }
     textFrameOptions_ = prerenderer.textFrameOptions().unretained;
@@ -1151,7 +1168,11 @@ public:
       params_.setSize_afterBaseAssignment_alreadyCeiledToScale(prerenderer.params().size());
     } else {
       params_.setSize_afterBaseAssignment_alreadyCeiledToScale(ceilToScale(prerenderer.size(), params_.displayScale()));
-      updateTextFrameInfo();
+      if (traitCollection_) {
+        [traitCollection_ performAsCurrentTraitCollection:^{ updateTextFrameInfo(); }];
+      } else {
+        updateTextFrameInfo();
+      }
       params_.shrinkSizeToFitTextBounds(textFrameInfo_.layoutBounds, prerenderer.sizeOptions());
     }
     if (size_ != params_.size()) {
@@ -1162,15 +1183,16 @@ public:
 
     // Assign task or task result.
 
+    bool didUsePrerenderedResult = false;
     if (!prerenderer.isFinished()) {
-      if (prerenderer.isFrozen()) {
+      if (renderingTraitsMatch && prerenderer.isFrozen()) {
         taskIsStale_ = false;
         task_ = &prerenderer;
         prerenderer.registerWaitingLabelLayer(*this);
-      } else {
+      } else if (renderingTraitsMatch) {
         prerenderer.tryCopyLayoutInfoTo(*this);
       }
-      if (!displaysAsynchronously_) {
+      if (!task_ || !displaysAsynchronously_) {
         [self setNeedsDisplay];
       }
     } else {
@@ -1179,14 +1201,18 @@ public:
         contentBoundsInTextFrame_ = CGRectZero;
         contentMayBeClipped_ = false;
         contentHasBackgroundColor_ = false;
-      } else {
+        didUsePrerenderedResult = true;
+      } else if (renderingTraitsMatch) {
         taskIsStale_ = false;
         prerenderer.assignResultTo(*this);
+        didUsePrerenderedResult = true;
+      } else {
+        [self setNeedsDisplay];
       }
     }
     auto *const delegate = labelLayerDelegate_;
     textLayoutWasInvalidated(delegate); // May invalidate this layer again.
-    if (prerenderer.isFinished() && !isInvalidated_) {
+    if (didUsePrerenderedResult && !isInvalidated_) {
       didDisplayText(delegate);
     }
   }
@@ -1194,6 +1220,16 @@ public:
   /// MARK: - Displaying
 
   void display()
+  {
+    if (traitCollection_) {
+      [traitCollection_ performAsCurrentTraitCollection:^{ displayInCurrentTraitCollection(); }];
+    } else {
+      displayInCurrentTraitCollection();
+    }
+  }
+
+private:
+  void displayInCurrentTraitCollection()
   {
     if (task_ != nil && !taskIsStale_ && displaysAsynchronously_ && !enteredBackground)
       return;
@@ -1258,20 +1294,24 @@ public:
     const dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
     if (textFrameInfoIsValidForCurrentSize_) {
       task_ = LabelRenderTask::dispatchAsync(
-          queue, *this, params_, allowExtendedRGBBitmapFormat, textFrame_, textFrameInfo_, textFrameOrigin_);
+          queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
+          textFrame_, textFrameInfo_, textFrameOrigin_);
     } else {
       textFrameOptionsIsPrivate_ = false;
       if (!shapedString_) {
         updateAttributedStringIfNecessary();
         task_ = LabelTextShapingAndLayoutAndRenderTask::dispatchAsync(
-            queue, *this, params_, allowExtendedRGBBitmapFormat, textFrameOptions_, attributedString_);
+            queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
+            textFrameOptions_, attributedString_);
       } else {
         task_ = LabelLayoutAndRenderTask::dispatchAsync(
-            queue, *this, params_, allowExtendedRGBBitmapFormat, textFrameOptions_, shapedString_);
+            queue, *this, traitCollection_, params_, allowExtendedRGBBitmapFormat,
+            textFrameOptions_, shapedString_);
       }
     }
   }
 
+public:
   void drawInContext(CGContext *context) const
   {
     if (!textFrame_)
@@ -2021,9 +2061,14 @@ auto LabelPrerenderer::WaitingLabelSetNode::get(LabelLayer &layer) -> WaitingLab
   impl.didMoveToWindow(window);
 }
 
-- (void)stu_setTraitDisplayScale:(CGFloat)displayScale displayGamut:(UIDisplayGamut)displayGamut
+- (void)stu_setTraitCollection:(UITraitCollection *)traitCollection
 {
-  impl.setTraitDisplayProperties(displayScale, displayGamut);
+  impl.setTraitCollection(traitCollection);
+}
+
+- (void)stu_updateColorAppearanceForTraitCollection:(UITraitCollection *)traitCollection
+{
+  impl.updateColorAppearance(traitCollection);
 }
 
 const CGSize &STULabelLayerGetSize(const STULabelLayer *self) { return self->impl.size_; }

@@ -15,6 +15,8 @@
 
 @property (nonatomic, strong, nonnull) STULabelOverlayStyle *overlayStyle;
 
+- (void)updateColorsForTraitCollection:(nonnull UITraitCollection *)traitCollection;
+
 - (void)setHidden:(BOOL)hidden;
 
 - (void)setHidden:(BOOL)hidden

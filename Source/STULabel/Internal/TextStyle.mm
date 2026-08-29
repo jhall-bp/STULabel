@@ -106,7 +106,7 @@ void TextStyleOverride::applyTo(const TextStyle &style)
 
 #define setStyleInfo(component, styleInfoName)                                                                         \
   styleInfos_[__builtin_ctz(static_cast<UInt16>(component)) - 1] =                                                     \
-      !(preservedFlags & component) ? &highlightStyle->info.styleInfoName : style.nonnullOwnInfo(component)
+      !(preservedFlags & component) ? &highlightStyle_->info.styleInfoName : style.nonnullOwnInfo(component)
 
   setStyleInfo(TextFlags::hasBackground, background);
   setStyleInfo(TextFlags::hasShadow, shadow);
@@ -126,7 +126,7 @@ TextStyleOverride::TextStyleOverride(Range<Int32> drawnLineRange,
     : drawnLineRange{drawnLineRange}, drawnRangeInOriginalString{drawnRangeInOriginalString}, drawnRange{drawnRange},
       overrideRangeInOriginalString{drawnRangeInOriginalString.end, drawnRangeInOriginalString.end},
       overrideRange{drawnRange.end, drawnRange.end}, flagsMask{TextFlags{UINT16_MAX}}, flags{TextFlags{}},
-      textColorIndex{}, style_{0, FontIndex{}, ColorIndex{}}, overriddenStyle_{}, highlightStyle{}
+      textColorIndex{}, style_{0, FontIndex{}, ColorIndex{}}, overriddenStyle_{}, highlightStyle_{}
 {}
 
 // Sometimes C++ can be a little silly.
@@ -139,10 +139,11 @@ TextStyleOverride::TextStyleOverride(Range<Int32> drawnLineRange,
                                      TextFlags flagsMask,
                                      TextFlags flags,
                                      Optional<ColorIndex> textColorIndex,
-                                     Optional<const TextHighlightStyle &> highlightStyle)
+                                     Optional<TextHighlightStyle> highlightStyle)
     : drawnLineRange{drawnLineRange}, drawnRangeInOriginalString{drawnRangeInOriginalString}, drawnRange{drawnRange},
       overrideRangeInOriginalString{overrideRangeInOriginalString}, overrideRange{overrideRange}, flagsMask{flagsMask},
-      flags{flags}, textColorIndex{textColorIndex}, style_{0, FontIndex{}, ColorIndex{}}, highlightStyle{highlightStyle}
+      flags{flags}, textColorIndex{textColorIndex}, style_{0, FontIndex{}, ColorIndex{}}, overriddenStyle_{},
+      highlightStyle_{std::move(highlightStyle)}
 {}
 
 TextStyleOverride TextStyleOverride::create(const TextFrame &textFrame,
@@ -152,11 +153,13 @@ TextStyleOverride TextStyleOverride::create(const TextFrame &textFrame,
   const Range<Int32> drawnRangeInOriginalString = textFrame.rangeInOriginalString(drawnRange);
   Range<Int32> highlightRangeInOriginalString{uninitialized};
   Range<TextFrameIndex> highlightRange{uninitialized};
-  const STUTextHighlightStyle *__unsafe_unretained highlightStyle =
+  STUTextHighlightStyle *__unsafe_unretained const highlightStyleObject =
       !options ? nil : options->highlightStyle().unretained;
-  if (highlightStyle) {
-    if (!highlightStyle->style.textColorIndex && highlightStyle->style.flagsMask == TextFlags{UINT16_MAX}) {
-      highlightStyle = nil;
+  Optional<TextHighlightStyle> highlightStyle;
+  if (highlightStyleObject) {
+    highlightStyle = [highlightStyleObject stu_resolvedStyle];
+    if (!highlightStyle->textColorIndex && highlightStyle->flagsMask == TextFlags{UINT16_MAX}) {
+      highlightStyle = none;
     } else {
       bool needRangeInOriginalString = true;
       if (const Optional<STUTextFrameRange> range = options->highlightTextFrameRange()) {
@@ -177,7 +180,7 @@ TextStyleOverride TextStyleOverride::create(const TextFrame &textFrame,
         highlightRange.end = drawnRange.end;
       }
       if (highlightRange.end <= highlightRange.start) {
-        highlightStyle = nil;
+        highlightStyle = none;
       } else if (needRangeInOriginalString) {
         // If the following range conversion causes a crash, the STUTextFrameDrawingOptions
         // contained a highlightTextFrameRange that is not valid for this textFrame.
@@ -201,10 +204,10 @@ TextStyleOverride TextStyleOverride::create(const TextFrame &textFrame,
           drawnRange,
           highlightRangeInOriginalString,
           highlightRange,
-          highlightStyle->style.flagsMask,
-          highlightStyle->style.flags,
-          highlightStyle->style.textColorIndex,
-          highlightStyle->style};
+          highlightStyle->flagsMask,
+          highlightStyle->flags,
+          highlightStyle->textColorIndex,
+          std::move(highlightStyle)};
 }
 
 TextStyleOverride::TextStyleOverride(const TextFrame &textFrame,

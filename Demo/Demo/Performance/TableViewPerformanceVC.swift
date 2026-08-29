@@ -618,7 +618,7 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
   }
 
   func prerenderer(forIndex index: Int) -> STULabelPrerenderer {
-    let prerenderer = STULabelPrerenderer()
+    let prerenderer = STULabelPrerenderer(traitCollection: traitCollection)
     let insets = labelContentInsets
     let negativeMargin = testCase == .emojicalypse ? 0 : insets.left + insets.right
     prerenderer.setWidth(
@@ -628,8 +628,6 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
     prerenderer.clipsContentToBounds = true
     prerenderer.maximumNumberOfLines = 0
     prerenderer.backgroundColor = labelBackgroundColor?.cgColor
-    prerenderer.displayScale = displayScale
-
     let text: NSAttributedString
     switch testCase {
     case .emojicalypse: text = emojiText(index: index)

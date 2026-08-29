@@ -97,8 +97,6 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
   if (![object isKindOfClass:STUTextHighlightStyle.class])
     return false;
   STUTextHighlightStyle *const other = object;
-  if (style.flagsMask != other->style.flagsMask || style.flags != other->style.flags)
-    return false;
 #define IF_NOT_EQUAL_RETURN_FALSE(Type, name)                                                                          \
   if (!equal(_##name, other->_##name))                                                                                 \
     return false;
@@ -109,10 +107,9 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
 
 - (NSUInteger)hash
 {
-  const auto h =
-      hash(static_cast<UInt64>(style.flags) | (static_cast<UInt64>(style.flagsMask) << 16) |
-               (static_cast<UInt64>(_underlineStyle) << 32) | (static_cast<UInt64>(_strikethroughStyle) << 48),
-           _textColor);
+  const auto h = hash(static_cast<UInt64>(_underlineStyle) |
+                          (static_cast<UInt64>(_strikethroughStyle) << 32),
+                      _textColor);
   // Doesn't include most properties.
   return narrow_cast<NSUInteger>(h);
 }
@@ -182,10 +179,18 @@ STU_INLINE bool setColor(TextHighlightStyle::ColorArray &colors,
 }
 - (instancetype)initWithBuilder:(STUTextHighlightStyleBuilder *__unsafe_unretained)builder
 {
-  style.flagsMask = TextFlags{IntegerTraits<UnderlyingType<TextFlags>>::max};
+  if (builder) {
+#define ASSIGN_FROM_BUILDER(Type, name) _##name = builder->_##name;
+    FOR_ALL_FIELDS(ASSIGN_FROM_BUILDER)
+#undef ASSIGN_FROM_BUILDER
+  }
+  return self;
+}
 
-  if (!builder)
-    return self;
+static TextHighlightStyle resolvedStyle(STUTextHighlightStyle *__unsafe_unretained self)
+{
+  TextHighlightStyle style{};
+  style.flagsMask = TextFlags{IntegerTraits<UnderlyingType<TextFlags>>::max};
 
   const auto setFlags = [&](TextFlags flag, bool isPresent, bool clearIfNotPresent) {
     if (isPresent) {
@@ -198,48 +203,41 @@ STU_INLINE bool setColor(TextHighlightStyle::ColorArray &colors,
 
   auto &colors = style.colors;
 
-  if (builder->_textColor) {
-    _textColor = builder->_textColor;
-    setColor(colors, false, _textColor, textColorIndex, Out{style.textColorIndex});
+  if (self->_textColor) {
+    setColor(colors, false, self->_textColor, textColorIndex, Out{style.textColorIndex});
   }
-  if (builder->_strokeColor || builder->_strokeWidth != 0) {
-    _strokeColor = builder->_strokeColor;
-    _strokeWidth = builder->_strokeWidth;
-    const Float32 strokeWidth = narrow_cast<Float32>(_strokeWidth);
-    setColor(colors, false, _strokeColor, strokeColorIndex, Out{style.info.stroke.colorIndex});
+  if (self->_strokeColor || self->_strokeWidth != 0) {
+    const Float32 strokeWidth = narrow_cast<Float32>(self->_strokeWidth);
+    setColor(colors, false, self->_strokeColor, strokeColorIndex, Out{style.info.stroke.colorIndex});
     const bool hasStroke = strokeWidth > 0;
     if (hasStroke) {
       style.info.stroke.strokeWidth = strokeWidth;
-      style.info.stroke.doNotFill = builder->_strokeButDoNotFill;
+      style.info.stroke.doNotFill = self->_strokeButDoNotFill;
     }
-    setFlags(TextFlags::hasStroke, hasStroke, _strokeColor != nil);
+    setFlags(TextFlags::hasStroke, hasStroke, self->_strokeColor != nil);
   }
-  if (builder->_underlineColor || builder->_underlineStyle) {
-    _underlineColor = builder->_underlineColor;
-    _underlineStyle = builder->_underlineStyle;
-    style.info.underline.setStyle(_underlineStyle);
+  if (self->_underlineColor || self->_underlineStyle) {
+    style.info.underline.setStyle(self->_underlineStyle);
     const bool hasStyle = !!style.info.underline.style();
     const bool isNotClear =
-        setColor(colors, true, _underlineColor, underlineColorIndex, Out{style.info.underline.colorIndex});
-    const bool hasUnderline = hasStyle && (_underlineColor == nil || isNotClear);
-    setFlags(TextFlags::hasUnderline, hasUnderline, hasStyle || _underlineColor);
+        setColor(colors, true, self->_underlineColor, underlineColorIndex, Out{style.info.underline.colorIndex});
+    const bool hasUnderline = hasStyle && (self->_underlineColor == nil || isNotClear);
+    setFlags(TextFlags::hasUnderline, hasUnderline, hasStyle || self->_underlineColor);
   }
-  if (builder->_strikethroughColor || builder->_strikethroughStyle) {
-    _strikethroughColor = builder->_strikethroughColor;
-    _strikethroughStyle = builder->_strikethroughStyle;
-    style.info.strikethrough.style = _strikethroughStyle;
+  if (self->_strikethroughColor || self->_strikethroughStyle) {
+    style.info.strikethrough.style = self->_strikethroughStyle;
     const bool hasStyle = style.info.strikethrough.style != StrikethroughStyle{};
-    const bool isNotClear =
-        setColor(colors, true, _strikethroughColor, strikethroughColorIndex, Out{style.info.strikethrough.colorIndex});
-    const bool hasStrikethrough = hasStyle && (_strikethroughColor == nil || isNotClear);
-    setFlags(TextFlags::hasStrikethrough, hasStrikethrough, hasStyle || _strikethroughColor);
+    const bool isNotClear = setColor(colors,
+                                     true,
+                                     self->_strikethroughColor,
+                                     strikethroughColorIndex,
+                                     Out{style.info.strikethrough.colorIndex});
+    const bool hasStrikethrough = hasStyle && (self->_strikethroughColor == nil || isNotClear);
+    setFlags(TextFlags::hasStrikethrough, hasStrikethrough, hasStyle || self->_strikethroughColor);
   }
-  if (builder->_shadowColor || builder->_shadowBlurRadius != 0 || builder->_shadowOffset.width != 0 ||
-      builder->_shadowOffset.height != 0) {
-    _shadowColor = builder->_shadowColor;
-    _shadowBlurRadius = builder->_shadowBlurRadius;
-    _shadowOffset = builder->_shadowOffset;
-    UIColor *__unsafe_unretained shadowColor = _shadowColor;
+  if (self->_shadowColor || self->_shadowBlurRadius != 0 || self->_shadowOffset.width != 0 ||
+      self->_shadowOffset.height != 0) {
+    UIColor *__unsafe_unretained shadowColor = self->_shadowColor;
     if (!shadowColor) {
       static UIColor *defaultColor;
       static dispatch_once_t once;
@@ -254,25 +252,28 @@ STU_INLINE bool setColor(TextHighlightStyle::ColorArray &colors,
     }
     const bool isNotClear = setColor(colors, true, shadowColor, shadowColorIndex, Out{style.info.shadow.colorIndex});
     if (isNotClear) {
-      style.info.shadow.offsetX = narrow_cast<Float32>(_shadowOffset.width);
-      style.info.shadow.offsetY = narrow_cast<Float32>(_shadowOffset.height);
-      style.info.shadow.blurRadius = narrow_cast<Float32>(_shadowBlurRadius);
+      style.info.shadow.offsetX = narrow_cast<Float32>(self->_shadowOffset.width);
+      style.info.shadow.offsetY = narrow_cast<Float32>(self->_shadowOffset.height);
+      style.info.shadow.blurRadius = narrow_cast<Float32>(self->_shadowBlurRadius);
     }
     setFlags(TextFlags::hasShadow, isNotClear, true);
   }
-  if (builder->_background) {
-    _background = builder->_background;
+  if (self->_background) {
     const bool hasBackground =
-        setColor(colors, true, _background->_color, backgroundColorIndex, Out{style.info.background.colorIndex}) ||
         setColor(colors,
                  true,
-                 _background->_borderWidth == 0 ? nil : _background->_borderColor,
+                 self->_background->_color,
+                 backgroundColorIndex,
+                 Out{style.info.background.colorIndex}) ||
+        setColor(colors,
+                 true,
+                 self->_background->_borderWidth == 0 ? nil : self->_background->_borderColor,
                  backgroundBorderColorIndex,
                  Out{style.info.background.borderColorIndex});
     if (hasBackground) {
-      style.info.background.stuAttribute = _background;
+      style.info.background.stuAttribute = self->_background;
     }
-    setFlags(TextFlags::hasBackground, hasBackground, _background != nil);
+    setFlags(TextFlags::hasBackground, hasBackground, true);
   }
   // Aggregate the color flags.
   TextFlags flags{style.flags};
@@ -280,7 +281,12 @@ STU_INLINE bool setColor(TextHighlightStyle::ColorArray &colors,
     flags |= color.textFlags();
   }
   style.flags = flags;
-  return self;
+  return style;
+}
+
+- (TextHighlightStyle)stu_resolvedStyle
+{
+  return resolvedStyle(self);
 }
 
 @end

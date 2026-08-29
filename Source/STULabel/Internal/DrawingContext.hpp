@@ -254,16 +254,18 @@ public:
                                    ? ColorIndex::overrideTextColor : Optional<ColorIndex>{};
       overrideTextColorIndices_[3] = directGlyphDrawingFlags_highlighted & TextFlags::hasLink
                                    ? ColorIndex::overrideLinkColor : overrideTextColorIndices_[1];
+      overrideColors_[0] = Color{options->overrideTextUIColor().unretained};
+      overrideColors_[1] = Color{options->overrideLinkUIColor().unretained};
       otherColors_[ColorIndex::overrideTextColor.value
-                   - ColorIndex::fixedColorIndexRange.start] = options->overrideTextColor();
+                   - ColorIndex::fixedColorIndexRange.start] = overrideColors_[0];
       otherColors_[ColorIndex::overrideLinkColor.value
-                   - ColorIndex::fixedColorIndexRange.start] = options->overrideLinkColor();
+                   - ColorIndex::fixedColorIndexRange.start] = overrideColors_[1];
     }
     if (styleOverride) {
       if (styleOverride->textColorIndex || (styleOverride->flags & TextFlags::hasStroke)) {
         directGlyphDrawingFlags_highlighted |= detail::everyRunFlag;
       }
-      if (auto style = styleOverride->highlightStyle) {
+      if (auto style = styleOverride->highlightStyle()) {
         const Int offset = ColorIndex::highlightColorStartIndex
                          - ColorIndex::fixedColorIndexRange.start;
         for (Int i = 0; i < ColorIndex::highlightColorCount; ++i) {
@@ -310,6 +312,7 @@ private:
   // the CGContext by minus this offset and then adding this offset to the shadow offset).
   const CGFloat offCanvasShadowExtraXOffset_;
   const ColorRef* __nullable const colorArrays_[2]; // {otherColors_, textFrameColors}
+  Color overrideColors_[2];
   ColorRef otherColors_[ColorIndex::fixedColorCount];
   LocalFontInfoCache fontInfoCache_;
   Optional<LocalGlyphBoundsCache> glyphBoundsCache_;

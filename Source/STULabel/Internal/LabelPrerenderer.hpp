@@ -92,6 +92,20 @@ public:
 
   bool isFrozen() const { return isFrozen_; }
 
+  void setTraitCollection(UITraitCollection* __unsafe_unretained traitCollection) {
+    checkNotFrozen();
+    traitCollection_ = [traitCollection copy];
+    setDisplayScale(traitCollection.displayScale);
+    setUserInterfaceLayoutDirection(
+      static_cast<UIUserInterfaceLayoutDirection>(traitCollection.layoutDirection));
+    setNeverUsesExtendedRGBBitmapFormat(traitCollection.displayGamut == UIDisplayGamutSRGB);
+  }
+
+  bool renderingTraitsMatch(UITraitCollection* __unsafe_unretained traitCollection) const {
+    return params_.displayScale() == DisplayScale::createOrIfInvalidUseOne(traitCollection.displayScale)
+        && [traitCollection_ isEqual:traitCollection];
+  }
+
   NSAttributedString* __nullable attributedString() const { return attributedString_; }
 
   void setAttributedString(NSAttributedString* __unsafe_unretained attributedString) {

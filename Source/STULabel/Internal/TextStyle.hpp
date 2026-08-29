@@ -509,7 +509,24 @@ void TextStyle::writeTerminatorWithStringIndex(Int32 stringIndex, const Byte* pr
 
 struct TextFrame;
 class TextFrameDrawingOptions;
-struct TextHighlightStyle;
+
+struct TextHighlightStyle {
+  struct Info {
+    TextStyle::BackgroundInfo    background;
+    TextStyle::ShadowInfo        shadow;
+    TextStyle::UnderlineInfo     underline;
+    TextStyle::StrikethroughInfo strikethrough;
+    TextStyle::StrokeInfo        stroke;
+  };
+
+  using ColorArray = Color[ColorIndex::highlightColorCount];
+
+  TextFlags flagsMask;
+  TextFlags flags;
+  Optional<ColorIndex> textColorIndex;
+  ColorArray colors;
+  Info info;
+};
 
 class TextStyleOverride {
 public:
@@ -524,11 +541,17 @@ public:
 private:
   TextStyle::Big style_;
   const TextStyle* __nullable overriddenStyle_;
+  Optional<TextHighlightStyle> highlightStyle_;
 public:
   STU_INLINE const TextStyle& style() const { return style_; }
   STU_INLINE const TextStyle* __nullable overriddenStyle() const { return overriddenStyle_; }
 
-  Optional<const TextHighlightStyle&> const highlightStyle;
+  STU_INLINE Optional<const TextHighlightStyle&> highlightStyle() const {
+    if (highlightStyle_) {
+      return *highlightStyle_;
+    }
+    return none;
+  }
 private:
   const void* __nullable styleInfos_[6];
 
@@ -556,7 +579,7 @@ private:
                     TextFlags flagsMask,
                     TextFlags flags,
                     Optional<ColorIndex> textColorIndex,
-                    Optional<const TextHighlightStyle&> highlightStyle);
+                    Optional<TextHighlightStyle> highlightStyle);
 
   friend Optional<const TextStyleOverride&> TextStyle::styleOverride() const;
   friend const void* TextStyle::nonnullInfoFromOverride(TextFlags) const;

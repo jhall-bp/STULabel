@@ -4,31 +4,8 @@
 
 #import "Internal/TextStyle.hpp"
 
-namespace stu_label {
+@interface STUTextHighlightStyle (Internal)
 
-struct TextHighlightStyle {
-  struct Info {
-    TextStyle::BackgroundInfo    background;
-    TextStyle::ShadowInfo        shadow;
-    TextStyle::UnderlineInfo     underline;
-    TextStyle::StrikethroughInfo strikethrough;
-    TextStyle::StrokeInfo        stroke;
-  };
+- (stu_label::TextHighlightStyle)stu_resolvedStyle;
 
-  using ColorArray = Color[stu_label::ColorIndex::highlightColorCount];
-
-  TextFlags flagsMask;
-  TextFlags flags;
-  Optional<ColorIndex> textColorIndex;
-  ColorArray colors;
-  Info info;
-};
-
-} // namespace stu_label
-
-@interface STUTextHighlightStyle() {
-@package
-  stu_label::TextHighlightStyle style;
-}
 @end
-

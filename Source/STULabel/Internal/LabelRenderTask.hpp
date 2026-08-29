@@ -8,6 +8,8 @@
 #import "LabelRendering.hpp"
 #import "ShapedString.hpp"
 
+@class UITraitCollection;
+
 
 namespace stu_label {
 
@@ -44,6 +46,7 @@ protected:
   bool allowExtendedRGBBitmapFormat_{true};
 
   LabelLayer* label_{};
+  UITraitCollection* traitCollection_{};
 
   LabelParameters params_{};
   LabelTextFrameRenderInfo renderInfo_;
@@ -68,10 +71,12 @@ protected:
     }
   }
 
-  void commonNonPrerenderInit(LabelLayer& label, const LabelParameters& params,
+  void commonNonPrerenderInit(LabelLayer& label, UITraitCollection* traitCollection,
+                              const LabelParameters& params,
                               bool allowExtendedRGBBitmapFormat)
   {
     label_ = &label;
+    traitCollection_ = traitCollection;
     params_ = params;
     params_.releasesShapedStringAfterRendering = false;
     params_.releasesTextFrameAfterRendering = false;
@@ -80,6 +85,7 @@ protected:
   }
 
   void renderImage(const STUCancellationFlag* __nullable);
+  void renderImageInCurrentTraitCollection(const STUCancellationFlag* __nullable);
 
   static void run(void* task);
 
@@ -124,6 +130,7 @@ public:
 
   static auto dispatchAsync(__nonnull dispatch_queue_t queue,
                             LabelLayer& label,
+                            UITraitCollection* traitCollection,
                             const LabelParameters& params,
                             bool allowExtendedRGBBitmapFormat,
                             STUTextFrame* __unsafe_unretained __nonnull textFrame,
@@ -133,7 +140,7 @@ public:
   {
     auto* task = new (Malloc().allocate<LabelRenderTask>(1))
                      LabelRenderTask{Type::render};
-    task->commonNonPrerenderInit(label, params, allowExtendedRGBBitmapFormat);
+    task->commonNonPrerenderInit(label, traitCollection, params, allowExtendedRGBBitmapFormat);
     task->textFrame_ = textFrame;
     task->textFrameInfo_ = textFrameLayoutInfo;
     task->textFrameOriginInLayer_ = textFrameOriginInLayer;
@@ -173,6 +180,7 @@ protected:
 public:
   static auto dispatchAsync(__nonnull dispatch_queue_t queue,
                             LabelLayer& label,
+                            UITraitCollection* traitCollection,
                             const LabelParameters& params,
                             bool allowExtendedRGBBitmapFormat,
                             STUTextFrameOptions* __unsafe_unretained __nonnull textFrameOptions,
@@ -181,7 +189,7 @@ public:
   {
     auto* task = new (Malloc().allocate<LabelLayoutAndRenderTask>(1))
                      LabelLayoutAndRenderTask{Type::layoutAndRender};
-    task->commonNonPrerenderInit(label, params, allowExtendedRGBBitmapFormat);
+    task->commonNonPrerenderInit(label, traitCollection, params, allowExtendedRGBBitmapFormat);
     task->shapedString_ = shapedString;
     task->textFrameOptions_ = textFrameOptions;
     dispatch_async_f(queue, task, run);
@@ -208,6 +216,7 @@ protected:
 public:
   static auto dispatchAsync(__nonnull dispatch_queue_t queue,
                             LabelLayer& label,
+                            UITraitCollection* traitCollection,
                             const LabelParameters& params,
                             bool allowExtendedRGBBitmapFormat,
                             STUTextFrameOptions* __unsafe_unretained __nonnull textFrameOptions,
@@ -216,7 +225,7 @@ public:
   {
     auto* task = new (Malloc().allocate<LabelTextShapingAndLayoutAndRenderTask>(1))
                      LabelTextShapingAndLayoutAndRenderTask{Type::textShapingAndLayoutAndRender};
-    task->commonNonPrerenderInit(label, params, allowExtendedRGBBitmapFormat);
+    task->commonNonPrerenderInit(label, traitCollection, params, allowExtendedRGBBitmapFormat);
     task->textFrameOptions_ = textFrameOptions;
     task->attributedString_ = attributedString;
     dispatch_async_f(queue, task, run);
