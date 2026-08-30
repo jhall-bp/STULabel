@@ -2,6 +2,8 @@
 
 #import "NSStringRef.hpp"
 
+#import <objc/message.h>
+
 namespace stu_label {
 
 struct OutEffectiveRange : Parameter<OutEffectiveRange, Range<Int>&> {
@@ -14,16 +16,13 @@ struct OutEndOfLongestEffectiveRange : Parameter<OutEndOfLongestEffectiveRange, 
 
 using CFAttributedString = RemovePointer<CFAttributedStringRef>;
 
-namespace detail {
-  CFStringRef getStringWithoutRetain(NSAttributedString* attributedString);
-}
-
 /// A non-owning reference to an NSAttributedString instance.
 class NSAttributedStringRef {
 public:
   NSAttributedString* __unsafe_unretained const attributedString;
   const NSStringRef string;
 private:
+  using GetStringMethod = CFStringRef (*)(NSAttributedString*, SEL);
   using GetAttributesMethod = NSDictionary<NSAttributedStringKey, id>*
                                 (*)(NSAttributedString*, SEL, NSUInteger, NSRangePointer);
   const GetAttributesMethod getAttributesMethod_;
@@ -33,7 +32,8 @@ public:
   NSAttributedStringRef(NSAttributedString* __unsafe_unretained attributedString,
                         Optional<Ref<TempStringBuffer>> optBuffer = none)
   : attributedString{attributedString},
-    string{detail::getStringWithoutRetain(attributedString), optBuffer},
+    string{reinterpret_cast<GetStringMethod>(objc_msgSend)(attributedString, @selector(string)),
+           optBuffer},
     getAttributesMethod_{reinterpret_cast<GetAttributesMethod>(
                            [attributedString methodForSelector:
                                                @selector(attributesAtIndex:effectiveRange:)])}

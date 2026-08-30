@@ -1,17 +1,10 @@
 // Copyright 2017–2018 Stephan Tolksdorf
 
-#if __has_feature(objc_arc)
-  #error This file must be compiled with -fno-objc-arc
-#endif
-
 #import "STUPlaceholderObjects.h"
-
-#import "STULabel/STUObjCRuntimeWrappers.h"
 
 #import "STULabel/STUShapedString.h"
 
-// We use forward declarations here so that we don't need to import the corresponding header files
-// from this no-objc-arc file.
+// We use forward declarations here to avoid importing the corresponding implementation headers.
 
 STU_EXTERN_C_BEGIN
 
@@ -37,7 +30,6 @@ STUTextFrame *__nonnull STUTextFrameCreateWithShapedStringRange(__nullable Class
 STU_EXTERN_C_END
 
 STU_DISABLE_CLANG_WARNING("-Wobjc-designated-initializers")
-STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
 
 @implementation STUUninitializedShapedString
 
@@ -57,24 +49,6 @@ STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
                                       cancellationFlag:(nullable const STUCancellationFlag *)cancellationFlag
 {
   return (id)STUShapedStringCreate(nil, attributedString, baseWritingDirection, cancellationFlag);
-}
-
-- (void)dealloc
-{}
-
-- (instancetype)retain
-{
-  return self;
-}
-- (oneway void)release
-{}
-- (instancetype)autorelease
-{
-  return self;
-}
-- (NSUInteger)retainCount
-{
-  return NSUIntegerMax;
 }
 
 @end
@@ -100,25 +74,6 @@ STU_DISABLE_CLANG_WARNING("-Wobjc-missing-super-calls")
       nil, shapedString, stringRange, size, displayScale, options, cancellationFlag);
 }
 
-- (void)dealloc
-{}
-
-- (instancetype)retain
-{
-  return self;
-}
-- (oneway void)release
-{}
-- (instancetype)autorelease
-{
-  return self;
-}
-- (NSUInteger)retainCount
-{
-  return NSUIntegerMax;
-}
-
 @end
 
-STU_REENABLE_CLANG_WARNING
 STU_REENABLE_CLANG_WARNING

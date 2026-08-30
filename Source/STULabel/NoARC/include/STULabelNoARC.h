@@ -1,4 +1,4 @@
-// This target exists only to compile STULabel's manually managed Objective-C objects without ARC.
+// This target exists only for STULabelPrerenderer's custom Objective-C object lifetime.
 // Its implementation is linked into the public STULabel product; it has no public API of its own.
 
 #pragma once

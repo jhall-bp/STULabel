@@ -15,7 +15,7 @@ class NSArrayRef;
 
 namespace detail {
   union NSArrayBufferOrObjectAtIndexMethod {
-    using ObjectAtIndexMethod = id (*)(NSArray *, SEL, NSUInteger);
+    using ObjectAtIndexMethod = CFTypeRef (*)(NSArray *, SEL, NSUInteger);
 
     ObjectAtIndexMethod objectAtIndexMethod;
     id __nullable __unsafe_unretained* buffer;
@@ -25,8 +25,6 @@ namespace detail {
   using UnretainedObjectPointer = Conditional<!isConvertible<T, id>, T,
                                               Unretained<RemovePointer<T>>>;
 
-  CFTypeRef objectAtIndex(NSArray* array, id (* method)(NSArray *, SEL, NSUInteger),
-                          NSUInteger) STU_PURE;
 }
 
 /// A non-owning reference to an NSArray<ObjectPointer> subspan.
@@ -192,8 +190,8 @@ public:
       if (span.hasBuffer()) {
         p = span.bufferOrMethod_.buffer[i];
       } else {
-        p = (__bridge id)detail::objectAtIndex((__bridge NSArray*)span.cfArray(),
-                                               span.bufferOrMethod_.objectAtIndexMethod, i);
+        p = (__bridge id)span.bufferOrMethod_.objectAtIndexMethod(
+            (__bridge NSArray*)span.cfArray(), @selector(objectAtIndex:), i);
       }
       if constexpr (!isConvertible<ObjectPointer, id>) {
         return static_cast<ObjectPointer>((__bridge void*)p);

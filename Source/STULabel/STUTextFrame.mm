@@ -73,8 +73,7 @@ Unretained<STUTextFrame * __nonnull> stu_label::emptySTUTextFrame()
   });
 
   if (self == textFrameClass) {
-    // The placeholder is a singleton without retain count and doesn't need to be retained here.
-    return (__bridge_transfer id)(__bridge CFTypeRef)textFramePlaceholder;
+    return (__bridge_transfer id)CFRetain((__bridge CFTypeRef)textFramePlaceholder);
   } else {
     return stu_createClassInstance(self, 0);
   }

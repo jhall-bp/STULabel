@@ -4,6 +4,8 @@
 #import "TextFlags.hpp"
 #import "Unretained.hpp"
 
+#import <objc/message.h>
+
 #include "DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h"
 
 namespace stu_label {
@@ -47,7 +49,10 @@ namespace stu_label {
 
 /// color.CGColor without the mandatory autorelease of the color object in ARC code (triggered by
 /// the NS_RETURNS_INNER_POINTER annotation of the CGColor getter).
-CGColor* cgColor(UIColor* color);
+STU_INLINE CGColor* cgColor(UIColor* __unsafe_unretained color) {
+  using Getter = CGColor* (*)(id, SEL);
+  return reinterpret_cast<Getter>(objc_msgSend)(color, @selector(CGColor));
+}
 
 // For our purposes it's quite convenient to use nullable color types.
 

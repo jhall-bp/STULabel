@@ -85,8 +85,7 @@ size_t STUShapedStringGetLength(STUShapedString *self) { return sign_cast(self->
   });
 
   if (self == shapedStringClass) {
-    // The placeholder is a singleton without retain count and doesn't need to be retained.
-    return (__bridge_transfer id)(__bridge CFTypeRef)shapedStringPlaceholder;
+    return (__bridge_transfer id)CFRetain((__bridge CFTypeRef)shapedStringPlaceholder);
   } else {
     return stu_createClassInstance(self, 0);
   }

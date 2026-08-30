@@ -24,12 +24,7 @@ let package = Package(
       path: "Source/STULabel",
       exclude: ["Resources"],
       sources: [
-        "Internal/Color-no-ARC.mm",
-        "Internal/NSArrayRef-no-ARC.mm",
-        "Internal/NSAttributedString-no-ARC.mm",
-        "Internal/STUPlaceholderObjects-no-ARC.m",
         "STULabelPrerenderer-no-ARC.mm",
-        "STUObjCRuntimeWrappers-no-ARC.m",
       ],
       publicHeadersPath: "NoARC/include",
       cSettings: [
@@ -51,12 +46,7 @@ let package = Package(
       dependencies: ["STULabelNoARC"],
       exclude: [
         "STULabel.modulemap",
-        "Internal/Color-no-ARC.mm",
-        "Internal/NSArrayRef-no-ARC.mm",
-        "Internal/NSAttributedString-no-ARC.mm",
-        "Internal/STUPlaceholderObjects-no-ARC.m",
         "STULabelPrerenderer-no-ARC.mm",
-        "STUObjCRuntimeWrappers-no-ARC.m",
       ],
       resources: [.process("Resources")],
       publicHeadersPath: ".",
