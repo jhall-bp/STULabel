@@ -60,7 +60,7 @@ protected:
   ColorBase() = default;
 
   STU_INLINE
-  ColorBase(CGColor* color, ColorFlags flags)
+  ColorBase(UIColor* color, ColorFlags flags)
   : taggedPointer_{reinterpret_cast<UInt>(color) | (static_cast<UInt>(flags) & 3)}
   {
     static_assert(static_cast<Int>(ColorFlags::isNotGray) == 1);
@@ -84,18 +84,31 @@ public:
     return static_cast<TextFlags>(static_cast<UInt>(colorFlags()) << 8);
   }
 
+  STU_INLINE
+  const TextFlags resolvedTextFlags() const {
+    const ColorFlags flags = uiColor() ? stu_label::colorFlags(uiColor()) : ColorFlags::isClear;
+    return static_cast<TextFlags>(
+        static_cast<UInt>(flags & (ColorFlags::isNotGray | ColorFlags::isExtended)) << 8);
+  }
+
   STU_INLINE bool isNotGray() const { return taggedPointer_ & 1; }
   STU_INLINE bool isExtended() const { return taggedPointer_ & 2; }
 
   STU_INLINE
-  CGColor* cgColor() const {
-    return reinterpret_cast<CGColor*>(taggedPointer_ & ~UInt(3));
+  UIColor* __nullable uiColor() const {
+    return (__bridge UIColor*)reinterpret_cast<void*>(taggedPointer_ & ~UInt(3));
+  }
+
+  STU_INLINE
+  CGColor* __nullable cgColor() const {
+    UIColor* const color = uiColor();
+    return color ? stu_label::cgColor(color) : nil;
   }
 
   STU_INLINE
   bool operator==(const ColorBase& other) const {
     return taggedPointer_ == other.taggedPointer_
-        || CGColorEqualToColor(cgColor(), other.cgColor());
+        || [uiColor() isEqual:other.uiColor()];
   }
 
   STU_INLINE
@@ -118,7 +131,7 @@ public:
   : ColorBase{} {}
 
   STU_INLINE
-  ColorRef(CGColor* color, ColorFlags flags)
+  ColorRef(UIColor* color, ColorFlags flags)
   : ColorBase{color, flags}
   {}
 };
@@ -141,16 +154,7 @@ public:
   : ColorBase{color}
   {
     if (taggedPointer_) {
-      incrementRefCount(cgColor());
-    }
-  }
-
-  STU_INLINE
-  Color(CGColor* color, ColorFlags flags)
-  : ColorBase{color, flags}
-  {
-    if (color) {
-      incrementRefCount(color);
+      incrementRefCount(uiColor());
     }
   }
 
@@ -163,25 +167,29 @@ public:
 
   STU_INLINE
   Color(UIColor* __unsafe_unretained color, ColorFlags flags)
-  : Color{stu_label::cgColor(color), flags}
-  {}
+  : ColorBase{color, flags}
+  {
+    if (color) {
+      incrementRefCount(color);
+    }
+  }
 
   STU_INLINE
   Color(const Color& other)
   : ColorBase{other}
   {
     if (taggedPointer_) {
-      incrementRefCount(cgColor());
+      incrementRefCount(uiColor());
     }
   }
   
   STU_INLINE
   Color& operator=(const Color& other) {
     if (other.taggedPointer_) {
-      incrementRefCount(other.cgColor());
+      incrementRefCount(other.uiColor());
     }
     if (taggedPointer_) {
-      decrementRefCount(cgColor());
+      decrementRefCount(uiColor());
     }
     taggedPointer_ = other.taggedPointer_;
     return *this;
@@ -198,7 +206,7 @@ public:
   Color& operator=(Color&& other) {
     if (this != &other) {
       if (taggedPointer_) {
-        decrementRefCount(cgColor());
+        decrementRefCount(uiColor());
       }
       taggedPointer_ = std::exchange(other.taggedPointer_, 0);
     }
@@ -208,7 +216,7 @@ public:
   STU_INLINE
   ~Color() {
     if (taggedPointer_) {
-      decrementRefCount(cgColor());
+      decrementRefCount(uiColor());
     }
   }
 

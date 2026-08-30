@@ -15,7 +15,11 @@ CGColor *DrawingContext::cgColor(ColorIndex colorIndex)
   UInt32 index = colorIndex.value;
   index -= colorIndexOffsets[isTextFrameColor]; // May wrap around.
   STU_ASSERT(index < colorCounts_[isTextFrameColor]);
-  return colorArrays_[isTextFrameColor][index].cgColor();
+  CGColor*& resolvedColor = resolvedColorArrays_[isTextFrameColor][index];
+  if (!resolvedColor) {
+    resolvedColor = colorArrays_[isTextFrameColor][index].cgColor();
+  }
+  return resolvedColor;
 }
 
 STU_NO_INLINE

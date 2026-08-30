@@ -189,6 +189,7 @@ public:
     super_setContentsScale(params_.displayScale());
 
     isInvalidated_ = true;
+    setRenderingTraitCollection(UITraitCollection.currentTraitCollection);
     [self setNeedsDisplay];
   }
 
@@ -226,28 +227,20 @@ private:
   }
 
 public:
-  void setTraitCollection(UITraitCollection *__unsafe_unretained traitCollection)
+  UITraitCollection *renderingTraitCollection() const
   {
-    traitCollection_ = traitCollection;
-    const CGFloat displayScale = traitCollection.displayScale;
-    const UIDisplayGamut displayGamut = traitCollection.displayGamut;
-    traitDisplayScale_ = clampDisplayScaleInput(displayScale);
-    if (displayGamut_ != displayGamut && hasContent_) {
-      [self setNeedsDisplay];
-    }
-    displayGamut_ = displayGamut;
+    return traitCollection_;
   }
 
-  void updateColorAppearance(UITraitCollection *__unsafe_unretained traitCollection)
+  void setRenderingTraitCollection(UITraitCollection *__unsafe_unretained traitCollection)
   {
-    setTraitCollection(traitCollection);
-    if (shapedString_) {
-      shapedString_ = nil;
-    }
-    if (!isInvalidated_) {
-      invalidateLayout_slowPath_main(false);
-      [self setNeedsDisplay];
-    }
+    STU_CHECK(traitCollection != nil);
+    if ([traitCollection_ isEqual:traitCollection])
+      return;
+    traitCollection_ = [traitCollection copy];
+    traitDisplayScale_ = clampDisplayScaleInput(traitCollection.displayScale);
+    displayGamut_ = traitCollection.displayGamut;
+    invalidateImage();
   }
 
   /// MARK: - STULabelLayerDelegate
@@ -1113,7 +1106,7 @@ public:
     STU_CHECK_MSG(prerenderer.isFrozen() || !displaysAsynchronously_,
                   "You must call one of the render methods on the STULabelPrerenderer instance before"
                   " passing it to a STULabel(Layer) with displaysAsynchronously=true.");
-    const bool renderingTraitsMatch = !traitCollection_ || prerenderer.renderingTraitsMatch(traitCollection_);
+    const bool renderingTraitsMatch = prerenderer.renderingTraitsMatch(traitCollection_);
     if (!isInvalidated_) {
       invalidateLayout_slowPath_main(false);
       shapedString_ = nil;
@@ -1166,13 +1159,9 @@ public:
       params_.setSize_afterBaseAssignment_alreadyCeiledToScale(prerenderer.params().size());
     } else {
       params_.setSize_afterBaseAssignment_alreadyCeiledToScale(ceilToScale(prerenderer.size(), params_.displayScale()));
-      if (traitCollection_) {
-        [traitCollection_ performAsCurrentTraitCollection:^{
-          updateTextFrameInfo();
-        }];
-      } else {
+      [traitCollection_ performAsCurrentTraitCollection:^{
         updateTextFrameInfo();
-      }
+      }];
       params_.shrinkSizeToFitTextBounds(textFrameInfo_.layoutBounds, prerenderer.sizeOptions());
     }
     if (size_ != params_.size()) {
@@ -1221,13 +1210,9 @@ public:
 
   void display()
   {
-    if (traitCollection_) {
-      [traitCollection_ performAsCurrentTraitCollection:^{
-        displayInCurrentTraitCollection();
-      }];
-    } else {
+    [traitCollection_ performAsCurrentTraitCollection:^{
       displayInCurrentTraitCollection();
-    }
+    }];
   }
 
 private:
@@ -2069,14 +2054,14 @@ auto LabelPrerenderer::WaitingLabelSetNode::get(LabelLayer &layer) -> WaitingLab
   impl.didMoveToWindow(window);
 }
 
-- (void)stu_setTraitCollection:(UITraitCollection *)traitCollection
+- (UITraitCollection *)renderingTraitCollection
 {
-  impl.setTraitCollection(traitCollection);
+  return impl.renderingTraitCollection();
 }
 
-- (void)stu_updateColorAppearanceForTraitCollection:(UITraitCollection *)traitCollection
+- (void)setRenderingTraitCollection:(UITraitCollection *)traitCollection
 {
-  impl.updateColorAppearance(traitCollection);
+  impl.setRenderingTraitCollection(traitCollection);
 }
 
 const CGSize &STULabelLayerGetSize(const STULabelLayer *self) { return self->impl.size_; }

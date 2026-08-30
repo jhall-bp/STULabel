@@ -16,10 +16,9 @@ extern NSString* const STUOriginalFontAttributeName;
 /// @note
 ///  The TextStyle data may contain non-owning references to attributes of the
 ///  NSAttributedString(s). Hence, the attributed strings (or a copy of them) must be kept alive
-///  (and not be mutated) for as long as the style data is in use. Furthermore, the ColorRefs store
-///  CGColor pointers obtained from the UIColor's CGColor property, without retaining them. So,
-///  in theory, the CGColor's lifetime may end when the current autorelease pool is emptied
-///  (though in practice all UIColor subclasses cache the returned CGColor objects).
+///  (and not be mutated) for as long as the style data is in use. The ColorRefs store the
+///  attributed UIColors without retaining them; the eventual ShapedString or TextFrame owns the
+///  colors after copying the style data.
 class TextStyleBuffer {
 public:
   using ColorHashBucket = TempIndexHashSet<UInt16>::Bucket;

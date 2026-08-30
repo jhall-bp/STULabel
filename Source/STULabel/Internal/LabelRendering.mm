@@ -95,7 +95,10 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame *__unsafe_u
                                                           : LabelRenderMode::drawInCAContext;
 
   const STUTextFrameFlags frameFlags = [&]() STU_INLINE_LAMBDA -> STUTextFrameFlags {
-    const auto frameFlags = textFrame->data->flags;
+    STUTextFrameFlags frameFlags = textFrame->data->flags;
+    for (ColorRef color : textFrameRef(textFrame).colors()) {
+      frameFlags |= static_cast<STUTextFrameFlags>(color.resolvedTextFlags());
+    }
     if (!params.drawingOptions)
       return frameFlags;
     TextFrameDrawingOptions &options = params.drawingOptions->impl;

@@ -20,6 +20,15 @@ STU_EXPORT
 /// Default value: false
 @property (nonatomic) bool displaysAsynchronously;
 
+/// The traits used for rendering, including resolving semantic colors.
+///
+/// A @c STULabel automatically keeps this property synchronized with its trait collection.
+/// Code that uses an @c STULabelLayer directly must update this property when the layer's
+/// rendering environment changes.
+///
+/// The initial value is @c UITraitCollection.currentTraitCollection.
+@property (nonatomic, copy, nonnull) UITraitCollection *renderingTraitCollection;
+
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer;
 
 /// The attributed string that should be displayed in the label.

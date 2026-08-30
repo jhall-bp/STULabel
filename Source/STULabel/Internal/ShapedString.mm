@@ -505,7 +505,7 @@ ShapedString::ShapedString(NSAttributedString *const attributedString,
   }
   if (!colors.isEmpty()) {
     for (auto &color : colors) {
-      incrementRefCount(color.cgColor());
+      incrementRefCount(color.uiColor());
     }
     copyConstructArray(colors, const_array_cast(tas.colors).begin());
     const ArrayRef<ColorHashBucket> thisHashBuckets = const_array_cast(tas.colorHashBuckets);
@@ -527,7 +527,7 @@ ShapedString::~ShapedString()
 {
   const ArraysRef tas = arrays();
   for (ColorRef color : tas.colors.reversed()) {
-    decrementRefCount(color.cgColor());
+    decrementRefCount(color.uiColor());
   }
 #if STU_USE_ADDRESS_SANITIZER
   sanitizer::unpoison((Byte *)tas.paragraphs.end(), sanitizerGap);

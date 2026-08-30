@@ -88,7 +88,7 @@ TextFrame::TextFrame(TextFrameLayouter &&layouter, UInt dataSize)
 
     const ArrayRef<const ColorRef> colors = layouter.colors();
     for (auto &color : colors) {
-      CFRetain(color.cgColor());
+      incrementRefCount(color.uiColor());
     }
     copyConstructArray(colors, reinterpret_cast<ColorRef *>(p));
     p += colors.arraySizeInBytes();
@@ -311,7 +311,7 @@ TextFrame::~TextFrame()
     line.releaseCTLines();
   }
   for (ColorRef color : colors()) {
-    decrementRefCount(color.cgColor());
+    decrementRefCount(color.uiColor());
   }
   decrementRefCount(originalAttributedString);
 

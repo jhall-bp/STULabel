@@ -226,11 +226,11 @@ public:
     textFrameOrigin_{textFrameOrigin},
     shadowYExtraScaleFactor_{-(displayScale ? displayScale->value() : 1)/contextBaseCTM_d.value},
     offCanvasShadowExtraXOffset_{max(4*clipRect.x.diameter(), 1024.f)},
-    colorArrays_{otherColors_, textFrame.colors().begin()}
+    colorArrays_{otherColors_, textFrame.colors().begin()},
+    resolvedTextFrameColors_{zeroInitialized, Count{textFrame.colors().count()}},
+    resolvedColorArrays_{resolvedOtherColors_, resolvedTextFrameColors_.begin()}
   {
-    STU_STATIC_CONST_ONCE_PRESERVE_MOST(CGColor*, cgBlackColor,
-                                        (CGColor*)CFRetain(UIColor.blackColor.CGColor));
-    otherColors_[0] = ColorRef{cgBlackColor, ColorFlags{}};
+    otherColors_[0] = ColorRef{UIColor.blackColor, ColorFlags{}};
     const TextFlags directGlyphDrawingFlags = TextFlags::hasAttachment
                                             | TextFlags::hasBackground
                                             | TextFlags::hasUnderline
@@ -312,6 +312,9 @@ private:
   // the CGContext by minus this offset and then adding this offset to the shadow offset).
   const CGFloat offCanvasShadowExtraXOffset_;
   const ColorRef* __nullable const colorArrays_[2]; // {otherColors_, textFrameColors}
+  TempArray<CGColor*> resolvedTextFrameColors_;
+  CGColor* __nullable resolvedOtherColors_[ColorIndex::fixedColorCount]{};
+  CGColor* __nullable *const resolvedColorArrays_[2];
   Color overrideColors_[2];
   ColorRef otherColors_[ColorIndex::fixedColorCount];
   LocalFontInfoCache fontInfoCache_;

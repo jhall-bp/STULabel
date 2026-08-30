@@ -388,25 +388,20 @@ FontIndex TextStyleBuffer::addFont(FontRef font)
 STU_NO_INLINE
 ColorIndex TextStyleBuffer::addColor(UIColor *__unsafe_unretained uiColor)
 {
-  if (uiColor == uiColorBlack) { // UIKit caches UIColor.blackColor
+  if (uiColor == uiColorBlack) { // UIKit caches UIColor.blackColor.
     return ColorIndex::black;
   }
   const UInt16 offset = ColorIndex::fixedColorIndexRange.end;
-  CGColor *const cgColor = stu_label::cgColor(uiColor);
   if (colors_.count() <= 16) {
     UInt16 i1 = offset;
     for (const ColorRef &c : colors()) { // May iterate over oldColors_.
-      // Only compares pointers.
-      if (cgColor == c.cgColor())
+      if (uiColor == c.uiColor())
         return ColorIndex{i1};
       ++i1;
     }
   }
   Optional<RGBA> rgba = RGBA::of(uiColor);
   const ColorFlags colorFlags = rgba ? stu_label::colorFlags(*rgba) : ColorFlags::isNotGray;
-  if (colorFlags & ColorFlags::isBlack) {
-    return ColorIndex::black;
-  }
   if (STU_UNLIKELY(colorIndices_.count() == 0)) {
     if (oldColors_.first.isEmpty()) {
       colorIndices_.initializeWithBucketCount(16);
@@ -421,16 +416,15 @@ ColorIndex TextStyleBuffer::addColor(UIColor *__unsafe_unretained uiColor)
   }
   static_assert(maxFontCount <= maxValue<UInt16> - offset);
   const UInt16 newIndex = narrow_cast<UInt16>(colorIndices_.count() + offset);
-  const auto hashCode =
-      rgba ? hash(rgba->red, rgba->green, rgba->blue, rgba->alpha) : HashCode{static_cast<UInt64>(colorFlags)};
+  const auto hashCode = hashPointer(uiColor);
   if (const auto [i, inserted] = colorIndices_.insert(
           hashCode,
           newIndex,
-          [&](UInt16 index) { return CGColorEqualToColor(cgColor, colors_[index - offset].cgColor()); });
+          [&](UInt16 index) { return uiColor == colors_[index - offset].uiColor(); });
       !inserted) {
     return ColorIndex{i};
   }
-  colors_.append(ColorRef{cgColor, colorFlags});
+  colors_.append(ColorRef{uiColor, colorFlags});
   return ColorIndex{newIndex};
 }
 

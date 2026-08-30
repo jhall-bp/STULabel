@@ -637,7 +637,7 @@ static void initCommon(STULabel *self)
   self->_layer = static_cast<STULabelLayer *>([self layer]);
   STU_CHECK([self->_layer isKindOfClass:stuLabelLayerClass]);
   UITraitCollection *const traits = self.traitCollection;
-  [self->_layer stu_setTraitCollection:traits];
+  self->_layer.renderingTraitCollection = traits;
   self->_layer.contentsScale = traits.displayScale;
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = UIColor.linkColor;
@@ -1110,7 +1110,7 @@ static void updateDisplayedBackgroundColor(STULabel *__unsafe_unretained self)
 static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 {
   UITraitCollection *const traits = self.traitCollection;
-  [self->_layer stu_setTraitCollection:traits];
+  self->_layer.renderingTraitCollection = traits;
   self->_layer.contentsScale = traits.displayScale;
 }
 
@@ -1123,7 +1123,7 @@ static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 - (void)colorAppearanceDidChange
 {
   UITraitCollection *const traits = self.traitCollection;
-  [_layer stu_updateColorAppearanceForTraitCollection:traits];
+  _layer.renderingTraitCollection = traits;
   updateDisplayedBackgroundColor(self);
   if (_bits.hasActiveLinkOverlayLayer) {
     [(STULabelLinkOverlayLayer *)_activeLinkOrOverlayLayer updateColorsForTraitCollection:traits];
@@ -2360,7 +2360,7 @@ static void initializeTextInteraction(STULabel *self)
 
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer
 {
-  [_layer stu_setTraitCollection:self.traitCollection];
+  _layer.renderingTraitCollection = self.traitCollection;
   const LabelParameters &params = STULabelLayerGetParams(_layer);
   UIColor *const overrideTextColor = params.overrideTextColor().unretained;
   UIColor *const overrideLinkColor = params.overrideLinkColor().unretained;
