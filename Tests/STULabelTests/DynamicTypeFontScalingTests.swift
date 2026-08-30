@@ -16,6 +16,34 @@ private final class LabelWithOverridePreferredContentSizeCategory: UILabel {
 struct DynamicTypeFontScalingTests {
 
   @Test
+  func `canonical content size categories are decoded correctly`() {
+    let categories: [UIContentSizeCategory] = [
+      .extraSmall,
+      .small,
+      .medium,
+      .large,
+      .extraLarge,
+      .extraExtraLarge,
+      .extraExtraExtraLarge,
+      .accessibilityMedium,
+      .accessibilityLarge,
+      .accessibilityExtraLarge,
+      .accessibilityExtraExtraLarge,
+      .accessibilityExtraExtraExtraLarge,
+    ]
+    let font = UIFont.preferredFont(
+      forTextStyle: .caption2,
+      compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
+
+    for category in categories {
+      let expectedFont = UIFont.preferredFont(
+        forTextStyle: .caption2,
+        compatibleWith: UITraitCollection(preferredContentSizeCategory: category))
+      #expect(font.stu_fontAdjusted(forContentSizeCategory: category) == expectedFont)
+    }
+  }
+
+  @Test
   func `adjusted font respects the content size category`() {
     let fixedFont = UIFont.systemFont(ofSize: 16)
 

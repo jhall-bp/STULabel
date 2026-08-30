@@ -10,20 +10,28 @@
 
 #import <stdatomic.h>
 
+// Keep the system-default category first because this order determines the pointer fast-path cost.
+// clang-format off
+#define STU_FOR_EACH_CONTENT_SIZE_CATEGORY(f) \
+  f(Large) \
+  f(ExtraSmall) \
+  f(Small) \
+  f(Medium) \
+  f(ExtraLarge) \
+  f(ExtraExtraLarge) \
+  f(ExtraExtraExtraLarge) \
+  f(AccessibilityMedium) \
+  f(AccessibilityLarge) \
+  f(AccessibilityExtraLarge) \
+  f(AccessibilityExtraExtraLarge) \
+  f(AccessibilityExtraExtraExtraLarge)
+// clang-format on
+
 typedef NS_ENUM(uint8_t, STUContentSizeCategory) {
   STUContentSizeCategoryUnspecified = 0,
-  STUContentSizeCategoryExtraSmall,
-  STUContentSizeCategorySmall,
-  STUContentSizeCategoryMedium,
-  STUContentSizeCategoryLarge,
-  STUContentSizeCategoryExtraLarge,
-  STUContentSizeCategoryExtraExtraLarge,
-  STUContentSizeCategoryExtraExtraExtraLarge,
-  STUContentSizeCategoryAccessibilityMedium,
-  STUContentSizeCategoryAccessibilityLarge,
-  STUContentSizeCategoryAccessibilityExtraLarge,
-  STUContentSizeCategoryAccessibilityExtraExtraLarge,
-  STUContentSizeCategoryAccessibilityExtraExtraExtraLarge
+#define STU_CONTENT_SIZE_CATEGORY_ENUM_CASE(name) STUContentSizeCategory##name,
+  STU_FOR_EACH_CONTENT_SIZE_CATEGORY(STU_CONTENT_SIZE_CATEGORY_ENUM_CASE)
+#undef STU_CONTENT_SIZE_CATEGORY_ENUM_CASE
 };
 const int STUContentSizeCategoryCount = STUContentSizeCategoryAccessibilityExtraExtraExtraLarge + 1;
 
@@ -31,71 +39,25 @@ static STUContentSizeCategory stuContentSizeCategory(UIContentSizeCategory __uns
 {
   if (!cat)
     return STUContentSizeCategoryUnspecified;
-  const CFIndex length = CFStringGetLength((__bridge CFStringRef)cat);
-  if (length == 0)
-    return STUContentSizeCategoryUnspecified;
-  bool unexpectedLength = false;
-  switch (length) {
-#define oneCategoryCase(name)                                                                                          \
-  if (cat == UIContentSizeCategory##name || [cat isEqualToString:UIContentSizeCategory##name]) {                       \
-    return STUContentSizeCategory##name;                                                                               \
-  }                                                                                                                    \
-  if (!unexpectedLength)                                                                                               \
-    goto UnexpectedLength;
 
-#define twoCategoriesCase(name1, name2)                                                                                \
-  if (cat == UIContentSizeCategory##name1)                                                                             \
-    return STUContentSizeCategory##name1;                                                                              \
-  if (cat == UIContentSizeCategory##name2)                                                                             \
-    return STUContentSizeCategory##name2;                                                                              \
-  if ([cat isEqualToString:UIContentSizeCategory##name1])                                                              \
-    return STUContentSizeCategory##name1;                                                                              \
-  if ([cat isEqualToString:UIContentSizeCategory##name2])                                                              \
-    return STUContentSizeCategory##name2;                                                                              \
-  if (!unexpectedLength)                                                                                               \
-    goto UnexpectedLength;
+  // UIKit supplies these singleton constants. Handle that hot path without any Objective-C calls.
+#define STU_RETURN_IF_IDENTICAL_CONTENT_SIZE_CATEGORY(name)                                                            \
+  if (cat == UIContentSizeCategory##name)                                                                              \
+    return STUContentSizeCategory##name;
+  STU_FOR_EACH_CONTENT_SIZE_CATEGORY(STU_RETURN_IF_IDENTICAL_CONTENT_SIZE_CATEGORY)
+#undef STU_RETURN_IF_IDENTICAL_CONTENT_SIZE_CATEGORY
 
-#define threeCategoriesCase(name1, name2, name3)                                                                       \
-  if (cat == UIContentSizeCategory##name1)                                                                             \
-    return STUContentSizeCategory##name1;                                                                              \
-  if (cat == UIContentSizeCategory##name2)                                                                             \
-    return STUContentSizeCategory##name2;                                                                              \
-  if (cat == UIContentSizeCategory##name3)                                                                             \
-    return STUContentSizeCategory##name2;                                                                              \
-  if ([cat isEqualToString:UIContentSizeCategory##name1])                                                              \
-    return STUContentSizeCategory##name1;                                                                              \
-  if ([cat isEqualToString:UIContentSizeCategory##name2])                                                              \
-    return STUContentSizeCategory##name2;                                                                              \
-  if ([cat isEqualToString:UIContentSizeCategory##name3])                                                              \
-    return STUContentSizeCategory##name3;                                                                              \
-  if (!unexpectedLength)                                                                                               \
-    goto UnexpectedLength;
+  // Preserve support for callers that construct an equivalent category value themselves.
+#define STU_RETURN_IF_EQUAL_CONTENT_SIZE_CATEGORY(name)                                                                \
+  if ([cat isEqualToString:UIContentSizeCategory##name])                                                               \
+    return STUContentSizeCategory##name;
+  STU_FOR_EACH_CONTENT_SIZE_CATEGORY(STU_RETURN_IF_EQUAL_CONTENT_SIZE_CATEGORY)
+#undef STU_RETURN_IF_EQUAL_CONTENT_SIZE_CATEGORY
 
-  default:
-  UnexpectedLength:
-    unexpectedLength = true;
-    STU_FALLTHROUGH
-  case 24:                                                           // UICTContentSizeCategoryS
-                                                                     // UICTContentSizeCategoryM
-                                                                     // UICTContentSizeCategoryL
-  threeCategoriesCase(Small, Medium, Large) STU_FALLTHROUGH case 25: // UICTContentSizeCategoryXS
-                                                                     // UICTContentSizeCategoryXL
-  twoCategoriesCase(ExtraSmall, ExtraLarge) STU_FALLTHROUGH case 26: // UICTContentSizeCategoryXXL
-  oneCategoryCase(ExtraExtraLarge) STU_FALLTHROUGH case 27:          // UICTContentSizeCategoryXXXL
-  oneCategoryCase(ExtraExtraExtraLarge) STU_FALLTHROUGH case 37:     // UICTContentSizeCategoryAccessibilityM
-                                                                     // UICTContentSizeCategoryAccessibilityL
-  twoCategoriesCase(AccessibilityMedium, AccessibilityLarge)
-      STU_FALLTHROUGH case 38:                                           // UICTContentSizeCategoryAccessibilityXL
-  oneCategoryCase(AccessibilityExtraLarge) STU_FALLTHROUGH case 39:      // UICTContentSizeCategoryAccessibilityXXL
-  oneCategoryCase(AccessibilityExtraExtraLarge) STU_FALLTHROUGH case 40: // UICTContentSizeCategoryAccessibilityXXXL
-    oneCategoryCase(AccessibilityExtraExtraExtraLarge)
-
-#undef oneCategoryCase
-#undef twoCategoriesCase
-#undef threeCategoriesCase
-  } // switch
   return STUContentSizeCategoryUnspecified;
 }
+
+#undef STU_FOR_EACH_CONTENT_SIZE_CATEGORY
 
 static Class nsNumberClass;
 static Class nsStringClass;
