@@ -24,10 +24,27 @@ lto_flags := if env_var_or_default("LTO", "") == "" { "" } else { "LLVM_LTO=" + 
 default:
     @just --list
 
-format:
-    swift format --recursive --in-place . \
-    && find . \( -name '*.h' -o -name '*.m' -o -name '*.mm' -o -name '*.c' -o -name '*.cc' -o -name '*.cpp' \) \
-          -exec xcrun clang-format -i {} +
+[arg("check", long="check", value="true")]
+format check="false":
+    #!/bin/bash
+
+    if [[ "{{check}}" == "true" ]]; then
+        swift format lint --strict --recursive Source/ Tests/
+        swift_status=$?
+
+        find . \( -name '*.h' -o -name '*.m' -o -name '*.mm' -o -name '*.c' -o -name '*.cc' -o -name '*.cpp' \) \
+            -exec xcrun clang-format --dry-run --Werror {} +
+        clang_status=$?
+    else
+        swift format --recursive --in-place Source/ Tests/
+        swift_status=$?
+
+        find . \( -name '*.h' -o -name '*.m' -o -name '*.mm' -o -name '*.c' -o -name '*.cc' -o -name '*.cpp' \) \
+            -exec xcrun clang-format -i {} +
+        clang_status=$?
+    fi
+
+    (( swift_status == 0 && clang_status == 0 ))
 
 # Print the resolved Swift package manifest.
 package-graph:
