@@ -85,6 +85,34 @@ struct SwiftWrapperTests {
     #expect(label.layer.overrideLinkColor == .systemRed)
   }
 
+  @Test
+  func `STULabel preserves disabled link color through tint and hierarchy changes`() {
+    let label = STULabel()
+    let disabledLinkColor = UIColor.systemRed
+    label.disabledLinkColor = disabledLinkColor
+    label.isEnabled = false
+
+    #expect(label.layer.overrideLinkColor == disabledLinkColor)
+
+    label.tintColor = .systemBlue
+    label.tintColorDidChange()
+    #expect(label.layer.overrideLinkColor == disabledLinkColor)
+
+    let container = UIView()
+    container.tintColor = .systemGreen
+    container.addSubview(label)
+    #expect(label.layer.overrideLinkColor == disabledLinkColor)
+
+    label.didMoveToWindow()
+    #expect(label.layer.overrideLinkColor == disabledLinkColor)
+
+    label.disabledLinkColor = nil
+    #expect(label.layer.overrideLinkColor == label.tintColor)
+
+    label.isEnabled = true
+    #expect(label.layer.overrideLinkColor == .link)
+  }
+
   // Currently we just test here that these properties are actually callable (without causing a
   // linker error) and return the correct value in the simplest situation.
   @Test

@@ -1137,14 +1137,30 @@ static void updateDisplayProperties(STULabel *__unsafe_unretained self)
 {
   return _disabledLinkColor;
 }
+
+static UIColor *effectiveLinkColor(STULabel *__unsafe_unretained self)
+{
+  if (!self->_bits.isEnabled && self->_disabledLinkColor) {
+    return self->_disabledLinkColor;
+  }
+  if (self->_bits.usesTintColorAsLinkColor || self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed) {
+    return self.tintColor;
+  }
+  return UIColor.linkColor;
+}
+
+static void updateEffectiveLinkColor(STULabel *__unsafe_unretained self)
+{
+  self->_layer.overrideLinkColor = effectiveLinkColor(self);
+}
+
 - (void)setDisabledLinkColor:(UIColor *)disabledLinkColor
 {
   if (_disabledLinkColor == disabledLinkColor)
     return;
   _disabledLinkColor = disabledLinkColor;
   if (!_bits.isEnabled) {
-    _layer.overrideLinkColor =
-        disabledLinkColor ?: (_bits.usesTintColorAsLinkColor ? self.tintColor : UIColor.linkColor);
+    updateEffectiveLinkColor(self);
   }
 }
 
@@ -1157,20 +1173,10 @@ static void updateDisplayProperties(STULabel *__unsafe_unretained self)
   if (_bits.usesTintColorAsLinkColor == usesTintColorAsLinkColor)
     return;
   _bits.usesTintColorAsLinkColor = usesTintColorAsLinkColor;
-  if (_bits.isEnabled || !_disabledLinkColor) {
-    _layer.overrideLinkColor = usesTintColorAsLinkColor ? self.tintColor : UIColor.linkColor;
-  }
+  updateEffectiveLinkColor(self);
 }
 
-static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self)
-{
-  if ((self->_bits.usesTintColorAsLinkColor && (self->_bits.isEnabled || !self->_disabledLinkColor)) ||
-      self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed) {
-    self->_layer.overrideLinkColor = self.tintColor;
-  } else {
-    self->_layer.overrideLinkColor = UIColor.linkColor;
-  }
-}
+static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self) { updateEffectiveLinkColor(self); }
 
 - (void)tintColorDidChange
 {
@@ -1225,11 +1231,7 @@ static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self)
   if (_disabledTextColor) {
     _layer.overrideTextColor = !enabled ? _disabledTextColor : nil;
   }
-  if (_disabledLinkColor) {
-    _layer.overrideLinkColor = !enabled                         ? _disabledLinkColor
-                               : _bits.usesTintColorAsLinkColor ? self.tintColor
-                                                                : UIColor.linkColor;
-  }
+  updateEffectiveLinkColor(self);
 }
 
 // MARK: - Active link overlay

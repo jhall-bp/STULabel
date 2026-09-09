@@ -71,7 +71,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R04 | Must fix | Synchronize the complete rendering environment | Open | Coordinate with R03, R05, R06 |
 | R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Open | Coordinate with R04 |
-| R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Open | Independent, same STULabel.mm file |
+| R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
 | R08 | Must fix for distribution | Remove unsafe flags from public package dependency graph | Open | Coordinate with G01 and ARC work |
 | R09 | Strong improvement | Restore deliberate rendering concurrency | Open | Uncommitted changes at review; coordinate with R03 |
 | R10 | Strong improvement | Avoid eager attributed-string normalization | Open | Coordinate with R05 |
@@ -278,7 +278,7 @@ No implementation recorded. Next: trace the configuration contract and consolida
 ## R07 — Preserve disabled link colors during tint/lifecycle changes
 
 **Classification:** Must fix  
-**Status:** Open  
+**Status:** Complete
 **Owner:** Unassigned
 
 ### Problem and evidence
@@ -293,15 +293,32 @@ Consolidate effective link-color calculation. Apply an explicit disabled overrid
 
 ### Acceptance criteria
 
-- [ ] Disabled-link overrides survive tint and hierarchy/window changes.
-- [ ] Enabled/disabled transitions select the appropriate color.
-- [ ] Explicit override removal restores the intended fallback.
-- [ ] Tint usage and dimmed-tint behavior remain intentional.
-- [ ] Native Testing coverage checks observable effective colors, including the original regression.
+- [x] Disabled-link overrides survive tint and hierarchy/window changes.
+- [x] Enabled/disabled transitions select the appropriate color.
+- [x] Explicit override removal restores the intended fallback.
+- [x] Tint usage and dimmed-tint behavior remain intentional.
+- [x] Native Testing coverage checks observable effective colors, including the original regression.
 
 ### Progress and completion record
 
-No implementation recorded. Next: enumerate current link-color writers and replace divergent decision rules.
+2026-09-09 — Codex — Complete; uncommitted.
+
+Changes and rationale: Consolidated every state and lifecycle update of `overrideLinkColor` around one
+effective-color calculation. An explicit disabled override now wins before tint/dimming/default-link
+fallbacks, so UIKit tint, superview, and window callbacks cannot replace it. Clearing that override
+uses the current effective tint (including UIKit's disabled dimming), and re-enabling restores the
+configured regular-link behavior.
+
+Files/commit: `Source/STULabel/STULabel.mm` and `Tests/STULabelTests/SwiftWrapperTests.swift`; no
+commit.
+
+Validation, environment, and results: `build-for-testing` and the native Swift Testing suite
+`SwiftWrapperTests` passed on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2. The test
+`STULabel preserves disabled link color through tint and hierarchy changes` covers the reported tint
+regression, superview and window lifecycle callbacks, override removal with dimmed tint, and re-enabling. `git diff --check`
+passed.
+
+Remaining risk/blocker and next action: None for this finding.
 
 ## R08 — Remove unsafe flags from the public package dependency graph
 
