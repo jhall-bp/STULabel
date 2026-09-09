@@ -317,13 +317,16 @@ static NSLayoutYAxisAnchor *lastBaselineAnchor(STULabelBaselinesLayoutGuide *__u
 
 static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide *__unsafe_unretained self,
                                        CGFloat displayScale,
-                                       const LabelTextFrameInfo &info)
+                                       const LabelTextFrameInfo &info,
+                                       CGFloat textFrameOriginY)
 {
-  if (self->_firstBaselineConstraint && self->_firstBaseline != info.firstBaseline) {
-    self->_firstBaselineConstraint.constant = info.firstBaseline;
+  const CGFloat firstBaseline = info.firstBaseline + textFrameOriginY;
+  const CGFloat lastBaseline = info.lastBaseline + textFrameOriginY;
+  if (self->_firstBaselineConstraint && self->_firstBaseline != firstBaseline) {
+    self->_firstBaselineConstraint.constant = firstBaseline;
   }
-  if (self->_lastBaselineConstraint && self->_lastBaseline != info.lastBaseline) {
-    self->_lastBaselineConstraint.constant = info.lastBaseline;
+  if (self->_lastBaselineConstraint && self->_lastBaseline != lastBaseline) {
+    self->_lastBaselineConstraint.constant = lastBaseline;
   }
   if (!self->_lineHeightConstraints.isEmpty() &&
       (self->_lineHeightInfo != info || self->_displayScale != displayScale)) {
@@ -335,8 +338,8 @@ static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide *__unsafe_un
       c.layoutConstraint.constant = c.layoutConstantForSpacing(c.spacing(), scale);
     }
   }
-  self->_firstBaseline = info.firstBaseline;
-  self->_lastBaseline = info.lastBaseline;
+  self->_firstBaseline = firstBaseline;
+  self->_lastBaseline = lastBaseline;
   self->_displayScale = displayScale;
   self->_lineHeightInfo = info;
 }
@@ -528,16 +531,14 @@ static void updateLayoutGuides(STULabel *label);
   __unsafe_unretained STULabelLayer *_layer;
   CGRect _contentBounds;
   CGSize _maxWidthIntrinsicContentSize;
-  CGSize _intrinsicContentSizeKnownToAutoLayout;
-  CGFloat _layoutWidthForIntrinsicContentSizeKnownToAutoLayout;
+  CGFloat _intrinsicContentSizeWidth;
+  CGFloat _intrinsicContentSizeLayoutWidth;
   struct STULabelBitField
   {
     UInt8 oldTintAdjustmentMode : 2;
     bool isSettingBounds : 1;
-    bool isUpdatingConstraints : 1;
-    bool intrinsicContentSizeIsKnownToAutoLayout : 1;
-    bool waitingForPossibleSetBoundsCall : 1;
-    bool didSetNeedsLayoutOnSuperview : 1;
+    bool hasMeasuredIntrinsicContentSize : 1;
+    bool needsIntrinsicContentSizeLayout : 1;
     bool hasIntrinsicContentWidth : 1;
     bool maxWidthIntrinsicContentSizeIsValid : 1;
     bool adjustsFontForContentSizeCategory : 1;
@@ -724,9 +725,9 @@ static void initCommon(STULabel *self)
 
 - (void)setBounds:(CGRect)bounds
 {
+  const CGFloat oldWidth = STULabelLayerGetSize(_layer).width;
   const bool isRecursiveCall = _bits.isSettingBounds;
   _bits.isSettingBounds = true;
-  _bits.waitingForPossibleSetBoundsCall = false;
   [super setBounds:bounds];
   _bits.isSettingBounds = isRecursiveCall;
 
@@ -734,7 +735,8 @@ static void initCommon(STULabel *self)
   // labelLayerTextLayoutWasInvalidated, even when the size change invalidates the intrinsic content
   // size (when setBounds is called for a multi-line label with a larger size after the initial
   // call to intrinsicContentSize).
-  if (_bits.intrinsicContentSizeIsKnownToAutoLayout && widthInvalidatesIntrinsicContentSize(self)) {
+  if (_bits.hasMeasuredIntrinsicContentSize && oldWidth != STULabelLayerGetSize(_layer).width &&
+      widthInvalidatesIntrinsicContentSize(self)) {
     [self invalidateIntrinsicContentSize];
   }
 }
@@ -747,17 +749,15 @@ static void updateLayoutGuides(STULabel *__unsafe_unretained self)
   if (self->_baselinesLayoutGuide) {
     updateBaselinesLayoutGuide(self->_baselinesLayoutGuide,
                                self.traitCollection.displayScale,
-                               STULabelLayerGetCurrentTextFrameInfo(self->_layer));
+                               STULabelLayerGetCurrentTextFrameInfo(self->_layer),
+                               self->_layer.textFrameOrigin.y);
   }
 }
 
 - (void)updateConstraints
 {
-  const bool isRecursiveCall = _bits.isUpdatingConstraints;
-  _bits.isUpdatingConstraints = true;
   [super updateConstraints];
   updateLayoutGuides(self);
-  _bits.isUpdatingConstraints = isRecursiveCall;
 }
 
 - (bool)hasIntrinsicContentWidth
@@ -803,39 +803,33 @@ static void updateLayoutGuides(STULabel *__unsafe_unretained self)
       size.width = _maxWidthIntrinsicContentSize.width;
     }
   }
-  if (_bits.isUpdatingConstraints) {
-    _bits.intrinsicContentSizeIsKnownToAutoLayout = true;
-    _layoutWidthForIntrinsicContentSizeKnownToAutoLayout = layoutWidth;
-    if (size.height == _intrinsicContentSizeKnownToAutoLayout.height &&
-        (!_bits.hasIntrinsicContentWidth || size.width == _intrinsicContentSizeKnownToAutoLayout.width)) {
-      _bits.waitingForPossibleSetBoundsCall = false;
-    }
-    _intrinsicContentSizeKnownToAutoLayout = size;
-  }
+  _bits.hasMeasuredIntrinsicContentSize = true;
+  _intrinsicContentSizeLayoutWidth = layoutWidth;
+  _intrinsicContentSizeWidth = size.width;
   if (!_bits.hasIntrinsicContentWidth) {
     size.width = UIViewNoIntrinsicMetric;
   }
   return size;
 }
 
-/// @pre intrinsicContentSizeIsKnownToAutoLayout
+/// @pre hasMeasuredIntrinsicContentSize
 static bool widthInvalidatesIntrinsicContentSize(STULabel *__unsafe_unretained self)
 {
-  STU_DEBUG_ASSERT(self->_bits.intrinsicContentSizeIsKnownToAutoLayout);
+  STU_DEBUG_ASSERT(self->_bits.hasMeasuredIntrinsicContentSize);
   if (STULabelLayerGetMaximumNumberOfLines(self->_layer) == 1)
     return false;
   const CGFloat width = STULabelLayerGetSize(self->_layer).width;
-  return width > self->_layoutWidthForIntrinsicContentSizeKnownToAutoLayout ||
-         width < min(self->_layoutWidthForIntrinsicContentSizeKnownToAutoLayout,
-                     self->_intrinsicContentSizeKnownToAutoLayout.width);
+  return width > self->_intrinsicContentSizeLayoutWidth ||
+         width < min(self->_intrinsicContentSizeLayoutWidth,
+                     self->_intrinsicContentSizeWidth);
 }
 
 - (void)invalidateIntrinsicContentSize
 {
-  if (_bits.intrinsicContentSizeIsKnownToAutoLayout) {
-    _bits.intrinsicContentSizeIsKnownToAutoLayout = false;
-    _bits.waitingForPossibleSetBoundsCall = true; // See the comment in layoutSubviews.
+  if (_bits.hasMeasuredIntrinsicContentSize) {
+    _bits.needsIntrinsicContentSizeLayout = true;
   }
+  _bits.hasMeasuredIntrinsicContentSize = false;
   [super invalidateIntrinsicContentSize];
 }
 
@@ -843,20 +837,13 @@ static bool widthInvalidatesIntrinsicContentSize(STULabel *__unsafe_unretained s
 {
   updateLayoutGuides(self);
   [super layoutSubviews];
-  // UIKit sometimes doesn't properly update the layout after a call to
-  // invalidateIntrinsicContentSize. Sometimes it just forgets to query the updated intrinsic
-  // content size (rdar://34422006) and sometimes it simply doesn't update the layout after changes
-  // in the constraints. To workaround these issue we track Auto-Layout-initiated intrinsic content
-  // size invalidations and the subsequent setBounds calls. Any setBounds call should have happened
-  // by now, so if none has, we request a relayout of the superview, which seems to reliably flush
-  // any pending layout updates.
-  if (_bits.waitingForPossibleSetBoundsCall && !_bits.didSetNeedsLayoutOnSuperview) {
-    _bits.didSetNeedsLayoutOnSuperview = true;
+  // iOS 26 can query the new intrinsic size without applying it in the current layout
+  // pass, particularly when baseline constraints also change. Request one follow-up
+  // per invalidation, even if intrinsicContentSize has already been queried.
+  if (_bits.needsIntrinsicContentSizeLayout) {
+    _bits.needsIntrinsicContentSizeLayout = false;
     [self.superview setNeedsLayout];
-  } else {
-    _bits.didSetNeedsLayoutOnSuperview = false;
   }
-  _bits.waitingForPossibleSetBoundsCall = false;
 }
 
 - (void)labelLayerTextLayoutWasInvalidated:(STULabelLayer *__unused)labelLayer
@@ -865,7 +852,7 @@ static bool widthInvalidatesIntrinsicContentSize(STULabel *__unsafe_unretained s
   if (!_bits.isSettingBounds) {
     _bits.maxWidthIntrinsicContentSizeIsValid = false;
   }
-  if (_bits.intrinsicContentSizeIsKnownToAutoLayout && !_bits.isSettingBounds) {
+  if (_bits.hasMeasuredIntrinsicContentSize && !_bits.isSettingBounds) {
     [self invalidateIntrinsicContentSize];
   }
   if (_bits.delegateRespondsToTextLayoutWasInvalidated) {
