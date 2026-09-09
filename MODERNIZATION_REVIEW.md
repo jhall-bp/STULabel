@@ -463,7 +463,7 @@ Remaining scope: snapshot reference differences remain outside R11; G01's other 
 ## R12 — Remove unreachable accessibility non-rotor branch
 
 **Classification:** Optional cleanup  
-**Status:** Open  
+**Status:** Complete
 **Owner:** Unassigned
 
 ### Problem and evidence
@@ -478,14 +478,16 @@ This is a clarity improvement; the compiler likely already removes the dead bran
 
 ### Acceptance criteria
 
-- [ ] The constant and unreachable alternatives are removed.
-- [ ] Remaining element classes still serve their actual callers.
-- [ ] Link accessibility/rotor construction preserves observable behavior.
-- [ ] No unnecessary test harness or unrelated accessibility rewrite is added.
+- [x] The constant and unreachable alternatives are removed.
+- [x] Remaining element classes still serve their actual callers.
+- [x] Link accessibility/rotor construction preserves observable behavior.
+- [x] No unnecessary test harness or unrelated accessibility rewrite is added.
 
 ### Progress and completion record
 
-No implementation recorded. Next: verify the constant's scope and remaining class references, then simplify directly.
+Removed the permanent `createRotorLinks` switch and directly create rotor-link elements with an
+unconditional rotor assignment. The shared subelement type remains in its non-rotor callers.
+The iOS 26.2 package build and existing accessibility-element lifecycle test pass.
 
 ## R13 — Document the breaking consumer migration contract
 

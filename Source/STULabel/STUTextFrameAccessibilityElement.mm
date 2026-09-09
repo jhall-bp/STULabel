@@ -669,8 +669,6 @@ static void addElementsForRangeThatMayContainLinks(
     }
   }
 
-  const bool createRotorLinks = true;
-
   const UInt index = array.count;
   NSMutableAttributedString *__block mutableSubtring = nil;
   [params.attributedString
@@ -681,8 +679,7 @@ static void addElementsForRangeThatMayContainLinks(
                 if (!linkValue)
                   return;
                 if (STUTextFrameAccessibilitySubelement *const linkElement =
-                        [[(createRotorLinks ? STUTextFrameAccessibilityRotorLinkElement.class
-                                            : STUTextFrameAccessibilitySubelement.class) alloc] initWithParams:params
+                        [[STUTextFrameAccessibilityRotorLinkElement alloc] initWithParams:params
                                                                                                    stringRange:linkRange
                                                                                     mutableAttributedSubstring:nil
                                                                                                      linkCount:1
@@ -713,10 +710,8 @@ static void addElementsForRangeThatMayContainLinks(
     return;
   }
   [array insertObject:textElement atIndex:index];
-  if (createRotorLinks) {
-    textElement.accessibilityCustomRotors = @[ createLinkRotorForAccessibilityContainer(
-        params.textFrameAccessibilityElement, range(index + 1, Count{linkCount})) ];
-  }
+  textElement.accessibilityCustomRotors = @[ createLinkRotorForAccessibilityContainer(
+      params.textFrameAccessibilityElement, range(index + 1, Count{linkCount})) ];
 }
 
 static void
