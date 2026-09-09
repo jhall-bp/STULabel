@@ -9,6 +9,8 @@ private final class TextInputDelegateRecorder: NSObject, UITextInputDelegate {
   var selectionDidChangeCount = 0
   var textWillChangeCount = 0
   var textDidChangeCount = 0
+  var onTextWillChange: ((any UITextInput) -> Void)?
+  var onTextDidChange: ((any UITextInput) -> Void)?
 
   func selectionWillChange(_ textInput: (any UITextInput)?) {
     selectionWillChangeCount += 1
@@ -20,10 +22,16 @@ private final class TextInputDelegateRecorder: NSObject, UITextInputDelegate {
 
   func textWillChange(_ textInput: (any UITextInput)?) {
     textWillChangeCount += 1
+    if let textInput {
+      onTextWillChange?(textInput)
+    }
   }
 
   func textDidChange(_ textInput: (any UITextInput)?) {
     textDidChangeCount += 1
+    if let textInput {
+      onTextDidChange?(textInput)
+    }
   }
 
   @available(iOS 18.4, *)
@@ -275,6 +283,60 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Visual caret movement retains affinity at bidirectional boundaries`() throws {
+    let label = label(with: "abc אבג", size: CGSize(width: 200, height: 50))
+    let input: any UITextInput = label
+    let start = input.beginningOfDocument
+    let beforeSpace = try #require(input.position(from: start, offset: 3))
+    let afterSpace = try #require(input.position(from: beforeSpace, in: .right, offset: 1))
+    let afterBidiBoundary = try #require(input.position(from: afterSpace, in: .right, offset: 1))
+    let nextBidiPosition = try #require(input.position(from: afterBidiBoundary, in: .right, offset: 1))
+
+    #expect(input.offset(from: start, to: afterSpace) == 4)
+    #expect(input.offset(from: start, to: afterBidiBoundary) == 7)
+    #expect(input.offset(from: start, to: nextBidiPosition) == 6)
+
+    let documentRange = try #require(documentRange(for: input))
+    let farthestRight = try #require(input.position(within: documentRange, farthestIn: .right))
+    #expect(input.offset(from: start, to: farthestRight) == 4)
+    #expect(
+      input.caretRect(for: farthestRight).midX
+        > input.caretRect(for: input.endOfDocument).midX)
+
+    let leftToRightLabel = self.label(with: "a👩‍💻b", size: CGSize(width: 200, height: 50))
+    let leftToRightInput: any UITextInput = leftToRightLabel
+    let afterA = try #require(
+      leftToRightInput.position(
+        from: leftToRightInput.beginningOfDocument,
+        in: .right,
+        offset: 1))
+    let afterEmoji = try #require(leftToRightInput.position(from: afterA, in: .right, offset: 1))
+    #expect(leftToRightInput.offset(from: leftToRightInput.beginningOfDocument, to: afterA) == 1)
+    #expect(leftToRightInput.offset(from: leftToRightInput.beginningOfDocument, to: afterEmoji) == 6)
+
+    let rightToLeftLabel = self.label(with: "אבג", size: CGSize(width: 200, height: 50))
+    let rightToLeftInput: any UITextInput = rightToLeftLabel
+    let afterFirstVisualCharacter = try #require(
+      rightToLeftInput.position(
+        from: rightToLeftInput.beginningOfDocument,
+        in: .left,
+        offset: 1))
+    #expect(
+      rightToLeftInput.offset(
+        from: rightToLeftInput.beginningOfDocument,
+        to: afterFirstVisualCharacter) == 1)
+
+    let wrappedLabel = self.label(with: "first second third", size: CGSize(width: 80, height: 100))
+    let wrappedInput: any UITextInput = wrappedLabel
+    let nextLine = try #require(
+      wrappedInput.position(
+        from: wrappedInput.beginningOfDocument,
+        in: .down,
+        offset: 1))
+    #expect(wrappedInput.compare(nextLine, to: wrappedInput.beginningOfDocument) == .orderedDescending)
+  }
+
+  @Test
   func `Visible truncation is the only copyable text`() throws {
     let label = label(
       with: "abcdefghijklmnopqrst",
@@ -426,6 +488,61 @@ struct UITextInputTests {
     #expect(recorder.selectionWillChangeCount == 1)
     #expect(recorder.selectionDidChangeCount == 1)
     #expect(input.selectedTextRange == nil)
+  }
+
+  @Test
+  func `Visible document publication is stable during delegate callbacks`() throws {
+    let label = label(with: "before", size: CGSize(width: 200, height: 50))
+    let input: any UITextInput = label
+    let recorder = TextInputDelegateRecorder()
+    var lengthsDuringWillChange: [Int] = []
+    var lengthsDuringDidChange: [Int] = []
+    recorder.onTextWillChange = { changedInput in
+      lengthsDuringWillChange.append(
+        changedInput.offset(
+          from: changedInput.beginningOfDocument,
+          to: changedInput.endOfDocument))
+    }
+    recorder.onTextDidChange = { changedInput in
+      lengthsDuringDidChange.append(
+        changedInput.offset(
+          from: changedInput.beginningOfDocument,
+          to: changedInput.endOfDocument))
+    }
+    input.inputDelegate = recorder
+    input.selectedTextRange = documentRange(for: input)
+    recorder.selectionWillChangeCount = 0
+    recorder.selectionDidChangeCount = 0
+
+    label.text = "after"
+    _ = label.textFrame
+    notifyTextDidDisplay(in: label)
+
+    #expect(recorder.textWillChangeCount == 1)
+    #expect(recorder.textDidChangeCount == 1)
+    #expect(recorder.selectionWillChangeCount == 1)
+    #expect(recorder.selectionDidChangeCount == 1)
+    #expect(lengthsDuringWillChange == [6])
+    #expect(lengthsDuringDidChange == [5])
+    #expect(input.selectedTextRange == nil)
+
+    let truncatingLabel = self.label(
+      with: "abcdefghijklmnopqrst",
+      size: CGSize(width: 62, height: 50))
+    let truncatingInput: any UITextInput = truncatingLabel
+    let truncationRecorder = TextInputDelegateRecorder()
+    truncatingInput.inputDelegate = truncationRecorder
+    truncatingLabel.maximumNumberOfLines = 1
+    truncatingLabel.lastLineTruncationMode = .end
+    _ = truncatingLabel.textFrame
+    notifyTextDidDisplay(in: truncatingLabel)
+
+    #expect(truncationRecorder.textWillChangeCount == 1)
+    #expect(truncationRecorder.textDidChangeCount == 1)
+    #expect(
+      truncatingInput.offset(
+        from: truncatingInput.beginningOfDocument,
+        to: truncatingInput.endOfDocument) < truncatingLabel.text.utf16.count)
   }
 
   @Test

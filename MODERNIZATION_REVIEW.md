@@ -65,8 +65,8 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 
 | ID | Classification | Task | Status | Coordination |
 | --- | --- | --- | --- | --- |
-| R01 | Must fix | Transactional text-input document publication | Open | Coordinate with R02 |
-| R02 | Must fix | Visual caret navigation across bidi boundaries | Open | Coordinate with R01 |
+| R01 | Must fix | Transactional text-input document publication | Complete | Coordinated with R02 |
+| R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Open | Share environment model with R04 |
 | R04 | Must fix | Synchronize the complete rendering environment | Open | Coordinate with R03, R05, R06 |
 | R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
@@ -83,7 +83,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 ## R01 — Transactional text-input document publication
 
 **Classification:** Must fix  
-**Status:** Open  
+**Status:** Complete
 **Owner:** Unassigned
 
 ### Problem and evidence
@@ -102,21 +102,29 @@ Do not merely move the assignment before the callback if that breaks the promise
 
 ### Acceptance criteria
 
-- [ ] Delegate queries during both will/did callbacks do not recursively notify.
-- [ ] One document mutation produces one coherent notification transaction.
-- [ ] Document, selection, and range queries observe internally consistent snapshots.
-- [ ] Text changes and layout/truncation-driven visible-document changes are covered.
-- [ ] Focused meaningful tests reproduce the old problem and validate the new behavior.
-- [ ] Actual runtime used for validation is recorded.
+- [x] Delegate queries during both will/did callbacks do not recursively notify.
+- [x] One document mutation produces one coherent notification transaction.
+- [x] Document, selection, and range queries observe internally consistent snapshots.
+- [x] Text changes and layout/truncation-driven visible-document changes are covered.
+- [x] Focused meaningful tests reproduce the old problem and validate the new behavior.
+- [x] Actual runtime used for validation is recorded.
 
 ### Progress and completion record
 
-No implementation recorded. Next: trace all document publication/invalidation entry points and select the single transaction boundary.
+2026-09-09 — Codex — Complete; uncommitted.
+
+Changes and rationale: Made `_stu_displayedString` the document snapshot exposed by UITextInput getters and added an explicit publication guard. The delegate now observes the old snapshot during `textWillChange:`, the new snapshot during `textDidChange:`, and re-entrant getters cannot begin another transaction. The same transaction boundary covers layout/truncation-driven visible-string changes.
+
+Files/commit: `Source/STULabel/STULabel+UITextInput-Internal.h`, `Source/STULabel/STULabel+UITextInput.mm`, and `Tests/STULabelTests/UITextInputTests.swift`; no commit.
+
+Validation, environment, and results: The native Swift Testing case `Visible document publication is stable during delegate callbacks` passed after rebuild on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2 (test result `Test-STULabel-Package-2026.09.09_21-10-23-+1000.xcresult`). It covers re-entrant getters in both callbacks plus a truncation-driven document change. `clang-format --dry-run --Werror` and `git diff --check` passed.
+
+Remaining risk/blocker and next action: None for this finding.
 
 ## R02 — Visual caret navigation across bidi boundaries
 
 **Classification:** Must fix  
-**Status:** Open  
+**Status:** Ready for review
 **Owner:** Unassigned
 
 ### Problem and evidence
@@ -131,16 +139,24 @@ Derive visual caret movement from existing line/run geometry. Represent affinity
 
 ### Acceptance criteria
 
-- [ ] Mixed LTR/RTL navigation makes visual progress without cycles.
-- [ ] Farthest-left/right positions agree with visual caret geometry.
-- [ ] Pure LTR, pure RTL, mixed runs, wrapped lines, and composed characters are covered.
-- [ ] Offset-zero, document boundaries, and boundary affinity are handled consistently.
+- [x] Mixed LTR/RTL navigation makes visual progress without cycles.
+- [x] Farthest-left/right positions agree with visual caret geometry.
+- [x] Pure LTR, pure RTL, mixed runs, wrapped lines, and composed characters are covered.
+- [x] Offset-zero, document boundaries, and boundary affinity are handled consistently.
 - [ ] Native interaction behavior is checked where public protocol tests cannot establish it.
-- [ ] No repeated full-document geometry reconstruction is added to each arrow movement.
+- [x] No repeated full-document geometry reconstruction is added to each arrow movement.
 
 ### Progress and completion record
 
-No implementation recorded. Next: map current caret helpers and consolidate their visual-position model.
+2026-09-09 — Codex — Ready for review; uncommitted.
+
+Changes and rationale: Added storage affinity to text positions, then consolidated point hit-testing, adjacent-line navigation, horizontal navigation, and farthest-position selection around the existing text-frame grapheme/run geometry. Horizontal movement now walks visual grapheme edges without rebuilding the text frame; farthest positions inspect existing selection rects rather than choosing logical range endpoints.
+
+Files/commit: `Source/STULabel/STULabel+UITextInput.mm` and `Tests/STULabelTests/UITextInputTests.swift`; no commit.
+
+Validation, environment, and results: The native Swift Testing case `Visual caret movement retains affinity at bidirectional boundaries` passed after rebuild on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2 (test result `Test-STULabel-Package-2026.09.09_21-09-39-+1000.xcresult`). It covers the reported mixed string, farthest-right geometry, ordinary LTR, RTL, a composed emoji, and a wrapped line. `clang-format --dry-run --Werror` and `git diff --check` passed.
+
+Remaining risk/blocker and next action: Native UIKit selection smoke testing is blocked: Device Interaction supports iOS 27+ only, while the Demo fails to build on the iOS 27 fallback with `Missing package product 'STULabelSwift'`. The test device session was closed. Once G01 resolves that product failure, manually long-press and move both selection handles through a mixed-bidi label.
 
 ## R03 — Preserve target traits in tiled rendering
 

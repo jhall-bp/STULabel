@@ -15,6 +15,7 @@
   UITextRange *_stu_selectedTextRange;
   UITextInputStringTokenizer *_stu_tokenizer;
   NSString *_stu_displayedString;
+  bool _stu_isPublishingDisplayedString;
   UITextStorageDirection _stu_selectionAffinity;
 }
 
@@ -23,6 +24,7 @@
 @property (nonatomic, strong, nullable) UITextRange *stu_selectedTextRange;
 @property (nonatomic, strong, nullable) UITextInputStringTokenizer *stu_tokenizer;
 @property (nonatomic, copy, nullable) NSString *stu_displayedString;
+@property (nonatomic) bool stu_isPublishingDisplayedString;
 @property (nonatomic) UITextStorageDirection stu_selectionAffinity;
 
 - (instancetype)initWithLabel:(STULabel *)label;
