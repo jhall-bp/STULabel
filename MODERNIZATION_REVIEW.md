@@ -76,7 +76,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R09 | Strong improvement | Restore deliberate rendering concurrency | Open | Uncommitted changes at review; coordinate with R03 |
 | R10 | Strong improvement | Avoid eager attributed-string normalization | Open | Coordinate with R05 |
 | R11 | Strong improvement | Reduce historical Auto Layout retry machinery | Complete | Narrow iOS 26.2 retry retained with reproduction and focused coverage |
-| R12 | Optional cleanup | Remove unreachable accessibility non-rotor branch | Open | Narrow cleanup only |
+| R12 | Optional cleanup | Remove unreachable accessibility non-rotor branch | Complete | Committed as `31b6916` |
 | R13 | Release requirement | Document the breaking consumer migration contract | Open | Finalize after behavior/API decisions |
 | G01 | Release validation gate | Establish real downstream and iOS 26 build/runtime health | Open | Includes R08's versioned-consumer check |
 
@@ -111,11 +111,11 @@ Do not merely move the assignment before the callback if that breaks the promise
 
 ### Progress and completion record
 
-2026-09-09 — Codex — Complete; uncommitted.
+2026-09-09 — Codex — Complete; committed as `1bae9ff`.
 
 Changes and rationale: Made `_stu_displayedString` the document snapshot exposed by UITextInput getters and added an explicit publication guard. The delegate now observes the old snapshot during `textWillChange:`, the new snapshot during `textDidChange:`, and re-entrant getters cannot begin another transaction. The same transaction boundary covers layout/truncation-driven visible-string changes.
 
-Files/commit: `Source/STULabel/STULabel+UITextInput-Internal.h`, `Source/STULabel/STULabel+UITextInput.mm`, and `Tests/STULabelTests/UITextInputTests.swift`; no commit.
+Files/commit: `Source/STULabel/STULabel+UITextInput-Internal.h`, `Source/STULabel/STULabel+UITextInput.mm`, and `Tests/STULabelTests/UITextInputTests.swift`; `1bae9ff`.
 
 Validation, environment, and results: The native Swift Testing case `Visible document publication is stable during delegate callbacks` passed after rebuild on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2 (test result `Test-STULabel-Package-2026.09.09_21-10-23-+1000.xcresult`). It covers re-entrant getters in both callbacks plus a truncation-driven document change. `clang-format --dry-run --Werror` and `git diff --check` passed.
 
@@ -148,15 +148,25 @@ Derive visual caret movement from existing line/run geometry. Represent affinity
 
 ### Progress and completion record
 
-2026-09-09 — Codex — Ready for review; uncommitted.
+2026-09-09 — Codex — Ready for review; committed as `1bae9ff`.
 
 Changes and rationale: Added storage affinity to text positions, then consolidated point hit-testing, adjacent-line navigation, horizontal navigation, and farthest-position selection around the existing text-frame grapheme/run geometry. Horizontal movement now walks visual grapheme edges without rebuilding the text frame; farthest positions inspect existing selection rects rather than choosing logical range endpoints.
 
-Files/commit: `Source/STULabel/STULabel+UITextInput.mm` and `Tests/STULabelTests/UITextInputTests.swift`; no commit.
+Files/commit: `Source/STULabel/STULabel+UITextInput.mm` and `Tests/STULabelTests/UITextInputTests.swift`; `1bae9ff`.
 
 Validation, environment, and results: The native Swift Testing case `Visual caret movement retains affinity at bidirectional boundaries` passed after rebuild on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2 (test result `Test-STULabel-Package-2026.09.09_21-09-39-+1000.xcresult`). It covers the reported mixed string, farthest-right geometry, ordinary LTR, RTL, a composed emoji, and a wrapped line. `clang-format --dry-run --Werror` and `git diff --check` passed.
 
 Remaining risk/blocker and next action: Native UIKit selection smoke testing is blocked: Device Interaction supports iOS 27+ only, while the Demo fails to build on the iOS 27 fallback with `Missing package product 'STULabelSwift'`. The test device session was closed. Once G01 resolves that product failure, manually long-press and move both selection handles through a mixed-bidi label.
+
+2026-09-11 — Codex — Ready for review; follow-up committed as `ae8600b`.
+
+Changes and rationale: Preserved the original position and its storage affinity for a logical offset of zero. At a visual line edge, horizontal movement now identifies the current line from the caret's affinity and existing text-frame range, selects the adjacent line in logical forward/backward order from the paragraph base direction, and enters it at its logical leading/trailing visual edge. This closes wrapped LTR and RTL traversal without a document scan, new shaping pass, or work in drawing loops.
+
+Files/commit: `Source/STULabel/STULabel+UITextInput.mm` and `Tests/STULabelTests/UITextInputTests.swift`; `ae8600b`.
+
+Validation, environment, and results: Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro simulator, iOS 26.2. Before the production change, the two focused regressions produced five expectation failures: offset-zero affinity changed the caret from x≈34 to x≈63, and both LTR and RTL traversal stopped before the next wrapped line. After the change, the dedicated Swift Testing cases cover offset-zero caret identity plus bidirectional traversal across all wrapped lines in both paragraph directions. All 19 `UITextInputTests` passed (result `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/49DA04F5-FA36-40A9-9518-CA616555A3D3.txt`). Scoped Swift and Objective-C++ formatting checks and `git diff --check` passed.
+
+Remaining risk/blocker and next action: The protocol-level defects are closed. The native UIKit selection-handle smoke check remains part of G01 and is not claimed here.
 
 ## R03 — Preserve target traits in tiled rendering
 
@@ -185,7 +195,7 @@ Capture an immutable target trait snapshot with each tile generation. Activate i
 
 ### Progress and completion record
 
-2026-09-10 — Codex — Complete; uncommitted.
+2026-09-10 — Codex — Complete; committed as `01a1b86`.
 
 Changes and rationale:
 - Each installed tile drawing closure retains the layer's immutable `renderingTraitCollection` snapshot, the same snapshot active when selecting the image format. It activates that snapshot once around the complete default/custom drawing operation. The visible-tile and background-prerender paths already share this closure, so neither needs another environment property or per-glyph work.
@@ -196,9 +206,9 @@ Coordination contract for R04–R06:
 - R04 remains responsible for refreshing the complete snapshot from the view at its environment preparation/invalidation boundaries. It must use the layer setter, which now also retires deferred tiles. The tile callback captures the complete snapshot unchanged, including content size, direction, size class, and custom traits; it must not read a view or mutable layer on worker threads.
 - R05 should resolve/cache preferred defaults against that explicit target upstream of shaping. Tile rendering neither selects fonts nor owns font invalidation. The regression uses an explicit font to isolate R03 from the still-open default-font issue.
 - R06 should make the view's UIColor background authoritative and adopt the prerenderer's incoming background there. Tiles do not acquire a second background owner. Background adoption and target snapshot synchronization belong before render preparation/format selection.
-- R03 requires neither the R04 callback rewrite nor the R05/R06 behavior changes to fix deferred snapshot transport. Those tasks remain Open; this completion does not claim that the view currently synchronizes every trait.
+- R03 required neither the R04 callback rewrite nor the R05/R06 behavior changes to fix deferred snapshot transport. R04, R05, and R06 have since completed.
 
-Files: `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/TiledRenderingTraitsTests.swift`, and this tracker. No commit or push.
+Files/commit: `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/TiledRenderingTraitsTests.swift`, and this tracker; `01a1b86`.
 
 Validation:
 - Xcode MCP `BuildProject(buildForTesting: true)` and `RunSomeTests`, generated package workspace, `STULabel-Package`, iPhone 17 Pro (26.2), Xcode 27 Beta 6 / iOS 27 SDK. Test console confirms actual runtime **iOS 26.2 (23C54)**.
@@ -207,7 +217,7 @@ Validation:
 - A scoped baseline comparison removed only the two production changes and rebuilt: both ordinary cases passed, both tiled pixel/trait cases failed, and the background case failed its old-trait and immediate-retirement assertions. Baseline result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/46AFAB49-5F9D-46D1-8BA6-A4B3AB571BFC.txt`.
 - Restored the production fix, rebuilt, and reran successfully. Final result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/F8D7A93F-3DE0-4F5B-8C60-4661A62EB1FE.txt`.
 
-Remaining scope: R04–R06 and G01 remain open. No timing claim or aggregate-suite health claim is made.
+Remaining scope: G01 remains open. No timing claim or aggregate-suite health claim is made.
 
 ## R04 — Synchronize the complete rendering environment
 
@@ -238,7 +248,7 @@ Do not use ambient background-thread traits or repeatedly add unrelated callback
 
 ### Progress and completion record
 
-2026-09-10 — Codex — Complete; implementation and validation recorded in the R04 commit.
+2026-09-10 — Codex — Complete; committed as `133a242`.
 
 Changes and ownership:
 - The view owns environment synchronization in `updateRenderingEnvironment`. One registration replaces the separate appearance/display/direction callbacks and the conditional content-size registration. Standard appearance, content-size, direction, display, idiom, and size-class changes publish the complete immutable collection through the existing layer setter, even when Dynamic Type adjustment is disabled.
@@ -250,7 +260,7 @@ Changes and ownership:
 Coordination:
 - R03 consumes this snapshot and immediately retires obsolete tiled generations through the layer setter. Its five regression cases remain passing. R03 was committed as `01a1b86`.
 - R06's authoritative view background adoption was required before centralizing color resolution and was committed separately as `ba2e4ef`. Prerenderer CGColor imports are static UIColors; normal dynamic UIColor assignments retain identity.
-- R05 remains Open: resolve preferred default fonts against this same explicit layer snapshot upstream of shaping. This change preserves the existing opt-in font-adjustment semantics; it does not claim to fix globally cached defaults or immediate scaling on enablement.
+- R05 subsequently resolved and cached preferred defaults against this same explicit layer snapshot upstream of shaping in `f2b11be`.
 
 Files: `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabel.h`, `Source/STULabel/STULabelLayer.mm`, `Source/STULabel/STULabelLayer-Internal.hpp`, and `Tests/STULabelTests/RenderingEnvironmentTests.swift`.
 
@@ -260,7 +270,7 @@ Validation:
 - A scoped baseline comparison restored only the three R04 production files to the committed R03/R06 state and rebuilt. All four R04 cases failed: stale content-size/custom traits and acceptance of obsolete regular/prerendered async results. Baseline result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/9B9464A6-C413-4A0A-9DD7-04402A6D9F7F.txt`.
 - Restored the R04 implementation, rebuilt, and reran all 21 focused cases successfully. Final result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/379A7A2B-56CF-4CC5-9768-9C2A9C3EB608.txt`. `git diff --check` passed.
 
-Remaining scope: R05 and G01 remain open. This is focused iOS 26.2 correctness evidence, not aggregate-suite, Xcode 26 toolchain, or performance-benchmark evidence.
+Remaining scope: G01 remains open. This is focused iOS 26.2 correctness evidence, not aggregate-suite, Xcode 26 toolchain, or performance-benchmark evidence.
 
 ## R05 — Trait-correct preferred default fonts
 
@@ -289,14 +299,14 @@ Resolve the preferred default against the explicit target traits. Cache per rele
 
 ### Progress and completion record
 
-2026-09-11 — Codex — Complete; committed separately from R04.
+2026-09-11 — Codex — Complete; committed as `f2b11be`, separately from R04.
 
 Changes and rationale:
 - The process-wide preferred-body-font singleton was replaced by a lazy per-layer default resolved with the layer's complete `renderingTraitCollection`. A trait transition preserves an already-effective implicit plain-text font, maintaining the opt-in Dynamic Type contract, then retires the resolver cache so newly assigned content uses the new target environment. Resolution remains upstream of shaping and drawing.
 - Enabling `adjustsFontForContentSizeCategory` now immediately runs the existing adjustment path for the current category. The plain-text path assigns even when UIKit returns the same font object so a newly resolved implicit default replaces any attributed string materialized under the previous category. Partially attributed text continues through the existing preferred-font scaler, which leaves explicit fixed fonts unchanged.
 - The `STULabel` and `STULabelLayer` contracts now state which trait collection resolves defaults and that consumer-provided fonts are preserved. R10's attributed-string copy optimization remains separate.
 
-Files: `Source/STULabel/STULabel.h`, `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabelLayer.h`, `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/DynamicTypeFontScalingTests.swift`, and this tracker.
+Files/commit: `Source/STULabel/STULabel.h`, `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabelLayer.h`, `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/DynamicTypeFontScalingTests.swift`, and this tracker; `f2b11be`.
 
 Validation:
 - Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro. `BuildProject(buildForTesting: true)` passed.
@@ -332,7 +342,7 @@ Adopt the incoming background into the view's authoritative state during prerend
 
 ### Progress and completion record
 
-2026-09-10 — Codex — Complete; committed separately from R04.
+2026-09-10 — Codex — Complete; committed as `ba2e4ef`, separately from R04.
 
 Changes: `configureWithPrerenderer:` adopts the incoming resolved CGColor as a static UIColor in the view before the layer can notify its delegate. This replaces nil or existing view backgrounds consistently; later environment updates derive the displayed color from that authoritative state. Normally assigned dynamic UIColor identity is preserved. The public configuration method documents the imported color semantics.
 
@@ -368,7 +378,7 @@ Consolidate effective link-color calculation. Apply an explicit disabled overrid
 
 ### Progress and completion record
 
-2026-09-09 — Codex — Complete; uncommitted.
+2026-09-09 — Codex — Complete; committed as `e4d71f1`.
 
 Changes and rationale: Consolidated every state and lifecycle update of `overrideLinkColor` around one
 effective-color calculation. An explicit disabled override now wins before tint/dimming/default-link
@@ -376,8 +386,8 @@ fallbacks, so UIKit tint, superview, and window callbacks cannot replace it. Cle
 uses the current effective tint (including UIKit's disabled dimming), and re-enabling restores the
 configured regular-link behavior.
 
-Files/commit: `Source/STULabel/STULabel.mm` and `Tests/STULabelTests/SwiftWrapperTests.swift`; no
-commit.
+Files/commit: `Source/STULabel/STULabel.mm` and `Tests/STULabelTests/SwiftWrapperTests.swift`;
+`e4d71f1`.
 
 Validation, environment, and results: `build-for-testing` and the native Swift Testing suite
 `SwiftWrapperTests` passed on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2. The test
@@ -508,7 +518,7 @@ Keep necessary width-dependent measurement caching and baseline-guide updates. R
 
 ### Progress and completion record
 
-2026-09-09 — Codex — Complete; uncommitted.
+2026-09-09 — Codex — Complete; committed as `3e4b8d2`.
 
 Changes and rationale:
 - Removed `isUpdatingConstraints`, `intrinsicContentSizeIsKnownToAutoLayout`, `waitingForPossibleSetBoundsCall`, and `didSetNeedsLayoutOnSuperview`. Intrinsic measurements now record their width directly, including public queries outside UIKit's constraint-update callback. The previous stored height is no longer needed.
@@ -523,7 +533,7 @@ Validation:
 - `BuildProject(buildForTesting: true)` passed. `RunSomeTests` passed all six new tests, covering both intrinsic-width settings, narrowing/widening, multiline text replacement and clearing, self-sizing container fitting, font/inset changes, baseline positions, content guides, stable subsequent layout calls, and single-line/height-only invalidation fast paths.
 - Final focused result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/85087173-27AD-475D-B786-8AECBD2C6609.txt`.
 - Existing Auto Layout checks: content-guide and guide-deallocation tests passed. Three snapshot tests (baseline anchors, spacing constraints, and non-label spacing) still differ from stored references. A scoped A/B run restored the original `STULabel.mm` and reproduced the same failures; all 17 generated snapshot PNGs were byte-identical between original and patched implementations. Original comparison result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/78DD89B8-16F7-452A-8B64-4A37A9D19C0E.txt`. The R11 patch was then restored and the six new tests rerun successfully.
-- `git diff --check` passed. No snapshot rerecording, commit, or push.
+- `git diff --check` passed. No snapshot rerecording or push.
 
 Remaining scope: snapshot reference differences remain outside R11; G01's other release gates remain open. This establishes the focused iOS 26.2 behavior, not an Xcode 26 toolchain result or a timing benchmark.
 
@@ -555,6 +565,8 @@ This is a clarity improvement; the compiler likely already removes the dead bran
 Removed the permanent `createRotorLinks` switch and directly create rotor-link elements with an
 unconditional rotor assignment. The shared subelement type remains in its non-rotor callers.
 The iOS 26.2 package build and existing accessibility-element lifecycle test pass.
+
+2026-09-10 — Codex — Complete; committed as `31b6916`.
 
 ## R13 — Document the breaking consumer migration contract
 
@@ -636,11 +648,9 @@ Do not replace specialized CoreText layout/drawing or remove old CoreText/VoiceO
 
 ### Final completion record
 
-- Overall state: **Open — initial review handoff**
-- Completed task IDs: R11 (2026-09-09; uncommitted).
+- Overall state: **Open — eight tasks complete; R02 ready for native review**
+- Completed task IDs: R01 (`1bae9ff`), R03 (`01a1b86`), R04 (`133a242`), R05 (`f2b11be`), R06 (`ba2e4ef`), R07 (`e4d71f1`), R11 (`3e4b8d2`), and R12 (`31b6916`).
 - Deferred/superseded task IDs and rationale: None recorded.
-- Required validation still outstanding: G01 and task-specific criteria.
-- Final reviewed commit/worktree: Not yet recorded.
-- Final assessment after fixes: Not yet recorded.
-
-2026-09-10 completion update: R03 (`01a1b86`), R06 (`ba2e4ef`), and R04 are complete in separate commits. The overall release gate remains open.
+- Required validation still outstanding: G01, R02's native UIKit interaction check, and the unchecked criteria on open tasks.
+- Final reviewed commit/worktree: R02 follow-up `ae8600b`; tracker synchronization is recorded in the immediately following commit.
+- Final assessment after fixes: Completed tasks have focused source/runtime evidence and recorded commits. The reviewed R02 protocol defects are fixed; the branch remains short of release readiness while the open tasks and G01 remain unresolved.
