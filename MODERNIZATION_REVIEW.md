@@ -70,7 +70,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Open | Coordinate with R03, R05, R06 |
 | R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
-| R06 | Must fix | Single background-color owner across prerenderer configuration | Open | Coordinate with R04 |
+| R06 | Must fix | Single background-color owner across prerenderer configuration | Complete | Prerequisite for R04 environment synchronization |
 | R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
 | R08 | Must fix for distribution | Remove unsafe flags from public package dependency graph | Open | Coordinate with G01 and ARC work |
 | R09 | Strong improvement | Restore deliberate rendering concurrency | Open | Uncommitted changes at review; coordinate with R03 |
@@ -272,8 +272,8 @@ No implementation recorded. Next: trace default-font use in label, standalone la
 ## R06 — Single background-color owner across prerenderer configuration
 
 **Classification:** Must fix  
-**Status:** Open  
-**Owner:** Unassigned
+**Status:** Complete
+**Owner:** Codex
 
 ### Problem and evidence
 
@@ -287,15 +287,23 @@ Adopt the incoming background into the view's authoritative state during prerend
 
 ### Acceptance criteria
 
-- [ ] Configuring a fresh label imports a coherent view/layer background.
-- [ ] Configuring a label with an existing background replaces it consistently.
-- [ ] Subsequent appearance changes do not erase or restore stale colors.
-- [ ] Normal dynamic UIColor backgrounds still resolve against target traits.
-- [ ] Nil/transparent backgrounds and relevant opacity/render-format state remain coherent.
+- [x] Configuring a fresh label imports a coherent view/layer background.
+- [x] Configuring a label with an existing background replaces it consistently.
+- [x] Subsequent appearance changes do not erase or restore stale colors.
+- [x] Normal dynamic UIColor backgrounds still resolve against target traits.
+- [x] Nil/transparent backgrounds and relevant opacity/render-format state remain coherent.
 
 ### Progress and completion record
 
-No implementation recorded. Next: trace the configuration contract and consolidate background ownership.
+2026-09-10 — Codex — Complete; committed separately from R04.
+
+Changes: `configureWithPrerenderer:` adopts the incoming resolved CGColor as a static UIColor in the view before the layer can notify its delegate. This replaces nil or existing view backgrounds consistently; later environment updates derive the displayed color from that authoritative state. Normally assigned dynamic UIColor identity is preserved. The public configuration method documents the imported color semantics.
+
+Files: `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabel.h`, and `Tests/STULabelTests/PrerenderedBackgroundTests.swift`.
+
+Validation: Xcode MCP, STULabel-Package, iPhone 17 Pro / actual iOS 26.2 (23C54). All six background combinations passed: fresh/existing view background × nil/red/transparent import, followed by dark/light changes and normal dynamic background assignment. These cases passed within the 21-case rendering/layout regression run on Xcode 27 Release Candidate, result `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/67E0A2EC-EDD1-4CC1-AEC0-75BB17B94B61.txt`. The tests were then moved into their own suite for the atomic R06 commit.
+
+Remaining scope: R04 owns complete environment synchronization; R05's default-font behavior remains separate.
 
 ## R07 — Preserve disabled link colors during tint/lifecycle changes
 

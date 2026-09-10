@@ -2350,6 +2350,10 @@ static void initializeTextInteraction(STULabel *self)
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer
 {
   _layer.renderingTraitCollection = self.traitCollection;
+  // Prerenderers own a resolved CGColor. Import it as a static UIColor into the view's
+  // authoritative background state before the layer can notify its delegate.
+  CGColorRef background = prerenderer.backgroundColor;
+  _backgroundColor = background ? [UIColor colorWithCGColor:background] : nil;
   const LabelParameters &params = STULabelLayerGetParams(_layer);
   UIColor *const overrideTextColor = params.overrideTextColor().unretained;
   UIColor *const overrideLinkColor = params.overrideLinkColor().unretained;

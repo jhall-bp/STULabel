@@ -24,6 +24,8 @@ STU_EXPORT
 /// Default value: false
 @property (nonatomic) bool displaysAsynchronously;
 
+/// Adopts the prerenderer's background as a static UIColor, replacing the view's previous background.
+/// Assign a dynamic UIColor to backgroundColor afterward if the background should adapt to traits.
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer;
 
 /// The attributed string that should be displayed in the label.
