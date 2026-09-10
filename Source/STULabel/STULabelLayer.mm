@@ -240,6 +240,11 @@ public:
     traitCollection_ = [traitCollection copy];
     traitDisplayScale_ = clampDisplayScaleInput(traitCollection.displayScale);
     displayGamut_ = traitCollection.displayGamut;
+    // Deferred tiles must stop publishing immediately, before the next parent display.
+    // Clearing their drawing block abandons in-flight tiles using the existing task ownership.
+    if (renderMode_ == LabelRenderMode::tiledSublayer) {
+      clearContent();
+    }
     invalidateImage();
   }
 
@@ -1518,17 +1523,22 @@ private:
     CGPoint const textFrameOrigin = -contentBoundsInTextFrame_.origin;
     STUTextFrameDrawingOptions *const drawingOptions = params_.frozenDrawingOptions().unretained;
     STULabelDrawingBlock const drawingBlock = params_.drawingBlock;
+    // Retain the same immutable environment used to select renderInfo.imageFormat.
+    // Both visible and prerendered tiles invoke this closure after the parent trait scope ends.
+    UITraitCollection *const traits = traitCollection_;
     ((STULabelTiledLayer *)contentLayer_).drawingBlock =
         ^(CGContext *context, CGRect __unused rect, const STUCancellationFlag *cancellationFlag) {
-          drawLabelTextFrame(textFrame,
-                             range,
-                             textFrameOrigin,
-                             context,
-                             ContextBaseCTM_d{1},
-                             PixelAlignBaselines{true},
-                             drawingOptions,
-                             drawingBlock,
-                             cancellationFlag);
+          [traits performAsCurrentTraitCollection:^{
+            drawLabelTextFrame(textFrame,
+                               range,
+                               textFrameOrigin,
+                               context,
+                               ContextBaseCTM_d{1},
+                               PixelAlignBaselines{true},
+                               drawingOptions,
+                               drawingBlock,
+                               cancellationFlag);
+          }];
         };
   }
 

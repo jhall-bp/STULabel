@@ -67,7 +67,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | --- | --- | --- | --- | --- |
 | R01 | Must fix | Transactional text-input document publication | Complete | Coordinated with R02 |
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
-| R03 | Must fix | Preserve target traits in tiled rendering | Open | Share environment model with R04 |
+| R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Open | Coordinate with R03, R05, R06 |
 | R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Open | Coordinate with R04 |
@@ -161,8 +161,8 @@ Remaining risk/blocker and next action: Native UIKit selection smoke testing is 
 ## R03 — Preserve target traits in tiled rendering
 
 **Classification:** Must fix  
-**Status:** Open  
-**Owner:** Unassigned
+**Status:** Complete
+**Owner:** Codex
 
 ### Problem and evidence
 
@@ -176,16 +176,38 @@ Capture an immutable target trait snapshot with each tile generation. Activate i
 
 ### Acceptance criteria
 
-- [ ] Default and custom tile drawing observe the requested target traits.
-- [ ] Synchronous visible tiles and asynchronously prepared tiles are covered.
-- [ ] Changing traits cannot publish stale tiles from an older generation.
-- [ ] Bitmap-format selection and pixel rendering use the same environment.
-- [ ] Ordinary non-tiled rendering remains correct.
-- [ ] Validation includes the actual tiled path, not just the parent layer's initial display callback.
+- [x] Default and custom tile drawing observe the requested target traits.
+- [x] Synchronous visible tiles and asynchronously prepared tiles are covered.
+- [x] Changing traits cannot publish stale tiles from an older generation.
+- [x] Bitmap-format selection and pixel rendering use the same environment.
+- [x] Ordinary non-tiled rendering remains correct.
+- [x] Validation includes the actual tiled path, not just the parent layer's initial display callback.
 
 ### Progress and completion record
 
-No implementation recorded. Next: trace tile generation, cancellation, and closure ownership before choosing the capture boundary.
+2026-09-10 — Codex — Complete; uncommitted.
+
+Changes and rationale:
+- Each installed tile drawing closure retains the layer's immutable `renderingTraitCollection` snapshot, the same snapshot active when selecting the image format. It activates that snapshot once around the complete default/custom drawing operation. The visible-tile and background-prerender paths already share this closure, so neither needs another environment property or per-glyph work.
+- A changed target immediately clears tiled content, before scheduling the parent redraw. Replacing the tile drawing block removes existing tiles and uses the existing cancellation/abandonment ownership: running tiles lose their layer, receive cancellation, and are destroyed by their task after completion. They cannot rejoin the new generation. No generation counter or second cancellation mechanism was added.
+- Equal snapshots remain a no-op. Pixel invalidation retains the existing text frame; the tests verify frame identity across dark/light/dark changes.
+
+Coordination contract for R04–R06:
+- R04 remains responsible for refreshing the complete snapshot from the view at its environment preparation/invalidation boundaries. It must use the layer setter, which now also retires deferred tiles. The tile callback captures the complete snapshot unchanged, including content size, direction, size class, and custom traits; it must not read a view or mutable layer on worker threads.
+- R05 should resolve/cache preferred defaults against that explicit target upstream of shaping. Tile rendering neither selects fonts nor owns font invalidation. The regression uses an explicit font to isolate R03 from the still-open default-font issue.
+- R06 should make the view's UIColor background authoritative and adopt the prerenderer's incoming background there. Tiles do not acquire a second background owner. Background adoption and target snapshot synchronization belong before render preparation/format selection.
+- R03 requires neither the R04 callback rewrite nor the R05/R06 behavior changes to fix deferred snapshot transport. Those tasks remain Open; this completion does not claim that the view currently synchronizes every trait.
+
+Files: `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/TiledRenderingTraitsTests.swift`, and this tracker. No commit or push.
+
+Validation:
+- Xcode MCP `BuildProject(buildForTesting: true)` and `RunSomeTests`, generated package workspace, `STULabel-Package`, iPhone 17 Pro (26.2), Xcode 27 Beta 6 / iOS 27 SDK. Test console confirms actual runtime **iOS 26.2 (23C54)**.
+- All five Swift Testing cases pass: ordinary/tiled × default/custom drawing, plus an in-flight background tile held across a trait change. The tiled cases invoke the actual child layer after the parent's trait scope ends, inspect target appearance/content-size/direction/size-class values, verify RGB format for colored text, and inspect red/white pixels across dark/light/dark changes.
+- The scrolling-driven background case proves that display returns while the tile callback is suspended, then verifies immediate retirement of old tile contents and drawing under the new target after resumption.
+- A scoped baseline comparison removed only the two production changes and rebuilt: both ordinary cases passed, both tiled pixel/trait cases failed, and the background case failed its old-trait and immediate-retirement assertions. Baseline result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/46AFAB49-5F9D-46D1-8BA6-A4B3AB571BFC.txt`.
+- Restored the production fix, rebuilt, and reran successfully. Final result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/F8D7A93F-3DE0-4F5B-8C60-4661A62EB1FE.txt`.
+
+Remaining scope: R04–R06 and G01 remain open. No timing claim or aggregate-suite health claim is made.
 
 ## R04 — Synchronize the complete rendering environment
 
