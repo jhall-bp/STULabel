@@ -12,8 +12,110 @@ private final class LabelWithOverridePreferredContentSizeCategory: UILabel {
   }
 }
 
+private final class STULabelWithOverridePreferredContentSizeCategory: STULabel {
+  var preferredContentSizeCategory: UIContentSizeCategory = .unspecified {
+    didSet {
+      traitOverrides.preferredContentSizeCategory = preferredContentSizeCategory
+      updateTraitsIfNeeded()
+    }
+  }
+}
+
 @MainActor
 struct DynamicTypeFontScalingTests {
+
+  @Test
+  func `default fonts use each layer's rendering environment`() {
+    let largeTraits = UITraitCollection(preferredContentSizeCategory: .large)
+    let accessibilityTraits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+
+    let largeLayer = STULabelLayer()
+    largeLayer.renderingTraitCollection = largeTraits
+    largeLayer.text = "Large"
+    let largeFont = largeLayer.font
+    #expect(
+      largeFont
+        == UIFont.preferredFont(forTextStyle: .body, compatibleWith: largeTraits))
+    #expect(largeLayer.font === largeFont)
+
+    let accessibilityLayer = STULabelLayer()
+    accessibilityLayer.renderingTraitCollection = accessibilityTraits
+    accessibilityLayer.text = "Accessibility"
+    let accessibilityFont = accessibilityLayer.font
+    #expect(
+      accessibilityFont
+        == UIFont.preferredFont(forTextStyle: .body, compatibleWith: accessibilityTraits))
+    #expect(accessibilityLayer.font === accessibilityFont)
+    #expect(accessibilityFont != largeFont)
+  }
+
+  @Test
+  func `plain and partially attributed text share the trait-correct default font`() {
+    let traits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+    let expectedFont = UIFont.preferredFont(forTextStyle: .body, compatibleWith: traits)
+    let explicitFont = UIFont.systemFont(ofSize: 13)
+    let layer = STULabelLayer()
+    layer.renderingTraitCollection = traits
+
+    layer.text = "Plain"
+    #expect(layer.font == expectedFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == expectedFont)
+
+    layer.attributedText = NSAttributedString([
+      ("Default", [:]),
+      (" explicit", [.font: explicitFont]),
+    ])
+    #expect(layer.font == expectedFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == expectedFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 8, effectiveRange: nil) as? UIFont == explicitFont)
+  }
+
+  @Test
+  func `enabling font adjustment immediately applies the current category`() {
+    let largeTraits = UITraitCollection(preferredContentSizeCategory: .large)
+    let accessibilityCategory = UIContentSizeCategory.accessibilityExtraExtraExtraLarge
+    let accessibilityTraits = UITraitCollection(
+      preferredContentSizeCategory: accessibilityCategory)
+    let label = STULabelWithOverridePreferredContentSizeCategory()
+    label.preferredContentSizeCategory = .large
+    label.text = "Default"
+    let largeFont = label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+    #expect(
+      largeFont
+        == UIFont.preferredFont(forTextStyle: .body, compatibleWith: largeTraits))
+
+    label.preferredContentSizeCategory = accessibilityCategory
+    #expect(
+      label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == largeFont)
+
+    label.adjustsFontForContentSizeCategory = true
+    let expectedFont = UIFont.preferredFont(
+      forTextStyle: .body, compatibleWith: accessibilityTraits)
+    #expect(label.font == expectedFont)
+    #expect(
+      label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == expectedFont)
+
+    let explicitFont = UIFont.systemFont(ofSize: 13)
+    let attributedLabel = STULabelWithOverridePreferredContentSizeCategory()
+    attributedLabel.preferredContentSizeCategory = .large
+    attributedLabel.attributedText = NSAttributedString([
+      ("Default", [:]),
+      (" explicit", [.font: explicitFont]),
+    ])
+    attributedLabel.preferredContentSizeCategory = accessibilityCategory
+    attributedLabel.adjustsFontForContentSizeCategory = true
+    #expect(
+      attributedLabel.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == expectedFont)
+    #expect(
+      attributedLabel.attributedText.attribute(.font, at: 8, effectiveRange: nil) as? UIFont
+        == explicitFont)
+  }
 
   @Test
   func `canonical content size categories are decoded correctly`() {

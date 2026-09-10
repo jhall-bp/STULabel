@@ -35,12 +35,15 @@ STU_EXPORT
 /// @c textAlignment properties are set to the corresponding attribute values of the first character
 /// in the string.
 ///
-/// The label uses the preferred @c UIFontTextStyleBody font and @c UIColor.labelColor for ranges
-/// in the attributed string that have no font or foreground color attribute.
+/// The label uses the preferred @c UIFontTextStyleBody font resolved for @c self.traitCollection
+/// and @c UIColor.labelColor for ranges in the attributed string that have no font or foreground
+/// color attribute. Consumer-provided fonts are preserved.
 @property (nonatomic, copy, null_resettable) NSAttributedString *attributedText;
 
 @property (nonatomic, copy, null_resettable) NSString *text;
 
+/// The default value is the preferred @c UIFontTextStyleBody font resolved for
+/// @c self.traitCollection.
 @property (nonatomic, null_resettable) UIFont *font;
 
 @property (nonatomic, null_resettable) UIColor *textColor;

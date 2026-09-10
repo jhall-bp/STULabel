@@ -149,6 +149,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer>
   NSObject<STULabelLayerDelegate> *__weak labelLayerDelegate_;
 
   NSString *string_;
+  UIFont *defaultFont_;
   UIFont *font_;
   UIColor *textColor_;
   NSTextAlignment textAlignment_;
@@ -238,7 +239,13 @@ public:
     STU_CHECK(traitCollection != nil);
     if ([traitCollection_ isEqual:traitCollection])
       return;
+    // Existing plain text keeps its effective font until the owner opts into scaling or assigns
+    // new content. Preserve that font before resetting the resolver for the new environment.
+    if (string_ && !font_ && defaultFont_) {
+      font_ = defaultFont_;
+    }
     traitCollection_ = [traitCollection copy];
+    defaultFont_ = nil;
     traitDisplayScale_ = clampDisplayScaleInput(traitCollection.displayScale);
     displayGamut_ = traitCollection.displayGamut;
     // Deferred tiles must stop publishing immediately, before the next parent display.
@@ -412,11 +419,14 @@ public:
 
 private:
   STU_NO_INLINE
-  static Unretained<UIFont * __nonnull> defaultFont()
+  Unretained<UIFont * __nonnull> defaultFont()
   {
-    STU_STATIC_CONST_ONCE(UIFont *, value, [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
-    STU_ANALYZER_ASSUME(value != nil);
-    return value;
+    if (!defaultFont_) {
+      defaultFont_ = [UIFont preferredFontForTextStyle:UIFontTextStyleBody
+                              compatibleWithTraitCollection:traitCollection_];
+      STU_ANALYZER_ASSUME(defaultFont_ != nil);
+    }
+    return defaultFont_;
   }
 
   STU_NO_INLINE

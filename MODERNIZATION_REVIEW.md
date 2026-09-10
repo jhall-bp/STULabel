@@ -69,7 +69,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Complete | R03 and R06 integrated; R05 default-font semantics remain separate |
-| R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
+| R05 | Must fix | Trait-correct preferred default fonts | Complete | Uses R04 trait snapshot; R10 remains separate |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Complete | Prerequisite for R04 environment synchronization |
 | R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
 | R08 | Must fix for distribution | Remove unsafe flags from public package dependency graph | Open | Coordinate with G01 and ARC work |
@@ -265,8 +265,8 @@ Remaining scope: R05 and G01 remain open. This is focused iOS 26.2 correctness e
 ## R05 — Trait-correct preferred default fonts
 
 **Classification:** Must fix  
-**Status:** Open  
-**Owner:** Unassigned
+**Status:** Complete
+**Owner:** Codex
 
 ### Problem and evidence
 
@@ -280,16 +280,31 @@ Resolve the preferred default against the explicit target traits. Cache per rele
 
 ### Acceptance criteria
 
-- [ ] A label created after the global default was first used still gets its own correct preferred font.
-- [ ] Different local trait environments do not contaminate one another.
-- [ ] Enabling adjustment applies the current category immediately.
-- [ ] Plain and partially attributed text use consistent defaults.
-- [ ] Explicit consumer-provided font semantics remain intentional and documented.
-- [ ] Font resolution/caching avoids repeated expensive work in shaping or drawing loops.
+- [x] A label created after the global default was first used still gets its own correct preferred font.
+- [x] Different local trait environments do not contaminate one another.
+- [x] Enabling adjustment applies the current category immediately.
+- [x] Plain and partially attributed text use consistent defaults.
+- [x] Explicit consumer-provided font semantics remain intentional and documented.
+- [x] Font resolution/caching avoids repeated expensive work in shaping or drawing loops.
 
 ### Progress and completion record
 
-No implementation recorded. Next: trace default-font use in label, standalone layer, and prerenderer paths.
+2026-09-11 — Codex — Complete; committed separately from R04.
+
+Changes and rationale:
+- The process-wide preferred-body-font singleton was replaced by a lazy per-layer default resolved with the layer's complete `renderingTraitCollection`. A trait transition preserves an already-effective implicit plain-text font, maintaining the opt-in Dynamic Type contract, then retires the resolver cache so newly assigned content uses the new target environment. Resolution remains upstream of shaping and drawing.
+- Enabling `adjustsFontForContentSizeCategory` now immediately runs the existing adjustment path for the current category. The plain-text path assigns even when UIKit returns the same font object so a newly resolved implicit default replaces any attributed string materialized under the previous category. Partially attributed text continues through the existing preferred-font scaler, which leaves explicit fixed fonts unchanged.
+- The `STULabel` and `STULabelLayer` contracts now state which trait collection resolves defaults and that consumer-provided fonts are preserved. R10's attributed-string copy optimization remains separate.
+
+Files: `Source/STULabel/STULabel.h`, `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabelLayer.h`, `Source/STULabel/STULabelLayer.mm`, `Tests/STULabelTests/DynamicTypeFontScalingTests.swift`, and this tracker.
+
+Validation:
+- Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro. `BuildProject(buildForTesting: true)` passed.
+- Before the production change, all three new regressions failed: a layer targeted at accessibility XXXL received the globally warmed 17-point body font instead of 53 points, plain and partially attributed defaults were likewise 17 points, and enabling adjustment left materialized text at 17 points. Baseline result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/777DB961-CD09-4E7D-89F2-F7B6B5F1EE22.txt`.
+- Final focused validation passed all six Dynamic Type tests and all 15 R03/R04/R06 rendering-environment, tiled-rendering, and prerendered-background cases. Results: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/1B8DCA65-97D5-4E4E-A114-7786725EF92C.txt` and `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/A4275653-5C80-4740-9FE5-A79F7A14A424.txt`.
+- The aggregate plan was also retried. It remained red at 73 passed, 108 failed, and two not run: five Objective-C Unicode tests rejected the simulator's ICU data version, snapshot/layout assertions failed, and the Swift test host repeatedly restarted, causing entire suites (including the independently passing R03–R06 suites) to be reported as crashes. Aggregate result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunAllTests/5D7C2723-5422-4E27-AA2B-2616F0249C59.txt`.
+
+Remaining scope: R10 may remove eager attributed-string normalization without changing the default-font ownership established here. Aggregate test-plan stabilization is outside R05.
 
 ## R06 — Single background-color owner across prerenderer configuration
 

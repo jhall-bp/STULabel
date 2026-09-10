@@ -1021,7 +1021,8 @@ STU_INLINE UIContentSizeCategory preferredContentSizeCategory(UIView *self)
 
   _bits.adjustsFontForContentSizeCategory = value;
   if (value) {
-    _contentSizeCategory = preferredContentSizeCategory(self);
+    _contentSizeCategory = nil;
+    [self updateFontForContentSizeCategory];
   } else {
     _contentSizeCategory = nil;
   }
@@ -1065,9 +1066,10 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
     } else {
       UIFont *const font = _layer.font;
       UIFont *const newFont = [font stu_fontAdjustedForContentSizeCategory:newCategory];
-      if (newFont != font) {
-        _layer.font = newFont;
-      }
+      // Assign even when UIKit returns the same object. For an implicit default this materializes
+      // the font selected for the layer's current rendering environment and invalidates any
+      // attributed string that was previously constructed with an older default.
+      _layer.font = newFont;
     }
   }
 }
