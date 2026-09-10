@@ -290,11 +290,15 @@ struct UITextInputTests {
     let beforeSpace = try #require(input.position(from: start, offset: 3))
     let afterSpace = try #require(input.position(from: beforeSpace, in: .right, offset: 1))
     let afterBidiBoundary = try #require(input.position(from: afterSpace, in: .right, offset: 1))
-    let nextBidiPosition = try #require(input.position(from: afterBidiBoundary, in: .right, offset: 1))
+    let nextBidiPosition = try #require(
+      input.position(from: afterBidiBoundary, in: .right, offset: 1))
+    let zeroOffsetPosition = try #require(input.position(from: afterSpace, offset: 0))
 
     #expect(input.offset(from: start, to: afterSpace) == 4)
     #expect(input.offset(from: start, to: afterBidiBoundary) == 7)
     #expect(input.offset(from: start, to: nextBidiPosition) == 6)
+    #expect(zeroOffsetPosition == afterSpace)
+    #expect(input.caretRect(for: zeroOffsetPosition) == input.caretRect(for: afterSpace))
 
     let documentRange = try #require(documentRange(for: input))
     let farthestRight = try #require(input.position(within: documentRange, farthestIn: .right))
@@ -312,7 +316,8 @@ struct UITextInputTests {
         offset: 1))
     let afterEmoji = try #require(leftToRightInput.position(from: afterA, in: .right, offset: 1))
     #expect(leftToRightInput.offset(from: leftToRightInput.beginningOfDocument, to: afterA) == 1)
-    #expect(leftToRightInput.offset(from: leftToRightInput.beginningOfDocument, to: afterEmoji) == 6)
+    #expect(
+      leftToRightInput.offset(from: leftToRightInput.beginningOfDocument, to: afterEmoji) == 6)
 
     let rightToLeftLabel = self.label(with: "אבג", size: CGSize(width: 200, height: 50))
     let rightToLeftInput: any UITextInput = rightToLeftLabel
@@ -325,7 +330,10 @@ struct UITextInputTests {
       rightToLeftInput.offset(
         from: rightToLeftInput.beginningOfDocument,
         to: afterFirstVisualCharacter) == 1)
+  }
 
+  @Test
+  func `Horizontal caret movement crosses wrapped lines in both writing directions`() throws {
     let wrappedLabel = self.label(with: "first second third", size: CGSize(width: 80, height: 100))
     let wrappedInput: any UITextInput = wrappedLabel
     let nextLine = try #require(
@@ -333,7 +341,73 @@ struct UITextInputTests {
         from: wrappedInput.beginningOfDocument,
         in: .down,
         offset: 1))
-    #expect(wrappedInput.compare(nextLine, to: wrappedInput.beginningOfDocument) == .orderedDescending)
+    #expect(
+      wrappedInput.compare(nextLine, to: wrappedInput.beginningOfDocument) == .orderedDescending)
+
+    var wrappedPosition = wrappedInput.beginningOfDocument
+    var movedToAnotherLine = false
+    var previousCaret = wrappedInput.caretRect(for: wrappedPosition)
+    for _ in 0...wrappedLabel.text.utf16.count {
+      guard let next = wrappedInput.position(from: wrappedPosition, in: .right, offset: 1) else {
+        break
+      }
+      let caret = wrappedInput.caretRect(for: next)
+      movedToAnotherLine = movedToAnotherLine || caret.midY > previousCaret.midY
+      previousCaret = caret
+      wrappedPosition = next
+    }
+    #expect(movedToAnotherLine)
+    #expect(wrappedInput.compare(wrappedPosition, to: wrappedInput.endOfDocument) == .orderedSame)
+
+    for _ in 0...wrappedLabel.text.utf16.count {
+      guard let previous = wrappedInput.position(from: wrappedPosition, in: .left, offset: 1) else {
+        break
+      }
+      wrappedPosition = previous
+    }
+    #expect(
+      wrappedInput.compare(wrappedPosition, to: wrappedInput.beginningOfDocument) == .orderedSame)
+
+    let wrappedRightToLeftLabel = self.label(
+      with: "אבג דהו זחט יכל מנס",
+      size: CGSize(width: 80, height: 100))
+    wrappedRightToLeftLabel.semanticContentAttribute = .forceRightToLeft
+    wrappedRightToLeftLabel.layoutIfNeeded()
+    _ = wrappedRightToLeftLabel.textFrame
+    notifyTextDidDisplay(in: wrappedRightToLeftLabel)
+    let wrappedRightToLeftInput: any UITextInput = wrappedRightToLeftLabel
+    var wrappedRightToLeftPosition = wrappedRightToLeftInput.beginningOfDocument
+    for _ in 0...wrappedRightToLeftLabel.text.utf16.count {
+      guard
+        let next = wrappedRightToLeftInput.position(
+          from: wrappedRightToLeftPosition,
+          in: .left,
+          offset: 1)
+      else {
+        break
+      }
+      wrappedRightToLeftPosition = next
+    }
+    #expect(
+      wrappedRightToLeftInput.compare(
+        wrappedRightToLeftPosition,
+        to: wrappedRightToLeftInput.endOfDocument) == .orderedSame)
+
+    for _ in 0...wrappedRightToLeftLabel.text.utf16.count {
+      guard
+        let previous = wrappedRightToLeftInput.position(
+          from: wrappedRightToLeftPosition,
+          in: .right,
+          offset: 1)
+      else {
+        break
+      }
+      wrappedRightToLeftPosition = previous
+    }
+    #expect(
+      wrappedRightToLeftInput.compare(
+        wrappedRightToLeftPosition,
+        to: wrappedRightToLeftInput.beginningOfDocument) == .orderedSame)
   }
 
   @Test
