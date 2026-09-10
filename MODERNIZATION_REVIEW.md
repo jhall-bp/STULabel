@@ -68,7 +68,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R01 | Must fix | Transactional text-input document publication | Complete | Coordinated with R02 |
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
-| R04 | Must fix | Synchronize the complete rendering environment | Open | Coordinate with R03, R05, R06 |
+| R04 | Must fix | Synchronize the complete rendering environment | Complete | R03 and R06 integrated; R05 default-font semantics remain separate |
 | R05 | Must fix | Trait-correct preferred default fonts | Open | Coordinate with R04, R10 |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Complete | Prerequisite for R04 environment synchronization |
 | R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
@@ -212,8 +212,8 @@ Remaining scope: R04–R06 and G01 remain open. No timing claim or aggregate-sui
 ## R04 — Synchronize the complete rendering environment
 
 **Classification:** Must fix  
-**Status:** Open  
-**Owner:** Unassigned
+**Status:** Complete
+**Owner:** Codex
 
 ### Problem and evidence
 
@@ -229,16 +229,38 @@ Do not use ambient background-thread traits or repeatedly add unrelated callback
 
 ### Acceptance criteria
 
-- [ ] The layer snapshot agrees with relevant current view traits before rendering.
-- [ ] Content-size, layout-direction, display properties, and appearance changes are covered.
-- [ ] Custom drawing receives the correct environment.
-- [ ] Async results are accepted only for the environment that produced them.
-- [ ] Trait-only pixel changes preserve shaping/layout where those stages do not depend on the changed traits.
-- [ ] R03, R05, and R06 use this model without competing state owners.
+- [x] The layer snapshot agrees with relevant current view traits before rendering.
+- [x] Content-size, layout-direction, display properties, and appearance changes are covered.
+- [x] Custom drawing receives the correct environment.
+- [x] Async results are accepted only for the environment that produced them.
+- [x] Trait-only pixel changes preserve shaping/layout where those stages do not depend on the changed traits.
+- [x] R03, R05, and R06 use this model without competing state owners.
 
 ### Progress and completion record
 
-No implementation recorded. Next: document environment ownership and invalidation boundaries before editing the callbacks.
+2026-09-10 — Codex — Complete; implementation and validation recorded in the R04 commit.
+
+Changes and ownership:
+- The view owns environment synchronization in `updateRenderingEnvironment`. One registration replaces the separate appearance/display/direction callbacks and the conditional content-size registration. Standard appearance, content-size, direction, display, idiom, and size-class changes publish the complete immutable collection through the existing layer setter, even when Dynamic Type adjustment is disabled.
+- Layout preparation, explicit view display invalidation, window changes, and prerenderer configuration use that same update. The layer invokes a private, cached delegate method before synchronous/asynchronous rendering and before accepting completed work. Worker threads retain snapshots and never access the view.
+- Async completion detaches the finishing task before synchronizing the view, then rejects results if layout was invalidated or the full trait collection/display scale no longer matches. This also covers already queued completions and waiting prerenderers when no trait invalidation callback ran.
+- Drawing-only changes retain the existing text frame. Display-scale changes update scale, while unrelated traits preserve an explicitly assigned contentScaleFactor. Semantic content direction and the existing opt-in font scaling behavior remain supported.
+- Custom drawing or dynamic-color dependencies beyond the standard registered traits use UIKit's `registerForTraitChanges` with `label.setNeedsDisplay()`. This is documented on `drawingBlock` and tested with a custom trait. Background-thread trait reads cannot participate in UIView automatic trait tracking. The complete snapshot, including custom values, is still checked before every render and async publication.
+
+Coordination:
+- R03 consumes this snapshot and immediately retires obsolete tiled generations through the layer setter. Its five regression cases remain passing. R03 was committed as `01a1b86`.
+- R06's authoritative view background adoption was required before centralizing color resolution and was committed separately as `ba2e4ef`. Prerenderer CGColor imports are static UIColors; normal dynamic UIColor assignments retain identity.
+- R05 remains Open: resolve preferred default fonts against this same explicit layer snapshot upstream of shaping. This change preserves the existing opt-in font-adjustment semantics; it does not claim to fix globally cached defaults or immediate scaling on enablement.
+
+Files: `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabel.h`, `Source/STULabel/STULabelLayer.mm`, `Source/STULabel/STULabelLayer-Internal.hpp`, and `Tests/STULabelTests/RenderingEnvironmentTests.swift`.
+
+Validation:
+- Xcode MCP, STULabel-Package, iPhone 17 Pro (26.2), Xcode 27 Release Candidate / iOS 27 SDK. Console confirms actual runtime **iOS 26.2 (23C54)**. After a stalled headless service connection, the same MCP APIs were invoked through `mcpbridge` connected to the running Xcode app; no command-line build or simulator substitute was used.
+- `BuildProject(buildForTesting: true)` passed. `RunSomeTests` selected entire suites so all parameterized cases ran: four R04 environment cases, six R06 background cases, five R03 tiled cases, and six existing intrinsic-layout cases — **21 passed, zero failed**.
+- A scoped baseline comparison restored only the three R04 production files to the committed R03/R06 state and rebuilt. All four R04 cases failed: stale content-size/custom traits and acceptance of obsolete regular/prerendered async results. Baseline result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/9B9464A6-C413-4A0A-9DD7-04402A6D9F7F.txt`.
+- Restored the R04 implementation, rebuilt, and reran all 21 focused cases successfully. Final result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/379A7A2B-56CF-4CC5-9768-9C2A9C3EB608.txt`. `git diff --check` passed.
+
+Remaining scope: R05 and G01 remain open. This is focused iOS 26.2 correctness evidence, not aggregate-suite, Xcode 26 toolchain, or performance-benchmark evidence.
 
 ## R05 — Trait-correct preferred default fonts
 
@@ -605,3 +627,5 @@ Do not replace specialized CoreText layout/drawing or remove old CoreText/VoiceO
 - Required validation still outstanding: G01 and task-specific criteria.
 - Final reviewed commit/worktree: Not yet recorded.
 - Final assessment after fixes: Not yet recorded.
+
+2026-09-10 completion update: R03 (`01a1b86`), R06 (`ba2e4ef`), and R04 are complete in separate commits. The overall release gate remains open.

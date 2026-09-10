@@ -6,6 +6,11 @@
 
 #import "Internal/Unretained.hpp"
 
+// Implemented by the owning view; invoked only on the main thread at render boundaries.
+@protocol STULabelRenderingEnvironment <NSObject>
+- (void)stu_labelLayerPrepareRenderingEnvironment:(STULabelLayer *)layer;
+@end
+
 @interface STULabelLayer ()
 
 - (void)stu_didMoveToWindow:(UIWindow*)window;

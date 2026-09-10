@@ -135,6 +135,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer>
   LabelLayerDidDisplayTextMethod didDisplayTextMethod_;
   LabelLayerDidMoveDisplayedTextMethod didMoveDisplayedTextMethod_;
   LabelLayerDelegateMethod textLayoutWasInvalidatedMethod_;
+  LabelLayerDelegateMethod prepareRenderingEnvironmentMethod_;
 
   LabelTextFrameInfo textFrameInfo_;
   CGPoint textFrameOrigin_;
@@ -273,7 +274,11 @@ public:
       sel = @selector(labelLayerTextLayoutWasInvalidated:);
       textLayoutWasInvalidatedMethod_ =
           ![delegate respondsToSelector:sel] ? nil : (LabelLayerDelegateMethod)[delegate methodForSelector:sel];
+      sel = @selector(stu_labelLayerPrepareRenderingEnvironment:);
+      prepareRenderingEnvironmentMethod_ =
+          ![delegate respondsToSelector:sel] ? nil : (LabelLayerDelegateMethod)[delegate methodForSelector:sel];
     } else {
+      prepareRenderingEnvironmentMethod_ = nil;
       labelLayerDelegate_ = nil;
       shouldDisplayAsyncMethod_ = nil;
       didDisplayTextMethod_ = nil;
@@ -1213,8 +1218,18 @@ public:
 
   /// MARK: - Displaying
 
+  void prepareRenderingEnvironment()
+  {
+    if (prepareRenderingEnvironmentMethod_) {
+      if (auto *const delegate = labelLayerDelegate_) {
+        prepareRenderingEnvironmentMethod_(delegate, @selector(stu_labelLayerPrepareRenderingEnvironment:), self);
+      }
+    }
+  }
+
   void display()
   {
+    prepareRenderingEnvironment();
     [traitCollection_ performAsCurrentTraitCollection:^{
       displayInCurrentTraitCollection();
     }];
@@ -2017,9 +2032,17 @@ void LabelRenderTask::finish_onMainThread(void *taskPointer)
 
   const auto assignTaskTo = [&task](LabelLayer &label) {
     STU_ASSERT(&task == label.task_);
+    // Detach before the view synchronizes: that may invalidate layout and remove tasks.
+    // A prerenderer has also already removed this label from its waiting set.
     label.task_ = nullptr;
+    STULabelLayer *NS_VALID_UNTIL_END_OF_SCOPE layer = label.self;
+    label.prepareRenderingEnvironment();
+    if (label.isInvalidated_ || ![task.traitCollection_ isEqual:label.traitCollection_] ||
+        task.params_.displayScale() != label.params_.displayScale()) {
+      [layer setNeedsDisplay];
+      return;
+    }
     if (!label.taskIsStale_) {
-      STULabelLayer *NS_VALID_UNTIL_END_OF_SCOPE layer = label.self;
       task.assignResultTo(label);
       auto *const delegate = label.labelLayerDelegate_;
       label.didDisplayText(delegate);

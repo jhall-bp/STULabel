@@ -585,10 +585,6 @@ static void updateLayoutGuides(STULabel *label);
   STULabelTextInteraction *_textInteraction API_UNAVAILABLE(watchos, tvos);
   STULabelGhostingMaskLayer *_ghostingMaskLayer;
   STUTextFrameAccessibilityElement *_textFrameAccessibilityElement;
-  id<UITraitChangeRegistration> _preferredContentSizeCategoryTraitChangeRegistration;
-  id<UITraitChangeRegistration> _colorAppearanceTraitChangeRegistration;
-  id<UITraitChangeRegistration> _displayPropertiesTraitChangeRegistration;
-  id<UITraitChangeRegistration> _userInterfaceDirectionTraitChangeRegistration;
 }
 
 + (Class)layerClass
@@ -643,15 +639,15 @@ static void initCommon(STULabel *self)
   self->_layer.labelLayerDelegate = self;
   self->_layer.overrideLinkColor = UIColor.linkColor;
 
-  self->_colorAppearanceTraitChangeRegistration =
-      [self registerForTraitChanges:UITraitCollection.systemTraitsAffectingColorAppearance
-                         withAction:@selector(colorAppearanceDidChange)];
-  self->_displayPropertiesTraitChangeRegistration =
-      [self registerForTraitChanges:@[ UITraitDisplayScale.class, UITraitDisplayGamut.class ]
-                         withAction:@selector(displayPropertiesDidChange)];
-  self->_userInterfaceDirectionTraitChangeRegistration =
-      [self registerForTraitChanges:@[ UITraitLayoutDirection.class ]
-                         withAction:@selector(userInterfaceDirectionDidChange:)];
+  // These dependencies invalidate rendering even when font adjustment is disabled.
+  // Other drawing dependencies can use UIKit registration with setNeedsDisplay.
+  STU_STATIC_CONST_ONCE(NSArray<Class<UITraitDefinition>> *, renderingTraits,
+      ([UITraitCollection.systemTraitsAffectingColorAppearance arrayByAddingObjectsFromArray:@[
+        UITraitDisplayScale.class, UITraitDisplayGamut.class, UITraitLayoutDirection.class,
+        UITraitPreferredContentSizeCategory.class, UITraitHorizontalSizeClass.class,
+        UITraitVerticalSizeClass.class, UITraitUserInterfaceIdiom.class
+      ]]));
+  [self registerForTraitChanges:renderingTraits withAction:@selector(updateRenderingEnvironment)];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -835,6 +831,7 @@ static bool widthInvalidatesIntrinsicContentSize(STULabel *__unsafe_unretained s
 
 - (void)layoutSubviews
 {
+  [self updateRenderingEnvironment];
   updateLayoutGuides(self);
   [super layoutSubviews];
   // iOS 26 can query the new intrinsic size without applying it in the current layout
@@ -1024,14 +1021,6 @@ STU_INLINE UIContentSizeCategory preferredContentSizeCategory(UIView *self)
 
   _bits.adjustsFontForContentSizeCategory = value;
   if (value) {
-    _preferredContentSizeCategoryTraitChangeRegistration =
-        [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                           withTarget:self
-                               action:@selector(preferredContentSizeCategoryDidChange:)];
-  } else {
-    [self unregisterForTraitChanges:_preferredContentSizeCategoryTraitChangeRegistration];
-  }
-  if (value) {
     _contentSizeCategory = preferredContentSizeCategory(self);
   } else {
     _contentSizeCategory = nil;
@@ -1058,15 +1047,10 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
 - (void)setSemanticContentAttribute:(UISemanticContentAttribute)semanticContentAttribute
 {
   [super setSemanticContentAttribute:semanticContentAttribute];
-  _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
+  [self updateRenderingEnvironment];
 }
 
-- (void)userInterfaceDirectionDidChange:(UITraitCollection *)previousTraitCollection
-{
-  _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
-}
-
-- (void)preferredContentSizeCategoryDidChange:(UITraitCollection *)previousTraitCollection
+- (void)updateFontForContentSizeCategory
 {
   const UIContentSizeCategory newCategory = preferredContentSizeCategory(self);
   if (![newCategory isEqualToString:_contentSizeCategory]) {
@@ -1094,27 +1078,40 @@ static void updateDisplayedBackgroundColor(STULabel *__unsafe_unretained self)
       [self->_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 }
 
-static void updateDisplayProperties(STULabel *__unsafe_unretained self)
+- (void)updateRenderingEnvironment
 {
   UITraitCollection *const traits = self.traitCollection;
-  self->_layer.renderingTraitCollection = traits;
-  self->_layer.contentsScale = traits.displayScale;
-}
-
-- (void)displayPropertiesDidChange
-{
-  updateDisplayProperties(self);
-  updateLayoutGuides(self);
-}
-
-- (void)colorAppearanceDidChange
-{
-  UITraitCollection *const traits = self.traitCollection;
+  UITraitCollection *const previous = _layer.renderingTraitCollection;
+  const bool traitsChanged = ![previous isEqual:traits];
+  // Publish first: invalidation callbacks and all subsequent render preparation use this snapshot.
   _layer.renderingTraitCollection = traits;
-  updateDisplayedBackgroundColor(self);
-  if (_bits.hasActiveLinkOverlayLayer) {
-    [(STULabelLinkOverlayLayer *)_activeLinkOrOverlayLayer updateColorsForTraitCollection:traits];
+  if (previous.displayScale != traits.displayScale) {
+    _layer.contentsScale = traits.displayScale;
   }
+  _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
+  if (_bits.adjustsFontForContentSizeCategory) {
+    [self updateFontForContentSizeCategory];
+  }
+  if (traitsChanged) {
+    _layer.displayedBackgroundColor = [_backgroundColor resolvedColorWithTraitCollection:traits].CGColor;
+    if (_bits.hasActiveLinkOverlayLayer) {
+      [(STULabelLinkOverlayLayer *)_activeLinkOrOverlayLayer updateColorsForTraitCollection:traits];
+    }
+    updateLayoutGuides(self);
+  }
+}
+
+- (void)stu_labelLayerPrepareRenderingEnvironment:(STULabelLayer *__unused)layer
+{
+  [self updateRenderingEnvironment];
+}
+
+- (void)setNeedsDisplay
+{
+  if (_layer) {
+    [self updateRenderingEnvironment];
+  }
+  [super setNeedsDisplay];
 }
 
 // MARK: - Tint and disabled colors
@@ -1196,7 +1193,7 @@ static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self) { update
 {
   UIWindow *const window = self.window;
   tintColorMayHaveChanged(self);
-  updateDisplayProperties(self);
+  [self updateRenderingEnvironment];
   [_layer stu_didMoveToWindow:window];
 }
 
@@ -2349,7 +2346,7 @@ static void initializeTextInteraction(STULabel *self)
 
 - (void)configureWithPrerenderer:(nonnull STULabelPrerenderer *)prerenderer
 {
-  _layer.renderingTraitCollection = self.traitCollection;
+  [self updateRenderingEnvironment];
   // Prerenderers own a resolved CGColor. Import it as a static UIColor into the view's
   // authoritative background state before the layer can notify its delegate.
   CGColorRef background = prerenderer.backgroundColor;

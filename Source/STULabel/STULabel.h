@@ -160,6 +160,15 @@ STU_EXPORT
 /// Default value: @c nil
 @property (nonatomic, nullable) UIColor *disabledLinkColor;
 
+/// Runs with the label's complete target trait collection, including during async and tiled drawing.
+/// The label observes standard appearance, content-size, direction, display, and size-class traits.
+/// For additional traits used by custom drawing or dynamic colors, register with UIKit and call
+/// setNeedsDisplay when they change. Worker-thread trait reads are not automatically tracked.
+/// For example, in Swift:
+///
+///     label.registerForTraitChanges([MyDrawingTrait.self]) { (label: STULabel, _) in
+///       label.setNeedsDisplay()
+///     }
 @property (nonatomic, nullable) STULabelDrawingBlock drawingBlock;
 
 @property (nonatomic) STULabelDrawingBlockColorOptions drawingBlockColorOptions;
