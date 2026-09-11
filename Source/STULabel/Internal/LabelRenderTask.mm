@@ -5,6 +5,35 @@
 
 namespace stu_label {
 
+static NSAttributedString *attributedStringByAddingMissingLabelDefaults(
+    NSAttributedString *__unsafe_unretained attributedString,
+    UIFont *__unsafe_unretained defaultFont)
+{
+  NSMutableAttributedString *__block result;
+  const NSRange fullRange{0, attributedString.length};
+  [attributedString
+      enumerateAttributesInRange:fullRange
+                         options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                      usingBlock:^(NSDictionary<NSAttributedStringKey, id> *attributes,
+                                   NSRange range,
+                                   BOOL *) {
+                        const bool needsFont = [attributes objectForKey:NSFontAttributeName] == nil;
+                        const bool needsColor = [attributes objectForKey:NSForegroundColorAttributeName] == nil;
+                        if (!needsFont && !needsColor)
+                          return;
+                        if (!result) {
+                          result = [attributedString mutableCopy];
+                        }
+                        if (needsFont) {
+                          [result addAttribute:NSFontAttributeName value:defaultFont range:range];
+                        }
+                        if (needsColor) {
+                          [result addAttribute:NSForegroundColorAttributeName value:UIColor.labelColor range:range];
+                        }
+                      }];
+  return result ? [result copy] : attributedString;
+}
+
 void LabelRenderTask::destroyAndDeallocateNonPrerenderTask()
 {
   switch (type_) {
@@ -40,8 +69,11 @@ void LabelRenderTask::abandonedByLabel(LabelLayer &label)
 void LabelTextShapingAndLayoutAndRenderTask ::createShapedString(const STUCancellationFlag *__nullable cancellationFlag)
 {
   const auto create = ^{
+    NSAttributedString *const attributedString = labelDefaultFont_
+        ? attributedStringByAddingMissingLabelDefaults(attributedString_, labelDefaultFont_)
+        : attributedString_;
     shapedString_ =
-        STUShapedStringCreate(nil, attributedString_, params_.defaultBaseWritingDirection, cancellationFlag);
+        STUShapedStringCreate(nil, attributedString, params_.defaultBaseWritingDirection, cancellationFlag);
   };
   if (traitCollection_) {
     [traitCollection_ performAsCurrentTraitCollection:create];

@@ -47,6 +47,12 @@ STU_EXPORT
 // None of the property setters may be called after the object has been frozen.
 // (This is checked by an always-on assert).
 
+/// The attributed string to shape and render.
+///
+/// When lazily constructing `shapedText`, ranges without a font use the preferred
+/// `UIFontTextStyleBody` font resolved for the target trait collection, and ranges without a
+/// foreground color use `UIColor.labelColor`. Explicit attributes are preserved. The original
+/// attributed string remains available through this property.
 @property (nonatomic, nullable) NSAttributedString *attributedText;
 
 @property (nonatomic) STULabelDefaultTextAlignment defaultTextAlignment;

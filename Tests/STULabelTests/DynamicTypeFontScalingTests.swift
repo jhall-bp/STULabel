@@ -221,6 +221,73 @@ struct DynamicTypeFontScalingTests {
     #expect(layer.font === explicitFont)
   }
 
+  @Test(arguments: [false, true], [false, true])
+  func `Prerendered defaults follow the consuming rendering environment`(
+    matchingTraits: Bool, partiallyAttributed: Bool
+  ) {
+    let prerendererTraits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+    let consumerTraits = matchingTraits
+      ? prerendererTraits
+      : UITraitCollection(preferredContentSizeCategory: .large)
+    let explicitFont = UIFont.systemFont(ofSize: 13)
+    let attributedText = partiallyAttributed
+      ? NSAttributedString([
+        ("Implicit", [:]),
+        (" explicit", [.font: explicitFont]),
+      ])
+      : NSAttributedString(string: "Implicit")
+
+    let prerenderer = STULabelPrerenderer(traitCollection: prerendererTraits)
+    prerenderer.attributedText = attributedText
+    prerenderer.setSize(
+      CGSize(width: 1_000, height: 1_000), contentInsets: .zero, options: [])
+    prerenderer.render()
+    let prerenderedText = prerenderer.shapedText.attributedString
+    let prerendererFont = UIFont.preferredFont(
+      forTextStyle: .body, compatibleWith: prerendererTraits)
+    #expect(
+      prerenderedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == prerendererFont)
+    #expect(
+      prerenderedText.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor
+        === UIColor.label)
+
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 1_000, height: 1_000))
+    label.traitOverrides.preferredContentSizeCategory = consumerTraits.preferredContentSizeCategory
+    label.updateTraitsIfNeeded()
+    label.configure(with: prerenderer)
+
+    let expectedFont = UIFont.preferredFont(forTextStyle: .body, compatibleWith: consumerTraits)
+    #expect(label.font == expectedFont)
+    #expect(
+      label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == expectedFont)
+    #expect(
+      label.attributedText.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor
+        === UIColor.label)
+    if partiallyAttributed {
+      #expect(
+        label.attributedText.attribute(.font, at: 9, effectiveRange: nil) as? UIFont
+          === explicitFont)
+    }
+
+    let direct = STULabelLayer()
+    direct.renderingTraitCollection = consumerTraits
+    direct.attributedText = attributedText
+    let fittingSize = CGSize(width: 1_000, height: 1_000)
+    #expect(label.sizeThatFits(fittingSize) == direct.sizeThatFits(fittingSize))
+
+    label.traitOverrides.preferredContentSizeCategory = .extraExtraExtraLarge
+    label.updateTraitsIfNeeded()
+    label.text = "Replacement"
+    let replacementTraits = UITraitCollection(
+      preferredContentSizeCategory: .extraExtraExtraLarge)
+    #expect(
+      label.font
+        == UIFont.preferredFont(forTextStyle: .body, compatibleWith: replacementTraits))
+  }
+
   @Test
   func `canonical content size categories are decoded correctly`() {
     let categories: [UIContentSizeCategory] = [

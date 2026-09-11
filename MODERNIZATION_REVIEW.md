@@ -69,7 +69,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Complete | R03 and R06 integrated; R05 default-font semantics remain separate |
-| R05 | Must fix | Trait-correct preferred default fonts | Open | Reopened: replacement plain text retains the prior implicit font |
+| R05 | Must fix | Trait-correct preferred default fonts | Complete | Follow-ups preserve provenance, Bold Text, and prerenderer defaults |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Complete | Prerequisite for R04 environment synchronization |
 | R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
 | R08 | Must fix for distribution | Remove unsafe flags from public package dependency graph | Open | Coordinate with G01 and ARC work |
@@ -398,6 +398,26 @@ Files: `Source/STULabel/STULabelLayer-Internal.hpp`, `Source/STULabel/STULabelLa
 Validation: Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro simulator, actual iOS 26.2. Before the production change, the two implicit-font regressions failed at 17 points versus the expected 53 points while the explicit-font control passed. `BuildProject(buildForTesting: true)` passed. Final validation passed all nine Dynamic Type cases and six focused R03/R04/R06 rendering-environment cases in one 15-case run. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/E82441C6-022F-405B-8108-B556194D069E.txt`.
 
 Remaining scope: R10's attributed-string allocation work remains separate. The aggregate plan was not rerun because its unrelated ICU, snapshot/layout, and host-restart failures are already recorded above.
+
+### Prerenderer follow-up resolution — 2026-09-11
+
+**Status: Complete after follow-up correction.** The completed-task review found that `STULabelPrerenderer` passed fontless attributed strings directly to `STUShapedString`, whose general-purpose fallback is a 12-point Core Text font. At accessibility XXXL this produced approximately 38 × 15 point prerendered layout instead of the direct label's 161 × 64 point preferred-body layout. After import, the label reported a 53-point public `font` while retaining the 12-point shaped layout.
+
+Changes and rationale:
+- The shared text-shaping task can now receive label defaults. Prerenderers resolve one preferred body font from their explicit target trait collection and inject missing font and semantic label-color attributes immediately upstream of shaping. Fully attributed input takes the existing no-copy path; missing defaults require one attributed-string scan and copy per shaping generation, outside glyph, line-layout, drawing, and scrolling loops.
+- The prerenderer retains its original attributed string separately from the normalized string owned by the shaped result. A consuming layer reuses that normalized string and shape only when target traits match. When traits differ or no shape is reusable, the layer applies defaults to the original text using its own environment before reshaping. This prevents prerenderer-target fonts from leaking into a different consumer environment.
+- Explicit first-character font provenance is transported independently of injected attributes, so later plain-text replacement still distinguishes a consumer font from an implicit default. Explicit fonts in other ranges are preserved.
+
+Files: `Source/STULabel/Internal/LabelRenderTask.hpp`, `Source/STULabel/Internal/LabelRenderTask.mm`, `Source/STULabel/Internal/LabelPrerenderer.hpp`, `Source/STULabel/STULabelLayer.mm`, `Source/STULabel/STULabelPrerenderer.h`, `Tests/STULabelTests/DynamicTypeFontScalingTests.swift`, and this tracker.
+
+Additional completion criteria:
+- [x] Fontless and partially attributed prerenderer input use the preferred body font for the target traits.
+- [x] A matching consumer reuses the normalized shaped result without a second default-insertion copy.
+- [x] A mismatching consumer resolves implicit defaults for its own traits before reshaping.
+- [x] Explicit range fonts and implicit first-character provenance survive configuration.
+- [x] Missing semantic foreground color follows the same label-default contract.
+
+Validation: Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. All 13 DynamicTypeFontScaling cases, five RenderingEnvironment cases, and two Objective-C prerenderer trait cases passed on the iPhone 17 Pro simulator, actual iOS 26.2 (23C54). The four parameter combinations cover fontless/partially attributed input across matching/mismatching consumer traits, compare imported and direct layout, inspect the prerenderer's normalized shape, and verify replacement implicit-font provenance. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/99A853C8-3A47-4E29-9977-1EC6297C7574.txt`.
 
 
 ## R06 — Single background-color owner across prerenderer configuration

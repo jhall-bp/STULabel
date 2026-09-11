@@ -201,6 +201,7 @@ class LabelTextShapingAndLayoutAndRenderTask : public LabelLayoutAndRenderTask {
   friend LabelRenderTask;
 protected:
   NSAttributedString* attributedString_{};
+  UIFont* labelDefaultFont_{};
 
   explicit LabelTextShapingAndLayoutAndRenderTask(Type type)
   : LabelLayoutAndRenderTask{type}

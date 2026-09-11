@@ -21,6 +21,7 @@ class LabelPrerenderer final : public LabelTextShapingAndLayoutAndRenderTask,
   bool hasShapedString_{};
   bool hasLayoutInfo_{};
   bool hasTextFrame_{};
+  bool fontIsExplicit_{};
   bool textFrameOptionsIsPrivate_{};
   bool contentInsetsAreDirectional_{};
   CGSize size_{};
@@ -95,6 +96,8 @@ public:
   void setTraitCollection(UITraitCollection* __unsafe_unretained traitCollection) {
     checkNotFrozen();
     traitCollection_ = [traitCollection copy];
+    labelDefaultFont_ = [UIFont preferredFontForTextStyle:UIFontTextStyleBody
+                              compatibleWithTraitCollection:traitCollection_];
     setDisplayScale(traitCollection.displayScale);
     setUserInterfaceLayoutDirection(
       static_cast<UIUserInterfaceLayoutDirection>(traitCollection.layoutDirection));
@@ -108,11 +111,16 @@ public:
 
   NSAttributedString* __nullable attributedString() const { return attributedString_; }
 
+  bool fontIsExplicit() const { return fontIsExplicit_; }
+
   void setAttributedString(NSAttributedString* __unsafe_unretained attributedString) {
     checkNotFrozen();
     if (attributedString_ == attributedString) return;
     attributedString_ = [attributedString copy];
     stringIsEmpty_ = !attributedString_ || attributedString_.length == 0;
+    fontIsExplicit_ = !stringIsEmpty_ && [attributedString_ attribute:NSFontAttributeName
+                                                              atIndex:0
+                                                       effectiveRange:nil] != nil;
     invalidateShapedString();
   }
 
@@ -140,9 +148,13 @@ public:
       const ShapedString& s = *stuShapedString->shapedString;
       attributedString_ = s.attributedString;
       stringIsEmpty_ = s.stringLength == 0;
+      fontIsExplicit_ = !stringIsEmpty_ && [attributedString_ attribute:NSFontAttributeName
+                                                                atIndex:0
+                                                         effectiveRange:nil] != nil;
     } else {
       attributedString_ = nil;
       stringIsEmpty_ = true;
+      fontIsExplicit_ = false;
     }
     hasShapedString_ = true;
   }

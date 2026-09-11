@@ -1174,11 +1174,20 @@ public:
     // Copy over configuration from prerenderer.
     clearStringProperties();
     isInvalidated_ = false;
-    attributedString_ = prerenderer.attributedString();
-    stringIsEmpty_ = prerenderer.stringIsEmpty();
-    fontIsExplicit_ = firstCharacterHasExplicitFont(attributedString_);
-    if (renderingTraitsMatch && !prerenderer.stringIsEmpty() && prerenderer.hasShapedString()) {
+    const bool canReuseShapedString =
+        renderingTraitsMatch && !prerenderer.stringIsEmpty() && prerenderer.hasShapedString();
+    if (canReuseShapedString) {
       shapedString_ = prerenderer.shapedString().unretained;
+      attributedString_ = shapedString_->shapedString->attributedString;
+    } else {
+      attributedString_ = prerenderer.attributedString();
+    }
+    stringIsEmpty_ = prerenderer.stringIsEmpty();
+    fontIsExplicit_ = prerenderer.fontIsExplicit();
+    if (!canReuseShapedString) {
+      // The prerenderer's original text has no injected defaults. Resolve them for this layer's
+      // environment when an existing shaped string cannot be reused.
+      addMissingDefaultTextAttributes();
     }
     textFrameOptions_ = prerenderer.textFrameOptions().unretained;
     textFrameOptionsIsPrivate_ = false;
