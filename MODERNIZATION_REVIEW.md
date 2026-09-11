@@ -711,6 +711,29 @@ Additional completion criteria:
 
 Validation: Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. All eight `IntrinsicContentSizeTests` passed on the iPhone 17 Pro simulator, actual iOS 26.2 (23C54), including the new 1×/2×/3× rendering-scale regression and the retained convergence, bounds-origin, baseline, and fast-path cases. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/DA1911D3-A6C6-4EBE-AD61-542EBE95E4CF.txt`.
 
+### Shared-constraint rendering-scale resolution — 2026-09-12
+
+**Status: Complete; source and test committed as `f27d171`.** A completed-task review found that the preceding rendering-scale correction still rounded a constraint shared by two `STULabel` baseline guides with whichever guide was currently updating. Because one constraint is registered with both labels, changing a 1× left-hand label could overwrite the constant previously rounded for the 3× target label. The confirmed difference was 0.6667 points, or two target pixels.
+
+Changes and rationale:
+- Each guide now publishes its current effective scale before refreshing attached constraints.
+- Each constraint refresh selects the scale through the existing target-first `displayScale(const SpacingConstraint&)` rule. Creation, automatic metric refresh, and public multiplier/offset changes therefore agree on one owner; update order can no longer change the final constant.
+- The correction adds no state, shaping, drawing, or scrolling-loop work. Per-constraint scale selection occurs only while affected layout-guide metadata is refreshed.
+- A Swift Testing regression creates a line-height constraint between labels at 1× and 3×, verifies initial target-scale rounding, changes only the smaller 1× label's font, and verifies that the constant remains on the 3× target grid.
+
+Additional completion criteria:
+- [x] A constraint shared by labels with different explicit rendering scales always uses the target label's scale.
+- [x] Changing only the non-target label cannot change the rounding grid.
+- [x] Initial calculation and automatic refresh use the same rule as public multiplier/offset updates.
+- [x] Existing R11 convergence, bounds-origin, rendering-scale, fast-path, and guide-lifetime coverage remains passing.
+
+Validation:
+- Before the source correction, the new regression failed on actual iOS 26.2 by 0.6666667 points: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/A8ADAFD8-A29D-4F68-BAF4-63835B05F8CD.txt`.
+- Xcode MCP `BuildProject(buildForTesting: true)` passed for `STULabel-Package` on iPhone 17 Pro (26.2), using the iOS 27 SDK: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/BuildProject/BuildProject-Log-20260912-081003.txt`.
+- All nine `IntrinsicContentSizeTests` plus the existing baseline-guide lifetime test passed on actual iOS 26.2 (23C54): `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/8B2458D5-2870-4DC4-8482-7D672127195D.txt`.
+- The Mac Catalyst product build passed: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/BuildProject/BuildProject-Log-20260912-081141.txt`.
+- The separately run legacy non-label-spacing snapshot still differed from its stored reference, matching the baseline snapshot limitation already recorded for R11. No snapshot was rerecorded.
+
 
 ## R12 — Remove unreachable accessibility non-rotor branch
 
@@ -829,11 +852,11 @@ Do not replace specialized CoreText layout/drawing or remove old CoreText/VoiceO
 ### Final completion record
 
 - Overall state: **Open — all eight tasks in the completed-task review are complete; other tracker tasks and release gates remain open.**
-- Completed task IDs: R01 (`1bae9ff`, `4b2cbcf`), R03 (`01a1b86`), R04 (`133a242`, `db34918`), R05 (`f2b11be`, `acde15d`, `0e4f6cb`, with Bold Text registration in `db34918`), R06 (`ba2e4ef`), R07 (`e4d71f1`, `7bc1b11`), R11 (`3e4b8d2`, `9e5b5dc`, `89737c7`), and R12 (`31b6916`).
+- Completed task IDs: R01 (`1bae9ff`, `4b2cbcf`), R03 (`01a1b86`), R04 (`133a242`, `db34918`), R05 (`f2b11be`, `acde15d`, `0e4f6cb`, with Bold Text registration in `db34918`), R06 (`ba2e4ef`), R07 (`e4d71f1`, `7bc1b11`), R11 (`3e4b8d2`, `9e5b5dc`, `89737c7`, `f27d171`), and R12 (`31b6916`).
 - R02 remains Ready for review; it was outside this follow-up review's completed-only scope.
 - Deferred/superseded task IDs and rationale: None recorded.
 - Required validation still outstanding: the open tasks and G01 release gates. They were not re-reviewed or implicitly completed by this focused work.
-- Follow-up reviewed commit/worktree: the review began at `4b2cbcf`; the four resulting resolutions are `db34918`, `0e4f6cb`, `89737c7`, and `7bc1b11`. Existing uncommitted context-menu/drag-preview/color changes and Demo edits were identified, preserved, and excluded from these commits.
+- Follow-up reviewed commit/worktree: the review began at `4b2cbcf`; the resulting resolutions are `db34918`, `0e4f6cb`, `89737c7`, `7bc1b11`, and `f27d171`. Existing uncommitted context-menu/drag-preview/color changes and Demo edits were identified, preserved, and excluded from these commits.
 
 ## Completed-task follow-up assessment — 2026-09-11
 
@@ -847,7 +870,7 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 | R05 | Earlier implicit-font provenance issue resolved in `acde15d`; prerenderer default/layout mismatch resolved in `0e4f6cb`, with Bold Text integration in `db34918`. |
 | R06 | Remains complete: background ownership/import semantics are coherent. |
 | R07 | Runtime behavior remains complete; the incorrect public default documentation and initial-state coverage were corrected in `7bc1b11`. |
-| R11 | Bounds-origin defect resolved in `9e5b5dc`; rendered-scale spacing rounding resolved in `89737c7`. The reduced invalidation design remains intact. |
+| R11 | Bounds-origin defect resolved in `9e5b5dc`; single-label rendered-scale rounding resolved in `89737c7`; shared-label target-scale ownership resolved in `f27d171`. The reduced invalidation design remains intact. |
 | R12 | Remains complete: unreachable branch removed without broadening the change. |
 
 ### Fresh validation
@@ -873,6 +896,6 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 
 The completed work is substantially better than the original review snapshot. Rendering-environment ownership, deferred tile transport, background adoption, link-color precedence, and the reduced Auto Layout retry mechanism are cohesive improvements. There is no reason from this review to replace those successful designs.
 
-The completed-task ownership boundaries are now coherent: R01 publishes document geometry with its string; rendering traits include Bold Text; implicit defaults retain provenance across direct and prerendered paths; prerenderer reuse is conditioned on the full target environment; baseline guides use the rendered scale; and R07's public contract matches its centralized runtime behavior.
+The completed-task ownership boundaries are now coherent: R01 publishes document geometry with its string; rendering traits include Bold Text; implicit defaults retain provenance across direct and prerendered paths; prerenderer reuse is conditioned on the full target environment; baseline spacing uses each constraint's target label rendering scale; and R07's public contract matches its centralized runtime behavior.
 
 R10 remains the deliberate place to optimize attributed-string normalization and identity without weakening these default semantics. The remaining open tasks and G01 still require their own implementation and release evidence; this completed-task resolution does not broaden their status.
