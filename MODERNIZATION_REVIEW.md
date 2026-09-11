@@ -828,14 +828,12 @@ Do not replace specialized CoreText layout/drawing or remove old CoreText/VoiceO
 
 ### Final completion record
 
-- Overall state: **Open — six tasks are complete; R01 and R05 remain reopened by the 2026-09-11 follow-up review.**
-- Completed task IDs: R03 (`01a1b86`), R04 (`133a242`), R06 (`ba2e4ef`), R07 (`e4d71f1`), R11 (`3e4b8d2` plus the current bounds-origin follow-up), and R12 (`31b6916`).
-- Previously completed tasks with additional work: R01 (`1bae9ff`) and R05 (`f2b11be`). Their original fixes and evidence remain recorded above.
+- Overall state: **Open — all eight tasks in the completed-task review are complete; other tracker tasks and release gates remain open.**
+- Completed task IDs: R01 (`1bae9ff`, `4b2cbcf`), R03 (`01a1b86`), R04 (`133a242`, `db34918`), R05 (`f2b11be`, `acde15d`, `0e4f6cb`, with Bold Text registration in `db34918`), R06 (`ba2e4ef`), R07 (`e4d71f1`, `7bc1b11`), R11 (`3e4b8d2`, `9e5b5dc`, `89737c7`), and R12 (`31b6916`).
 - R02 remains Ready for review; it was outside this follow-up review's completed-only scope.
 - Deferred/superseded task IDs and rationale: None recorded.
-- Required validation still outstanding: R01 and R05's reopened criteria and the previously outstanding gates. Other open tasks and G01 were not re-reviewed.
-- Follow-up reviewed commit/worktree: `4191e2a`, with the current implementations inspected in place. Existing uncommitted context-menu/drag-preview/color changes and Demo edits were identified and excluded from review findings.
-- The subsequent R11 resolution modifies `Source/STULabel/STULabel.mm`, `Tests/STULabelTests/IntrinsicContentSizeTests.swift`, and this tracker. Existing unrelated worktree changes remain excluded.
+- Required validation still outstanding: the open tasks and G01 release gates. They were not re-reviewed or implicitly completed by this focused work.
+- Follow-up reviewed commit/worktree: the review began at `4b2cbcf`; the four resulting resolutions are `db34918`, `0e4f6cb`, `89737c7`, and `7bc1b11`. Existing uncommitted context-menu/drag-preview/color changes and Demo edits were identified, preserved, and excluded from these commits.
 
 ## Completed-task follow-up assessment — 2026-09-11
 
@@ -845,11 +843,11 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 | --- | --- |
 | R01 | Reopened, P1; resolved by the subsequent coherent-document completion recorded above. |
 | R03 | Remains complete: tile trait capture and cancellation reuse are coherent. |
-| R04 | Remains complete: shared environment preparation and async rejection are coherent. |
-| R05 | Reopened, P2: an implicit font becomes a permanent override across replacement plain text. |
+| R04 | Review found the omitted Bold Text dependency; resolved in `db34918` through the existing centralized environment registration. |
+| R05 | Earlier implicit-font provenance issue resolved in `acde15d`; prerenderer default/layout mismatch resolved in `0e4f6cb`, with Bold Text integration in `db34918`. |
 | R06 | Remains complete: background ownership/import semantics are coherent. |
-| R07 | Remains complete: disabled-link precedence is centralized and preserved. |
-| R11 | Reopened, P2 residual baseline defect; resolved by the subsequent R11 completion recorded above. |
+| R07 | Runtime behavior remains complete; the incorrect public default documentation and initial-state coverage were corrected in `7bc1b11`. |
+| R11 | Bounds-origin defect resolved in `9e5b5dc`; rendered-scale spacing rounding resolved in `89737c7`. The reduced invalidation design remains intact. |
 | R12 | Remains complete: unreachable branch removed without broadening the change. |
 
 ### Fresh validation
@@ -864,10 +862,17 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 - No aggregate known-failing suite was rerun, no snapshots were rerecorded, and no new timing claims were made.
 - Temporary diagnostic/result paths may be cleaned by the system; the reproduction steps and observations above are the durable handoff.
 
+### Resolution validation — 2026-09-11
+
+- Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. Final build log: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/BuildProject/BuildProject-Log-20260911-224104.txt`.
+- **65 integrated focused cases passed on the iPhone 17 Pro simulator, actual iOS 26.2 (23C54)**: UITextInputTests (21), TiledRenderingTraitsTests (5), RenderingEnvironmentTests (5), DynamicTypeFontScalingTests (13), PrerenderedBackgroundTests (6), SwiftWrapperTests (5), IntrinsicContentSizeTests (8), and Objective-C PrerendererTraitTests (2).
+- Integrated result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/49F5EC06-9A5F-4BD1-AAD4-F4BF64C36E2F.txt`. Console runtime evidence: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-09-11T22-41-45+10-00.txt`.
+- The aggregate known-failing plan, snapshot references, performance gates, Demo/downstream consumers, and G01 were not rerun. The final focused run compiled the preserved unrelated dirty worktree; only the four resolution commits and this tracker synchronization belong to this review.
+
 ### Architectural assessment and next work
 
 The completed work is substantially better than the original review snapshot. Rendering-environment ownership, deferred tile transport, background adoption, link-color precedence, and the reduced Auto Layout retry mechanism are cohesive improvements. There is no reason from this review to replace those successful designs.
 
-The baseline coordinate boundary has since been completed under R11, and R01 now publishes document geometry with the string. The remaining ownership boundary from this assessment is preserving the distinction between implicit and explicit fonts under R05. Address that boundary directly rather than adding an isolated guard.
+The completed-task ownership boundaries are now coherent: R01 publishes document geometry with its string; rendering traits include Bold Text; implicit defaults retain provenance across direct and prerendered paths; prerenderer reuse is conditioned on the full target environment; baseline guides use the rendered scale; and R07's public contract matches its centralized runtime behavior.
 
-After each remaining fix, add focused regressions for the newly identified cases, run them on actual iOS 26, and update the task's status and this completion record. Passing the previous focused cases alone is insufficient to close the reopened findings.
+R10 remains the deliberate place to optimize attributed-string normalization and identity without weakening these default semantics. The remaining open tasks and G01 still require their own implementation and release evidence; this completed-task resolution does not broaden their status.
