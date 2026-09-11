@@ -85,7 +85,8 @@ struct RenderingEnvironmentTests {
       { $0.horizontalSizeClass = .compact },
       { $0.verticalSizeClass = .regular },
       { $0.userInterfaceStyle = .dark },
-      { $0.displayGamut = .P3 }
+      { $0.displayGamut = .P3 },
+      { $0.legibilityWeight = .bold },
     ]
     for change in changes {
       change(&parent.traitOverrides)
@@ -118,6 +119,29 @@ struct RenderingEnvironmentTests {
     #expect(label.layer.contentsScale == 1)
     label.semanticContentAttribute = .forceLeftToRight
     #expect(label.layer.userInterfaceLayoutDirection == .leftToRight)
+  }
+
+  @Test
+  func `Bold Text updates rendering traits and replacement implicit fonts`() {
+    let parent = UIView(frame: CGRect(x: 0, y: 0, width: 400, height: 400))
+    parent.traitOverrides.legibilityWeight = .regular
+    let label = STULabel()
+    parent.addSubview(label)
+    parent.updateTraitsIfNeeded()
+    label.updateTraitsIfNeeded()
+    label.text = "Initial"
+    let regularFont = label.font
+
+    parent.traitOverrides.legibilityWeight = .bold
+    parent.updateTraitsIfNeeded()
+    label.updateTraitsIfNeeded()
+    #expect(label.layer.renderingTraitCollection.legibilityWeight == .bold)
+    #expect(label.font == regularFont)
+
+    label.text = "Replacement"
+    let boldFont = UIFont.preferredFont(forTextStyle: .body, compatibleWith: label.traitCollection)
+    #expect(label.font == boldFont)
+    #expect(label.font != regularFont)
   }
 
   @Test

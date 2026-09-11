@@ -646,7 +646,8 @@ static void initCommon(STULabel *self)
   STU_STATIC_CONST_ONCE(NSArray<Class<UITraitDefinition>> *, renderingTraits,
       ([UITraitCollection.systemTraitsAffectingColorAppearance arrayByAddingObjectsFromArray:@[
         UITraitDisplayScale.class, UITraitDisplayGamut.class, UITraitLayoutDirection.class,
-        UITraitPreferredContentSizeCategory.class, UITraitHorizontalSizeClass.class,
+        UITraitPreferredContentSizeCategory.class, UITraitLegibilityWeight.class,
+        UITraitHorizontalSizeClass.class,
         UITraitVerticalSizeClass.class, UITraitUserInterfaceIdiom.class
       ]]));
   [self registerForTraitChanges:renderingTraits withAction:@selector(updateRenderingEnvironment)];

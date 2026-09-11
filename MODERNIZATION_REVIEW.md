@@ -311,7 +311,15 @@ Remaining scope: G01 remains open. This is focused iOS 26.2 correctness evidence
 
 ### Follow-up review — 2026-09-11
 
-**Status: Complete (retained).** The consolidated view-owned update, documented custom-trait invalidation contract, cached main-thread preparation callback, and completion-time full-snapshot/scale rejection form a coherent design. All four environment cases passed again, including regular and prerendered async rejection. No additional defect found in this resolution. R05's font-provenance issue remains under R05. Shared validation details appear below.
+**Status: Complete after follow-up correction.** The consolidated view-owned update, documented custom-trait invalidation contract, cached main-thread preparation callback, and completion-time full-snapshot/scale rejection form a coherent design. All four original environment cases passed again, including regular and prerendered async rejection. The completed-task review subsequently found that the registered dependency set omitted `UITraitLegibilityWeight`, so UIKit did not publish Bold Text changes into the layer snapshot. Replacement implicit text could therefore resolve a regular font while the view requested bold text.
+
+2026-09-11 — Codex — Follow-up corrected.
+
+Changes and rationale: Added `UITraitLegibilityWeight` to the existing centralized rendering-trait registration. This uses the same view-owned update and layer invalidation path as content size, appearance, direction, display, idiom, and size classes; it does not introduce a second callback or any work in shaping, layout, drawing, or scrolling loops. Existing implicit content retains its effective font under the documented opt-in scaling contract, while replacement content resolves the preferred body font from the newly published Bold Text environment.
+
+Files: `Source/STULabel/STULabel.mm`, `Tests/STULabelTests/RenderingEnvironmentTests.swift`, and this tracker.
+
+Validation: Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. The focused Swift Testing regression transitions an attached label from regular to bold legibility, verifies the complete layer snapshot, verifies existing-content stability, and then verifies that replacement implicit text uses the target-compatible bold preferred body font. The existing system-trait parameter sequence now also includes legibility weight. All five RenderingEnvironment cases and nine DynamicTypeFontScaling cases passed on the iPhone 17 Pro simulator, actual iOS 26.2; result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/D5887B56-9EF6-4E11-ABDE-D5D601CDF173.txt`.
 
 
 ## R05 — Trait-correct preferred default fonts
