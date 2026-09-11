@@ -47,6 +47,10 @@ STU_EXPORT
 
 /// The default value is the preferred @c UIFontTextStyleBody font resolved for
 /// @c self.renderingTraitCollection.
+///
+/// Changing @c renderingTraitCollection preserves the effective implicit font of existing text.
+/// Assigning replacement text resolves a new implicit default for the current traits. A font
+/// explicitly assigned by the consumer persists across both operations.
 @property (nonatomic, null_resettable) UIFont *font;
 
 @property (nonatomic, null_resettable) UIColor *textColor;

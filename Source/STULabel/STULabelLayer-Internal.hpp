@@ -15,6 +15,11 @@
 
 - (void)stu_didMoveToWindow:(UIWindow*)window;
 
+// These setters keep the current explicit-versus-implicit font provenance while applying
+// Dynamic Type adjustments initiated by the owning STULabel.
+- (void)stu_setAttributedTextAfterAdjustingFonts:(nullable NSAttributedString *)attributedText;
+- (void)stu_setFontAfterAdjustingForContentSizeCategory:(nonnull UIFont *)font;
+
 @property (nonatomic, setter=stu_setAlwaysUsesContentSublayer:) bool stu_alwaysUsesContentSublayer;
 
 @property (readonly, nullable) CALayer* stu_contentSublayer;

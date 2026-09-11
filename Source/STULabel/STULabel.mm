@@ -1068,7 +1068,7 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
       if (NSAttributedString *const text = _layer.attributedText) {
         auto *const newText = [text stu_copyWithFontsAdjustedForContentSizeCategory:newCategory];
         if (text != newText) {
-          _layer.attributedText = newText;
+          [_layer stu_setAttributedTextAfterAdjustingFonts:newText];
         }
       }
     } else {
@@ -1077,7 +1077,7 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
       // Assign even when UIKit returns the same object. For an implicit default this materializes
       // the font selected for the layer's current rendering environment and invalidates any
       // attributed string that was previously constructed with an older default.
-      _layer.font = newFont;
+      [_layer stu_setFontAfterAdjustingForContentSizeCategory:newFont];
     }
   }
 }

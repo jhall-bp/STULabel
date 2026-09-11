@@ -309,7 +309,7 @@ Remaining scope: G01 remains open. This is focused iOS 26.2 correctness evidence
 ## R05 — Trait-correct preferred default fonts
 
 **Classification:** Must fix  
-**Status:** Open
+**Status:** Complete
 **Owner:** Codex
 
 ### Problem and evidence
@@ -352,7 +352,7 @@ Remaining scope: R10 may remove eager attributed-string normalization without ch
 
 ### Follow-up review — 2026-09-11
 
-**Status: Open (reopened). Must fix, P2.** Per-layer resolution fixes cross-label contamination, but a trait transition permanently promotes an implicit default into the explicit-font storage.
+**Status: Complete (resolved).** Per-layer resolution fixes cross-label contamination, but a trait transition previously promoted an implicit default into the explicit-font storage.
 
 [setRenderingTraitCollection](Source/STULabel/STULabelLayer.mm#L237) copies `defaultFont_` into `font_`. [setText](Source/STULabel/STULabelLayer.mm#L390) preserves that value as though the consumer assigned it. This contradicts the comment/completion record that new content uses the new rendering environment.
 
@@ -365,13 +365,23 @@ Reproduction, Xcode MCP RunCodeSnippet on **iOS 27.0 (24A434)**:
 Preferred fix: retain the distinction between an explicit consumer font and the effective implicit font of existing content. Preserve old content when adjustment is disabled, but retire its implicit font when replacing the content. Resolve the new default against current traits. Clearing every `font_` on text assignment would wrongly discard explicit consumer fonts.
 
 Additional completion criteria:
-- [ ] Replacement plain text uses the current implicit default after a category transition.
-- [ ] New plain and partially attributed content agree after prior font queries and prior materialization/rendering.
-- [ ] Existing content remains stable with adjustment disabled, and enabling adjustment applies immediately.
-- [ ] Explicit fonts survive replacement and trait changes as documented.
-- [ ] Run focused transition regressions on actual iOS 26.
+- [x] Replacement plain text uses the current implicit default after a category transition.
+- [x] New plain and partially attributed content agree after prior font queries and prior materialization/rendering.
+- [x] Existing content remains stable with adjustment disabled, and enabling adjustment applies immediately.
+- [x] Explicit fonts survive replacement and trait changes as documented.
+- [x] Run focused transition regressions on actual iOS 26.
 
 All six existing Dynamic Type cases passed on iOS 26.2; none covers this replacement transition. R10's allocation work remains separate and was not re-reviewed.
+
+2026-09-11 — Codex — Follow-up resolved.
+
+Changes and rationale: Added explicit font provenance to the layer independently of the stored effective font. Trait changes may retain an implicit font for the current content, but replacing that content retires the retained font and its cached plain-text attributes before resolving the current trait-compatible default. First-character provenance is captured before attributed-string default insertion, so converting replacement attributed content to plain text preserves an explicit consumer font but not a layer-injected default. Dynamic Type's internal plain and attributed rewrites preserve the existing provenance instead of being mistaken for public font assignments. This adds only constant-time state transitions outside shaping and drawing loops.
+
+Files: `Source/STULabel/STULabelLayer-Internal.hpp`, `Source/STULabel/STULabelLayer.mm`, `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabel.h`, `Source/STULabel/STULabelLayer.h`, `Tests/STULabelTests/DynamicTypeFontScalingTests.swift`, and this tracker.
+
+Validation: Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro simulator, actual iOS 26.2. Before the production change, the two implicit-font regressions failed at 17 points versus the expected 53 points while the explicit-font control passed. `BuildProject(buildForTesting: true)` passed. Final validation passed all nine Dynamic Type cases and six focused R03/R04/R06 rendering-environment cases in one 15-case run. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/E82441C6-022F-405B-8108-B556194D069E.txt`.
+
+Remaining scope: R10's attributed-string allocation work remains separate. The aggregate plan was not rerun because its unrelated ICU, snapshot/layout, and host-restart failures are already recorded above.
 
 
 ## R06 — Single background-color owner across prerenderer configuration

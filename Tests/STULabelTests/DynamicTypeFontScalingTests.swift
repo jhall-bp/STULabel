@@ -100,6 +100,13 @@ struct DynamicTypeFontScalingTests {
     #expect(
       label.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == expectedFont)
 
+    label.adjustsFontForContentSizeCategory = false
+    label.preferredContentSizeCategory = .large
+    #expect(label.font == expectedFont)
+    label.text = "Replacement"
+    #expect(
+      label.font == UIFont.preferredFont(forTextStyle: .body, compatibleWith: largeTraits))
+
     let explicitFont = UIFont.systemFont(ofSize: 13)
     let attributedLabel = STULabelWithOverridePreferredContentSizeCategory()
     attributedLabel.preferredContentSizeCategory = .large
@@ -115,6 +122,103 @@ struct DynamicTypeFontScalingTests {
     #expect(
       attributedLabel.attributedText.attribute(.font, at: 8, effectiveRange: nil) as? UIFont
         == explicitFont)
+
+    attributedLabel.adjustsFontForContentSizeCategory = false
+    attributedLabel.preferredContentSizeCategory = .large
+    #expect(
+      attributedLabel.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == expectedFont)
+    attributedLabel.text = "Replacement"
+    #expect(
+      attributedLabel.font
+        == UIFont.preferredFont(forTextStyle: .body, compatibleWith: largeTraits))
+  }
+
+  @Test
+  func `replacement text retires an implicit font preserved across a trait change`() {
+    let largeTraits = UITraitCollection(preferredContentSizeCategory: .large)
+    let accessibilityTraits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+    let accessibilityFont = UIFont.preferredFont(
+      forTextStyle: .body, compatibleWith: accessibilityTraits)
+    let layer = STULabelLayer()
+    layer.renderingTraitCollection = largeTraits
+    layer.text = "Initial"
+    let largeFont = layer.font
+    _ = layer.attributedText
+
+    layer.renderingTraitCollection = accessibilityTraits
+    #expect(layer.font == largeFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == largeFont)
+
+    layer.text = "Replacement"
+    #expect(layer.font == accessibilityFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == accessibilityFont)
+  }
+
+  @Test
+  func `an attributed default does not become the replacement plain text font`() {
+    let largeTraits = UITraitCollection(preferredContentSizeCategory: .large)
+    let accessibilityTraits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+    let largeFont = UIFont.preferredFont(forTextStyle: .body, compatibleWith: largeTraits)
+    let accessibilityFont = UIFont.preferredFont(
+      forTextStyle: .body, compatibleWith: accessibilityTraits)
+    let explicitFont = UIFont.systemFont(ofSize: 13)
+    let layer = STULabelLayer()
+    layer.renderingTraitCollection = largeTraits
+    layer.attributedText = NSAttributedString([
+      ("Default", [:]),
+      (" explicit", [.font: explicitFont]),
+    ])
+    _ = layer.shapedText
+
+    layer.renderingTraitCollection = accessibilityTraits
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont == largeFont)
+
+    layer.text = "Plain replacement"
+    #expect(layer.font == accessibilityFont)
+
+    layer.attributedText = NSAttributedString([
+      ("New default", [:]),
+      (" explicit", [.font: explicitFont]),
+    ])
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        == accessibilityFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 11, effectiveRange: nil) as? UIFont
+        == explicitFont)
+  }
+
+  @Test
+  func `explicit fonts survive trait changes and replacement text`() {
+    let largeTraits = UITraitCollection(preferredContentSizeCategory: .large)
+    let accessibilityTraits = UITraitCollection(
+      preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+    let explicitFont = UIFont.systemFont(ofSize: 13)
+    let layer = STULabelLayer()
+    layer.renderingTraitCollection = largeTraits
+    layer.font = explicitFont
+    layer.text = "Initial"
+    _ = layer.attributedText
+
+    layer.renderingTraitCollection = accessibilityTraits
+    layer.text = "Replacement"
+    #expect(layer.font === explicitFont)
+    #expect(
+      layer.attributedText.attribute(.font, at: 0, effectiveRange: nil) as? UIFont
+        === explicitFont)
+
+    layer.attributedText = NSAttributedString(
+      string: "Attributed", attributes: [.font: explicitFont])
+    layer.renderingTraitCollection = largeTraits
+    layer.text = "Plain replacement"
+    #expect(layer.font === explicitFont)
   }
 
   @Test

@@ -117,6 +117,7 @@ class LabelLayer : public LabelPropertiesCRTPBase<LabelLayer>
   bool contentsIsNotNil_ : 1;
   bool isRegisteredAsLayerThatMayHaveImage_ : 1;
   bool imageMayHaveBeenPurged_ : 1;
+  bool fontIsExplicit_ : 1;
 
   LabelLayer *previousLayerThatHasImage_;
   LabelLayer *nextLayerThatHasImage_;
@@ -241,7 +242,7 @@ public:
       return;
     // Existing plain text keeps its effective font until the owner opts into scaling or assigns
     // new content. Preserve that font before resetting the resolver for the new environment.
-    if (string_ && !font_ && defaultFont_) {
+    if (string_ && !fontIsExplicit_ && !font_ && defaultFont_) {
       font_ = defaultFont_;
     }
     traitCollection_ = [traitCollection copy];
@@ -386,17 +387,32 @@ private:
 public:
   bool isAttributed() const { return string_ == nil && attributedString_ != nil; }
 
+  static bool firstCharacterHasExplicitFont(NSAttributedString *__unsafe_unretained attributedString)
+  {
+    return attributedString.length != 0 && [attributedString attribute:NSFontAttributeName
+                                                               atIndex:0
+                                                        effectiveRange:nil] != nil;
+  }
+
   NSString *text() const { return string_ ?: (attributedString_ ? attributedString_.string : @""); }
   void setText(NSString *__unsafe_unretained __nullable string)
   {
     if (string == string_ || [string isEqualToString:string_])
       return;
     const bool needToCopyAttributes = string_ == nil && attributedString_ != nil;
+    if (!fontIsExplicit_) {
+      // A font retained solely to keep the old content stable belongs to that content. New plain
+      // text must resolve its implicit default against the current rendering environment.
+      if (font_) {
+        font_ = nil;
+        cachedAttributesDictionary_ = nil;
+      }
+    }
     string_ = [string copy];
     if (needToCopyAttributes) {
       NSDictionary<NSAttributedStringKey, id> *const attributes =
           stringIsEmpty_ ? nil : [attributedString_ attributesAtIndex:0 effectiveRange:nil];
-      if (!font_) {
+      if (fontIsExplicit_ && !font_) {
         font_ = [attributes objectForKey:NSFontAttributeName] ?: defaultFont().unretained;
       }
       if (!textColor_) {
@@ -452,14 +468,21 @@ public:
     }
     return defaultFont().unretained;
   }
-  void setFont(UIFont *__unsafe_unretained font)
+  void setFont(UIFont *__unsafe_unretained font) { setFont(font, font != nil); }
+  void setFontPreservingProvenance(UIFont *__unsafe_unretained font) { setFont(font, fontIsExplicit_); }
+
+private:
+  void setFont(UIFont *__unsafe_unretained font, bool isExplicit)
   {
     if (!font) {
       font = defaultFont().unretained;
     }
-    if (font == font_)
+    if (font == font_) {
+      fontIsExplicit_ = isExplicit;
       return;
+    }
     font_ = font;
+    fontIsExplicit_ = isExplicit;
     invalidatedStringAttributes_ |= InvalidatedStringAttributes::font;
     if (cachedAttributesDictionary_) {
       cachedAttributesDictionary_ = nil;
@@ -467,6 +490,7 @@ public:
     invalidateShapedString();
   }
 
+public:
   UIColor *textColor() const
   {
     if (textColor_) {
@@ -525,16 +549,26 @@ public:
   }
   void setAttributedText(NSAttributedString *__unsafe_unretained attributedString)
   {
+    setAttributedText(attributedString, firstCharacterHasExplicitFont(attributedString));
+  }
+  void setAttributedTextPreservingFontProvenance(NSAttributedString *__unsafe_unretained attributedString)
+  {
+    setAttributedText(attributedString, fontIsExplicit_);
+  }
+
+private:
+  void setAttributedText(NSAttributedString *__unsafe_unretained attributedString, bool fontIsExplicit)
+  {
     if (attributedString == attributedString_)
       return;
     attributedString_ = [attributedString copy];
     stringIsEmpty_ = attributedString_ == nil || attributedString_.length == 0;
     clearStringProperties();
+    fontIsExplicit_ = fontIsExplicit;
     addMissingDefaultTextAttributes();
     invalidateShapedString();
   }
 
-private:
   STU_NO_INLINE
   void clearStringProperties()
   {
@@ -545,6 +579,7 @@ private:
     if (font_) {
       font_ = nil;
     }
+    fontIsExplicit_ = false;
     if (textColor_) {
       textColor_ = nil;
     }
@@ -708,7 +743,9 @@ public:
       shapedString_ = shapedString;
       attributedString_ = shapedString ? shapedString->shapedString->attributedString : nil;
       stringIsEmpty_ = attributedString_ == nil || attributedString_.length == 0;
+      const bool fontIsExplicit = firstCharacterHasExplicitFont(attributedString_);
       clearStringProperties();
+      fontIsExplicit_ = fontIsExplicit;
     }
     invalidateLayout();
   }
@@ -1139,6 +1176,7 @@ public:
     isInvalidated_ = false;
     attributedString_ = prerenderer.attributedString();
     stringIsEmpty_ = prerenderer.stringIsEmpty();
+    fontIsExplicit_ = firstCharacterHasExplicitFont(attributedString_);
     if (renderingTraitsMatch && !prerenderer.stringIsEmpty() && prerenderer.hasShapedString()) {
       shapedString_ = prerenderer.shapedString().unretained;
     }
@@ -2253,6 +2291,10 @@ STU_REENABLE_CLANG_WARNING
 {
   impl.setAttributedText(attributedString);
 }
+- (void)stu_setAttributedTextAfterAdjustingFonts:(nullable NSAttributedString *)attributedString
+{
+  impl.setAttributedTextPreservingFontProvenance(attributedString);
+}
 
 - (NSString *)text
 {
@@ -2270,6 +2312,10 @@ STU_REENABLE_CLANG_WARNING
 - (void)setFont:(nullable UIFont *)font
 {
   impl.setFont(font);
+}
+- (void)stu_setFontAfterAdjustingForContentSizeCategory:(nonnull UIFont *)font
+{
+  impl.setFontPreservingProvenance(font);
 }
 
 - (UIColor *)textColor
