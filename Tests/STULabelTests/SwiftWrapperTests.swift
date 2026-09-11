@@ -88,6 +88,13 @@ struct SwiftWrapperTests {
   @Test
   func `STULabel preserves disabled link color through tint and hierarchy changes`() {
     let label = STULabel()
+    let defaultDisabledLinkColor = UIColor.link.withProminence(.tertiary)
+    #expect(label.disabledLinkColor == defaultDisabledLinkColor)
+    label.isEnabled = false
+    #expect(label.layer.overrideLinkColor == defaultDisabledLinkColor)
+    label.isEnabled = true
+    #expect(label.layer.overrideLinkColor == .link)
+
     let disabledLinkColor = UIColor.systemRed
     label.disabledLinkColor = disabledLinkColor
     label.isEnabled = false

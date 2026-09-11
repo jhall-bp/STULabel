@@ -164,7 +164,8 @@ STU_EXPORT
 /// Default value: `UIColor(white: 0.56, alpha: 1)`
 @property (nonatomic, nullable) UIColor *disabledTextColor;
 
-/// Default value: @c nil
+/// Default value: `[UIColor.linkColor colorWithProminence:UIColorProminenceTertiary]`.
+/// Assigning @c nil makes a disabled label fall back to its effective tint or regular link color.
 @property (nonatomic, nullable) UIColor *disabledLinkColor;
 
 /// Runs with the label's complete target trait collection, including during async and tiled drawing.

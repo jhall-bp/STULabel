@@ -508,7 +508,15 @@ Remaining risk/blocker and next action: None for this finding.
 
 ### Follow-up review — 2026-09-11
 
-**Status: Complete (retained).** State setters and lifecycle callbacks share the effective-color calculation, with explicit disabled overrides taking precedence. The focused tint/hierarchy case passed again. No additional defect found; retain this centralized calculation.
+**Status: Complete after documentation correction.** State setters and lifecycle callbacks share the effective-color calculation, with explicit disabled overrides taking precedence. The focused tint/hierarchy case passed again. The completed-task review found one public-contract discrepancy: `disabledLinkColor` was documented as defaulting to nil, while initialization has always supplied the tertiary-prominence dynamic system link color.
+
+2026-09-11 — Codex — Public contract corrected.
+
+Changes and rationale: The header now documents the actual dynamic default and the nil fallback semantics. The existing native Swift Testing lifecycle case begins by asserting both the public initial value and the effective disabled layer color before exercising a custom override, lifecycle changes, override removal, and re-enabling. No runtime color-selection path or additional state was introduced.
+
+Files: `Source/STULabel/STULabel.h`, `Tests/STULabelTests/SwiftWrapperTests.swift`, and this tracker.
+
+Validation: Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. All five `SwiftWrapperTests` passed on the iPhone 17 Pro simulator, actual iOS 26.2 (23C54), including the expanded initial-default and lifecycle regression. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/C0CF1150-3B1E-49B3-90A7-E0EC44BA24E2.txt`.
 
 
 ## R08 — Remove unsafe flags from the public package dependency graph
