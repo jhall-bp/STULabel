@@ -65,17 +65,17 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 
 | ID | Classification | Task | Status | Coordination |
 | --- | --- | --- | --- | --- |
-| R01 | Must fix | Transactional text-input document publication | Complete | Coordinated with R02 |
+| R01 | Must fix | Transactional text-input document publication | Open | Reopened: old string and live geometry diverge during callbacks |
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Complete | R03 and R06 integrated; R05 default-font semantics remain separate |
-| R05 | Must fix | Trait-correct preferred default fonts | Complete | Uses R04 trait snapshot; R10 remains separate |
+| R05 | Must fix | Trait-correct preferred default fonts | Open | Reopened: replacement plain text retains the prior implicit font |
 | R06 | Must fix | Single background-color owner across prerenderer configuration | Complete | Prerequisite for R04 environment synchronization |
 | R07 | Must fix | Preserve disabled link colors during tint/lifecycle changes | Complete | Independent, same STULabel.mm file |
 | R08 | Must fix for distribution | Remove unsafe flags from public package dependency graph | Open | Coordinate with G01 and ARC work |
 | R09 | Strong improvement | Restore deliberate rendering concurrency | Open | Uncommitted changes at review; coordinate with R03 |
 | R10 | Strong improvement | Avoid eager attributed-string normalization | Open | Coordinate with R05 |
-| R11 | Strong improvement | Reduce historical Auto Layout retry machinery | Complete | Narrow iOS 26.2 retry retained with reproduction and focused coverage |
+| R11 | Strong improvement | Reduce historical Auto Layout retry machinery | Complete | Bounds-origin conversion fixed; retry simplification retained |
 | R12 | Optional cleanup | Remove unreachable accessibility non-rotor branch | Complete | Committed as `31b6916` |
 | R13 | Release requirement | Document the breaking consumer migration contract | Open | Finalize after behavior/API decisions |
 | G01 | Release validation gate | Establish real downstream and iOS 26 build/runtime health | Open | Includes R08's versioned-consumer check |
@@ -83,7 +83,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 ## R01 — Transactional text-input document publication
 
 **Classification:** Must fix  
-**Status:** Complete
+**Status:** Open
 **Owner:** Unassigned
 
 ### Problem and evidence
@@ -104,7 +104,7 @@ Do not merely move the assignment before the callback if that breaks the promise
 
 - [x] Delegate queries during both will/did callbacks do not recursively notify.
 - [x] One document mutation produces one coherent notification transaction.
-- [x] Document, selection, and range queries observe internally consistent snapshots.
+- [ ] Document, selection, and range queries observe internally consistent snapshots. Reopened: callback geometry uses the live frame; see follow-up review.
 - [x] Text changes and layout/truncation-driven visible-document changes are covered.
 - [x] Focused meaningful tests reproduce the old problem and validate the new behavior.
 - [x] Actual runtime used for validation is recorded.
@@ -120,6 +120,30 @@ Files/commit: `Source/STULabel/STULabel+UITextInput-Internal.h`, `Source/STULabe
 Validation, environment, and results: The native Swift Testing case `Visible document publication is stable during delegate callbacks` passed after rebuild on Xcode 27 Beta 6, iPhone 17 Pro simulator, iOS 26.2 (test result `Test-STULabel-Package-2026.09.09_21-10-23-+1000.xcresult`). It covers re-entrant getters in both callbacks plus a truncation-driven document change. `clang-format --dry-run --Werror` and `git diff --check` passed.
 
 Remaining risk/blocker and next action: None for this finding.
+
+### Follow-up review — 2026-09-11
+
+**Status: Open (reopened). Must fix, P1.** String recursion is fixed, but publication still mixes the old string with live geometry.
+
+[updateVisibleString/textInputString](Source/STULabel/STULabel+UITextInput.mm#L234) expose the old stored string during will-change. However, [caretRect](Source/STULabel/STULabel+UITextInput.mm#L356) reads the new visible string, and rectangle/hit-testing helpers read the live text frame and origin. [caretRectForPosition:](Source/STULabel/STULabel+UITextInput.mm#L846) validates an endpoint against the old snapshot before passing it into that new geometry.
+
+New evidence, Xcode MCP RunCodeSnippet on **iOS 27.0 (24A434)**:
+- With a 20-point font, replace "iiii" with "WWWW". During `textWillChange:`, `text(in:)` returns "iiii" while its end caret moves from x≈17.03 to x≈74.63.
+- Set text to "abcdef", obtain its backward-affinity endpoint using `closestPosition(to: CGPoint(x: 399, y: 10))` in a 400 × 100 label, then replace text with "a". Querying that old endpoint's caret inside `textWillChange:` aborts: the endpoint is valid for the old document, but `previousCharacterBoundary` indexes the new one-character string.
+- Crash report: `/Users/jessehalley/Library/Logs/DiagnosticReports/XCPreviewAgent-2026-09-11-101226.ips`, containing an Objective-C exception, `-[NSString rangeOfComposedCharacterSequenceAtIndex:]`, and SIGABRT.
+- The original publication test passed again on actual iOS 26.2, but does not query callback geometry. The new cases still need iOS 26 regression coverage.
+
+Preferred fix: publish a retained displayed-frame snapshot together with its string, origin/geometry environment, and selection. Every UITextInput query in the transaction must use the same old or new snapshot. Reuse existing frame geometry; a caret bounds check alone would retain contradictory document state.
+
+Additional completion criteria:
+- [ ] Callback text, caret/selection rectangles, point hit testing, and position/range queries agree on one snapshot.
+- [ ] Shrinking text cannot throw when will-change queries an old valid caret.
+- [ ] Cover same-length replacements with different glyph widths and layout/truncation changes.
+- [ ] Reentrant queries do not perform another layout merely to discover that publication is already in progress.
+- [ ] Add focused Swift Testing regressions and run them on actual iOS 26.
+
+The historical record above remains evidence of the narrower recursion fix. This review changes documentation only.
+
 
 ## R02 — Visual caret navigation across bidi boundaries
 
@@ -219,6 +243,11 @@ Validation:
 
 Remaining scope: G01 remains open. No timing claim or aggregate-suite health claim is made.
 
+### Follow-up review — 2026-09-11
+
+**Status: Complete (retained).** The immutable target capture encloses the complete tile draw. Existing clear/cancel ownership prevents abandoned tiles from publishing into a replacement generation, without a second generation system. All five tile cases passed again, including in-flight abandonment. No additional defect found in this resolution. Shared validation details appear in the final follow-up assessment.
+
+
 ## R04 — Synchronize the complete rendering environment
 
 **Classification:** Must fix  
@@ -272,10 +301,15 @@ Validation:
 
 Remaining scope: G01 remains open. This is focused iOS 26.2 correctness evidence, not aggregate-suite, Xcode 26 toolchain, or performance-benchmark evidence.
 
+### Follow-up review — 2026-09-11
+
+**Status: Complete (retained).** The consolidated view-owned update, documented custom-trait invalidation contract, cached main-thread preparation callback, and completion-time full-snapshot/scale rejection form a coherent design. All four environment cases passed again, including regular and prerendered async rejection. No additional defect found in this resolution. R05's font-provenance issue remains under R05. Shared validation details appear below.
+
+
 ## R05 — Trait-correct preferred default fonts
 
 **Classification:** Must fix  
-**Status:** Complete
+**Status:** Open
 **Owner:** Codex
 
 ### Problem and evidence
@@ -316,6 +350,30 @@ Validation:
 
 Remaining scope: R10 may remove eager attributed-string normalization without changing the default-font ownership established here. Aggregate test-plan stabilization is outside R05.
 
+### Follow-up review — 2026-09-11
+
+**Status: Open (reopened). Must fix, P2.** Per-layer resolution fixes cross-label contamination, but a trait transition permanently promotes an implicit default into the explicit-font storage.
+
+[setRenderingTraitCollection](Source/STULabel/STULabelLayer.mm#L237) copies `defaultFont_` into `font_`. [setText](Source/STULabel/STULabelLayer.mm#L390) preserves that value as though the consumer assigned it. This contradicts the comment/completion record that new content uses the new rendering environment.
+
+Reproduction, Xcode MCP RunCodeSnippet on **iOS 27.0 (24A434)**:
+1. Set Large traits, assign plain text, and resolve its default: 17 points.
+2. Change traits to accessibility XXXL: existing text appropriately stays 17 without opt-in adjustment.
+3. Assign different plain text: it still receives 17, although the target-compatible body font is 53.
+4. Assign a fresh attributed string without a font: it receives 53.
+
+Preferred fix: retain the distinction between an explicit consumer font and the effective implicit font of existing content. Preserve old content when adjustment is disabled, but retire its implicit font when replacing the content. Resolve the new default against current traits. Clearing every `font_` on text assignment would wrongly discard explicit consumer fonts.
+
+Additional completion criteria:
+- [ ] Replacement plain text uses the current implicit default after a category transition.
+- [ ] New plain and partially attributed content agree after prior font queries and prior materialization/rendering.
+- [ ] Existing content remains stable with adjustment disabled, and enabling adjustment applies immediately.
+- [ ] Explicit fonts survive replacement and trait changes as documented.
+- [ ] Run focused transition regressions on actual iOS 26.
+
+All six existing Dynamic Type cases passed on iOS 26.2; none covers this replacement transition. R10's allocation work remains separate and was not re-reviewed.
+
+
 ## R06 — Single background-color owner across prerenderer configuration
 
 **Classification:** Must fix  
@@ -351,6 +409,11 @@ Files: `Source/STULabel/STULabel.mm`, `Source/STULabel/STULabel.h`, and `Tests/S
 Validation: Xcode MCP, STULabel-Package, iPhone 17 Pro / actual iOS 26.2 (23C54). All six background combinations passed: fresh/existing view background × nil/red/transparent import, followed by dark/light changes and normal dynamic background assignment. These cases passed within the 21-case rendering/layout regression run on Xcode 27 Release Candidate, result `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/67E0A2EC-EDD1-4CC1-AEC0-75BB17B94B61.txt`. The tests were then moved into their own suite for the atomic R06 commit.
 
 Remaining scope: R04 owns complete environment synchronization; R05's default-font behavior remains separate.
+
+### Follow-up review — 2026-09-11
+
+**Status: Complete (retained).** Background adoption precedes layer-configuration callbacks; imported CGColors intentionally become static UIColors, and normal dynamic UIColor identity remains view-owned. All six background combinations passed again. No additional defect found; retain the single-owner implementation.
+
 
 ## R07 — Preserve disabled link colors during tint/lifecycle changes
 
@@ -396,6 +459,11 @@ regression, superview and window lifecycle callbacks, override removal with dimm
 passed.
 
 Remaining risk/blocker and next action: None for this finding.
+
+### Follow-up review — 2026-09-11
+
+**Status: Complete (retained).** State setters and lifecycle callbacks share the effective-color calculation, with explicit disabled overrides taking precedence. The focused tint/hierarchy case passed again. No additional defect found; retain this centralized calculation.
+
 
 ## R08 — Remove unsafe flags from the public package dependency graph
 
@@ -494,7 +562,7 @@ No implementation recorded. Next: establish whether normalized storage is a publ
 ## R11 — Reduce historical Auto Layout retry machinery
 
 **Classification:** Strong improvement; deletion requires focused evidence  
-**Status:** Complete  
+**Status:** Complete
 **Owner:** Codex
 
 ### Problem and evidence
@@ -537,6 +605,44 @@ Validation:
 
 Remaining scope: snapshot reference differences remain outside R11; G01's other release gates remain open. This establishes the focused iOS 26.2 behavior, not an Xcode 26 toolchain result or a timing benchmark.
 
+### Follow-up review — 2026-09-11
+
+**Status: Complete (resolved below; originally reopened as Must fix, P2).** The original retry simplification remains sound.
+
+Keep the reduced invalidation state, maximum-width cache, width-validity interval, and coalesced follow-up backed by the documented iOS 26 reproduction. All six intrinsic-layout cases passed again on actual iOS 26.2.
+
+The baseline correction remains incomplete for nonzero bounds origins. [updateBaselinesLayoutGuide](Source/STULabel/STULabel.mm#L319) adds the text-frame origin to the baseline, then treats that label-coordinate Y value as a distance from `label.topAnchor`. It must also account for `label.bounds.minY`. [STULabelLayoutInfo.h](Source/STULabel/STULabelLayoutInfo.h#L18) explicitly defines baseline values in label coordinates.
+
+Reproduction, Xcode MCP RunCodeSnippet on **iOS 27.0 (24A434)**: place a label at parent y=20 with a 7-point top inset, 20-point font, width 200 and height 100; constrain a marker to `firstBaselineAnchor`. At bounds origin zero, the marker and converted public first baseline both equal y≈46.33. Set `bounds.origin.y = 9` and lay out: the marker stays y≈46.33, while `label.convert(CGPoint(x: 0, y: label.layoutInfo.firstBaseline), to: parent).y` equals y≈37.33. Returning the origin to zero restores agreement.
+
+This is a residual coordinate issue, not evidence that the retry simplification introduced the bounds-origin behavior. Existing tests cover origin-only intrinsic invalidation but compare baseline anchors only with zero bounds origins.
+
+Preferred fix: derive first/last baseline constants as distances from the bounds minimum, and refresh those guide constants when bounds origin changes. Preserve the origin-only intrinsic-measurement fast path; updating guide coordinates does not require reshaping or intrinsic invalidation.
+
+Additional completion criteria:
+- [x] First/last baseline anchors match converted baseline coordinates for positive, negative, and zero bounds origins.
+- [x] Origin changes refresh guide constants without intrinsic-size measurement invalidation.
+- [x] Insets, vertical alignment, and baseline spacing remain correct.
+- [x] Add actual iOS 26 coverage and retain the passing convergence cases.
+
+### Reopened issue completion — 2026-09-11
+
+**Status: Complete.**
+
+Changes and rationale:
+- Baseline guide constants now convert label-coordinate baseline values into distances from `topAnchor` by subtracting `bounds.minY` after adding the text-frame origin.
+- `setBounds:` refreshes an existing baseline guide when the bounds Y origin changes. This updates only guide geometry; the width-based intrinsic invalidation decision remains unchanged, so origin-only changes retain the intrinsic-measurement fast path.
+- The focused Swift Testing regression covers first and last baseline anchors at zero, positive, and negative bounds origins with top, center, and bottom vertical alignment, nonzero content insets, and a line-height spacing constraint. It also verifies that origin changes do not invalidate intrinsic size and that the spacing constant remains stable.
+
+Validation:
+- Xcode MCP, generated package workspace, `STULabel-Package`, iPhone 17 Pro (26.2), iOS 27 SDK. Console confirms actual runtime **iOS 26.2 (23C54)**.
+- `BuildProject(buildForTesting: true)` passed. Log: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/BuildProject/BuildProject-Log-20260911-110652.txt`.
+- `RunSomeTests` passed all seven `IntrinsicContentSizeTests`, including the new bounds-origin regression and the six retained convergence/fast-path cases. Summary: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/94440884-0B67-4378-B128-DAB2BFCFC521.txt`. Runtime evidence: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-09-11T11-07-07+10-00.txt`.
+- `git diff --check` passed. No snapshot references were changed and no push was performed.
+
+Remaining scope: snapshot reference differences and G01's release gates remain outside R11. No timing claim or aggregate-suite health claim is made.
+
+
 ## R12 — Remove unreachable accessibility non-rotor branch
 
 **Classification:** Optional cleanup  
@@ -567,6 +673,11 @@ unconditional rotor assignment. The shared subelement type remains in its non-ro
 The iOS 26.2 package build and existing accessibility-element lifecycle test pass.
 
 2026-09-10 — Codex — Complete; committed as `31b6916`.
+
+### Follow-up review — 2026-09-11
+
+**Status: Complete (retained).** The removed conditional was permanently true, and the shared subelement class remains in use elsewhere. The existing accessibility-element lifetime case passed again. No additional defect found; retain the direct rotor construction.
+
 
 ## R13 — Document the breaking consumer migration contract
 
@@ -648,9 +759,46 @@ Do not replace specialized CoreText layout/drawing or remove old CoreText/VoiceO
 
 ### Final completion record
 
-- Overall state: **Open — eight tasks complete; R02 ready for native review**
-- Completed task IDs: R01 (`1bae9ff`), R03 (`01a1b86`), R04 (`133a242`), R05 (`f2b11be`), R06 (`ba2e4ef`), R07 (`e4d71f1`), R11 (`3e4b8d2`), and R12 (`31b6916`).
+- Overall state: **Open — six tasks are complete; R01 and R05 remain reopened by the 2026-09-11 follow-up review.**
+- Completed task IDs: R03 (`01a1b86`), R04 (`133a242`), R06 (`ba2e4ef`), R07 (`e4d71f1`), R11 (`3e4b8d2` plus the current bounds-origin follow-up), and R12 (`31b6916`).
+- Previously completed tasks with additional work: R01 (`1bae9ff`) and R05 (`f2b11be`). Their original fixes and evidence remain recorded above.
+- R02 remains Ready for review; it was outside this follow-up review's completed-only scope.
 - Deferred/superseded task IDs and rationale: None recorded.
-- Required validation still outstanding: G01, R02's native UIKit interaction check, and the unchecked criteria on open tasks.
-- Final reviewed commit/worktree: R02 follow-up `ae8600b`; tracker synchronization is recorded in the immediately following commit.
-- Final assessment after fixes: Completed tasks have focused source/runtime evidence and recorded commits. The reviewed R02 protocol defects are fixed; the branch remains short of release readiness while the open tasks and G01 remain unresolved.
+- Required validation still outstanding: R01 and R05's reopened criteria and the previously outstanding gates. Other open tasks and G01 were not re-reviewed.
+- Follow-up reviewed commit/worktree: `4191e2a`, with the current implementations inspected in place. Existing uncommitted context-menu/drag-preview/color changes and Demo edits were identified and excluded from review findings.
+- The subsequent R11 resolution modifies `Source/STULabel/STULabel.mm`, `Tests/STULabelTests/IntrinsicContentSizeTests.swift`, and this tracker. Existing unrelated worktree changes remain excluded.
+
+## Completed-task follow-up assessment — 2026-09-11
+
+Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, R05, R06, R07, R11, and R12. R02 and all open tasks were excluded. Source was reviewed as an integrated library, including ownership and invalidation boundaries shared by the completed tasks.
+
+| Task | Follow-up outcome |
+| --- | --- |
+| R01 | Reopened, P1: string publication is guarded, but live geometry breaks the transaction and can crash on document shrink. |
+| R03 | Remains complete: tile trait capture and cancellation reuse are coherent. |
+| R04 | Remains complete: shared environment preparation and async rejection are coherent. |
+| R05 | Reopened, P2: an implicit font becomes a permanent override across replacement plain text. |
+| R06 | Remains complete: background ownership/import semantics are coherent. |
+| R07 | Remains complete: disabled-link precedence is centralized and preserved. |
+| R11 | Reopened, P2 residual baseline defect; resolved by the subsequent R11 completion recorded above. |
+| R12 | Remains complete: unreachable branch removed without broadening the change. |
+
+### Fresh validation
+
+- Toolchain: Xcode 27 Release Candidate / iOS 27 SDK.
+- Xcode MCP `BuildProject(buildForTesting: true)` passed. Log: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/BuildProject/BuildProject-Log-20260911-101037.txt`.
+- **29 focused cases passed on actual iOS 26.2 (23C54)**: DynamicTypeFontScalingTests (6), IntrinsicContentSizeTests (6), PrerenderedBackgroundTests (6), RenderingEnvironmentTests (4), TiledRenderingTraitsTests (5), the R01 publication case (1), and the R07 disabled-link case (1).
+- Focused summary: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/3B0301FC-E5A1-4E95-8450-886C3FB0C05B.txt`. Console runtime evidence: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-09-11T10-10-49+10-00.txt`.
+- The existing accessibility-element lifetime case also passed: **30 selected existing cases passed overall**. Separate summary: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/DF1390BE-D64F-4B64-B29E-546A423AD26D.txt`.
+- Additional review probes used Xcode MCP RunCodeSnippet and reported **iOS 27.0 (24A434)**. They demonstrated the new R01/R05/R11 gaps described above. They are not claimed as new iOS 26 runtime reproductions.
+- R01's document-shrink probe terminated the preview host with an Objective-C string-range exception. The tool surfaced `Preview service no longer running`; the associated crash report confirms SIGABRT and the composed-character indexing frame. This was separated from build/test infrastructure failures.
+- No aggregate known-failing suite was rerun, no snapshots were rerecorded, and no new timing claims were made.
+- Temporary diagnostic/result paths may be cleaned by the system; the reproduction steps and observations above are the durable handoff.
+
+### Architectural assessment and next work
+
+The completed work is substantially better than the original review snapshot. Rendering-environment ownership, deferred tile transport, background adoption, link-color precedence, and the reduced Auto Layout retry mechanism are cohesive improvements. There is no reason from this review to replace those successful designs.
+
+The baseline coordinate boundary has since been completed under R11. Two ownership boundaries still need completion: publish document geometry with the string, and preserve the distinction between implicit and explicit fonts. Address those boundaries directly rather than adding isolated guards. R01 has the highest priority because a valid callback query can abort the process.
+
+After each remaining fix, add focused regressions for the newly identified cases, run them on actual iOS 26, and update the task's status and this completion record. Passing the previous focused cases alone is insufficient to close the reopened findings.

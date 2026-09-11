@@ -318,10 +318,12 @@ static NSLayoutYAxisAnchor *lastBaselineAnchor(STULabelBaselinesLayoutGuide *__u
 static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide *__unsafe_unretained self,
                                        CGFloat displayScale,
                                        const LabelTextFrameInfo &info,
-                                       CGFloat textFrameOriginY)
+                                       CGFloat textFrameOriginY,
+                                       CGFloat boundsMinY)
 {
-  const CGFloat firstBaseline = info.firstBaseline + textFrameOriginY;
-  const CGFloat lastBaseline = info.lastBaseline + textFrameOriginY;
+  const CGFloat baselineOffset = textFrameOriginY - boundsMinY;
+  const CGFloat firstBaseline = info.firstBaseline + baselineOffset;
+  const CGFloat lastBaseline = info.lastBaseline + baselineOffset;
   if (self->_firstBaselineConstraint && self->_firstBaseline != firstBaseline) {
     self->_firstBaselineConstraint.constant = firstBaseline;
   }
@@ -722,10 +724,15 @@ static void initCommon(STULabel *self)
 - (void)setBounds:(CGRect)bounds
 {
   const CGFloat oldWidth = STULabelLayerGetSize(_layer).width;
+  const CGFloat oldBoundsMinY = CGRectGetMinY(self.bounds);
   const bool isRecursiveCall = _bits.isSettingBounds;
   _bits.isSettingBounds = true;
   [super setBounds:bounds];
   _bits.isSettingBounds = isRecursiveCall;
+
+  if (_baselinesLayoutGuide && oldBoundsMinY != CGRectGetMinY(self.bounds)) {
+    updateLayoutGuides(self);
+  }
 
   // Note that [super setBounds] doesn't necessarily trigger a call to
   // labelLayerTextLayoutWasInvalidated, even when the size change invalidates the intrinsic content
@@ -746,7 +753,8 @@ static void updateLayoutGuides(STULabel *__unsafe_unretained self)
     updateBaselinesLayoutGuide(self->_baselinesLayoutGuide,
                                self.traitCollection.displayScale,
                                STULabelLayerGetCurrentTextFrameInfo(self->_layer),
-                               self->_layer.textFrameOrigin.y);
+                               self->_layer.textFrameOrigin.y,
+                               CGRectGetMinY(self.bounds));
   }
 }
 
@@ -1798,7 +1806,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
     // complex line rect shapes, so we use our own implementation here.
     const CGAffineTransform tf = CGAffineTransformMakeTranslation(-bounds.origin.x, -bounds.origin.y);
     const CGPathRef path =
-        [rects createPathWithEdgeInsets:UIEdgeInsets{.left = ex, .right = ex, .top = ey, .bottom = ey}
+        [rects createPathWithEdgeInsets:UIEdgeInsets{.top = ey, .left = ex, .bottom = ey, .right = ex}
                                        cornerRadius:abs(min(ex, ey))
             extendTextLinesToCommonHorizontalBounds:true
                                    fillTextLineGaps:true

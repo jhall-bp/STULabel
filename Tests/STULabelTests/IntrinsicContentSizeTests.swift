@@ -149,6 +149,75 @@ struct IntrinsicContentSizeTests {
   }
 
   @Test
+  func `Baseline anchors follow bounds origins without invalidating intrinsic size`() {
+    let root = UIView(frame: CGRect(x: 0, y: 0, width: 600, height: 1000))
+    let label = makeLabel()
+    label.text = "First line\nLast line"
+    label.contentInsets = UIEdgeInsets(top: 7, left: 11, bottom: 13, right: 17)
+    root.addSubview(label)
+
+    let first = UIView()
+    let last = UIView()
+    let spaced = UIView()
+    first.translatesAutoresizingMaskIntoConstraints = false
+    last.translatesAutoresizingMaskIntoConstraints = false
+    spaced.translatesAutoresizingMaskIntoConstraints = false
+    root.addSubview(first)
+    root.addSubview(last)
+    root.addSubview(spaced)
+    let baselineSpacing = constrain(
+      spaced, .top, .equal, label, .firstBaseline,
+      plusLineHeightMultipliedBy: 1, plus: 3)
+    NSLayoutConstraint.activate([
+      label.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 10),
+      label.topAnchor.constraint(equalTo: root.topAnchor, constant: 20),
+      label.widthAnchor.constraint(equalToConstant: 200),
+      label.heightAnchor.constraint(equalToConstant: 120),
+      first.topAnchor.constraint(equalTo: label.firstBaselineAnchor),
+      last.topAnchor.constraint(equalTo: label.lastBaselineAnchor),
+      baselineSpacing,
+      first.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      last.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      spaced.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      first.widthAnchor.constraint(equalToConstant: 1),
+      last.widthAnchor.constraint(equalToConstant: 1),
+      first.heightAnchor.constraint(equalToConstant: 1),
+      last.heightAnchor.constraint(equalToConstant: 1),
+      spaced.widthAnchor.constraint(equalToConstant: 1),
+      spaced.heightAnchor.constraint(equalToConstant: 1),
+    ])
+
+    for alignment: STULabelVerticalAlignment in [.top, .center, .bottom] {
+      label.verticalAlignment = alignment
+      root.setNeedsLayout()
+      root.layoutIfNeeded()
+      _ = label.intrinsicContentSize
+      let invalidationCount = label.invalidationCount
+      let baselineSpacingConstant = baselineSpacing.constant
+
+      for originY: CGFloat in [0, 9, -9, 0] {
+        label.bounds.origin.y = originY
+        root.layoutIfNeeded()
+
+        let info = label.layoutInfo
+        let tolerance = 1 / info.displayScale
+        let convertedFirstBaseline = label.convert(
+          CGPoint(x: 0, y: info.firstBaseline), to: root
+        ).y
+        let convertedLastBaseline = label.convert(
+          CGPoint(x: 0, y: info.lastBaseline), to: root
+        ).y
+        #expect(abs(first.frame.minY - convertedFirstBaseline) <= tolerance)
+        #expect(abs(last.frame.minY - convertedLastBaseline) <= tolerance)
+        #expect(
+          abs(spaced.frame.minY - convertedFirstBaseline - baselineSpacing.constant) <= tolerance)
+        #expect(baselineSpacing.constant == baselineSpacingConstant)
+        #expect(label.invalidationCount == invalidationCount)
+      }
+    }
+  }
+
+  @Test
   func `Single line bounds changes reuse intrinsic measurement`() {
     let label = makeLabel()
     label.maximumNumberOfLines = 1
