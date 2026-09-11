@@ -747,12 +747,13 @@ static void initCommon(STULabel *self)
 
 static void updateLayoutGuides(STULabel *__unsafe_unretained self)
 {
+  const LabelParameters &params = STULabelLayerGetParams(self->_layer);
   if (self->_contentLayoutGuide) {
-    updateContentLayoutGuide(self->_contentLayoutGuide, STULabelLayerGetParams(self->_layer));
+    updateContentLayoutGuide(self->_contentLayoutGuide, params);
   }
   if (self->_baselinesLayoutGuide) {
     updateBaselinesLayoutGuide(self->_baselinesLayoutGuide,
-                               self.traitCollection.displayScale,
+                               params.displayScale(),
                                STULabelLayerGetCurrentTextFrameInfo(self->_layer),
                                self->_layer.textFrameOrigin.y,
                                CGRectGetMinY(self.bounds));

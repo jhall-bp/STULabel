@@ -218,6 +218,42 @@ struct IntrinsicContentSizeTests {
   }
 
   @Test
+  func `Baseline spacing rounds at the layer rendering scale`() {
+    let root = UIView(frame: CGRect(x: 0, y: 0, width: 600, height: 1_000))
+    root.traitOverrides.displayScale = 3
+    let label = makeLabel()
+    root.addSubview(label)
+    let spaced = UIView()
+    spaced.translatesAutoresizingMaskIntoConstraints = false
+    root.addSubview(spaced)
+    let baselineSpacing = constrain(
+      spaced, .top, .equal, label, .firstBaseline, plusLineHeightMultipliedBy: 1)
+    NSLayoutConstraint.activate([
+      label.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      label.topAnchor.constraint(equalTo: root.topAnchor),
+      label.widthAnchor.constraint(equalToConstant: 200),
+      label.heightAnchor.constraint(equalToConstant: 120),
+      baselineSpacing,
+      spaced.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      spaced.widthAnchor.constraint(equalToConstant: 1),
+      spaced.heightAnchor.constraint(equalToConstant: 1),
+    ])
+    root.updateTraitsIfNeeded()
+    label.updateTraitsIfNeeded()
+    #expect(label.traitCollection.displayScale == 3)
+
+    for scale: CGFloat in [1, 2, 3] {
+      label.contentScaleFactor = scale
+      root.setNeedsLayout()
+      root.layoutIfNeeded()
+      let info = label.layoutInfo
+      let expected = ceil(CGFloat(info.firstLineHeight) * scale) / scale
+      #expect(info.displayScale == scale)
+      #expect(abs(baselineSpacing.constant - expected) < 0.000_001)
+    }
+  }
+
+  @Test
   func `Single line bounds changes reuse intrinsic measurement`() {
     let label = makeLabel()
     label.maximumNumberOfLines = 1

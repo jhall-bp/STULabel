@@ -688,6 +688,21 @@ Validation:
 
 Remaining scope: snapshot reference differences and G01's release gates remain outside R11. No timing claim or aggregate-suite health claim is made.
 
+### Rendering-scale follow-up resolution — 2026-09-11
+
+**Status: Complete after follow-up correction.** The completed-task review found that line-height spacing constraints were refreshed with `traitCollection.displayScale`, while `STULabelLayoutInfo.displayScale` and all text geometry use the label layer's effective `contentsScale`. An explicitly preserved `contentScaleFactor` could therefore leave spacing rounded to a different pixel grid from the rendered text.
+
+Changes and rationale: `updateLayoutGuides` now reads the layer's authoritative `LabelParameters` once and uses its `displayScale` for both content and baseline guide updates. This removes the competing scale source without changing the retained R11 invalidation/measurement design and adds no shaping, layout, drawing, or scrolling-loop work.
+
+Files: `Source/STULabel/STULabel.mm`, `Tests/STULabelTests/IntrinsicContentSizeTests.swift`, and this tracker.
+
+Additional completion criteria:
+- [x] Line-height spacing rounds at the effective layer rendering scale.
+- [x] Explicit content scales 1, 2, and 3 are covered while the inherited trait scale remains 3.
+- [x] The existing bounds-origin, convergence, and intrinsic-measurement fast-path coverage remains passing.
+
+Validation: Xcode MCP `BuildProject(buildForTesting: true)` passed with Xcode 27 Release Candidate / iOS 27 SDK. All eight `IntrinsicContentSizeTests` passed on the iPhone 17 Pro simulator, actual iOS 26.2 (23C54), including the new 1×/2×/3× rendering-scale regression and the retained convergence, bounds-origin, baseline, and fast-path cases. Result: `/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/DA1911D3-A6C6-4EBE-AD61-542EBE95E4CF.txt`.
+
 
 ## R12 — Remove unreachable accessibility non-rotor branch
 
