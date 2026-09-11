@@ -315,8 +315,15 @@ static NSLayoutYAxisAnchor *lastBaselineAnchor(STULabelBaselinesLayoutGuide *__u
   return anchor;
 }
 
+static CGFloat displayScale(const SpacingConstraint &constraint)
+{
+  return constraint.layoutGuide2   ? constraint.layoutGuide2->_displayScale
+         : constraint.layoutGuide1 ? constraint.layoutGuide1->_displayScale
+                                   : 0;
+}
+
 static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide *__unsafe_unretained self,
-                                       CGFloat displayScale,
+                                       CGFloat guideDisplayScale,
                                        const LabelTextFrameInfo &info,
                                        CGFloat textFrameOriginY,
                                        CGFloat boundsMinY)
@@ -330,19 +337,20 @@ static void updateBaselinesLayoutGuide(STULabelBaselinesLayoutGuide *__unsafe_un
   if (self->_lastBaselineConstraint && self->_lastBaseline != lastBaseline) {
     self->_lastBaselineConstraint.constant = lastBaseline;
   }
-  if (!self->_lineHeightConstraints.isEmpty() &&
-      (self->_lineHeightInfo != info || self->_displayScale != displayScale)) {
-    const DisplayScale scale = DisplayScale::createOrIfInvalidUseOne(displayScale);
+  const bool lineHeightConstraintsNeedUpdate =
+      self->_lineHeightInfo != info || self->_displayScale != guideDisplayScale;
+  self->_displayScale = guideDisplayScale;
+  if (!self->_lineHeightConstraints.isEmpty() && lineHeightConstraintsNeedUpdate) {
     const FirstAndLastLineHeightInfo lineHeightInfo{info};
     for (SpacingConstraintRef &cr : self->_lineHeightConstraints) {
       SpacingConstraint &c = cr.constraint();
       c.setHeight(cr.item(), lineHeightInfo);
+      const DisplayScale scale = DisplayScale::createOrIfInvalidUseOne(displayScale(c));
       c.layoutConstraint.constant = c.layoutConstantForSpacing(c.spacing(), scale);
     }
   }
   self->_firstBaseline = firstBaseline;
   self->_lastBaseline = lastBaseline;
-  self->_displayScale = displayScale;
   self->_lineHeightInfo = info;
 }
 
@@ -415,13 +423,6 @@ static NSLayoutConstraint *createSpacingConstraint(SpacingConstraint::Type type,
 static STULabelSpacingConstraint *__nullable spacingConstraint(NSLayoutConstraint *constraint)
 {
   return objc_getAssociatedObject(constraint, spacingConstraintAssociatedObjectKey);
-}
-
-static CGFloat displayScale(const SpacingConstraint &constraint)
-{
-  return constraint.layoutGuide2   ? constraint.layoutGuide2->_displayScale
-         : constraint.layoutGuide1 ? constraint.layoutGuide1->_displayScale
-                                   : 0;
 }
 
 @end

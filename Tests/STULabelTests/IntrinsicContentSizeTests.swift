@@ -254,6 +254,48 @@ struct IntrinsicContentSizeTests {
   }
 
   @Test
+  func `Shared baseline spacing keeps the target label rendering scale`() {
+    let root = UIView(frame: CGRect(x: 0, y: 0, width: 600, height: 1_000))
+    let leftLabel = makeLabel()
+    leftLabel.font = .systemFont(ofSize: 13)
+    leftLabel.contentScaleFactor = 1
+    root.addSubview(leftLabel)
+    let rightLabel = makeLabel()
+    rightLabel.font = .systemFont(ofSize: 17)
+    rightLabel.contentScaleFactor = 3
+    root.addSubview(rightLabel)
+    let baselineSpacing = constrain(
+      leftLabel, .firstBaseline, .equal, rightLabel, .firstBaseline,
+      plusLineHeightMultipliedBy: 1)
+    NSLayoutConstraint.activate([
+      leftLabel.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+      leftLabel.widthAnchor.constraint(equalToConstant: 200),
+      leftLabel.heightAnchor.constraint(equalToConstant: 120),
+      rightLabel.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 300),
+      rightLabel.topAnchor.constraint(equalTo: root.topAnchor),
+      rightLabel.widthAnchor.constraint(equalToConstant: 200),
+      rightLabel.heightAnchor.constraint(equalToConstant: 120),
+      baselineSpacing,
+    ])
+    root.layoutIfNeeded()
+
+    let rightInfo = rightLabel.layoutInfo
+    let expected =
+      ceil(CGFloat(rightInfo.firstLineHeight) * rightInfo.displayScale) / rightInfo.displayScale
+    #expect(leftLabel.layoutInfo.firstLineHeight < rightInfo.firstLineHeight)
+    #expect(leftLabel.layoutInfo.displayScale == 1)
+    #expect(rightInfo.displayScale == 3)
+    #expect(abs(baselineSpacing.constant - expected) < 0.000_001)
+
+    leftLabel.font = .systemFont(ofSize: 14)
+    root.setNeedsLayout()
+    root.layoutIfNeeded()
+
+    #expect(leftLabel.layoutInfo.firstLineHeight < rightInfo.firstLineHeight)
+    #expect(abs(baselineSpacing.constant - expected) < 0.000_001)
+  }
+
+  @Test
   func `Single line bounds changes reuse intrinsic measurement`() {
     let label = makeLabel()
     label.maximumNumberOfLines = 1
