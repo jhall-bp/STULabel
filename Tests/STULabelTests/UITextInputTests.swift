@@ -571,17 +571,21 @@ struct UITextInputTests {
     let recorder = TextInputDelegateRecorder()
     var lengthsDuringWillChange: [Int] = []
     var lengthsDuringDidChange: [Int] = []
+    var hadSelectionDuringWillChange: [Bool] = []
+    var hadSelectionDuringDidChange: [Bool] = []
     recorder.onTextWillChange = { changedInput in
       lengthsDuringWillChange.append(
         changedInput.offset(
           from: changedInput.beginningOfDocument,
           to: changedInput.endOfDocument))
+      hadSelectionDuringWillChange.append(changedInput.selectedTextRange != nil)
     }
     recorder.onTextDidChange = { changedInput in
       lengthsDuringDidChange.append(
         changedInput.offset(
           from: changedInput.beginningOfDocument,
           to: changedInput.endOfDocument))
+      hadSelectionDuringDidChange.append(changedInput.selectedTextRange != nil)
     }
     input.inputDelegate = recorder
     input.selectedTextRange = documentRange(for: input)
@@ -598,6 +602,8 @@ struct UITextInputTests {
     #expect(recorder.selectionDidChangeCount == 1)
     #expect(lengthsDuringWillChange == [6])
     #expect(lengthsDuringDidChange == [5])
+    #expect(hadSelectionDuringWillChange == [true])
+    #expect(hadSelectionDuringDidChange == [false])
     #expect(input.selectedTextRange == nil)
 
     let truncatingLabel = self.label(
@@ -617,6 +623,127 @@ struct UITextInputTests {
       truncatingInput.offset(
         from: truncatingInput.beginningOfDocument,
         to: truncatingInput.endOfDocument) < truncatingLabel.text.utf16.count)
+  }
+
+  @Test
+  func `Published document keeps text and caret geometry coherent during callbacks`() throws {
+    let font = UIFont.systemFont(ofSize: 20)
+    let label = label(
+      with: NSAttributedString(string: "iiii", attributes: [.font: font]),
+      size: CGSize(width: 400, height: 100))
+    let input: any UITextInput = label
+    let oldEnd = input.endOfDocument
+    let oldCaret = input.caretRect(for: oldEnd)
+    let probePoint = CGPoint(x: 30, y: 10)
+    let oldRange = try #require(documentRange(for: input))
+    let oldSelectionRects = input.selectionRects(for: oldRange).map(\.rect)
+    let oldClosestPosition = try #require(input.closestPosition(to: probePoint))
+    let oldClosestOffset = input.offset(from: input.beginningOfDocument, to: oldClosestPosition)
+    let oldHitRange = try #require(input.characterRange(at: probePoint))
+    let oldHitOffset = input.offset(from: input.beginningOfDocument, to: oldHitRange.start)
+    let recorder = TextInputDelegateRecorder()
+    var textDuringWillChange: String?
+    var textDuringDidChange: String?
+    var caretDuringWillChange: CGRect?
+    var caretDuringDidChange: CGRect?
+    var selectionRectsDuringWillChange: [CGRect]?
+    var selectionRectsDuringDidChange: [CGRect]?
+    var closestOffsetDuringWillChange: Int?
+    var closestOffsetDuringDidChange: Int?
+    var hitOffsetDuringWillChange: Int?
+    var hitOffsetDuringDidChange: Int?
+    recorder.onTextWillChange = { changedInput in
+      let range = changedInput.textRange(
+        from: changedInput.beginningOfDocument,
+        to: changedInput.endOfDocument)
+      textDuringWillChange = range.flatMap { changedInput.text(in: $0) }
+      caretDuringWillChange = changedInput.caretRect(for: changedInput.endOfDocument)
+      selectionRectsDuringWillChange = range.map {
+        changedInput.selectionRects(for: $0).map(\.rect)
+      }
+      closestOffsetDuringWillChange = changedInput.closestPosition(to: probePoint).map {
+        changedInput.offset(from: changedInput.beginningOfDocument, to: $0)
+      }
+      hitOffsetDuringWillChange = changedInput.characterRange(at: probePoint).map {
+        changedInput.offset(from: changedInput.beginningOfDocument, to: $0.start)
+      }
+    }
+    recorder.onTextDidChange = { changedInput in
+      let range = changedInput.textRange(
+        from: changedInput.beginningOfDocument,
+        to: changedInput.endOfDocument)
+      textDuringDidChange = range.flatMap { changedInput.text(in: $0) }
+      caretDuringDidChange = changedInput.caretRect(for: changedInput.endOfDocument)
+      selectionRectsDuringDidChange = range.map {
+        changedInput.selectionRects(for: $0).map(\.rect)
+      }
+      closestOffsetDuringDidChange = changedInput.closestPosition(to: probePoint).map {
+        changedInput.offset(from: changedInput.beginningOfDocument, to: $0)
+      }
+      hitOffsetDuringDidChange = changedInput.characterRange(at: probePoint).map {
+        changedInput.offset(from: changedInput.beginningOfDocument, to: $0.start)
+      }
+    }
+    input.inputDelegate = recorder
+
+    label.contentInsets = UIEdgeInsets(top: 5, left: 23, bottom: 0, right: 0)
+    label.attributedText = NSAttributedString(string: "WWWW", attributes: [.font: font])
+    _ = label.textFrame
+    notifyTextDidDisplay(in: label)
+
+    let newCaret = input.caretRect(for: input.endOfDocument)
+    let newRange = try #require(documentRange(for: input))
+    let newSelectionRects = input.selectionRects(for: newRange).map(\.rect)
+    let newClosestPosition = try #require(input.closestPosition(to: probePoint))
+    let newClosestOffset = input.offset(from: input.beginningOfDocument, to: newClosestPosition)
+    let newHitRange = try #require(input.characterRange(at: probePoint))
+    let newHitOffset = input.offset(from: input.beginningOfDocument, to: newHitRange.start)
+    #expect(recorder.textWillChangeCount == 1)
+    #expect(recorder.textDidChangeCount == 1)
+    #expect(textDuringWillChange == "iiii")
+    #expect(textDuringDidChange == "WWWW")
+    #expect(caretDuringWillChange == oldCaret)
+    #expect(caretDuringDidChange == newCaret)
+    #expect(selectionRectsDuringWillChange == oldSelectionRects)
+    #expect(selectionRectsDuringDidChange == newSelectionRects)
+    #expect(closestOffsetDuringWillChange == oldClosestOffset)
+    #expect(closestOffsetDuringDidChange == newClosestOffset)
+    #expect(hitOffsetDuringWillChange == oldHitOffset)
+    #expect(hitOffsetDuringDidChange == newHitOffset)
+    #expect(newCaret.midX > oldCaret.midX + 20)
+  }
+
+  @Test
+  func `Published document keeps an old endpoint valid while text shrinks`() throws {
+    let font = UIFont.systemFont(ofSize: 20)
+    let label = label(
+      with: NSAttributedString(string: "abcdef", attributes: [.font: font]),
+      size: CGSize(width: 400, height: 100))
+    let input: any UITextInput = label
+    let oldEnd = try #require(input.closestPosition(to: CGPoint(x: 399, y: 10)))
+    #expect(input.offset(from: input.beginningOfDocument, to: oldEnd) == 6)
+    let oldCaret = input.caretRect(for: oldEnd)
+    let recorder = TextInputDelegateRecorder()
+    var textDuringWillChange: String?
+    var caretDuringWillChange: CGRect?
+    recorder.onTextWillChange = { changedInput in
+      let range = changedInput.textRange(
+        from: changedInput.beginningOfDocument,
+        to: changedInput.endOfDocument)
+      textDuringWillChange = range.flatMap { changedInput.text(in: $0) }
+      caretDuringWillChange = changedInput.caretRect(for: oldEnd)
+    }
+    input.inputDelegate = recorder
+
+    label.attributedText = NSAttributedString(string: "a", attributes: [.font: font])
+    _ = label.textFrame
+    notifyTextDidDisplay(in: label)
+
+    #expect(recorder.textWillChangeCount == 1)
+    #expect(recorder.textDidChangeCount == 1)
+    #expect(textDuringWillChange == "abcdef")
+    #expect(caretDuringWillChange == oldCaret)
+    #expect(input.caretRect(for: oldEnd) == .zero)
   }
 
   @Test

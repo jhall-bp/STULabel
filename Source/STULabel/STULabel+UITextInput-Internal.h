@@ -4,6 +4,8 @@
 
 #import <UIKit/UITextInteraction.h>
 
+@class STULabelTextInputDocument;
+
 /// Owns a label's UIKit text interaction and the mutable state required by its UITextInput
 /// conformance. UITextInteraction's public factory always returns UIKit's concrete class, so
 /// this object is its delegate and controller rather than an unsupported subclass.
@@ -12,19 +14,17 @@
   __weak STULabel *_label;
   UITextInteraction *_interaction;
   __weak id<UITextInputDelegate> _stu_inputDelegate;
-  UITextRange *_stu_selectedTextRange;
   UITextInputStringTokenizer *_stu_tokenizer;
-  NSString *_stu_displayedString;
-  bool _stu_isPublishingDisplayedString;
+  STULabelTextInputDocument *_stu_document;
+  bool _stu_isPublishingDocument;
   UITextStorageDirection _stu_selectionAffinity;
 }
 
 @property (nonatomic, readonly) UITextInteraction *stu_interaction;
 @property (nonatomic, weak, nullable) id<UITextInputDelegate> stu_inputDelegate;
-@property (nonatomic, strong, nullable) UITextRange *stu_selectedTextRange;
 @property (nonatomic, strong, nullable) UITextInputStringTokenizer *stu_tokenizer;
-@property (nonatomic, copy, nullable) NSString *stu_displayedString;
-@property (nonatomic) bool stu_isPublishingDisplayedString;
+@property (nonatomic, strong, nullable) STULabelTextInputDocument *stu_document;
+@property (nonatomic) bool stu_isPublishingDocument;
 @property (nonatomic) UITextStorageDirection stu_selectionAffinity;
 
 - (instancetype)initWithLabel:(STULabel *)label;

@@ -65,7 +65,7 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 
 | ID | Classification | Task | Status | Coordination |
 | --- | --- | --- | --- | --- |
-| R01 | Must fix | Transactional text-input document publication | Open | Reopened: old string and live geometry diverge during callbacks |
+| R01 | Must fix | Transactional text-input document publication | Complete | One retained snapshot owns text, geometry, links, and selection |
 | R02 | Must fix | Visual caret navigation across bidi boundaries | Ready for review | Native UI smoke check blocked by Demo product resolution |
 | R03 | Must fix | Preserve target traits in tiled rendering | Complete | Uses layer snapshot contract; R04–R06 ownership boundaries recorded below |
 | R04 | Must fix | Synchronize the complete rendering environment | Complete | R03 and R06 integrated; R05 default-font semantics remain separate |
@@ -83,8 +83,8 @@ Statuses reflect the dated implementation records below; unchanged tasks retain 
 ## R01 — Transactional text-input document publication
 
 **Classification:** Must fix  
-**Status:** Open
-**Owner:** Unassigned
+**Status:** Complete
+**Owner:** Codex
 
 ### Problem and evidence
 
@@ -104,7 +104,7 @@ Do not merely move the assignment before the callback if that breaks the promise
 
 - [x] Delegate queries during both will/did callbacks do not recursively notify.
 - [x] One document mutation produces one coherent notification transaction.
-- [ ] Document, selection, and range queries observe internally consistent snapshots. Reopened: callback geometry uses the live frame; see follow-up review.
+- [x] Document, selection, and range queries observe internally consistent snapshots.
 - [x] Text changes and layout/truncation-driven visible-document changes are covered.
 - [x] Focused meaningful tests reproduce the old problem and validate the new behavior.
 - [x] Actual runtime used for validation is recorded.
@@ -123,7 +123,7 @@ Remaining risk/blocker and next action: None for this finding.
 
 ### Follow-up review — 2026-09-11
 
-**Status: Open (reopened). Must fix, P1.** String recursion is fixed, but publication still mixes the old string with live geometry.
+**Status: Complete.** String recursion was fixed first; the reopened geometry inconsistency is now resolved by the completion record below.
 
 [updateVisibleString/textInputString](Source/STULabel/STULabel+UITextInput.mm#L234) expose the old stored string during will-change. However, [caretRect](Source/STULabel/STULabel+UITextInput.mm#L356) reads the new visible string, and rectangle/hit-testing helpers read the live text frame and origin. [caretRectForPosition:](Source/STULabel/STULabel+UITextInput.mm#L846) validates an endpoint against the old snapshot before passing it into that new geometry.
 
@@ -136,13 +136,21 @@ New evidence, Xcode MCP RunCodeSnippet on **iOS 27.0 (24A434)**:
 Preferred fix: publish a retained displayed-frame snapshot together with its string, origin/geometry environment, and selection. Every UITextInput query in the transaction must use the same old or new snapshot. Reuse existing frame geometry; a caret bounds check alone would retain contradictory document state.
 
 Additional completion criteria:
-- [ ] Callback text, caret/selection rectangles, point hit testing, and position/range queries agree on one snapshot.
-- [ ] Shrinking text cannot throw when will-change queries an old valid caret.
-- [ ] Cover same-length replacements with different glyph widths and layout/truncation changes.
-- [ ] Reentrant queries do not perform another layout merely to discover that publication is already in progress.
-- [ ] Add focused Swift Testing regressions and run them on actual iOS 26.
+- [x] Callback text, caret/selection rectangles, point hit testing, and position/range queries agree on one snapshot.
+- [x] Shrinking text cannot throw when will-change queries an old valid caret.
+- [x] Cover same-length replacements with different glyph widths and layout/truncation changes.
+- [x] Reentrant queries do not perform another layout merely to discover that publication is already in progress.
+- [x] Add focused Swift Testing regressions and run them on actual iOS 26.
 
-The historical record above remains evidence of the narrower recursion fix. This review changes documentation only.
+### Reopened-finding completion — 2026-09-11
+
+Changes and rationale: Replaced the separately published string and selection with one retained `STULabelTextInputDocument`. The document owns the immutable text frame, visible string, frame origin, display scale, links, and selection. Every UITextInput geometry, hit-testing, styling, position, and range helper now receives that document explicitly, so will-change callbacks use the complete old generation and did-change callbacks use the complete new generation. Geometry-only updates replace the snapshot without text notifications, while the unchanged-frame fast path avoids both allocation and the previous whole-string comparison on repeated queries.
+
+Files/commit: `Source/STULabel/STULabel+UITextInput-Internal.h`, `Source/STULabel/STULabel+UITextInput.mm`, `Tests/STULabelTests/UITextInputTests.swift`, and this tracker; committed together with this record.
+
+Validation, environment, and results: Xcode 27 Release Candidate, STULabel-Package scheme, Xcode MCP destination `iPhone 17 Pro (26.2)`. `BuildProject(buildForTesting: true)` passed (`BuildProject-Log-20260911-160955.txt`). All 21 `UITextInputTests` passed after the final callback-coverage expansion (`Test-STULabel-Package-2026.09.11_16-17-08-+1000.xcresult`). The new cases cover `iiii` → `WWWW` with an origin change, old/new selection rectangles, point hit testing, closest positions, and the `abcdef` → `a` backward-affinity endpoint that previously crashed. A Mac Catalyst product build also passed (`BuildProject-Log-20260911-161405.txt`). Mac Catalyst build-for-testing remains blocked outside R01 by the existing `AllocatorUtils.hpp:10` `UInt` typedef mismatch (`BuildProject-Log-20260911-161344.txt`). `clang-format --dry-run --Werror`, `swift-format lint --strict`, and `git diff --check` passed.
+
+Remaining risk/blocker and next action: None for R01. The historical record above remains evidence of the narrower recursion fix; the Mac Catalyst test-target baseline remains part of broader release validation.
 
 
 ## R02 — Visual caret navigation across bidi boundaries
@@ -784,7 +792,7 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 
 | Task | Follow-up outcome |
 | --- | --- |
-| R01 | Reopened, P1: string publication is guarded, but live geometry breaks the transaction and can crash on document shrink. |
+| R01 | Reopened, P1; resolved by the subsequent coherent-document completion recorded above. |
 | R03 | Remains complete: tile trait capture and cancellation reuse are coherent. |
 | R04 | Remains complete: shared environment preparation and async rejection are coherent. |
 | R05 | Reopened, P2: an implicit font becomes a permanent override across replacement plain text. |
@@ -809,6 +817,6 @@ Scope was strictly the eight tasks marked Complete at the start: R01, R03, R04, 
 
 The completed work is substantially better than the original review snapshot. Rendering-environment ownership, deferred tile transport, background adoption, link-color precedence, and the reduced Auto Layout retry mechanism are cohesive improvements. There is no reason from this review to replace those successful designs.
 
-The baseline coordinate boundary has since been completed under R11. Two ownership boundaries still need completion: publish document geometry with the string, and preserve the distinction between implicit and explicit fonts. Address those boundaries directly rather than adding isolated guards. R01 has the highest priority because a valid callback query can abort the process.
+The baseline coordinate boundary has since been completed under R11, and R01 now publishes document geometry with the string. The remaining ownership boundary from this assessment is preserving the distinction between implicit and explicit fonts under R05. Address that boundary directly rather than adding an isolated guard.
 
 After each remaining fix, add focused regressions for the newly identified cases, run them on actual iOS 26, and update the task's status and this completion record. Passing the previous focused cases alone is insufficient to close the reopened findings.

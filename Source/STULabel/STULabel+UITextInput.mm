@@ -104,6 +104,58 @@
 }
 @end
 
+@interface STULabelTextInputDocument : NSObject
+
+@property (nonatomic, strong, readonly) STUTextFrame *textFrame;
+@property (nonatomic, copy, readonly) NSString *string;
+@property (nonatomic, readonly) CGPoint frameOrigin;
+@property (nonatomic, readonly) CGFloat displayScale;
+@property (nonatomic, strong, readonly) STUTextLinkArray *links;
+@property (nonatomic, strong, readonly, nullable) STULabelTextInputRange *selectedTextRange;
+
+- (instancetype)initWithTextFrame:(STUTextFrame *)textFrame
+                           string:(NSString *)string
+                      frameOrigin:(CGPoint)frameOrigin
+                     displayScale:(CGFloat)displayScale
+                            links:(STUTextLinkArray *)links
+                selectedTextRange:(nullable STULabelTextInputRange *)selectedTextRange;
+
+- (STULabelTextInputDocument *)documentWithSelectedTextRange:(nullable STULabelTextInputRange *)selectedTextRange;
+
+@end
+
+@implementation STULabelTextInputDocument
+
+- (instancetype)initWithTextFrame:(STUTextFrame *)textFrame
+                           string:(NSString *)string
+                      frameOrigin:(CGPoint)frameOrigin
+                     displayScale:(CGFloat)displayScale
+                            links:(STUTextLinkArray *)links
+                selectedTextRange:(STULabelTextInputRange *)selectedTextRange
+{
+  if ((self = [super init])) {
+    _textFrame = textFrame;
+    _string = [string copy];
+    _frameOrigin = frameOrigin;
+    _displayScale = displayScale;
+    _links = links;
+    _selectedTextRange = selectedTextRange;
+  }
+  return self;
+}
+
+- (STULabelTextInputDocument *)documentWithSelectedTextRange:(STULabelTextInputRange *)selectedTextRange
+{
+  return [[STULabelTextInputDocument alloc] initWithTextFrame:_textFrame
+                                                       string:_string
+                                                  frameOrigin:_frameOrigin
+                                                 displayScale:_displayScale
+                                                        links:_links
+                                            selectedTextRange:selectedTextRange];
+}
+
+@end
+
 @interface STULabelTextSelectionRect : UITextSelectionRect <NSCopying> {
 @private
   CGRect _rect;
@@ -176,8 +228,6 @@
 }
 @end
 
-static STU_INLINE NSString *visibleString(STULabel *self) { return self.textFrame.truncatedAttributedString.string; }
-
 static STU_INLINE STULabelTextInputPosition *textPosition(NSUInteger index)
 {
   return [[STULabelTextInputPosition alloc] initWithIndex:index affinity:UITextStorageDirectionForward];
@@ -224,47 +274,63 @@ static STU_INLINE NSUInteger nextCharacterBoundary(NSString *string, NSUInteger 
   return NSMaxRange([string rangeOfComposedCharacterSequenceAtIndex:index]);
 }
 
-static void updateVisibleString(STULabel *self, STULabelTextInteraction *interaction)
+static STU_INLINE STULabelTextInteraction *textInteraction(STULabel *self) { return [self stu_textInteraction]; }
+
+static void updateVisibleDocument(STULabel *self, STULabelTextInteraction *interaction)
 {
-  NSString *const string = visibleString(self);
-  if (!interaction.stu_displayedString) {
-    interaction.stu_displayedString = string;
-    return;
-  }
-  const bool didChange = ![interaction.stu_displayedString isEqualToString:string];
-  if (!didChange || interaction.stu_isPublishingDisplayedString)
+  if (interaction.stu_isPublishingDocument)
     return;
 
-  interaction.stu_isPublishingDisplayedString = true;
-  const bool hadSelection = interaction.stu_selectedTextRange != nil;
+  STUTextFrame *const textFrame = self.textFrame;
+  const CGPoint frameOrigin = self.textFrameOrigin;
+  const CGFloat displayScale = self.layer.contentsScale;
+  STULabelTextInputDocument *const oldDocument = interaction.stu_document;
+  if (oldDocument && oldDocument.textFrame == textFrame && CGPointEqualToPoint(oldDocument.frameOrigin, frameOrigin) &&
+      oldDocument.displayScale == displayScale) {
+    return;
+  }
+
+  NSString *const string = textFrame.truncatedAttributedString.string;
+  const bool textDidChange = oldDocument && ![oldDocument.string isEqualToString:string];
+  STULabelTextInputRange *const selection = textDidChange ? nil : oldDocument.selectedTextRange;
+  STULabelTextInputDocument *const newDocument = [[STULabelTextInputDocument alloc] initWithTextFrame:textFrame
+                                                                                               string:string
+                                                                                          frameOrigin:frameOrigin
+                                                                                         displayScale:displayScale
+                                                                                                links:self.links
+                                                                                    selectedTextRange:selection];
+  if (!oldDocument || !textDidChange) {
+    interaction.stu_document = newDocument;
+    return;
+  }
+
+  interaction.stu_isPublishingDocument = true;
+  const bool hadSelection = oldDocument.selectedTextRange != nil;
   id<UITextInputDelegate> const inputDelegate = interaction.stu_inputDelegate;
   [inputDelegate textWillChange:self];
   if (hadSelection)
     [inputDelegate selectionWillChange:self];
-  interaction.stu_displayedString = string;
-  interaction.stu_selectedTextRange = nil;
+  interaction.stu_document = newDocument;
   [inputDelegate textDidChange:self];
   if (hadSelection)
     [inputDelegate selectionDidChange:self];
-  interaction.stu_isPublishingDisplayedString = false;
+  interaction.stu_isPublishingDocument = false;
 }
 
-static STU_INLINE STULabelTextInteraction *textInteraction(STULabel *self) { return [self stu_textInteraction]; }
-
-static STU_INLINE NSString *textInputString(STULabel *self)
+static STU_INLINE STULabelTextInputDocument *textInputDocument(STULabel *self)
 {
   STULabelTextInteraction *const interaction = textInteraction(self);
-  updateVisibleString(self, interaction);
-  return interaction.stu_displayedString;
+  updateVisibleDocument(self, interaction);
+  return interaction.stu_document;
 }
 
-static NSRange truncationTokenLinkRange(STULabel *self)
+static NSRange truncationTokenLinkRange(STULabelTextInputDocument *document)
 {
-  STUTextFrame *const textFrame = self.textFrame;
+  STUTextFrame *const textFrame = document.textFrame;
   const NSRange tokenRange = STUTextFrameRangeGetRangeInTruncatedString(textFrame.rangeOfLastTruncationToken);
   if (tokenRange.length == 0)
     return NSMakeRange(NSNotFound, 0);
-  for (STUTextLink *const link in self.links) {
+  for (STUTextLink *const link in document.links) {
     const NSRange tokenLinkRange = NSIntersectionRange(tokenRange, link.rangeInTruncatedString);
     if (tokenLinkRange.length != 0)
       return tokenLinkRange;
@@ -272,9 +338,9 @@ static NSRange truncationTokenLinkRange(STULabel *self)
   return NSMakeRange(NSNotFound, 0);
 }
 
-static NSRange selectionRangeExcludingTruncationTokenLink(STULabel *self, NSRange range)
+static NSRange selectionRangeExcludingTruncationTokenLink(STULabelTextInputDocument *document, NSRange range)
 {
-  const NSRange linkRange = truncationTokenLinkRange(self);
+  const NSRange linkRange = truncationTokenLinkRange(document);
   if (linkRange.location == NSNotFound || NSIntersectionRange(range, linkRange).length == 0) {
     return range;
   }
@@ -288,25 +354,28 @@ static NSRange selectionRangeExcludingTruncationTokenLink(STULabel *self, NSRang
   return NSMakeRange(NSNotFound, 0);
 }
 
-static STUTextRectArray *rectsForRange(STULabel *self, NSRange range)
+static STUTextRectArray *rectsForRange(STULabelTextInputDocument *document, NSRange range)
 {
   if (range.length == 0)
     return STUTextRectArray.emptyArray;
-  STUTextFrame *const textFrame = self.textFrame;
+  STUTextFrame *const textFrame = document.textFrame;
   return [textFrame rectsForRange:[textFrame rangeForRangeInTruncatedString:range]
-                      frameOrigin:self.textFrameOrigin
-                     displayScale:self.layer.contentsScale];
+                      frameOrigin:document.frameOrigin
+                     displayScale:document.displayScale];
 }
 
-static NSUInteger selectionRectIndexContainingEndpoint(
-    STULabel *self, STUTextRectArray *selectionRects, NSString *string, NSRange selectionRange, bool start)
+static NSUInteger selectionRectIndexContainingEndpoint(STULabelTextInputDocument *document,
+                                                       STUTextRectArray *selectionRects,
+                                                       NSString *string,
+                                                       NSRange selectionRange,
+                                                       bool start)
 {
   if (selectionRange.length == 0)
     return NSNotFound;
   const NSUInteger characterIndex = start ? selectionRange.location : NSMaxRange(selectionRange) - 1;
   const NSRange characterRange =
       NSIntersectionRange(selectionRange, [string rangeOfComposedCharacterSequenceAtIndex:characterIndex]);
-  STUTextRectArray *const characterRects = rectsForRange(self, characterRange);
+  STUTextRectArray *const characterRects = rectsForRange(document, characterRange);
   for (size_t j = 0; j < characterRects.rectCount; ++j) {
     const size_t lineIndex = [characterRects textLineIndexForRectAtIndex:j];
     const CGRect characterRect = [characterRects rectAtIndex:j];
@@ -322,12 +391,12 @@ static NSUInteger selectionRectIndexContainingEndpoint(
   return NSNotFound;
 }
 
-static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabel *self, CGPoint point)
+static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabelTextInputDocument *document, CGPoint point)
 {
-  return [self.textFrame rangeOfGraphemeClusterClosestToPoint:point
-                                   ignoringTrailingWhitespace:true
-                                                  frameOrigin:self.textFrameOrigin
-                                                 displayScale:self.layer.contentsScale];
+  return [document.textFrame rangeOfGraphemeClusterClosestToPoint:point
+                                       ignoringTrailingWhitespace:true
+                                                      frameOrigin:document.frameOrigin
+                                                     displayScale:document.displayScale];
 }
 
 static STULabelTextInputPosition *stringPositionClosestToX(STUTextFrameGraphemeClusterRange cluster, CGFloat x)
@@ -341,14 +410,14 @@ static STULabelTextInputPosition *stringPositionClosestToX(STUTextFrameGraphemeC
                         : textPosition(range.location, UITextStorageDirectionForward);
 }
 
-static NSWritingDirection writingDirectionAtPoint(STULabel *self, CGPoint point)
+static NSWritingDirection writingDirectionAtPoint(STULabelTextInputDocument *document, CGPoint point)
 {
-  return (NSWritingDirection)clusterClosestToPoint(self, point).writingDirection;
+  return (NSWritingDirection)clusterClosestToPoint(document, point).writingDirection;
 }
 
-static CGRect caretRect(STULabel *self, STULabelTextInputPosition *position)
+static CGRect caretRect(STULabelTextInputDocument *document, STULabelTextInputPosition *position)
 {
-  NSString *const string = visibleString(self);
+  NSString *const string = document.string;
   if (string.length == 0)
     return CGRectZero;
   const NSUInteger index = position.index;
@@ -356,14 +425,14 @@ static CGRect caretRect(STULabel *self, STULabelTextInputPosition *position)
       position.affinity == UITextStorageDirectionBackward ? index > 0 : index == string.length;
   const NSUInteger start = usesPreviousCharacter ? previousCharacterBoundary(string, index) : index;
   const NSUInteger end = usesPreviousCharacter ? index : nextCharacterBoundary(string, index);
-  STUTextRectArray *const rects = rectsForRange(self, NSMakeRange(start, end - start));
+  STUTextRectArray *const rects = rectsForRange(document, NSMakeRange(start, end - start));
   if (rects.rectCount == 0)
     return CGRectZero;
   CGRect const rect = [rects rectAtIndex:usesPreviousCharacter ? rects.rectCount - 1 : 0];
   const NSWritingDirection direction =
-      writingDirectionAtPoint(self, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)));
+      writingDirectionAtPoint(document, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)));
   const bool useMaxX = usesPreviousCharacter == (direction == NSWritingDirectionLeftToRight);
-  const CGFloat scale = self.layer.contentsScale > 0 ? self.layer.contentsScale : 1;
+  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
   const CGFloat width = 1 / scale;
   return CGRectMake(useMaxX ? CGRectGetMaxX(rect) - width / 2 : CGRectGetMinX(rect) - width / 2,
                     rect.origin.y,
@@ -372,9 +441,10 @@ static CGRect caretRect(STULabel *self, STULabelTextInputPosition *position)
 }
 
 static NSWritingDirection
-baseWritingDirectionAtPosition(STULabel *self, NSString *string, NSUInteger index, UITextStorageDirection direction)
+baseWritingDirectionAtPosition(STULabelTextInputDocument *document, NSUInteger index, UITextStorageDirection direction)
 {
-  STUTextFrame *const textFrame = self.textFrame;
+  NSString *const string = document.string;
+  STUTextFrame *const textFrame = document.textFrame;
   if (direction == UITextStorageDirectionBackward && index > 0) {
     --index;
   } else if (index == string.length && index > 0) {
@@ -390,10 +460,12 @@ baseWritingDirectionAtPosition(STULabel *self, NSString *string, NSUInteger inde
   return (NSWritingDirection)paragraph->baseWritingDirection;
 }
 
-static STULabelTextInputPosition *
-positionOnAdjacentLine(STULabel *self, NSUInteger index, CGRect caret, UITextLayoutDirection direction)
+static STULabelTextInputPosition *positionOnAdjacentLine(STULabelTextInputDocument *document,
+                                                         NSUInteger index,
+                                                         CGRect caret,
+                                                         UITextLayoutDirection direction)
 {
-  STUTextFrame *const textFrame = self.textFrame;
+  STUTextFrame *const textFrame = document.textFrame;
   const STUTextFrameRange indexRange = [textFrame rangeForRangeInTruncatedString:NSMakeRange(index, 0)];
   const int32_t lineOffset = direction == UITextLayoutDirectionUp ? -1 : 1;
   const int32_t targetLineIndex = (int32_t)indexRange.start.lineIndex + lineOffset;
@@ -408,10 +480,10 @@ positionOnAdjacentLine(STULabel *self, NSUInteger index, CGRect caret, UITextLay
   if (targetRange.length == 0)
     return textPosition(targetRange.location);
 
-  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:self.textFrameOrigin
-                                                                   displayScale:self.layer.contentsScale];
+  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:document.frameOrigin
+                                                                   displayScale:document.displayScale];
   const CGFloat textScaleFactor = layoutInfo.textScaleFactor > 0 ? layoutInfo.textScaleFactor : 1;
-  const CGFloat x = (CGRectGetMidX(caret) - self.textFrameOrigin.x) / textScaleFactor - targetLine->originX;
+  const CGFloat x = (CGRectGetMidX(caret) - document.frameOrigin.x) / textScaleFactor - targetLine->originX;
   const CGFloat xOffset = x < 0 ? 0 : x > targetLine->width ? targetLine->width : x;
   const STUTextFrameGraphemeClusterRange cluster =
       STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(targetLine, xOffset);
@@ -434,12 +506,12 @@ static bool areEqualTextPositions(STULabelTextInputPosition *a, STULabelTextInpu
   return a.index == b.index && a.affinity == b.affinity;
 }
 
-static STULabelTextInputPosition *positionInHorizontalDirection(STULabel *self,
-                                                                NSString *string,
+static STULabelTextInputPosition *positionInHorizontalDirection(STULabelTextInputDocument *document,
                                                                 STULabelTextInputPosition *position,
                                                                 UITextLayoutDirection direction)
 {
-  STUTextFrame *const textFrame = self.textFrame;
+  NSString *const string = document.string;
+  STUTextFrame *const textFrame = document.textFrame;
   const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
   if (data->lineCount == 0)
     return position;
@@ -452,14 +524,14 @@ static STULabelTextInputPosition *positionInHorizontalDirection(STULabel *self,
   const int32_t lineIndex = MIN((int32_t)range.start.lineIndex, data->lineCount - 1);
   const STUTextFrameLine *const lines = STUTextFrameDataGetLines(data);
   const STUTextFrameLine *const line = lines + lineIndex;
-  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:self.textFrameOrigin
-                                                                   displayScale:self.layer.contentsScale];
+  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:document.frameOrigin
+                                                                   displayScale:document.displayScale];
   const CGFloat textScaleFactor = layoutInfo.textScaleFactor > 0 ? layoutInfo.textScaleFactor : 1;
-  const CGRect rect = caretRect(self, position);
+  const CGRect rect = caretRect(document, position);
   if (CGRectIsEmpty(rect))
     return position;
-  CGFloat xOffset = (CGRectGetMidX(rect) - self.textFrameOrigin.x) / textScaleFactor - line->originX;
-  const CGFloat scale = self.layer.contentsScale > 0 ? self.layer.contentsScale : 1;
+  CGFloat xOffset = (CGRectGetMidX(rect) - document.frameOrigin.x) / textScaleFactor - line->originX;
+  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
   const CGFloat epsilon = 0.5 / (scale * textScaleFactor);
   const bool movingRight = direction == UITextLayoutDirectionRight;
   for (int i = 0; i != 4; ++i) {
@@ -499,8 +571,7 @@ static STULabelTextInputPosition *positionInHorizontalDirection(STULabel *self,
   return position;
 }
 
-static STULabelTextInputPosition *positionInDirection(STULabel *self,
-                                                      NSString *string,
+static STULabelTextInputPosition *positionInDirection(STULabelTextInputDocument *document,
                                                       STULabelTextInputPosition *position,
                                                       UITextLayoutDirection direction)
 {
@@ -508,31 +579,31 @@ static STULabelTextInputPosition *positionInDirection(STULabel *self,
   switch (direction) {
   case UITextLayoutDirectionLeft:
   case UITextLayoutDirectionRight:
-    return positionInHorizontalDirection(self, string, position, direction);
+    return positionInHorizontalDirection(document, position, direction);
   case UITextLayoutDirectionUp:
   case UITextLayoutDirectionDown: {
-    CGRect const rect = caretRect(self, position);
+    CGRect const rect = caretRect(document, position);
     if (CGRectIsEmpty(rect))
       return position;
-    return positionOnAdjacentLine(self, index, rect, direction);
+    return positionOnAdjacentLine(document, index, rect, direction);
   }
   }
 }
 
-static NSRange characterRangeInDirection(STULabel *self,
-                                         NSString *string,
+static NSRange characterRangeInDirection(STULabelTextInputDocument *document,
                                          STULabelTextInputPosition *position,
                                          UITextLayoutDirection direction)
 {
-  STULabelTextInputPosition *const otherPosition = positionInDirection(self, string, position, direction);
+  STULabelTextInputPosition *const otherPosition = positionInDirection(document, position, direction);
   if (otherPosition.index == position.index)
     return NSMakeRange(position.index, 0);
   return otherPosition.index < position.index ? NSMakeRange(otherPosition.index, position.index - otherPosition.index)
                                               : NSMakeRange(position.index, otherPosition.index - position.index);
 }
 
-static STULabelTextInputPosition *
-positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITextLayoutDirection direction)
+static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputDocument *document,
+                                                              STULabelTextInputRange *range,
+                                                              UITextLayoutDirection direction)
 {
   if (direction == UITextLayoutDirectionUp)
     return range.startPosition;
@@ -545,20 +616,20 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
     return range.startPosition;
 
   const bool wantsLeft = direction == UITextLayoutDirectionLeft;
-  const CGFloat scale = self.layer.contentsScale > 0 ? self.layer.contentsScale : 1;
+  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
   STULabelTextInputPosition *bestPosition = nil;
   CGFloat bestX = wantsLeft ? CGFLOAT_MAX : -CGFLOAT_MAX;
-  STUTextRectArray *const rects = rectsForRange(self, stringRange);
+  STUTextRectArray *const rects = rectsForRange(document, stringRange);
   for (size_t i = 0; i < rects.rectCount; ++i) {
     const CGRect rect = [rects rectAtIndex:i];
     const CGFloat inset = MIN(rect.size.width / 4, 0.5 / scale);
     const CGPoint point =
         CGPointMake(wantsLeft ? CGRectGetMinX(rect) + inset : CGRectGetMaxX(rect) - inset, CGRectGetMidY(rect));
-    const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(self, point);
+    const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
     STULabelTextInputPosition *const candidate = positionAtVisualEdge(cluster, wantsLeft);
     if (candidate.index < range.startPosition.index || candidate.index > range.endPosition.index)
       continue;
-    const CGFloat x = CGRectGetMidX(caretRect(self, candidate));
+    const CGFloat x = CGRectGetMidX(caretRect(document, candidate));
     if (!bestPosition || (wantsLeft ? x < bestX : x > bestX)) {
       bestPosition = candidate;
       bestX = x;
@@ -571,10 +642,9 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 @synthesize stu_interaction = _interaction;
 @synthesize stu_inputDelegate = _stu_inputDelegate;
-@synthesize stu_selectedTextRange = _stu_selectedTextRange;
 @synthesize stu_tokenizer = _stu_tokenizer;
-@synthesize stu_displayedString = _stu_displayedString;
-@synthesize stu_isPublishingDisplayedString = _stu_isPublishingDisplayedString;
+@synthesize stu_document = _stu_document;
+@synthesize stu_isPublishingDocument = _stu_isPublishingDocument;
 @synthesize stu_selectionAffinity = _stu_selectionAffinity;
 
 - (instancetype)initWithLabel:(STULabel *)label
@@ -600,7 +670,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 {
   STULabel *const label = _label;
   if (label)
-    updateVisibleString(label, self);
+    updateVisibleDocument(label, self);
 }
 
 - (BOOL)interactionShouldBegin:(UITextInteraction *__unused)interaction atPoint:(CGPoint)point
@@ -617,7 +687,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (BOOL)hasText
 {
-  return textInputString(self).length != 0;
+  return textInputDocument(self).string.length != 0;
 }
 
 - (void)insertText:(NSString *__unused)text
@@ -627,7 +697,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (nullable NSString *)textInRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return nil;
@@ -639,20 +709,20 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (nullable UITextRange *)selectedTextRange
 {
-  textInputString(self);
-  return textInteraction(self).stu_selectedTextRange;
+  return textInputDocument(self).selectedTextRange;
 }
 
 - (void)setSelectedTextRange:(nullable UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInteraction *const interaction = textInteraction(self);
   STULabelTextInputRange *newRange = range ? validTextRange(range, string) : nil;
   if (range && !newRange)
     return;
   if (newRange) {
     const NSRange normalizedRange = selectionRangeExcludingTruncationTokenLink(
-        self, NSMakeRange(newRange.startPosition.index, newRange.endPosition.index - newRange.startPosition.index));
+        document, NSMakeRange(newRange.startPosition.index, newRange.endPosition.index - newRange.startPosition.index));
     if (normalizedRange.location == NSNotFound) {
       newRange = nil;
     } else if (normalizedRange.location != newRange.startPosition.index ||
@@ -661,11 +731,11 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
                                                            end:textPosition(NSMaxRange(normalizedRange))];
     }
   }
-  STULabelTextInputRange *const oldRange = (STULabelTextInputRange *)interaction.stu_selectedTextRange;
+  STULabelTextInputRange *const oldRange = document.selectedTextRange;
   if (oldRange == newRange || [oldRange isEqual:newRange])
     return;
   [interaction.stu_inputDelegate selectionWillChange:self];
-  interaction.stu_selectedTextRange = newRange;
+  interaction.stu_document = [document documentWithSelectedTextRange:newRange];
   [interaction.stu_inputDelegate selectionDidChange:self];
 }
 
@@ -686,17 +756,17 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (UITextPosition *)beginningOfDocument
 {
-  textInputString(self);
+  textInputDocument(self);
   return textPosition(0);
 }
 - (UITextPosition *)endOfDocument
 {
-  return textPosition(textInputString(self).length);
+  return textPosition(textInputDocument(self).string.length);
 }
 
 - (nullable UITextRange *)textRangeFromPosition:(UITextPosition *)fromPosition toPosition:(UITextPosition *)toPosition
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputPosition *const from = validTextPosition(fromPosition, string);
   STULabelTextInputPosition *const to = validTextPosition(toPosition, string);
   if (!from || !to)
@@ -709,7 +779,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (nullable UITextPosition *)positionFromPosition:(UITextPosition *)position offset:(NSInteger)offset
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   if (!p)
     return nil;
@@ -736,13 +806,14 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
                                       inDirection:(UITextLayoutDirection)direction
                                            offset:(NSInteger)offset
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   if (!p || offset < 0)
     return nil;
   STULabelTextInputPosition *currentPosition = p;
   while (offset-- > 0) {
-    STULabelTextInputPosition *const nextPosition = positionInDirection(self, string, currentPosition, direction);
+    STULabelTextInputPosition *const nextPosition = positionInDirection(document, currentPosition, direction);
     if (areEqualTextPositions(nextPosition, currentPosition))
       return nil;
     currentPosition = nextPosition;
@@ -752,7 +823,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (NSComparisonResult)comparePosition:(UITextPosition *)position toPosition:(UITextPosition *)other
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   STULabelTextInputPosition *const otherP = validTextPosition(other, string);
   if (!p || !otherP)
@@ -762,7 +833,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (NSInteger)offsetFromPosition:(UITextPosition *)from toPosition:(UITextPosition *)to
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputPosition *const start = validTextPosition(from, string);
   STULabelTextInputPosition *const end = validTextPosition(to, string);
   if (!start || !end)
@@ -791,21 +862,23 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 - (nullable UITextPosition *)positionWithinRange:(UITextRange *)range
                              farthestInDirection:(UITextLayoutDirection)direction
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return nil;
-  return positionFarthestInDirection(self, r, direction);
+  return positionFarthestInDirection(document, r, direction);
 }
 
 - (nullable UITextRange *)characterRangeByExtendingPosition:(UITextPosition *)position
                                                 inDirection:(UITextLayoutDirection)direction
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   if (!p)
     return nil;
-  const NSRange range = characterRangeInDirection(self, string, p, direction);
+  const NSRange range = characterRangeInDirection(document, p, direction);
   if (range.length == 0)
     return nil;
   return [[STULabelTextInputRange alloc] initWithStart:textPosition(range.location)
@@ -815,9 +888,10 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 - (NSWritingDirection)baseWritingDirectionForPosition:(UITextPosition *)position
                                           inDirection:(UITextStorageDirection)direction
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
-  return p ? baseWritingDirectionAtPosition(self, string, p.index, direction) : NSWritingDirectionNatural;
+  return p ? baseWritingDirectionAtPosition(document, p.index, direction) : NSWritingDirectionNatural;
 }
 
 - (void)setBaseWritingDirection:(NSWritingDirection __unused)writingDirection forRange:(UITextRange *__unused)range
@@ -825,39 +899,42 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (CGRect)firstRectForRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return CGRectZero;
   if (r.empty)
-    return caretRect(self, r.startPosition);
+    return caretRect(document, r.startPosition);
   STUTextRectArray *const rects =
-      rectsForRange(self, NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index));
+      rectsForRange(document, NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index));
   return rects.rectCount ? [rects rectAtIndex:0] : CGRectZero;
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
 {
-  STULabelTextInputPosition *const p = validTextPosition(position, textInputString(self));
-  return p ? caretRect(self, p) : CGRectZero;
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  STULabelTextInputPosition *const p = validTextPosition(position, document.string);
+  return p ? caretRect(document, p) : CGRectZero;
 }
 
 - (NSArray<UITextSelectionRect *> *)selectionRectsForRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r || r.empty)
     return @[];
   const NSRange selectionRange = NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index);
-  STUTextRectArray *const rects = rectsForRange(self, selectionRange);
-  const NSUInteger startRectIndex = selectionRectIndexContainingEndpoint(self, rects, string, selectionRange, true);
-  const NSUInteger endRectIndex = selectionRectIndexContainingEndpoint(self, rects, string, selectionRange, false);
+  STUTextRectArray *const rects = rectsForRange(document, selectionRange);
+  const NSUInteger startRectIndex = selectionRectIndexContainingEndpoint(document, rects, string, selectionRange, true);
+  const NSUInteger endRectIndex = selectionRectIndexContainingEndpoint(document, rects, string, selectionRange, false);
   NSMutableArray<UITextSelectionRect *> *const result = [NSMutableArray arrayWithCapacity:rects.rectCount];
   for (size_t i = 0; i < rects.rectCount; ++i) {
     const CGRect rect = [rects rectAtIndex:i];
     STULabelTextSelectionRect *const selectionRect = [[STULabelTextSelectionRect alloc]
             initWithRect:rect
-        writingDirection:writingDirectionAtPoint(self, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)))
+        writingDirection:writingDirectionAtPoint(document, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)))
            containsStart:i == (startRectIndex == NSNotFound ? 0 : startRectIndex)
              containsEnd:i == (endRectIndex == NSNotFound ? rects.rectCount - 1 : endRectIndex)];
     [result addObject:selectionRect];
@@ -867,19 +944,20 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
-  textInputString(self);
-  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(self, point);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
   return stringPositionClosestToX(cluster, point.x);
 }
 
 - (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point withinRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputRange *const r = validTextRange(range, string);
-  UITextPosition *const position = [self closestPositionToPoint:point];
-  STULabelTextInputPosition *const p = validTextPosition(position, string);
-  if (!r || !p)
+  if (!r)
     return nil;
+  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
+  STULabelTextInputPosition *const p = stringPositionClosestToX(cluster, point.x);
   const NSUInteger index = p.index < r.startPosition.index ? r.startPosition.index
                            : p.index > r.endPosition.index ? r.endPosition.index
                                                            : p.index;
@@ -888,8 +966,8 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (nullable UITextRange *)characterRangeAtPoint:(CGPoint)point
 {
-  textInputString(self);
-  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(self, point);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
   const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
   if (range.length == 0)
     return nil;
@@ -900,17 +978,18 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 - (nullable NSDictionary<NSAttributedStringKey, id> *)textStylingAtPosition:(UITextPosition *)position
                                                                 inDirection:(UITextStorageDirection __unused)direction
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   if (!p || string.length == 0)
     return nil;
   const NSUInteger index = p.index == string.length ? p.index - 1 : p.index;
-  return [self.textFrame attributesAtIndexInTruncatedString:index];
+  return [document.textFrame attributesAtIndexInTruncatedString:index];
 }
 
 - (nullable UITextPosition *)positionWithinRange:(UITextRange *)range atCharacterOffset:(NSInteger)offset
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r || offset < 0)
     return nil;
@@ -923,7 +1002,7 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (NSInteger)characterOffsetOfPosition:(UITextPosition *)position withinRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  NSString *const string = textInputDocument(self).string;
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!p || !r || p.index < r.startPosition.index || p.index > r.endPosition.index)
@@ -985,11 +1064,12 @@ positionFarthestInDirection(STULabel *self, STULabelTextInputRange *range, UITex
 
 - (NSAttributedString *)attributedTextInRange:(UITextRange *)range
 {
-  NSString *const string = textInputString(self);
+  STULabelTextInputDocument *const document = textInputDocument(self);
+  NSString *const string = document.string;
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return [[NSAttributedString alloc] initWithString:@""];
-  return [self.textFrame.truncatedAttributedString
+  return [document.textFrame.truncatedAttributedString
       attributedSubstringFromRange:NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index)];
 }
 
