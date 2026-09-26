@@ -415,6 +415,19 @@ static NSWritingDirection writingDirectionAtPoint(STULabelTextInputDocument *doc
   return (NSWritingDirection)clusterClosestToPoint(document, point).writingDirection;
 }
 
+static const STUTextFrameLine *lineForPosition(STULabelTextInputDocument *document,
+                                               STULabelTextInputPosition *position)
+{
+  STUTextFrame *const textFrame = document.textFrame;
+  const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
+  if (data->lineCount == 0)
+    return nullptr;
+  // A backward-affinity position at a soft wrap belongs to the preceding visual line.
+  const NSUInteger index = position.index - (position.affinity == UITextStorageDirectionBackward && position.index > 0);
+  const STUTextFrameRange range = [textFrame rangeForRangeInTruncatedString:NSMakeRange(index, 0)];
+  return STUTextFrameDataGetLines(data) + MIN((int32_t)range.start.lineIndex, data->lineCount - 1);
+}
+
 static CGRect caretRect(STULabelTextInputDocument *document, STULabelTextInputPosition *position)
 {
   NSString *const string = document.string;
@@ -461,17 +474,19 @@ baseWritingDirectionAtPosition(STULabelTextInputDocument *document, NSUInteger i
 }
 
 static STULabelTextInputPosition *positionOnAdjacentLine(STULabelTextInputDocument *document,
-                                                         NSUInteger index,
+                                                         STULabelTextInputPosition *position,
                                                          CGRect caret,
                                                          UITextLayoutDirection direction)
 {
   STUTextFrame *const textFrame = document.textFrame;
-  const STUTextFrameRange indexRange = [textFrame rangeForRangeInTruncatedString:NSMakeRange(index, 0)];
+  const STUTextFrameLine *const line = lineForPosition(document, position);
+  if (!line)
+    return position;
   const int32_t lineOffset = direction == UITextLayoutDirectionUp ? -1 : 1;
-  const int32_t targetLineIndex = (int32_t)indexRange.start.lineIndex + lineOffset;
+  const int32_t targetLineIndex = line->lineIndex + lineOffset;
   const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
   if (targetLineIndex < 0 || targetLineIndex >= data->lineCount)
-    return textPosition(index);
+    return position;
 
   const STUTextFrameLine *const targetLine = STUTextFrameDataGetLines(data) + targetLineIndex;
   const NSRange targetRange =
@@ -510,20 +525,13 @@ static STULabelTextInputPosition *positionInHorizontalDirection(STULabelTextInpu
                                                                 STULabelTextInputPosition *position,
                                                                 UITextLayoutDirection direction)
 {
-  NSString *const string = document.string;
   STUTextFrame *const textFrame = document.textFrame;
-  const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
-  if (data->lineCount == 0)
+  const STUTextFrameLine *const line = lineForPosition(document, position);
+  if (!line)
     return position;
-  const NSUInteger index = position.index;
-  const bool usesPreviousCharacter =
-      position.affinity == UITextStorageDirectionBackward ? index > 0 : index == string.length;
-  const NSUInteger start = usesPreviousCharacter ? previousCharacterBoundary(string, index) : index;
-  const NSUInteger end = usesPreviousCharacter ? index : nextCharacterBoundary(string, index);
-  const STUTextFrameRange range = [textFrame rangeForRangeInTruncatedString:NSMakeRange(start, end - start)];
-  const int32_t lineIndex = MIN((int32_t)range.start.lineIndex, data->lineCount - 1);
+  const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
   const STUTextFrameLine *const lines = STUTextFrameDataGetLines(data);
-  const STUTextFrameLine *const line = lines + lineIndex;
+  const int32_t lineIndex = line->lineIndex;
   const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:document.frameOrigin
                                                                    displayScale:document.displayScale];
   const CGFloat textScaleFactor = layoutInfo.textScaleFactor > 0 ? layoutInfo.textScaleFactor : 1;
@@ -575,7 +583,6 @@ static STULabelTextInputPosition *positionInDirection(STULabelTextInputDocument 
                                                       STULabelTextInputPosition *position,
                                                       UITextLayoutDirection direction)
 {
-  const NSUInteger index = position.index;
   switch (direction) {
   case UITextLayoutDirectionLeft:
   case UITextLayoutDirectionRight:
@@ -585,7 +592,7 @@ static STULabelTextInputPosition *positionInDirection(STULabelTextInputDocument 
     CGRect const rect = caretRect(document, position);
     if (CGRectIsEmpty(rect))
       return position;
-    return positionOnAdjacentLine(document, index, rect, direction);
+    return positionOnAdjacentLine(document, position, rect, direction);
   }
   }
 }

@@ -411,6 +411,31 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Vertical movement uses the visual line at soft wraps`() throws {
+    for text in ["abcdefghijklmno", "אבגדהוזחטיכלמנס"] {
+      let label = label(with: text, size: CGSize(width: 45, height: 200))
+      let input: any UITextInput = label
+      let lines = label.textFrame.textFrame.lines
+      #expect(lines.count >= 3)
+      let endIndex = NSMaxRange(lines[0].rangeInTruncatedString)
+      let beforeEnd = try #require(
+        input.position(from: input.beginningOfDocument, offset: endIndex - 1))
+      let direction: UITextLayoutDirection = text == "abcdefghijklmno" ? .right : .left
+      let endOfFirstLine = try #require(input.position(from: beforeEnd, in: direction, offset: 1))
+      let startOfSecondLine = try #require(
+        input.position(from: input.beginningOfDocument, offset: endIndex))
+      #expect(input.compare(endOfFirstLine, to: startOfSecondLine) == .orderedSame)
+      #expect(input.caretRect(for: endOfFirstLine).midY < input.caretRect(for: startOfSecondLine).midY)
+      #expect(input.position(from: endOfFirstLine, in: .up, offset: 1) == nil)
+
+      let down = try #require(input.position(from: endOfFirstLine, in: .down, offset: 1))
+      #expect(abs(input.caretRect(for: down).midY - input.caretRect(for: startOfSecondLine).midY) < 0.5)
+      let up = try #require(input.position(from: down, in: .up, offset: 1))
+      #expect(abs(input.caretRect(for: up).midY - input.caretRect(for: endOfFirstLine).midY) < 0.5)
+    }
+  }
+
+  @Test
   func `Constrained hit testing preserves caret affinity`() throws {
     for (text, width) in [("abc אבג", 200.0), ("abcdefghijklmno", 45.0)] {
       let label = label(with: text, size: CGSize(width: width, height: 200))
