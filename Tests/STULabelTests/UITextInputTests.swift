@@ -411,6 +411,38 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Character extension follows storage characters across bidi boundaries`() throws {
+    for text in ["abc אבג def", "אבג abc דהו", "a👩‍💻e\u{301}b"] {
+      let label = label(with: text, size: CGSize(width: 90, height: 200))
+      let input: any UITextInput = label
+      let string = text as NSString
+      var index = 0
+      while index < string.length {
+        let character = string.rangeOfComposedCharacterSequence(at: index)
+        let position = try #require(input.position(from: input.beginningOfDocument, offset: index))
+        for direction in [UITextLayoutDirection.right, .up, .down] {
+          let range = try #require(input.characterRange(byExtending: position, in: direction))
+          #expect(input.text(in: range) == string.substring(with: character))
+        }
+        let after = try #require(
+          input.position(from: input.beginningOfDocument, offset: NSMaxRange(character)))
+        let backward = try #require(input.characterRange(byExtending: after, in: .left))
+        #expect(input.text(in: backward) == string.substring(with: character))
+        index = NSMaxRange(character)
+      }
+    }
+
+    let label = label(with: "abc אבג", size: CGSize(width: 200, height: 50))
+    let input: any UITextInput = label
+    let beforeSpace = try #require(input.position(from: input.beginningOfDocument, offset: 3))
+    let afterSpace = try #require(input.position(from: beforeSpace, in: .right, offset: 1))
+    let range = try #require(input.characterRange(byExtending: afterSpace, in: .right))
+    #expect(input.text(in: range) == "א")
+    #expect(input.characterRange(byExtending: input.beginningOfDocument, in: .left) == nil)
+    #expect(input.characterRange(byExtending: input.endOfDocument, in: .right) == nil)
+  }
+
+  @Test
   func `Vertical movement uses the visual line at soft wraps`() throws {
     for text in ["abcdefghijklmno", "אבגדהוזחטיכלמנס"] {
       let label = label(with: text, size: CGSize(width: 45, height: 200))

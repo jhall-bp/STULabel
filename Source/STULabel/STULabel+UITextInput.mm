@@ -601,11 +601,18 @@ static NSRange characterRangeInDirection(STULabelTextInputDocument *document,
                                          STULabelTextInputPosition *position,
                                          UITextLayoutDirection direction)
 {
-  STULabelTextInputPosition *const otherPosition = positionInDirection(document, position, direction);
-  if (otherPosition.index == position.index)
-    return NSMakeRange(position.index, 0);
-  return otherPosition.index < position.index ? NSMakeRange(otherPosition.index, position.index - otherPosition.index)
-                                              : NSMakeRange(position.index, otherPosition.index - position.index);
+  // Like UITextView, this query extends in storage order: left looks backward,
+  // and the other directions look forward. Visual neighbours can straddle a bidi run.
+  NSString *const string = document.string;
+  NSUInteger index = position.index;
+  if (direction == UITextLayoutDirectionLeft) {
+    if (index == 0)
+      return NSMakeRange(0, 0);
+    --index;
+  } else if (index == string.length) {
+    return NSMakeRange(index, 0);
+  }
+  return [string rangeOfComposedCharacterSequenceAtIndex:index];
 }
 
 static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputDocument *document,
