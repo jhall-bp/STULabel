@@ -432,6 +432,7 @@ struct UITextInputTests {
           #expect(input.offset(from: input.beginningOfDocument, to: hit) == index)
           #expect(input.caretRect(for: hit) == caret)
           #expect(input.closestPosition(to: point, within: range) == hit)
+          #expect(input.characterRange(at: point) == nil)
         }
       }
       #expect(emptyLineCount > 0)
@@ -444,6 +445,36 @@ struct UITextInputTests {
         position = next
       }
       #expect(input.position(from: position, in: .down, offset: 1) == nil)
+    }
+  }
+
+  @Test
+  func `Point queries choose the same line across paragraph indents`() throws {
+    for text in ["a\nb", "א\nב"] {
+      let firstParagraph = NSMutableParagraphStyle()
+      firstParagraph.firstLineHeadIndent = 150
+      firstParagraph.headIndent = 150
+      let attributedText = NSMutableAttributedString(
+        string: text, attributes: [.font: UIFont.systemFont(ofSize: 18)])
+      attributedText.addAttribute(.paragraphStyle, value: firstParagraph, range: NSRange(location: 0, length: 2))
+      let label = label(
+        with: attributedText, size: CGSize(width: 250, height: 200),
+        insets: UIEdgeInsets(top: 7, left: 11, bottom: 0, right: 3))
+      let input: any UITextInput = label
+      let document = try #require(documentRange(for: input))
+      for index in [0, 2] {
+        let start = try #require(input.position(from: input.beginningOfDocument, offset: index))
+        let caret = input.caretRect(for: start)
+        for x in [CGFloat(-40), caret.midX, 280] {
+          let point = CGPoint(x: x, y: caret.midY)
+          let position = try #require(input.closestPosition(to: point))
+          let character = try #require(input.characterRange(at: point))
+          #expect(input.offset(from: input.beginningOfDocument, to: character.start) == index)
+          #expect(input.offset(from: character.start, to: character.end) == 1)
+          #expect(input.caretRect(for: position).midY == caret.midY)
+          #expect(input.closestPosition(to: point, within: document) == position)
+        }
+      }
     }
   }
 

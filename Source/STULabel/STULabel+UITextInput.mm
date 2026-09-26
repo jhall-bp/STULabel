@@ -387,17 +387,18 @@ static NSUInteger selectionRectIndexContainingEndpoint(STULabelTextInputDocument
   return NSNotFound;
 }
 
-static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabelTextInputDocument *document, CGPoint point)
+static STUTextFrameGraphemeClusterRange clusterAtX(STULabelTextInputDocument *document,
+                                                   const STUTextFrameLine *line, CGFloat x)
 {
-  return [document.textFrame rangeOfGraphemeClusterClosestToPoint:point
-                                       ignoringTrailingWhitespace:true
-                                                      frameOrigin:document.frameOrigin
-                                                     displayScale:document.displayScale];
-}
-
-static NSWritingDirection writingDirectionAtPoint(STULabelTextInputDocument *document, CGPoint point)
-{
-  return (NSWritingDirection)clusterClosestToPoint(document, point).writingDirection;
+  using namespace stu_label;
+  if (!line)
+    return {};
+  ThreadLocalArenaAllocator::InitialBuffer<2048> buffer;
+  ThreadLocalArenaAllocator allocator{Ref{buffer}};
+  const TextFrame &frame = textFrameRef(document.textFrame);
+  const CGFloat offset = (x - document.frameOrigin.x) / frame.textScaleFactor - line->originX;
+  return static_cast<STUTextFrameGraphemeClusterRange>(
+      frame.lines()[line->lineIndex].rangeOfGraphemeClusterAtXOffset(offset));
 }
 
 static const STUTextFrameLine *lineForPosition(STULabelTextInputDocument *document,
@@ -962,9 +963,11 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   NSMutableArray<UITextSelectionRect *> *const result = [NSMutableArray arrayWithCapacity:rects.rectCount];
   for (size_t i = 0; i < rects.rectCount; ++i) {
     const CGRect rect = [rects rectAtIndex:i];
+    const STUTextFrameLine *const line = STUTextFrameDataGetLines(__STUTextFrameGetData(document.textFrame))
+                                       + [rects textLineIndexForRectAtIndex:i];
     STULabelTextSelectionRect *const selectionRect = [[STULabelTextSelectionRect alloc]
             initWithRect:rect
-        writingDirection:writingDirectionAtPoint(document, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)))
+        writingDirection:(NSWritingDirection)clusterAtX(document, line, CGRectGetMidX(rect)).writingDirection
            containsStart:i == (startRectIndex == NSNotFound ? 0 : startRectIndex)
              containsEnd:i == (endRectIndex == NSNotFound ? rects.rectCount - 1 : endRectIndex)];
     [result addObject:selectionRect];
@@ -996,7 +999,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
 - (nullable UITextRange *)characterRangeAtPoint:(CGPoint)point
 {
   STULabelTextInputDocument *const document = textInputDocument(self);
-  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
+  const STUTextFrameGraphemeClusterRange cluster = clusterAtX(document, lineClosestToY(document, point.y), point.x);
   const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
   if (range.length == 0)
     return nil;
