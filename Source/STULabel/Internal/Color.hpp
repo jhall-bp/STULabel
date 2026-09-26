@@ -47,6 +47,8 @@ template <> struct stu::IsOptionsEnum<stu_label::ColorFlags> : True {};
 
 namespace stu_label {
 
+UIColor* _Nullable colorByBlendingForegroundColor(UIColor * _Nonnull foregroundColor, UIColor * _Nonnull backgroundColor, CGFloat alpha);
+
 /// color.CGColor without the mandatory autorelease of the color object in ARC code (triggered by
 /// the NS_RETURNS_INNER_POINTER annotation of the CGColor getter).
 STU_INLINE CGColor* cgColor(UIColor* __unsafe_unretained color) {

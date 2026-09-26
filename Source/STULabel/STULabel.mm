@@ -9,6 +9,7 @@
 
 #import "STULabelLayoutInfo-Internal.hpp"
 
+#import "Internal/Color.hpp"
 #import "Internal/LabelParameters.hpp"
 #import "Internal/LabelRendering.hpp"
 #import "Internal/Once.hpp"
@@ -545,7 +546,6 @@ static void updateLayoutGuides(STULabel *label);
     bool hasIntrinsicContentWidth : 1;
     bool maxWidthIntrinsicContentSizeIsValid : 1;
     bool adjustsFontForContentSizeCategory : 1;
-    bool usesTintColorAsLinkColor : 1;
     bool hasActiveLinkOverlayLayer : 1;
     bool activeLinkOverlayIsHidden : 1;
     bool isEnabled : 1;
@@ -617,15 +617,14 @@ static void initCommon(STULabel *self)
   static dispatch_once_t once;
   dispatch_once_f(&once, nullptr, [](void *) {
     stuLabelLayerClass = STULabelLayer.class;
-    disabledTextColor = [UIColor.labelColor colorWithProminence:UIColorProminenceTertiary];
-    disabledLinkColor = [UIColor.linkColor colorWithProminence:UIColorProminenceTertiary];
+    disabledTextColor = [UIColor.labelColor colorWithProminence:UIColorProminenceSecondary];
+    disabledLinkColor = [UIColor.linkColor colorWithProminence:UIColorProminenceSecondary];
     defaultLabelOverlayStyle = STULabelOverlayStyle.defaultStyle;
     dragInteractionIsEnabledByDefault = [UIDragInteraction isEnabledByDefault];
   });
 
   self->_bits.hasIntrinsicContentWidth = true;
   self->_bits.isEnabled = true;
-  self->_bits.usesTintColorAsLinkColor = false;
   self->_bits.dragInteractionEnabled = dragInteractionIsEnabledByDefault;
   self->_bits.accessibilityElementRepresentsUntruncatedText = true;
   self->_linkTouchAreaExtensionRadius = 10;
@@ -640,7 +639,7 @@ static void initCommon(STULabel *self)
   self->_layer.renderingTraitCollection = traits;
   self->_layer.contentsScale = traits.displayScale;
   self->_layer.labelLayerDelegate = self;
-  self->_layer.overrideLinkColor = UIColor.linkColor;
+  self->_layer.overrideLinkColor = self.tintColor;
 
   // These dependencies invalidate rendering even when font adjustment is disabled.
   // Other drawing dependencies can use UIKit registration with setNeedsDisplay.
@@ -1153,10 +1152,7 @@ static UIColor *effectiveLinkColor(STULabel *__unsafe_unretained self)
   if (!self->_bits.isEnabled && self->_disabledLinkColor) {
     return self->_disabledLinkColor;
   }
-  if (self->_bits.usesTintColorAsLinkColor || self.tintAdjustmentMode == UIViewTintAdjustmentModeDimmed) {
-    return self.tintColor;
-  }
-  return UIColor.linkColor;
+  return self.tintColor;
 }
 
 static void updateEffectiveLinkColor(STULabel *__unsafe_unretained self)
@@ -1172,18 +1168,6 @@ static void updateEffectiveLinkColor(STULabel *__unsafe_unretained self)
   if (!_bits.isEnabled) {
     updateEffectiveLinkColor(self);
   }
-}
-
-- (bool)usesTintColorAsLinkColor
-{
-  return _bits.usesTintColorAsLinkColor;
-}
-- (void)setUsesTintColorAsLinkColor:(bool)usesTintColorAsLinkColor
-{
-  if (_bits.usesTintColorAsLinkColor == usesTintColorAsLinkColor)
-    return;
-  _bits.usesTintColorAsLinkColor = usesTintColorAsLinkColor;
-  updateEffectiveLinkColor(self);
 }
 
 static void tintColorMayHaveChanged(STULabel *__unsafe_unretained self) { updateEffectiveLinkColor(self); }
@@ -1555,6 +1539,7 @@ STU_INLINE void setContextMenuConfigurationLink(UIContextMenuConfiguration *conf
                                                           atLocation:location];
   if (configuration) {
     setContextMenuConfigurationLink(configuration, link);
+    self.selectedTextRange = (UITextRange *)STULabelTextInputRangeForLink(link);
   }
   return configuration;
 }
@@ -1571,6 +1556,13 @@ STU_INLINE void setContextMenuConfigurationLink(UIContextMenuConfiguration *conf
                  dismissalPreviewForItemWithIdentifier:(id<NSCopying>)identifier
 {
   return [self targetedPreviewForLink:contextMenuConfigurationLink(configuration) dragItem:nil];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction *)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration *)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator
+{
+  self.selectedTextRange = nil;
 }
 
 // MARK: - UIDragInteraction
@@ -1848,7 +1840,7 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
     }
   }
   if (!backgroundColor) {
-    backgroundColor = self.backgroundColor;
+    backgroundColor = stu_label::colorByBlendingForegroundColor(self.tintColor, self.backgroundColor, 0.8);
   }
   id<STULabelDelegate> delegate = _delegate;
   if (dragItem && delegate &&

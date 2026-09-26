@@ -77,11 +77,9 @@ struct SwiftWrapperTests {
   func `STULabel uses link color by default`() {
     let label = STULabel()
 
-    #expect(!label.usesTintColorAsLinkColor)
-    #expect(label.layer.overrideLinkColor == .link)
+    #expect(label.layer.overrideLinkColor == label.tintColor)
 
     label.tintColor = .systemRed
-    label.usesTintColorAsLinkColor = true
     #expect(label.layer.overrideLinkColor == .systemRed)
   }
 

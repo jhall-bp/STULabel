@@ -592,6 +592,8 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     largeSTULabelScrollView.addSubview(largeSTULabelScrollViewContentView)
     largeSTULabelScrollViewContentView.addSubview(largeSTULabel)
 
+    largeSTULabel.delegate = self
+    largeSTULabel.isSelectable = true
     largeSTULabel.dragInteractionEnabled = true
     largeSTULabel.maximumNumberOfLines = 0
     largeSTULabel.textLayoutMode = textLayoutMode.value
@@ -703,6 +705,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
       } else {
         assert(i == stuLabels.count)
         label = STULabel()
+        label.delegate = self
         textView = UITextView()
         multiLabelScrollView.dynamicallyAddedSubviews.append(label)
         multiLabelScrollView.dynamicallyAddedSubviews.append(textView)
@@ -766,6 +769,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
 
     let attributes: [NSAttributedString.Key: Any] = [
       .font: font,
+      .foregroundColor: UIColor.label,
       .paragraphStyle: paraStyle,
       kCTLanguageAttributeName as NSAttributedString.Key: translation.languageCode,
       NSAttributedString.Key("NSHyphenationLanguage"): translation.languageCode,
@@ -842,7 +846,7 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
             let query = "\"\(substring.replacingOccurrences(of: "\n", with: " "))\""
             url.queryItems = [URLQueryItem(name: "q", value: query)]
           }
-          return [.link: url.url!]
+          return [.link: url.url!, .foregroundColor: [UIColor.systemRed, UIColor.systemBrown, UIColor.link].randomElement()!]
         }
       }
       if let shadowRanges = shadowRanges.value {
@@ -1106,6 +1110,17 @@ class UDHRViewerVC: UIViewController, STULabelDelegate, UIScrollViewDelegate,
     }
     restoreScrollState()
     doNotRemoveSavedScrollStatesOnContentOffsetChanges = false
+  }
+
+  // MARK: - STULabelDelegate
+
+  func label(_ label: STULabel, contextMenuConfigurationForLink link: STUTextLink, at location: CGPoint) -> UIContextMenuConfiguration? {
+    UIContextMenuConfiguration(identifier: link) {
+      nil
+    } actionProvider: { defaultActions in
+      print("❤️‍🩹", #function)
+      return UIMenu(children: defaultActions)
+    }
   }
 
   // MARK: - Grapheme cluster highlighting

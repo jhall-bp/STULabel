@@ -147,10 +147,6 @@ STU_EXPORT
 /// Default value: @c nil
 @property (nonatomic, nullable) STULastHyphenationLocationInRangeFinder lastHyphenationLocationInRangeFinder;
 
-/// Default value: false. When false, links use @c UIColor.linkColor. When true, links use the
-/// label's @c tintColor instead.
-@property (nonatomic) bool usesTintColorAsLinkColor;
-
 @property (nonatomic, getter=isHighlighted) BOOL highlighted;
 
 @property (nonatomic, nullable) STUTextHighlightStyle *highlightStyle;
@@ -161,10 +157,10 @@ STU_EXPORT
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
 
-/// Default value: `UIColor(white: 0.56, alpha: 1)`
+/// Default value: `[UIColor.labelColor colorWithProminence:UIColorProminenceSecondary]`.
 @property (nonatomic, nullable) UIColor *disabledTextColor;
 
-/// Default value: `[UIColor.linkColor colorWithProminence:UIColorProminenceTertiary]`.
+/// Default value: `[UIColor.linkColor colorWithProminence:UIColorProminenceSecondary]`.
 /// Assigning @c nil makes a disabled label fall back to its effective tint or regular link color.
 @property (nonatomic, nullable) UIColor *disabledLinkColor;
 

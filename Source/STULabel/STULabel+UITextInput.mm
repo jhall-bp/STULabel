@@ -246,6 +246,23 @@ static STU_INLINE STULabelTextInputPosition *textPosition(NSUInteger index, UITe
   return [[STULabelTextInputPosition alloc] initWithIndex:index affinity:affinity];
 }
 
+static STU_INLINE STULabelTextInputRange *textRange(NSRange range)
+{
+  return [[STULabelTextInputRange alloc] initWithStart:textPosition(range.location)
+                                                   end:textPosition(NSMaxRange(range))];
+}
+
+static STU_INLINE NSRange stringRange(STULabelTextInputRange *range)
+{
+  const NSUInteger start = range.startPosition.index;
+  return NSMakeRange(start, range.endPosition.index - start);
+}
+
+STULabelTextInputRange *STULabelTextInputRangeForLink(STUTextLink *link)
+{
+  return textRange(link.rangeInTruncatedString);
+}
+
 static STULabelTextInputPosition *validTextPosition(UITextPosition *position, NSString *string)
 {
   if (![position isKindOfClass:STULabelTextInputPosition.class])
@@ -664,14 +681,12 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   return best ? textPosition(best->index, bestAffinity) : range.startPosition;
 }
 
-@implementation STULabelTextInteraction
+@implementation STULabelTextInteraction {
+  __weak STULabel *_label;
+  UITextInteraction *_interaction;
+}
 
 @synthesize stu_interaction = _interaction;
-@synthesize stu_inputDelegate = _stu_inputDelegate;
-@synthesize stu_tokenizer = _stu_tokenizer;
-@synthesize stu_document = _stu_document;
-@synthesize stu_isPublishingDocument = _stu_isPublishingDocument;
-@synthesize stu_selectionAffinity = _stu_selectionAffinity;
 
 - (instancetype)initWithLabel:(STULabel *)label
 {
@@ -702,7 +717,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
 - (BOOL)interactionShouldBegin:(UITextInteraction *__unused)interaction atPoint:(CGPoint)point
 {
   STULabel *const label = _label;
-  return label.isSelectable && ![label.links linkClosestToPoint:point maxDistance:label.linkTouchAreaExtensionRadius];
+  return label.enabled && label.isSelectable && ![label.links linkClosestToPoint:point maxDistance:label.linkTouchAreaExtensionRadius];
 }
 
 @end
@@ -727,7 +742,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return nil;
-  return [string substringWithRange:NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index)];
+  return [string substringWithRange:stringRange(r)];
 }
 
 - (void)replaceRange:(UITextRange *__unused)range withText:(NSString *__unused)text
@@ -747,14 +762,12 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   if (range && !newRange)
     return;
   if (newRange) {
-    const NSRange normalizedRange = selectionRangeExcludingTruncationTokenLink(
-        document, NSMakeRange(newRange.startPosition.index, newRange.endPosition.index - newRange.startPosition.index));
+    const NSRange normalizedRange = selectionRangeExcludingTruncationTokenLink(document, stringRange(newRange));
     if (normalizedRange.location == NSNotFound) {
       newRange = nil;
     } else if (normalizedRange.location != newRange.startPosition.index ||
                NSMaxRange(normalizedRange) != newRange.endPosition.index) {
-      newRange = [[STULabelTextInputRange alloc] initWithStart:textPosition(normalizedRange.location)
-                                                           end:textPosition(NSMaxRange(normalizedRange))];
+      newRange = textRange(normalizedRange);
     }
   }
   STULabelTextInputRange *const oldRange = document.selectedTextRange;
@@ -912,8 +925,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   const NSRange range = characterRangeInDirection(document, p, direction);
   if (range.length == 0)
     return nil;
-  return [[STULabelTextInputRange alloc] initWithStart:textPosition(range.location)
-                                                   end:textPosition(NSMaxRange(range))];
+  return textRange(range);
 }
 
 - (NSWritingDirection)baseWritingDirectionForPosition:(UITextPosition *)position
@@ -937,8 +949,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
     return CGRectZero;
   if (r.empty)
     return caretRect(document, r.startPosition);
-  STUTextRectArray *const rects =
-      rectsForRange(document, NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index));
+  STUTextRectArray *const rects = rectsForRange(document, stringRange(r));
   return rects.rectCount ? [rects rectAtIndex:0] : CGRectZero;
 }
 
@@ -956,7 +967,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r || r.empty)
     return @[];
-  const NSRange selectionRange = NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index);
+  const NSRange selectionRange = stringRange(r);
   STUTextRectArray *const rects = rectsForRange(document, selectionRange);
   const NSUInteger startRectIndex = selectionRectIndexContainingEndpoint(document, rects, string, selectionRange, true);
   const NSUInteger endRectIndex = selectionRectIndexContainingEndpoint(document, rects, string, selectionRange, false);
@@ -1003,8 +1014,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
   if (range.length == 0)
     return nil;
-  return [[STULabelTextInputRange alloc] initWithStart:textPosition(range.location)
-                                                   end:textPosition(NSMaxRange(range))];
+  return textRange(range);
 }
 
 - (nullable NSDictionary<NSAttributedStringKey, id> *)textStylingAtPosition:(UITextPosition *)position
@@ -1101,8 +1111,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return [[NSAttributedString alloc] initWithString:@""];
-  return [document.textFrame.truncatedAttributedString
-      attributedSubstringFromRange:NSMakeRange(r.startPosition.index, r.endPosition.index - r.startPosition.index)];
+  return [document.textFrame.truncatedAttributedString attributedSubstringFromRange:stringRange(r)];
 }
 
 - (void)insertAttributedText:(NSAttributedString *__unused)string

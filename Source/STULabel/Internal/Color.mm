@@ -34,4 +34,23 @@ ColorFlags colorFlags(CGColor *__nullable color)
   return colorFlags([UIColor colorWithCGColor:color]);
 }
 
+UIColor* colorByBlendingForegroundColor(UIColor * foregroundColor, UIColor * backgroundColor, CGFloat alpha)
+{
+    CGFloat fr, fg, fb, fa;
+    CGFloat br, bg, bb, ba;
+
+    if (![foregroundColor getRed:&fr green:&fg blue:&fb alpha:&fa] ||
+        ![backgroundColor getRed:&br green:&bg blue:&bb alpha:&ba]) {
+        return nil;
+    }
+
+    CGFloat effectiveAlpha = fa * alpha;
+
+    CGFloat r = fr * effectiveAlpha + br * (1.0 - effectiveAlpha);
+    CGFloat g = fg * effectiveAlpha + bg * (1.0 - effectiveAlpha);
+    CGFloat b = fb * effectiveAlpha + bb * (1.0 - effectiveAlpha);
+
+    return [UIColor colorWithRed:r green:g blue:b alpha:1.0];
+}
+
 } // namespace stu_label
