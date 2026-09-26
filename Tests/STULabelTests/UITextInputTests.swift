@@ -475,6 +475,9 @@ struct UITextInputTests {
       String(repeating: "a", count: 800),
       "abc אבג def",
       "a👩‍💻e\u{301}b",
+      "لا للغة العَرَبِيَّة",
+      "क्‍ष कक्षा नमस्ते",
+      "เก้า ภาษาไทย",
       "abc  ",
     ] {
       let label = label(with: text, size: CGSize(width: 20000, height: 100))
@@ -500,8 +503,8 @@ struct UITextInputTests {
     }
   }
 
-  @Test
-  func `Caret geometry agrees with rendered text after truncation and scaling`() throws {
+  @Test(arguments: [CGFloat(24), 96])
+  func `Caret geometry agrees with rendered text after truncation and scaling`(_ fontSize: CGFloat) throws {
     for text in [
       "office affinity efficient",
       "אבג דהו זחט יכל מנס",
@@ -513,8 +516,8 @@ struct UITextInputTests {
           let label = label(
             with: NSAttributedString(
               string: text,
-              attributes: [.font: UIFont(name: "TimesNewRomanPSMT", size: 24)!, .ligature: 1]),
-            size: CGSize(width: 120, height: 70),
+              attributes: [.font: UIFont(name: "TimesNewRomanPSMT", size: fontSize)!, .ligature: 1]),
+            size: CGSize(width: 5 * fontSize, height: 3 * fontSize),
             insets: UIEdgeInsets(top: 5, left: 7, bottom: 3, right: 11))
           label.maximumNumberOfLines = 1
           label.lastLineTruncationMode = mode
@@ -540,15 +543,101 @@ struct UITextInputTests {
                 let position = try #require(input.closestPosition(to: point))
                 let caret = input.caretRect(for: position)
                 let expectedX = fraction < 0.5 ? cluster.bounds.minX : cluster.bounds.maxX
-                // Core Text can redistribute insertion offsets within glyph clusters
-                // relative to the individual glyph advances used by selection rects.
                 #expect(
-                  abs(caret.midX - expectedX) < 0.5,
+                  abs(caret.midX - expectedX) < 0.01,
                   "\(text), \(mode), scale \(minimumScale), position \(input.offset(from: input.beginningOfDocument, to: position))")
                 #expect(caret.height > 0)
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  @Test
+  func `Style boundaries do not split grapheme navigation`() throws {
+    for (text, styledRange) in [
+      ("a\u{301}b", NSRange(location: 1, length: 1)),
+      ("👩‍💻b", NSRange(location: 3, length: 2)),
+      ("🇦🇺b", NSRange(location: 2, length: 2)),
+    ] {
+      let text = NSMutableAttributedString(
+        string: text, attributes: [.font: UIFont.systemFont(ofSize: 18)])
+      text.addAttribute(.font, value: UIFont.systemFont(ofSize: 28), range: styledRange)
+      let label = label(with: text, size: CGSize(width: 250, height: 80))
+      let input: any UITextInput = label
+      let firstCharacterEnd = (text.string as NSString).rangeOfComposedCharacterSequence(at: 0).length
+      let afterFirst = try #require(input.position(from: input.beginningOfDocument, in: .right, offset: 1))
+      #expect(input.offset(from: input.beginningOfDocument, to: afterFirst) == firstCharacterEnd)
+      let beforeLast = try #require(input.position(from: input.endOfDocument, in: .left, offset: 1))
+      #expect(input.offset(from: input.beginningOfDocument, to: beforeLast) == firstCharacterEnd)
+      let beginning = try #require(input.position(from: beforeLast, in: .left, offset: 1))
+      #expect(input.offset(from: input.beginningOfDocument, to: beginning) == 0)
+      let end = try #require(input.position(from: afterFirst, in: .right, offset: 1))
+      #expect(input.offset(from: input.beginningOfDocument, to: end) == text.length)
+    }
+  }
+
+  @Test
+  func `Multi-glyph clusters share selection and caret edges`() throws {
+    for text in ["لا للغة العَرَبِيَّة", "क्‍ष कक्षा नमस्ते", "เก้า ภาษาไทย"] {
+      for mode in [STULastLineTruncationMode.start, .middle, .end] {
+        let label = label(
+          with: NSAttributedString(
+            string: text, attributes: [.font: UIFont.systemFont(ofSize: 24), .ligature: 1]),
+          size: CGSize(width: 120, height: 72))
+        label.maximumNumberOfLines = 1
+        label.lastLineTruncationMode = mode
+        label.layoutIfNeeded()
+        notifyTextDidDisplay(in: label)
+        let input: any UITextInput = label
+        let frame = label.textFrame
+        let bounds = input.firstRect(for: try #require(documentRange(for: input)))
+        for x in stride(from: bounds.minX + 0.5, to: bounds.maxX, by: 3) {
+          let point = CGPoint(x: x, y: bounds.midY)
+          let cluster = frame.rangeOfGraphemeCluster(closestTo: point, ignoringTrailingWhitespace: true)
+          let range = try #require(input.characterRange(at: point))
+          let left = try #require(input.position(within: range, farthestIn: .left))
+          let right = try #require(input.position(within: range, farthestIn: .right))
+          #expect(abs(input.caretRect(for: left).midX - cluster.bounds.minX) < 0.01,
+            "\(text), \(mode), x \(x), range \(cluster.range.rangeInTruncatedString)")
+          #expect(abs(input.caretRect(for: right).midX - cluster.bounds.maxX) < 0.01,
+            "\(text), \(mode), x \(x), range \(cluster.range.rangeInTruncatedString)")
+        }
+      }
+    }
+  }
+
+  @Test
+  func `Hidden text does not change visible caret navigation`() throws {
+    for mode in [STULastLineTruncationMode.start, .middle, .end] {
+      var referenceOffsets: [Int] = []
+      var referenceRects: [CGRect] = []
+      for count in [1000, 10000, 100000] {
+        let label = label(with: String(repeating: "a", count: count), size: CGSize(width: 100, height: 60))
+        label.maximumNumberOfLines = 1
+        label.lastLineTruncationMode = mode
+        label.layoutIfNeeded()
+        notifyTextDidDisplay(in: label)
+        let input: any UITextInput = label
+        var offsets: [Int] = []
+        var rects: [CGRect] = []
+        var position: UITextPosition? = input.beginningOfDocument
+        while let current = position {
+          offsets.append(input.offset(from: input.beginningOfDocument, to: current))
+          rects.append(input.caretRect(for: current))
+          #expect(offsets.count < 20)
+          if offsets.count >= 20 { break }
+          position = input.position(from: current, in: .right, offset: 1)
+        }
+        #expect(offsets.last == input.offset(from: input.beginningOfDocument, to: input.endOfDocument))
+        if count == 1000 {
+          referenceOffsets = offsets
+          referenceRects = rects
+        } else {
+          #expect(offsets == referenceOffsets)
+          #expect(rects == referenceRects)
         }
       }
     }

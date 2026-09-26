@@ -418,7 +418,8 @@ static const stu_label::TextInputLineCarets &lineCarets(STULabelTextInputDocumen
 {
   if (!document->_carets)
     document->_carets = std::make_shared<stu_label::TextInputCaretCache>();
-  return document->_carets->try_emplace(line->lineIndex, *line, document.string).first->second;
+  const auto &frameLine = stu_label::textFrameRef(document.textFrame).lines()[line->lineIndex];
+  return document->_carets->try_emplace(line->lineIndex, frameLine, document.string).first->second;
 }
 
 static CGRect lineBounds(STULabelTextInputDocument *document, const STUTextFrameLine *line)
@@ -544,17 +545,6 @@ static STULabelTextInputPosition *positionOnAdjacentLine(STULabelTextInputDocume
   return positionClosestToX(document, targetLine, CGRectGetMidX(caret));
 }
 
-static STULabelTextInputPosition *positionAtVisualEdge(STUTextFrameGraphemeClusterRange cluster, bool left)
-{
-  const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
-  if (range.length == 0)
-    return textPosition(range.location);
-  const bool isLeftToRight = cluster.writingDirection == STUWritingDirectionLeftToRight;
-  if (left == isLeftToRight)
-    return textPosition(range.location, UITextStorageDirectionForward);
-  return textPosition(NSMaxRange(range), UITextStorageDirectionBackward);
-}
-
 static bool areEqualTextPositions(STULabelTextInputPosition *a, STULabelTextInputPosition *b)
 {
   return a.index == b.index && a.affinity == b.affinity;
@@ -641,32 +631,36 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   if (direction == UITextLayoutDirectionDown)
     return range.endPosition;
 
-  const NSRange stringRange =
-      NSMakeRange(range.startPosition.index, range.endPosition.index - range.startPosition.index);
-  if (stringRange.length == 0)
+  if (range.empty)
     return range.startPosition;
 
   const bool wantsLeft = direction == UITextLayoutDirectionLeft;
-  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
-  STULabelTextInputPosition *bestPosition = nil;
+  const STUTextFrameLine *const first = lineForPosition(document, range.startPosition);
+  const STUTextFrameLine *const last = lineForPosition(document, range.endPosition);
+  const stu_label::TextInputCaret *best = nullptr;
+  UITextStorageDirection bestAffinity = UITextStorageDirectionForward;
   CGFloat bestX = wantsLeft ? CGFLOAT_MAX : -CGFLOAT_MAX;
-  STUTextRectArray *const rects = rectsForRange(document, stringRange);
-  for (size_t i = 0; i < rects.rectCount; ++i) {
-    const CGRect rect = [rects rectAtIndex:i];
-    const CGFloat inset = MIN(rect.size.width / 4, 0.5 / scale);
-    const CGPoint point =
-        CGPointMake(wantsLeft ? CGRectGetMinX(rect) + inset : CGRectGetMaxX(rect) - inset, CGRectGetMidY(rect));
-    const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
-    STULabelTextInputPosition *const candidate = positionAtVisualEdge(cluster, wantsLeft);
-    if (candidate.index < range.startPosition.index || candidate.index > range.endPosition.index)
-      continue;
-    const CGFloat x = CGRectGetMidX(caretRect(document, candidate));
-    if (!bestPosition || (wantsLeft ? x < bestX : x > bestX)) {
-      bestPosition = candidate;
-      bestX = x;
+  for (const STUTextFrameLine *line = first; line && line <= last; ++line) {
+    const auto &carets = lineCarets(document, line).visual;
+    for (size_t i = 0; i < carets.size(); ++i) {
+      const auto &caret = carets[wantsLeft ? i : carets.size() - 1 - i];
+      if (caret.index < range.startPosition.index || caret.index > range.endPosition.index)
+        continue;
+      // At an endpoint, use the affinity facing into the selected text.
+      const auto affinity = caret.index == range.startPosition.index ? UITextStorageDirectionForward
+          : caret.index == range.endPosition.index ? UITextStorageDirectionBackward : caret.affinity;
+      if (!caret.hasBothAffinities && caret.affinity != affinity)
+        continue;
+      const CGFloat x = line->originX + caret.x;
+      if (!best || (wantsLeft ? x < bestX : x > bestX)) {
+        best = &caret;
+        bestAffinity = affinity;
+        bestX = x;
+      }
+      break;
     }
   }
-  return bestPosition ?: range.startPosition;
+  return best ? textPosition(best->index, bestAffinity) : range.startPosition;
 }
 
 @implementation STULabelTextInteraction

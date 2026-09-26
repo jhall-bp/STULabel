@@ -2,7 +2,8 @@
 
 #pragma once
 
-#import "../STUTextFrame-Unsafe.h"
+#import "TextFrame.hpp"
+#import "NSStringRef.hpp"
 
 #import <UIKit/UITextInput.h>
 
@@ -38,88 +39,92 @@ class TextInputLineCarets {
 public:
   std::vector<TextInputCaret> visual;
 
-  TextInputLineCarets(const STUTextFrameLine &line, NSString *string) {
-    const STUTextFrameParagraph &paragraph = *STUTextFrameLineGetParagraph(&line);
-    std::vector<TextInputCaret> left;
-    std::vector<TextInputCaret> right;
-    auto *const leftCarets = &left;
-    auto *const rightCarets = &right;
-    const auto excised = paragraph.excisedRangeInOriginalString;
-    const NSUInteger tokenStart = (NSUInteger)paragraph.rangeInTruncatedString.start
-                                  + excised.start - paragraph.rangeInOriginalString.start;
+  TextInputLineCarets(const TextFrameLine &line, NSString *string) {
+    ThreadLocalArenaAllocator::InitialBuffer<2048> buffer;
+    ThreadLocalArenaAllocator allocator{Ref{buffer}};
     const auto append = [](std::vector<TextInputCaret> &carets, NSUInteger index, CGFloat x, bool leading) {
       carets.push_back({index, x, leading ? UITextStorageDirectionForward : UITextStorageDirectionBackward});
     };
-
-    // Inserted hyphens can split a mixed-direction line between runs. Cache the
-    // run mapping once so each original caret receives the same shift as drawing.
-    struct HyphenRun {
-      CFRange range;
-      bool rightPart;
-      bool rightToLeft;
+    struct Cluster {
+      Range<Float64> x;
+      bool leftToRight;
     };
-    std::vector<HyphenRun> hyphenRuns;
-    if (line.hasInsertedHyphen && line._ctLine) {
-      const CFArrayRef runs = CTLineGetGlyphRuns(line._ctLine);
-      for (CFIndex i = 0; i < CFArrayGetCount(runs); ++i) {
-        const CTRunRef run = (CTRunRef)CFArrayGetValueAtIndex(runs, i);
-        hyphenRuns.push_back({CTRunGetStringRange(run),
-                             line._rightPartStart.runIndex >= 0 && i >= line._rightPartStart.runIndex,
-                             (CTRunGetStatus(run) & kCTRunStatusRightToLeft) != 0});
+    // A grapheme can span multiple glyphs or runs. Collect its outer bounds before
+    // emitting its two edges, using only the spans that the renderer actually draws.
+    std::map<std::pair<Int, Int>, Cluster> clusters;
+    const auto addCluster = [&](Range<Int> range, Range<Float64> x, bool leftToRight) {
+      if (range.isEmpty())
+        return;
+      auto [it, inserted] = clusters.try_emplace(std::pair{range.start, range.end}, Cluster{x, leftToRight});
+      if (!inserted)
+        it->second.x = it->second.x.convexHull(x);
+    };
+    line.forEachStyledGlyphSpan(none, [&](const StyledGlyphSpan &span, const TextStyle &, Range<Float64> spanX) {
+      if (span.part == TextLinePart::insertedHyphen) {
+        const NSRange range = [string rangeOfComposedCharacterSequenceAtIndex:line.rangeInTruncatedString.end - 1];
+        addCluster(Range<Int>{range}, spanX, line.paragraphBaseWritingDirection == STUWritingDirectionLeftToRight);
+        return;
       }
-      std::sort(hyphenRuns.begin(), hyphenRuns.end(),
-                [](const auto &a, const auto &b) { return a.range.location < b.range.location; });
-    }
-    const auto *const hyphenRunData = &hyphenRuns;
-    if (line._ctLine) {
-      CTLineEnumerateCaretOffsets(line._ctLine, ^(double x, CFIndex index, bool leading, bool *) {
-        // Core Text reports the first UTF-16 unit for a leading edge and the last
-        // UTF-16 unit for a trailing edge (including surrogate pairs and ligatures).
-        if (index < line.rangeInOriginalString.start || index >= line.rangeInOriginalString.end)
-          return;
-        if (line.hasTruncationToken && index >= excised.start && index < excised.end)
-          return;
-        const bool prefix = index < excised.start;
-        const NSInteger stringOffset = prefix
-            ? line.rangeInTruncatedString.start - line.rangeInOriginalString.start
-            : line.rangeInTruncatedString.end - line.rangeInOriginalString.end;
-        const NSUInteger position = index + !leading + stringOffset;
-        auto hyphenRun = hyphenRunData->end();
-        if (line.hasInsertedHyphen) {
-          hyphenRun = std::lower_bound(hyphenRunData->begin(), hyphenRunData->end(), index,
-                                      [](const auto &run, CFIndex i) {
-                                        return run.range.location + run.range.length <= i;
-                                      });
+      const GlyphSpan glyphs = span.glyphSpan;
+      if (glyphs.isEmpty())
+        return;
+      const bool leftToRight = !glyphs.run().isRightToLeft();
+      const auto indices = glyphs.stringIndicesArray();
+      // Sorting just the visible indices also handles non-monotonic runs without
+      // repeatedly scanning the full (potentially mostly truncated) Core Text run.
+      std::vector<Int> boundaries(indices.begin(), indices.end());
+      boundaries.push_back(span.stringRange.end);
+      std::sort(boundaries.begin(), boundaries.end());
+      const NSStringRef source{span.attributedString.string};
+      // A grapheme may cross a run boundary. Clip only to the visible line part.
+      Range<Int> visibleRange{0, source.count()};
+      if (span.part == TextLinePart::originalString) {
+        visibleRange = Range<Int>{line.rangeInOriginalString};
+        const Range<Int> excised{span.paragraph->excisedRangeInOriginalString()};
+        if (span.stringRange.start < excised.start)
+          visibleRange.end = min(visibleRange.end, excised.start);
+        else
+          visibleRange.start = max(visibleRange.start, excised.end);
+      }
+      Float64 x = spanX.start;
+      for (Int i = 0; i < glyphs.count(); ++i) {
+        const Float64 nextX = i + 1 == glyphs.count() ? spanX.end
+            : min(x + glyphs[{i, Count{1}}].typographicWidth(), spanX.end);
+        const auto end = std::upper_bound(boundaries.begin(), boundaries.end(), indices[i]);
+        if (end == boundaries.end()) {
+          x = nextX;
+          continue;
         }
-        const bool isRightPart = hyphenRun != hyphenRunData->end()
-            ? hyphenRun->rightPart
-            : line.hasTruncationToken && (prefix == line.isTruncatedAsRightToLeftLine);
-        const CGFloat minX = isRightPart ? line.leftPartWidth + line.tokenWidth : 0;
-        const CGFloat maxX = isRightPart ? line.width : line.leftPartWidth;
-        CGFloat offset = std::clamp<CGFloat>(x + (isRightPart ? line._rightPartXOffset : 0), minX, maxX);
-        if (hyphenRun != hyphenRunData->end()
-            && position == (NSUInteger)line.rangeInTruncatedString.end && !leading)
-          offset = line.leftPartWidth + (hyphenRun->rightToLeft ? 0 : line.tokenWidth);
-        append(isRightPart ? *rightCarets : *leftCarets, position, offset, leading);
-      });
+        const Range<Int> glyphRange{indices[i], *end};
+        Array<Range<Int>, Fixed, 16> ranges;
+        const Int count = source.copyRangesOfGraphemeClustersSkippingTrailingIgnorables(glyphRange, ranges);
+        Array<CGFloat, Fixed, 15> offsets;
+        const bool split = count > 1 && count <= ranges.count()
+            && glyphRange.contains(ranges[0]) && glyphRange.contains(ranges[count - 1])
+            && glyphs.copyInnerCaretOffsetsForLigatureGlyphAtIndex(i, offsets[{0, count - 1}]);
+        const auto add = [&](Range<Int> range, Range<Float64> bounds) {
+          StyledGlyphSpan part = span;
+          part.stringRange = Range<Int32>{range.intersection(visibleRange)};
+          addCluster(Range<Int>{part.rangeInTruncatedString()}, bounds, leftToRight);
+        };
+        if (count <= ranges.count()) {
+          Float64 startX = x;
+          for (Int j = 0; j < count; ++j) {
+            const Float64 endX = split && j + 1 < count ? min(x + offsets[j], nextX) : nextX;
+            add(ranges[j], {startX, endX});
+            if (split)
+              startX = endX;
+          }
+        } else {
+          add(glyphRange, {x, nextX});
+        }
+        x = nextX;
+      }
+    });
+    for (const auto &[range, cluster] : clusters) {
+      append(visual, cluster.leftToRight ? range.first : range.second, cluster.x.start, cluster.leftToRight);
+      append(visual, cluster.leftToRight ? range.second : range.first, cluster.x.end, !cluster.leftToRight);
     }
-    if (line.hasInsertedHyphen && !hyphenRuns.empty()
-        && [string characterAtIndex:line.rangeInTruncatedString.end - 1] == 0xAD) {
-      const CGFloat x = line.leftPartWidth + (hyphenRuns.back().rightToLeft ? line.tokenWidth : 0);
-      append(left, line.rangeInTruncatedString.end - 1, x, false);
-      append(left, line.rangeInTruncatedString.end - 1, x, true);
-    }
-    visual = std::move(left);
-    if (line.hasTruncationToken && line._tokenCTLine) {
-      auto *const carets = &visual;
-      CTLineEnumerateCaretOffsets(line._tokenCTLine, ^(double x, CFIndex index, bool leading, bool *) {
-        if (index < 0 || index >= paragraph.truncationTokenLength)
-          return;
-        append(*carets, tokenStart + index + !leading,
-               line.leftPartWidth + std::clamp<CGFloat>(x, 0, line.tokenWidth), leading);
-      });
-    }
-    visual.insert(visual.end(), right.begin(), right.end());
 
     // STULabel does not draw trailing whitespace. Its insertion positions belong
     // at the logical end of the line, rather than having no caret rectangle.
@@ -142,7 +147,7 @@ public:
     if (visual.empty())
       visual.push_back({(NSUInteger)line.rangeInTruncatedString.start, trailingX, UITextStorageDirectionForward});
 
-    // Preserve Core Text's order for coincident bidi edges and zero-width characters.
+    // Keep the adjoining edges in visual order at bidi boundaries and zero-width characters.
     std::stable_sort(visual.begin(), visual.end(), [](const auto &a, const auto &b) { return a.x < b.x; });
     size_t count = 0;
     for (const auto caret : visual) {
