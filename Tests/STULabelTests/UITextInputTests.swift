@@ -411,6 +411,141 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Trailing whitespace and line terminators have usable carets`() throws {
+    for text in ["abc  ", "אבג  ", "abc\n\ndef", "a\r\nb", " \t "] {
+      let label = label(with: text, size: CGSize(width: 200, height: 200))
+      let input: any UITextInput = label
+      for index in 0...text.utf16.count {
+        let position = try #require(input.position(from: input.beginningOfDocument, offset: index))
+        let caret = input.caretRect(for: position)
+        #expect(!caret.isEmpty, "Missing caret at UTF-16 offset \(index) in \(text.debugDescription)")
+        #expect(caret.origin.x.isFinite && caret.origin.y.isFinite)
+      }
+      if text.hasSuffix("  ") {
+        let direction: UITextLayoutDirection = text.hasPrefix("abc") ? .left : .right
+        let previous = try #require(input.position(from: input.endOfDocument, in: direction, offset: 1))
+        #expect(input.offset(from: previous, to: input.endOfDocument) == 1)
+        let beforeWhitespace = try #require(
+          input.position(from: input.endOfDocument, in: direction, offset: 2))
+        #expect(input.offset(from: beforeWhitespace, to: input.endOfDocument) == 2)
+      }
+    }
+  }
+
+  @Test
+  func `Multi-character visual movement matches individual steps`() throws {
+    for text in [
+      String(repeating: "a", count: 800),
+      "abc אבג def",
+      "a👩‍💻e\u{301}b",
+      "abc  ",
+    ] {
+      let label = label(with: text, size: CGSize(width: 20000, height: 100))
+      let input: any UITextInput = label
+      for direction in [UITextLayoutDirection.right, .left] {
+        let range = try #require(documentRange(for: input))
+        let start = try #require(
+          input.position(within: range, farthestIn: direction == .right ? .left : .right))
+        var current = start
+        var count = 0
+        while let next = input.position(from: current, in: direction, offset: 1) {
+          count += 1
+          #expect(count <= text.utf16.count * 2 + 1)
+          if count > text.utf16.count * 2 + 1 { break }
+          let direct = try #require(input.position(from: start, in: direction, offset: count))
+          #expect(direct == next)
+          #expect(input.caretRect(for: direct) == input.caretRect(for: next))
+          current = next
+        }
+        #expect(count > 0)
+        #expect(input.position(from: start, in: direction, offset: count + 1) == nil)
+      }
+    }
+  }
+
+  @Test
+  func `Caret geometry agrees with rendered text after truncation and scaling`() throws {
+    for text in [
+      "office affinity efficient",
+      "אבג דהו זחט יכל מנס",
+      "abc אבג def דהו ghi",
+      "a👩‍💻e\u{301}b and more text",
+    ] {
+      for mode in [STULastLineTruncationMode.start, .middle, .end] {
+        for minimumScale in [CGFloat(1), 0.6] {
+          let label = label(
+            with: NSAttributedString(
+              string: text,
+              attributes: [.font: UIFont(name: "TimesNewRomanPSMT", size: 24)!, .ligature: 1]),
+            size: CGSize(width: 120, height: 70),
+            insets: UIEdgeInsets(top: 5, left: 7, bottom: 3, right: 11))
+          label.maximumNumberOfLines = 1
+          label.lastLineTruncationMode = mode
+          label.minimumTextScaleFactor = minimumScale
+          label.layoutIfNeeded()
+          notifyTextDidDisplay(in: label)
+          let input: any UITextInput = label
+          let frame = label.textFrame
+          let length = input.offset(from: input.beginningOfDocument, to: input.endOfDocument)
+          let rects = frame.rects(
+            for: frame.range(forRangeInTruncatedString: NSRange(location: 0, length: length)))
+          #expect(rects.rectCount > 0)
+          for index in 0..<rects.rectCount {
+            let rect = rects.rect(at: index)
+            for x in stride(from: rect.minX + 0.5, to: rect.maxX, by: 3) {
+              let cluster = frame.rangeOfGraphemeCluster(
+                closestTo: CGPoint(x: x, y: rect.midY),
+                ignoringTrailingWhitespace: true)
+              for fraction in [CGFloat(0.25), 0.75] {
+                let point = CGPoint(
+                  x: cluster.bounds.minX + fraction * cluster.bounds.width,
+                  y: cluster.bounds.midY)
+                let position = try #require(input.closestPosition(to: point))
+                let caret = input.caretRect(for: position)
+                let expectedX = fraction < 0.5 ? cluster.bounds.minX : cluster.bounds.maxX
+                // Core Text can redistribute insertion offsets within glyph clusters
+                // relative to the individual glyph advances used by selection rects.
+                #expect(
+                  abs(caret.midX - expectedX) < 0.5,
+                  "\(text), \(mode), scale \(minimumScale), position \(input.offset(from: input.beginningOfDocument, to: position))")
+                #expect(caret.height > 0)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  func `Inserted hyphens preserve caret geometry in both writing directions`() throws {
+    for text in ["ab\u{AD}cdefghij", "אב\u{AD}גדהוזחטי"] {
+      let label = label(with: text, size: CGSize(width: 35, height: 200))
+      let input: any UITextInput = label
+      let frame = label.textFrame
+      #expect(try #require(frame.textFrame.lines.first).hasInsertedHyphen)
+      for index in 0..<2 {
+        let rects = frame.rects(
+          for: frame.range(forRangeInTruncatedString: NSRange(location: index, length: 1)))
+        let rect = rects.rect(at: 0)
+        let position = try #require(input.position(from: input.beginningOfDocument, offset: index))
+        let expectedX = text.hasPrefix("ab") ? rect.minX : rect.maxX
+        #expect(abs(input.caretRect(for: position).midX - expectedX) < 0.01)
+      }
+      let precedingRects = frame.rects(
+        for: frame.range(forRangeInTruncatedString: NSRange(location: 1, length: 1)))
+      let precedingRect = precedingRects.rect(at: 0)
+      let beforeHyphen = try #require(input.position(from: input.beginningOfDocument, offset: 2))
+      let expectedX = text.hasPrefix("ab") ? precedingRect.maxX : precedingRect.minX
+      #expect(abs(input.caretRect(for: beforeHyphen).midX - expectedX) < 0.01)
+      let afterHyphen = try #require(
+        input.position(from: beforeHyphen, in: text.hasPrefix("ab") ? .right : .left, offset: 1))
+      #expect(input.offset(from: input.beginningOfDocument, to: afterHyphen) == 3)
+      #expect(input.caretRect(for: afterHyphen).midY == input.caretRect(for: beforeHyphen).midY)
+    }
+  }
+
+  @Test
   func `Character extension follows storage characters across bidi boundaries`() throws {
     for text in ["abc אבג def", "אבג abc דהו", "a👩‍💻e\u{301}b"] {
       let label = label(with: text, size: CGSize(width: 90, height: 200))

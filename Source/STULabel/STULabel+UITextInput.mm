@@ -5,6 +5,9 @@
 #import "STULabelLayer.h"
 #import "STUTextFrame.h"
 #import "STUTextFrame-Unsafe.h"
+#import "STUTextFrame-Internal.hpp"
+#import "Internal/TextInputCarets.hpp"
+#import "Internal/TextLineSpansPath.hpp"
 
 @interface STULabelTextInputPosition : UITextPosition <NSCopying> {
 @private
@@ -104,7 +107,10 @@
 }
 @end
 
-@interface STULabelTextInputDocument : NSObject
+@interface STULabelTextInputDocument : NSObject {
+@public
+  std::shared_ptr<stu_label::TextInputCaretCache> _carets;
+}
 
 @property (nonatomic, strong, readonly) STUTextFrame *textFrame;
 @property (nonatomic, copy, readonly) NSString *string;
@@ -146,12 +152,14 @@
 
 - (STULabelTextInputDocument *)documentWithSelectedTextRange:(STULabelTextInputRange *)selectedTextRange
 {
-  return [[STULabelTextInputDocument alloc] initWithTextFrame:_textFrame
-                                                       string:_string
-                                                  frameOrigin:_frameOrigin
-                                                 displayScale:_displayScale
-                                                        links:_links
-                                            selectedTextRange:selectedTextRange];
+  STULabelTextInputDocument *const document = [[STULabelTextInputDocument alloc] initWithTextFrame:_textFrame
+                                                                                          string:_string
+                                                                                     frameOrigin:_frameOrigin
+                                                                                    displayScale:_displayScale
+                                                                                           links:_links
+                                                                               selectedTextRange:selectedTextRange];
+  document->_carets = _carets;
+  return document;
 }
 
 @end
@@ -260,20 +268,6 @@ static STULabelTextInputRange *validTextRange(UITextRange *range, NSString *stri
   return r;
 }
 
-static STU_INLINE NSUInteger previousCharacterBoundary(NSString *string, NSUInteger index)
-{
-  if (index == 0)
-    return 0;
-  return [string rangeOfComposedCharacterSequenceAtIndex:index - 1].location;
-}
-
-static STU_INLINE NSUInteger nextCharacterBoundary(NSString *string, NSUInteger index)
-{
-  if (index >= string.length)
-    return string.length;
-  return NSMaxRange([string rangeOfComposedCharacterSequenceAtIndex:index]);
-}
-
 static STU_INLINE STULabelTextInteraction *textInteraction(STULabel *self) { return [self stu_textInteraction]; }
 
 static void updateVisibleDocument(STULabel *self, STULabelTextInteraction *interaction)
@@ -299,6 +293,8 @@ static void updateVisibleDocument(STULabel *self, STULabelTextInteraction *inter
                                                                                          displayScale:displayScale
                                                                                                 links:self.links
                                                                                     selectedTextRange:selection];
+  if (oldDocument && oldDocument.textFrame == textFrame)
+    newDocument->_carets = oldDocument->_carets;
   if (!oldDocument || !textDidChange) {
     interaction.stu_document = newDocument;
     return;
@@ -428,29 +424,39 @@ static const STUTextFrameLine *lineForPosition(STULabelTextInputDocument *docume
   return STUTextFrameDataGetLines(data) + MIN((int32_t)range.start.lineIndex, data->lineCount - 1);
 }
 
+static const stu_label::TextInputLineCarets &lineCarets(STULabelTextInputDocument *document,
+                                                       const STUTextFrameLine *line)
+{
+  if (!document->_carets)
+    document->_carets = std::make_shared<stu_label::TextInputCaretCache>();
+  return document->_carets->try_emplace(line->lineIndex, *line, document.string).first->second;
+}
+
+static CGRect lineBounds(STULabelTextInputDocument *document, const STUTextFrameLine *line)
+{
+  using namespace stu_label;
+  const TextFrame &frame = textFrameRef(document.textFrame);
+  const TextFrameScaleAndDisplayScale scales{frame, document.displayScale};
+  TextLineVerticalPosition vertical = textLineVerticalPosition(
+      frame.lines()[line->lineIndex], scales.displayScale, VerticalEdgeInsets{},
+      VerticalOffsets{.textFrameOriginY = document.frameOrigin.y / scales.textFrameScale});
+  vertical.scale(scales.textFrameScale);
+  return CGRectMake(document.frameOrigin.x + line->originX * scales.textFrameScale,
+                    vertical.y().start, line->width * scales.textFrameScale, vertical.y().end - vertical.y().start);
+}
+
 static CGRect caretRect(STULabelTextInputDocument *document, STULabelTextInputPosition *position)
 {
-  NSString *const string = document.string;
-  if (string.length == 0)
+  const STUTextFrameLine *const line = lineForPosition(document, position);
+  if (!line)
     return CGRectZero;
-  const NSUInteger index = position.index;
-  const bool usesPreviousCharacter =
-      position.affinity == UITextStorageDirectionBackward ? index > 0 : index == string.length;
-  const NSUInteger start = usesPreviousCharacter ? previousCharacterBoundary(string, index) : index;
-  const NSUInteger end = usesPreviousCharacter ? index : nextCharacterBoundary(string, index);
-  STUTextRectArray *const rects = rectsForRange(document, NSMakeRange(start, end - start));
-  if (rects.rectCount == 0)
-    return CGRectZero;
-  CGRect const rect = [rects rectAtIndex:usesPreviousCharacter ? rects.rectCount - 1 : 0];
-  const NSWritingDirection direction =
-      writingDirectionAtPoint(document, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect)));
-  const bool useMaxX = usesPreviousCharacter == (direction == NSWritingDirectionLeftToRight);
-  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
-  const CGFloat width = 1 / scale;
-  return CGRectMake(useMaxX ? CGRectGetMaxX(rect) - width / 2 : CGRectGetMinX(rect) - width / 2,
-                    rect.origin.y,
-                    width,
-                    rect.size.height);
+  const auto &carets = lineCarets(document, line);
+  const auto &caret = carets.visual[carets.visualIndex(position.index, position.affinity)];
+  const CGRect bounds = lineBounds(document, line);
+  const CGFloat textScale = __STUTextFrameGetData(document.textFrame)->textScaleFactor;
+  const CGFloat width = 1 / (document.displayScale > 0 ? document.displayScale : 1);
+  return CGRectMake(bounds.origin.x + caret.x * textScale - width / 2,
+                    bounds.origin.y, width, bounds.size.height);
 }
 
 static NSWritingDirection
@@ -523,77 +529,55 @@ static bool areEqualTextPositions(STULabelTextInputPosition *a, STULabelTextInpu
 
 static STULabelTextInputPosition *positionInHorizontalDirection(STULabelTextInputDocument *document,
                                                                 STULabelTextInputPosition *position,
-                                                                UITextLayoutDirection direction)
+                                                                UITextLayoutDirection direction,
+                                                                NSUInteger offset)
 {
-  STUTextFrame *const textFrame = document.textFrame;
-  const STUTextFrameLine *const line = lineForPosition(document, position);
+  if (offset == 0)
+    return position;
+  const STUTextFrameLine *line = lineForPosition(document, position);
   if (!line)
-    return position;
-  const STUTextFrameData *const data = __STUTextFrameGetData(textFrame);
+    return nil;
+  const STUTextFrameData *const data = __STUTextFrameGetData(document.textFrame);
   const STUTextFrameLine *const lines = STUTextFrameDataGetLines(data);
-  const int32_t lineIndex = line->lineIndex;
-  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:document.frameOrigin
-                                                                   displayScale:document.displayScale];
-  const CGFloat textScaleFactor = layoutInfo.textScaleFactor > 0 ? layoutInfo.textScaleFactor : 1;
-  const CGRect rect = caretRect(document, position);
-  if (CGRectIsEmpty(rect))
-    return position;
-  CGFloat xOffset = (CGRectGetMidX(rect) - document.frameOrigin.x) / textScaleFactor - line->originX;
-  const CGFloat scale = document.displayScale > 0 ? document.displayScale : 1;
-  const CGFloat epsilon = 0.5 / (scale * textScaleFactor);
   const bool movingRight = direction == UITextLayoutDirectionRight;
-  for (int i = 0; i != 4; ++i) {
-    const CGFloat sampleX = xOffset + (movingRight ? epsilon : -epsilon);
-    if (sampleX < 0 || sampleX > line->width) {
-      const bool movingForward = movingRight == (line->paragraphBaseWritingDirection == STUWritingDirectionLeftToRight);
-      const int32_t targetLineIndex = lineIndex + (movingForward ? 1 : -1);
-      if (targetLineIndex < 0 || targetLineIndex >= data->lineCount)
-        return position;
-      const STUTextFrameLine *const targetLine = lines + targetLineIndex;
-      const bool targetLeft =
-          movingForward == (targetLine->paragraphBaseWritingDirection == STUWritingDirectionLeftToRight);
-      const CGFloat targetX = targetLeft ? 0 : targetLine->width;
-      const STUTextFrameGraphemeClusterRange cluster =
-          STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(targetLine, targetX);
-      return positionAtVisualEdge(cluster, targetLeft);
+  const auto navigationBounds = [](const STUTextFrameLine *line, const stu_label::TextInputLineCarets &carets) {
+    size_t first = 0;
+    size_t last = carets.visual.size() - 1;
+    // Crossing the last trailing whitespace character already enters the next
+    // line. Do not add another stop at that character's coincident trailing edge.
+    if (!line->isLastLine && line->trailingWhitespaceInTruncatedStringLength > 0 && first != last) {
+      if (line->paragraphBaseWritingDirection == STUWritingDirectionLeftToRight)
+        --last;
+      else
+        ++first;
     }
-    const STUTextFrameGraphemeClusterRange cluster = STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(line, sampleX);
-    STULabelTextInputPosition *const left = positionAtVisualEdge(cluster, true);
-    STULabelTextInputPosition *const right = positionAtVisualEdge(cluster, false);
-    if (movingRight) {
-      if (areEqualTextPositions(position, left) || position.index == left.index)
-        return right;
-      if (!areEqualTextPositions(position, right))
-        return left;
-    } else {
-      if (areEqualTextPositions(position, right) || position.index == right.index)
-        return left;
-      if (!areEqualTextPositions(position, left))
-        return right;
-    }
-    const CGFloat nextX = movingRight ? CGRectGetMaxX(cluster.bounds) : CGRectGetMinX(cluster.bounds);
-    if (nextX == xOffset)
-      return position;
-    xOffset = nextX;
-  }
-  return position;
-}
+    return std::pair{first, last};
+  };
 
-static STULabelTextInputPosition *positionInDirection(STULabelTextInputDocument *document,
-                                                      STULabelTextInputPosition *position,
-                                                      UITextLayoutDirection direction)
-{
-  switch (direction) {
-  case UITextLayoutDirectionLeft:
-  case UITextLayoutDirectionRight:
-    return positionInHorizontalDirection(document, position, direction);
-  case UITextLayoutDirectionUp:
-  case UITextLayoutDirectionDown: {
-    CGRect const rect = caretRect(document, position);
-    if (CGRectIsEmpty(rect))
-      return position;
-    return positionOnAdjacentLine(document, position, rect, direction);
-  }
+  const auto *carets = &lineCarets(document, line);
+  size_t index = carets->visualIndex(position.index, position.affinity);
+  for (;;) {
+    const auto [first, last] = navigationBounds(line, *carets);
+    const size_t available = movingRight ? (index < last ? last - index : 0) : (index > first ? index - first : 0);
+    if (offset <= available) {
+      index = movingRight ? index + offset : index - offset;
+      const auto &caret = carets->visual[index];
+      return textPosition(caret.index, caret.affinityForMovement(movingRight));
+    }
+    offset -= available;
+    const bool movingForward = movingRight == (line->paragraphBaseWritingDirection == STUWritingDirectionLeftToRight);
+    const int32_t targetLineIndex = line->lineIndex + (movingForward ? 1 : -1);
+    if (targetLineIndex < 0 || targetLineIndex >= data->lineCount)
+      return nil;
+    line = lines + targetLineIndex;
+    carets = &lineCarets(document, line);
+    const auto [targetFirst, targetLast] = navigationBounds(line, *carets);
+    const bool targetLeft = movingForward == (line->paragraphBaseWritingDirection == STUWritingDirectionLeftToRight);
+    index = targetLeft ? targetFirst : targetLast;
+    if (--offset == 0) {
+      const auto &caret = carets->visual[index];
+      return textPosition(caret.index, caret.affinityForMovement(!targetLeft));
+    }
   }
 }
 
@@ -825,9 +809,14 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   STULabelTextInputPosition *const p = validTextPosition(position, string);
   if (!p || offset < 0)
     return nil;
+  if (direction == UITextLayoutDirectionLeft || direction == UITextLayoutDirectionRight)
+    return positionInHorizontalDirection(document, p, direction, (NSUInteger)offset);
   STULabelTextInputPosition *currentPosition = p;
   while (offset-- > 0) {
-    STULabelTextInputPosition *const nextPosition = positionInDirection(document, currentPosition, direction);
+    const CGRect rect = caretRect(document, currentPosition);
+    if (CGRectIsEmpty(rect))
+      return nil;
+    STULabelTextInputPosition *const nextPosition = positionOnAdjacentLine(document, currentPosition, rect, direction);
     if (areEqualTextPositions(nextPosition, currentPosition))
       return nil;
     currentPosition = nextPosition;
