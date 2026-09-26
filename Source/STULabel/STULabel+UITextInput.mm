@@ -956,12 +956,13 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   STULabelTextInputRange *const r = validTextRange(range, string);
   if (!r)
     return nil;
+  if (r.empty)
+    return r.startPosition;
   const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
   STULabelTextInputPosition *const p = stringPositionClosestToX(cluster, point.x);
-  const NSUInteger index = p.index < r.startPosition.index ? r.startPosition.index
-                           : p.index > r.endPosition.index ? r.endPosition.index
-                                                           : p.index;
-  return textPosition(index);
+  return p.index < r.startPosition.index ? r.startPosition
+         : p.index > r.endPosition.index ? r.endPosition
+                                        : p;
 }
 
 - (nullable UITextRange *)characterRangeAtPoint:(CGPoint)point

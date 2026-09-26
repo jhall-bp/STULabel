@@ -411,6 +411,31 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Constrained hit testing preserves caret affinity`() throws {
+    for (text, width) in [("abc אבג", 200.0), ("abcdefghijklmno", 45.0)] {
+      let label = label(with: text, size: CGSize(width: width, height: 200))
+      let input: any UITextInput = label
+      let wholeDocument = try #require(documentRange(for: input))
+      let preceding = try #require(input.position(from: input.beginningOfDocument, offset: 3))
+      let boundary = try #require(input.position(from: preceding, in: .right, offset: 1))
+      let caret = input.caretRect(for: boundary)
+      let point = CGPoint(x: caret.midX - 0.1, y: caret.midY)
+      let hit = try #require(input.closestPosition(to: point))
+      let constrainedHit = try #require(input.closestPosition(to: point, within: wholeDocument))
+      #expect(constrainedHit == hit)
+      #expect(input.caretRect(for: constrainedHit) == input.caretRect(for: hit))
+
+      let collapsedRange = try #require(input.textRange(from: boundary, to: boundary))
+      for x in [-100.0, 1000.0] {
+        let clamped = try #require(
+          input.closestPosition(to: CGPoint(x: x, y: caret.midY), within: collapsedRange))
+        #expect(clamped == boundary)
+        #expect(input.caretRect(for: clamped) == caret)
+      }
+    }
+  }
+
+  @Test
   func `Visible truncation is the only copyable text`() throws {
     let label = label(
       with: "abcdefghijklmnopqrst",
