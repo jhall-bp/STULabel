@@ -395,17 +395,6 @@ static STUTextFrameGraphemeClusterRange clusterClosestToPoint(STULabelTextInputD
                                                      displayScale:document.displayScale];
 }
 
-static STULabelTextInputPosition *stringPositionClosestToX(STUTextFrameGraphemeClusterRange cluster, CGFloat x)
-{
-  const NSRange range = STUTextFrameRangeGetRangeInTruncatedString(cluster.range);
-  if (range.length == 0)
-    return textPosition(range.location);
-  const CGFloat midX = CGRectGetMidX(cluster.bounds);
-  const bool onTrailingHalf = cluster.writingDirection == STUWritingDirectionLeftToRight ? x >= midX : x <= midX;
-  return onTrailingHalf ? textPosition(NSMaxRange(range), UITextStorageDirectionBackward)
-                        : textPosition(range.location, UITextStorageDirectionForward);
-}
-
 static NSWritingDirection writingDirectionAtPoint(STULabelTextInputDocument *document, CGPoint point)
 {
   return (NSWritingDirection)clusterClosestToPoint(document, point).writingDirection;
@@ -459,6 +448,63 @@ static CGRect caretRect(STULabelTextInputDocument *document, STULabelTextInputPo
                     bounds.origin.y, width, bounds.size.height);
 }
 
+// Hit testing first chooses an insertion line, including lines without glyphs.
+static const STUTextFrameLine *lineClosestToY(STULabelTextInputDocument *document, CGFloat y)
+{
+  using namespace stu_label;
+  const TextFrame &frame = textFrameRef(document.textFrame);
+  if (frame.lineCount == 0)
+    return nullptr;
+  const CGFloat textScale = frame.textScaleFactor;
+  const CGFloat localY = (y - document.frameOrigin.y) / textScale;
+  const CGFloat epsilon = 1 / ((document.displayScale > 0 ? document.displayScale : 1) * textScale);
+  auto range = frame.verticalSearchTable().indexRange(
+      Range<Float32>{static_cast<Float32>(localY - epsilon), static_cast<Float32>(localY + epsilon)});
+  if (range.isEmpty()) {
+    range.start = MAX(0, range.start - 1);
+    range.end = MIN(frame.lineCount, range.end + 1);
+  }
+  const STUTextFrameLine *const lines = STUTextFrameDataGetLines(__STUTextFrameGetData(document.textFrame));
+  const STUTextFrameLine *closest = nullptr;
+  CGFloat bestDistance = CGFLOAT_MAX;
+  CGFloat bestCenterDistance = CGFLOAT_MAX;
+  for (auto i = range.start; i < range.end; ++i) {
+    const CGRect bounds = lineBounds(document, lines + i);
+    const CGFloat distance = MAX(0, MAX(CGRectGetMinY(bounds) - y, y - CGRectGetMaxY(bounds)));
+    const CGFloat centerDistance = ABS(y - CGRectGetMidY(bounds));
+    if (distance < bestDistance || (distance == bestDistance && centerDistance < bestCenterDistance)) {
+      closest = lines + i;
+      bestDistance = distance;
+      bestCenterDistance = centerDistance;
+    }
+  }
+  return closest;
+}
+
+static STULabelTextInputPosition *positionClosestToX(STULabelTextInputDocument *document,
+                                                      const STUTextFrameLine *line, CGFloat x)
+{
+  if (!line)
+    return textPosition(0);
+  if (line->width == 0)
+    return textPosition(line->rangeInTruncatedString.start);
+  const auto &carets = lineCarets(document, line).visual;
+  const CGFloat scale = __STUTextFrameGetData(document.textFrame)->textScaleFactor;
+  x = std::clamp<CGFloat>((x - document.frameOrigin.x) / scale - line->originX, 0, line->width);
+  auto right = std::lower_bound(carets.begin(), carets.end(), x,
+                               [](const auto &caret, CGFloat x) { return caret.x < x; });
+  const bool useRight = right != carets.end()
+      && (right == carets.begin() || right->x - x <= x - (right - 1)->x);
+  // At coincident bidi edges, choose the edge bordering the glyph under the point.
+  const auto &caret = useRight ? *right : *(right - 1);
+  return textPosition(caret.index, caret.affinityForMovement(useRight));
+}
+
+static STULabelTextInputPosition *positionClosestToPoint(STULabelTextInputDocument *document, CGPoint point)
+{
+  return positionClosestToX(document, lineClosestToY(document, point.y), point.x);
+}
+
 static NSWritingDirection
 baseWritingDirectionAtPosition(STULabelTextInputDocument *document, NSUInteger index, UITextStorageDirection direction)
 {
@@ -495,20 +541,7 @@ static STULabelTextInputPosition *positionOnAdjacentLine(STULabelTextInputDocume
     return position;
 
   const STUTextFrameLine *const targetLine = STUTextFrameDataGetLines(data) + targetLineIndex;
-  const NSRange targetRange =
-      NSMakeRange((NSUInteger)targetLine->rangeInTruncatedString.start,
-                  (NSUInteger)(targetLine->rangeInTruncatedString.end - targetLine->rangeInTruncatedString.start));
-  if (targetRange.length == 0)
-    return textPosition(targetRange.location);
-
-  const STUTextFrameLayoutInfo layoutInfo = [textFrame layoutInfoForFrameOrigin:document.frameOrigin
-                                                                   displayScale:document.displayScale];
-  const CGFloat textScaleFactor = layoutInfo.textScaleFactor > 0 ? layoutInfo.textScaleFactor : 1;
-  const CGFloat x = (CGRectGetMidX(caret) - document.frameOrigin.x) / textScaleFactor - targetLine->originX;
-  const CGFloat xOffset = x < 0 ? 0 : x > targetLine->width ? targetLine->width : x;
-  const STUTextFrameGraphemeClusterRange cluster =
-      STUTextFrameLineGetRangeOfGraphemeClusterAtXOffset(targetLine, xOffset);
-  return stringPositionClosestToX(cluster, xOffset);
+  return positionClosestToX(document, targetLine, CGRectGetMidX(caret));
 }
 
 static STULabelTextInputPosition *positionAtVisualEdge(STUTextFrameGraphemeClusterRange cluster, bool left)
@@ -948,8 +981,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
 - (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
   STULabelTextInputDocument *const document = textInputDocument(self);
-  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
-  return stringPositionClosestToX(cluster, point.x);
+  return positionClosestToPoint(document, point);
 }
 
 - (nullable UITextPosition *)closestPositionToPoint:(CGPoint)point withinRange:(UITextRange *)range
@@ -961,8 +993,7 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
     return nil;
   if (r.empty)
     return r.startPosition;
-  const STUTextFrameGraphemeClusterRange cluster = clusterClosestToPoint(document, point);
-  STULabelTextInputPosition *const p = stringPositionClosestToX(cluster, point.x);
+  STULabelTextInputPosition *const p = positionClosestToPoint(document, point);
   return p.index < r.startPosition.index ? r.startPosition
          : p.index > r.endPosition.index ? r.endPosition
                                         : p;

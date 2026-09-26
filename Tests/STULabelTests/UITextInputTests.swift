@@ -411,6 +411,43 @@ struct UITextInputTests {
   }
 
   @Test
+  func `Hit testing and vertical movement retain empty lines`() throws {
+    for text in ["abc\n\ndef", "אבג\n\nדהו", "\n\n", "abc\n \ndef"] {
+      let label = label(
+        with: NSAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: 18)]),
+        size: CGSize(width: 200, height: 200),
+        insets: UIEdgeInsets(top: 7, left: 11, bottom: 0, right: 3))
+      let input: any UITextInput = label
+      let range = try #require(documentRange(for: input))
+      let lines = label.textFrame.textFrame.lines
+      var emptyLineCount = 0
+      for line in lines where line.width == 0 {
+        emptyLineCount += 1
+        let index = line.rangeInTruncatedString.location
+        let start = try #require(input.position(from: input.beginningOfDocument, offset: index))
+        let caret = input.caretRect(for: start)
+        for x in [CGFloat(-50), caret.midX, 250] {
+          let point = CGPoint(x: x, y: caret.midY)
+          let hit = try #require(input.closestPosition(to: point))
+          #expect(input.offset(from: input.beginningOfDocument, to: hit) == index)
+          #expect(input.caretRect(for: hit) == caret)
+          #expect(input.closestPosition(to: point, within: range) == hit)
+        }
+      }
+      #expect(emptyLineCount > 0)
+      var position = input.beginningOfDocument
+      for line in lines.dropFirst() {
+        let next = try #require(input.position(from: position, in: .down, offset: 1))
+        let start = try #require(
+          input.position(from: input.beginningOfDocument, offset: line.rangeInTruncatedString.location))
+        #expect(input.caretRect(for: next).midY == input.caretRect(for: start).midY)
+        position = next
+      }
+      #expect(input.position(from: position, in: .down, offset: 1) == nil)
+    }
+  }
+
+  @Test
   func `Trailing whitespace and line terminators have usable carets`() throws {
     for text in ["abc  ", "אבג  ", "abc\n\ndef", "a\r\nb", " \t "] {
       let label = label(with: text, size: CGSize(width: 200, height: 200))
