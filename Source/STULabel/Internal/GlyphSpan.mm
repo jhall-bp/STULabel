@@ -190,10 +190,8 @@ static CTFont *slow_getFont(CTRun *run)
       objectForKey:(__bridge NSString *)kCTFontAttributeName];
 }
 
-static UInt expectedCTRunMinMallocSize = 0x78 + sizeof(void *);
-
-static UInt ctRunFontFieldOffset;
-static void initializeCTRunFontFieldOffset() { ctRunFontFieldOffset = 0x80; }
+static constexpr UInt ctRunFontFieldOffset = 0x80;
+static constexpr UInt expectedCTRunMinMallocSize = ctRunFontFieldOffset + sizeof(CTFont *);
 
 STU_INLINE
 static CTFont *unsafe_getFont_assumingExpectedObjectLayout(CTRun *__nonnull run)
@@ -230,7 +228,6 @@ static bool checkCanUseFastCTRunFontGetter(CTRun *__nonnull run)
 {
   if (malloc_size(run) < expectedCTRunMinMallocSize)
     return false;
-  initializeCTRunFontFieldOffset();
   if (slow_getFont(run) != unsafe_getFont_assumingExpectedObjectLayout(run))
     return false;
 
