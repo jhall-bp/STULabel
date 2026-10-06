@@ -93,7 +93,8 @@ class AllocatorBase : public detail::AllocatorBaseTag {
 
 public:
   /// \pre 0 ≤ `capacity` ≤ `(maxValue<UInt>/2)/sizeof(UInt)`
-  template <typename T = Byte, typename Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T = Byte, typename Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* allocate(Int capacity) {
     static_assert(alignof(T) <= Derived::minAlignment);
@@ -104,7 +105,8 @@ public:
     return allocate<T>(capacity, unchecked);
   }
   /// \pre 0 ≤ `capacity` ≤ `(maxValue<UInt>/2)/sizeof(UInt)`
-  template <typename T = Byte, typename Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T = Byte, typename Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* allocate(Int capacity, Unchecked) {
     static_assert(alignof(T) <= Derived::minAlignment);
@@ -114,14 +116,16 @@ public:
   }
 
   /// \pre The allocation at `pointer` must have capacity greater than or equal to `minCapacity`.
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   STU_INLINE
   void deallocate(T* pointer, Int minCapacity = 1) noexcept(!STU_ASSERT_MAY_THROW) {
     STU_DEBUG_ASSERT(pointer != nullptr && minCapacity >= 0);
     deallocate(pointer, minCapacity, unchecked);
   }
   /// \pre The allocation at `pointer` must have capacity greater than or equal to `minCapacity`.
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   STU_INLINE
   void deallocate(T* pointer, Int minCapacity, Unchecked) noexcept(!STU_ASSERT_MAY_THROW)
   {
@@ -136,7 +140,8 @@ public:
 
   /// \pre The capacity of the allocation at `pointer` must have capacity of `oldCapacity`.
   /// \pre 0 ≤ `usedCount` ≤ `oldCapacity` ≤ `newCapacity`
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* increaseCapacity(T* pointer, Int usedCount, Int oldCapacity, Int newCapacity) {
     STU_DEBUG_ASSERT(pointer != nullptr);
@@ -149,7 +154,8 @@ public:
   }
   /// \pre The capacity of the allocation at `pointer` must have capacity of `oldCapacity`.
   /// \pre 0 ≤ `usedCount` ≤ `oldCapacity` ≤ `newCapacity` ≤ `(maxValue<UInt>/2)/sizeof(T)`
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* increaseCapacity(T* pointer, Int usedCount, Int oldCapacity, Int newCapacity, Unchecked) {
     static_assert(isBitwiseMovable<T>);
@@ -165,7 +171,8 @@ public:
 
   /// \pre The capacity of the allocation at `pointer` must have capacity of `oldCapacity`.
   /// \pre 0 ≤ `usedCount` ≤ `newCapacity` ≤ `oldCapacity`
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* decreaseCapacity(T* pointer, Int usedCount, Int oldCapacity, Int newCapacity)
         noexcept(!STU_ASSERT_MAY_THROW)
@@ -176,7 +183,8 @@ public:
   }
   /// \pre The capacity of the allocation at `pointer` must have capacity of `oldCapacity`.
   /// \pre 0 ≤ `usedCount` ≤ `newCapacity` ≤ `oldCapacity`
-  template <typename T, typename Int = stu::Int, EnableIf<isInteger<Int>> = 0>
+  template <typename T, typename Int = stu::Int>
+    requires (isInteger<Int>)
   [[nodiscard]] STU_INLINE
   T* decreaseCapacity(T* pointer, Int usedCount, Int oldCapacity, Int newCapacity, Unchecked)
       noexcept(!STU_ASSERT_MAY_THROW)
@@ -280,7 +288,8 @@ void __asan_unpoison_memory_region(void const volatile* address, std::size_t siz
 #define STU_NO_ADDRESS_SANITATION __attribute__((no_sanitize_address))
 
 namespace sanitizer {
-  template <typename T, typename Int, EnableIf<!isVoid<T>> = 0>
+  template <typename T, typename Int>
+    requires (!isVoid<T>)
   STU_INLINE
   void annotateContiguousArray(T* address, Int capacity, Int oldLength, Int newLength) {
     __sanitizer_annotate_contiguous_container(address, address + capacity,
@@ -306,7 +315,8 @@ namespace sanitizer {
 
 namespace sanitizer {
 
-  template <typename T, typename Int, EnableIf<!isVoid<T>> = 0>
+  template <typename T, typename Int>
+    requires (!isVoid<T>)
   STU_CONSTEXPR
   void annotateContiguousArray(T* address __unused, Int capacity __unused,
                                Int oldLength __unused, Int newLength __unused)

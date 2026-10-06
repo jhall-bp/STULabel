@@ -14,7 +14,8 @@ struct Repeated {
   T value;
   Int count;
 
-  template <typename U, EnableIf<isSafelyConvertible<T, U> && !isSame<T, Uninitialized>> = 0>
+  template <typename U>
+    requires (isSafelyConvertible<T, U> && !isSame<T, Uninitialized>)
   /* implicit */
   operator Repeated<U>() const noexcept(isNothrowConstructible<U, const T&>) {
     return {value, count};
@@ -94,7 +95,8 @@ public:
   : AllocatorRef{std::move(allocator)}
   {}
 
-  template <bool enable = isMemberwiseConstructible<T>, EnableIf<enable> = 0>
+  template <bool enable = isMemberwiseConstructible<T>>
+    requires (enable)
   STU_INLINE
   Array(Uninitialized, Count<Int> count, AllocatorRef allocator = AllocatorRef{}) noexcept
   : Array{std::move(allocator)}
@@ -103,7 +105,8 @@ public:
     count_ = count.value;
   }
 
-  template <bool enable = isBitwiseZeroConstructible<T>, EnableIf<enable> = 0>
+  template <bool enable = isBitwiseZeroConstructible<T>>
+    requires (enable)
   STU_INLINE
   Array(ZeroInitialized, Count<Int> count, AllocatorRef allocator = AllocatorRef()) noexcept
   : Array{std::move(allocator)}
@@ -120,7 +123,8 @@ public:
     count_ = count.value;
   }
 
-  template <bool enable = isDefaultConstructible<T>, EnableIf<enable> = 0>
+  template <bool enable = isDefaultConstructible<T>>
+    requires (enable)
   STU_INLINE
   Array(Count<Int> count, AllocatorRef allocator = AllocatorRef{}) noexcept
   : Array{std::move(allocator)}

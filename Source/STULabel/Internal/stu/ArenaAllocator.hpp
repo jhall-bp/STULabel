@@ -44,7 +44,8 @@ public:
     InitialBuffer& operator=(const InitialBuffer& other) = delete;
   };
 
-  template <auto size, EnableIf<isDefaultConstructible<AllocatorRef>> = 0>
+  template <auto size>
+    requires (isDefaultConstructible<AllocatorRef>)
   explicit STU_INLINE
   ArenaAllocator(Ref<InitialBuffer<size>> buffer) noexcept
   : ArenaAllocator{buffer, AllocatorRef{}} {}
