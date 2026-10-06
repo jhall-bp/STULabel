@@ -21,11 +21,10 @@ STU_ASSUME_NONNULL_AND_STRONG_BEGIN
 /// Instances of this class can be safely created and used on a non-main thread, but concurrent
 /// access from multiple threads is not safe (unless all accesses are non-mutating).
 ///
-/// @note If the text contains links and the @c STULabel view in which you want to display the text
-///       is configured with @c usesTintColorAsLinkColor set to true, you need to set
-///       the prerenderer's @c linkOverrideColor to the label's @c tintColor. If the prerenderer
-///       uses the wrong color for links, the label will have to discard the prerendered image and
-///       render the text again.
+/// @note If the text contains links, set the prerenderer's @c overrideLinkColor to the target label's
+///       @c tintColor, or its @c disabledLinkColor when the label is disabled and that color is non-null.
+///       If the prerenderer uses the wrong color for links, the label will have to discard the
+///       prerendered image and render the text again.
 ///
 STU_EXPORT
 @interface STULabelPrerenderer : NSObject
@@ -64,11 +63,10 @@ STU_EXPORT
 @property (nonatomic, readonly) bool hasShapedText;
 
 /// The prerenderer lazily constructs the @c STUShapedString instance from @c self.attributedText
-/// and @c self.defaultBaseWritingDirection. If the attributed text is null, the getter returns an
-/// empty shaped string.
+/// with the default base writing direction corresponding to @c self.userInterfaceLayoutDirection.
+/// If the attributed text is null, the getter returns an empty shaped string.
 ///
-/// When the prerenderer is frozen, the setter must not be called and the getter may only be called
-/// if @c self.hasShapedText.
+/// When the prerenderer is frozen, the getter may only be called if @c self.hasShapedText.
 @property (nonatomic, readonly, null_resettable) STUShapedString *shapedText;
 
 @property (nonatomic, readonly) CGSize size;
