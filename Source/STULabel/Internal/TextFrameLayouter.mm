@@ -750,7 +750,7 @@ NewParagraph:;
     if (isLeftAligned(*para)) {
       originX = indent.left;
     } else if (para->alignment == STUParagraphAlignmentCenter) {
-      originX = (frameWidth - line->width) / 2 + (indent.left - indent.right);
+      originX = (frameWidth - line->width + indent.left - indent.right) / 2;
     } else { // Align right.
       originX = frameWidth - indent.right - line->width;
     }
@@ -1092,7 +1092,7 @@ void TextFrameLayouter::realignCenteredAndRightAlignedLines()
       const Indentations indent{stringPara, para, lineIndex, scaleInfo_};
       TextFrameLine &line = lines_[lineIndex];
       if (para.alignment == STUParagraphAlignmentCenter) {
-        line.originX = (frameWidth - line.width) / 2 + (indent.left - indent.right);
+        line.originX = (frameWidth - line.width + indent.left - indent.right) / 2;
       } else { // Align right.
         line.originX = frameWidth - indent.right - line.width;
       }

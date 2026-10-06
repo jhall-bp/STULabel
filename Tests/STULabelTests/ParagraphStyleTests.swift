@@ -7,6 +7,24 @@ import Testing
 @MainActor
 struct ParagraphStyleTests {
   @Test
+  func centeredTextUsesTheMidpointBetweenParagraphIndents() throws {
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.alignment = .center
+    paragraphStyle.firstLineHeadIndent = 40
+    paragraphStyle.headIndent = 40
+    paragraphStyle.tailIndent = -10
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(
+        string: "Centered", attributes: [
+          .font: UIFont.systemFont(ofSize: 18), .paragraphStyle: paragraphStyle,
+        ]), defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 200, height: 100), displayScale: 0)
+    try #require(frame.lines.count == 1)
+    let line = frame.lines[0]
+    #expect(abs(line.baselineOrigin.x + line.width / 2 - 115) < 0.00001)
+  }
+
+  @Test
   func `Initialization, encoding, equality, and hashing`() throws {
     let style0 = STUParagraphStyle()
     #expect(style0.firstLineOffset == .offsetOfFirstBaselineFromDefault(0))
