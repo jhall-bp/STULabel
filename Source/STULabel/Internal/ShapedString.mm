@@ -37,7 +37,7 @@ detectBaseWritingDirection(const NSStringRef &string, Range<Int> range, SkipIsol
       return true;
     case BidiStrongType::isolate:
       if (skipIsolatedText) {
-        isolateCounter += cp == 0x2069 ? -1 : 1;
+        isolateCounter = cp == 0x2069 ? max(NSInteger{0}, isolateCounter - 1) : isolateCounter + 1;
       }
       return false;
     }

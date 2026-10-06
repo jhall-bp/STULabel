@@ -12,6 +12,20 @@ private func createTypesetter(_ string: NSAttributedString) -> CTTypesetter {
 }
 
 struct ShapedStringTests {
+  @MainActor
+  @Test(arguments: [
+    "\u{2069}אבג",
+    "\u{2069}\u{2069}אבג",
+    "\u{2069}\u{2066}abc\u{2069}אבג",
+  ])
+  func unmatchedDirectionalIsolatesDoNotHideParagraphDirection(_ text: String) {
+    let string = NSAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: 18)])
+    let frame = STUTextFrame(
+      STUShapedString(string, defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 1000, height: 100), displayScale: 0)
+    #expect(frame.paragraphs[0].baseWritingDirection == .rightToLeft)
+  }
+
   @Test
   func `CTTypesetter thread safety`() {
     seedRand(123)
