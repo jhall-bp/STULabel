@@ -313,9 +313,9 @@ public:
   STU_INLINE
   void setStringIndex(Int32 value) {
     const bool isBig = this->isBig();
-    const UInt32 maxValue = isBig ? maxSmallStringIndex : INT32_MAX;
+    const UInt32 maxValue = isBig ? INT32_MAX : maxSmallStringIndex;
     const UInt64 mask = ~(UInt64{maxValue} << BitIndex::stringIndex);
-    STU_PRECONDITION(sign_cast(value) <= maxSmallStringIndex);
+    STU_PRECONDITION(sign_cast(value) <= maxValue);
     bits = (bits & mask) | (UInt64(value) << BitIndex::stringIndex);
   }
 

@@ -177,6 +177,38 @@ static NSDictionary<NSAttributedStringKey, id> *lotsOfAttributes()
   buffer.clearNeedToFixAttachmentAttributesFlag();
 }
 
+- (void)testUpdatingStringIndexPreservesStyleFields
+{
+  ThreadLocalArenaAllocator::InitialBuffer<2048> allocBuffer;
+  ThreadLocalArenaAllocator alloc{Ref{allocBuffer}};
+  LocalFontInfoCache fontInfoCache;
+  TextStyleBuffer buffer{Ref{fontInfoCache}, alloc};
+  buffer.encodeStringRangeStyle(Range{0, 1}, @{NSFontAttributeName : [UIFont systemFontOfSize:12]});
+  buffer.encodeStringRangeStyle(Range{1, 8}, @{NSFontAttributeName : [UIFont systemFontOfSize:18],
+                                             NSForegroundColorAttributeName : UIColor.redColor});
+  buffer.encodeStringRangeStyle(Range{8, TextStyle::maxSmallStringIndex + 2},
+                                @{NSFontAttributeName : [UIFont systemFontOfSize:24],
+                                  NSForegroundColorAttributeName : UIColor.blueColor});
+  buffer.addStringTerminatorStyle();
+  auto& first = *reinterpret_cast<const TextStyle*>(buffer.data().begin());
+  auto* style = const_cast<TextStyle*>(&first.next());
+  for (Int32 index : {4, TextStyle::maxSmallStringIndex + 1}) {
+    const auto fontIndex = style->fontIndex();
+    const auto colorIndex = style->colorIndex();
+    const auto flags = style->flags();
+    const auto* previous = &style->previous();
+    const auto* next = &style->next();
+    style->setStringIndex(index);
+    XCTAssertEqual(style->stringIndex(), index);
+    XCTAssertEqual(style->fontIndex(), fontIndex);
+    XCTAssertEqual(style->colorIndex(), colorIndex);
+    XCTAssertEqual(style->flags(), flags);
+    XCTAssertEqual(&style->previous(), previous);
+    XCTAssertEqual(&style->next(), next);
+    style = const_cast<TextStyle*>(next);
+  }
+}
+
 - (void)testColorOverflowHandling
 {
   ThreadLocalArenaAllocator::InitialBuffer<2048> allocBuffer;
