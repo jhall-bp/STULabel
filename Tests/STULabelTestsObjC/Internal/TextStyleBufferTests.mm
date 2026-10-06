@@ -159,6 +159,24 @@ static NSDictionary<NSAttributedStringKey, id> *lotsOfAttributes()
   }
 }
 
+- (void)testMergedAttachmentStylesRequireSeparateRunDelegates
+{
+  ThreadLocalArenaAllocator::InitialBuffer<2048> allocBuffer;
+  ThreadLocalArenaAllocator alloc{Ref{allocBuffer}};
+  LocalFontInfoCache fontInfoCache;
+  TextStyleBuffer buffer{Ref{fontInfoCache}, alloc};
+  STUTextAttachment *const attachment = lotsOfAttributes()[STUAttachmentAttributeName];
+  NSDictionary *NS_VALID_UNTIL_END_OF_SCOPE attributes = @{
+    STUAttachmentAttributeName : attachment,
+    (__bridge NSAttributedStringKey)kCTRunDelegateAttributeName : [attachment newCTRunDelegate]
+  };
+  buffer.encodeStringRangeStyle(Range{0, 1}, attributes);
+  XCTAssertFalse(buffer.needToFixAttachmentAttributes());
+  buffer.encodeStringRangeStyle(Range{1, 2}, attributes);
+  XCTAssertTrue(buffer.needToFixAttachmentAttributes());
+  buffer.clearNeedToFixAttachmentAttributesFlag();
+}
+
 - (void)testColorOverflowHandling
 {
   ThreadLocalArenaAllocator::InitialBuffer<2048> allocBuffer;

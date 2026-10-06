@@ -655,7 +655,7 @@ TextFlags TextStyleBuffer::encodeStringRangeStyle(Range<Int> range,
                                           reinterpret_cast<const Byte *>(lastStyle_) + firstInfoOffset,
                                           sign_cast(size - firstInfoOffset)) == 0) {
       data_.removeLast(TextStyle::maxSize);
-      if ((flags & TextFlags::hasAttachment) && !context.hasFixForRdar36622225) {
+      if ((flags & TextFlags::hasAttachment) && !(context.flags & Context::hasFixForRdar36622225)) {
         needToFixAttachmentAttributes_ = true; // rdar://36622225
       }
       return flags;
