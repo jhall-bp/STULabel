@@ -58,7 +58,7 @@ TextLineVerticalPosition textLineVerticalPosition(const TextFrameLine& line,
                                                   VerticalEdgeInsets insets = VerticalEdgeInsets{},
                                                   VerticalOffsets offsets = VerticalOffsets{})
 {
-  Float64 baseline = line.originY;
+  Float64 baseline = line.originY + offsets.textFrameOriginY;
   Float32 ascent = line.ascent + line.leading/2 - insets.top;
   Float32 descent = line.descent + line.leading/2 - insets.bottom;
   if (STU_UNLIKELY(-ascent > descent)) {
@@ -66,7 +66,6 @@ TextLineVerticalPosition textLineVerticalPosition(const TextFrameLine& line,
     ascent = -descent;
   }
   if (displayScale) {
-    baseline += offsets.textFrameOriginY;
     baseline = ceilToScale(baseline, *displayScale, offsets.ctmYOffset);
     if (line.lineIndex == 0) {
       ascent = ceilToScale(ascent, *displayScale);

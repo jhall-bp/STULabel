@@ -10,6 +10,38 @@ import UIKit
 struct TextFrameDrawingTests {
   let displayScale: CGFloat = 2
 
+  @Test
+  func backgroundTranslationDoesNotDependOnPixelAlignment() throws {
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(
+        string: "Background", attributes: [
+          .font: UIFont.systemFont(ofSize: 18), .backgroundColor: UIColor.red,
+        ])),
+      size: CGSize(width: 200, height: 100), displayScale: 0)
+    let origin = CGPoint(x: 10, y: 25)
+    let options = STUTextFrame.DrawingOptions()
+    options.drawingMode = .onlyBackground
+    func render(translatingContext: Bool) throws -> Data {
+      let context = try #require(CGContext(
+        data: nil, width: 256, height: 100, bitsPerComponent: 8, bytesPerRow: 256 * 4,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+      context.translateBy(x: 0, y: 100)
+      context.scaleBy(x: 1, y: -1)
+      if translatingContext {
+        context.translateBy(x: origin.x, y: origin.y)
+      }
+      frame.draw(
+        at: translatingContext ? .zero : origin, in: context, contextBaseCTM_d: 1,
+        pixelAlignBaselines: false, options: options)
+      return Data(bytes: try #require(context.data), count: context.bytesPerRow * context.height)
+    }
+    let translatedContext = try render(translatingContext: true)
+    let translatedFrame = try render(translatingContext: false)
+    #expect(translatedContext.contains { $0 != 0 })
+    #expect(translatedFrame == translatedContext)
+  }
+
   @Test(arguments: [128, 1024])
   func allBackgroundSegmentsDrawAfterBufferGrowth(_ segmentCount: Int) throws {
     let text = NSMutableAttributedString()
