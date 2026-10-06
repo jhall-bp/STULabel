@@ -32,7 +32,6 @@ PurgeableImage::PurgeableImage(SizeInPixels<UInt32> size,
   UInt allocationSize;
   NSPurgeableData *data;
   void *bytes;
-  CGContextRef context;
 
   if (__builtin_mul_overflow(size.width, imageFormat.bitsPerPixel / 8, &bytesPerRow))
     goto Failure;
@@ -53,12 +52,15 @@ PurgeableImage::PurgeableImage(SizeInPixels<UInt32> size,
   // The memory allocated by NSPurgeableData should be page-aligned.
   STU_DEBUG_ASSERT((reinterpret_cast<uintptr_t>(bytes) & 4095) == 0);
 
-  context = stu_createCGBitmapContext(size.width, size.height, scale, backgroundColor, imageFormat, bytes, bytesPerRow);
-  if (!context)
-    return; // stu_createCGBitmapContext already logs any error.
-  drawingFunction(context);
-  CGContextFlush(context);
-  CFRelease(context);
+  {
+    const RC<CGContext> context{
+        stu_createCGBitmapContext(size.width, size.height, scale, backgroundColor, imageFormat, bytes, bytesPerRow),
+        ShouldIncrementRefCount{false}};
+    if (!context)
+      return; // stu_createCGBitmapContext already logs any error.
+    drawingFunction(context.get());
+    CGContextFlush(context.get());
+  }
 
   *this = PurgeableImage(data, size, format, formatOptions, bytesPerRow);
   return;
@@ -114,8 +116,9 @@ RC<CGImage> PurgeableImage::createCGImage()
       return nullptr;
     }
   }
-  const CGDataProviderRef dp =
-      CGDataProviderCreateWithData((__bridge_retained void *)data_, data_.bytes, data_.length, endCGImageContentAccess);
+  const RC<RemovePointer<CGDataProviderRef>> dp{
+      CGDataProviderCreateWithData((__bridge_retained void *)data_, data_.bytes, data_.length, endCGImageContentAccess),
+      ShouldIncrementRefCount{false}};
   const STUCGImageFormat format = stuCGImageFormat(format_, formatOptions_);
   RC<CGImage> image = {CGImageCreate(size_.width,
                                      size_.height,
@@ -124,13 +127,12 @@ RC<CGImage> PurgeableImage::createCGImage()
                                      static_cast<UInt>(bytesPerRowDiv32_) * 32,
                                      format.colorSpace,
                                      format.bitmapInfo,
-                                     dp,
+                                     dp.get(),
                                      nullptr,
                                      true,
                                      kCGRenderingIntentPerceptual),
                        ShouldIncrementRefCount{false}};
   STU_DEBUG_ASSERT(image);
-  CFRelease(dp);
   return image;
 }
 

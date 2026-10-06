@@ -167,11 +167,12 @@ findXBoundsOfIntersectionsOfGlyphsWithHorizontalLine(CGFloat runXOffset,
     CGAffineTransform matrix = textMatrix;
     matrix.tx = position.x;
     matrix.ty = position.y;
-    const CGPathRef path = CTFontCreatePathForGlyph(font, gwp.glyphs()[i], &matrix);
+    const RC<const CGPath> path{CTFontCreatePathForGlyph(font, gwp.glyphs()[i], &matrix),
+                                ShouldIncrementRefCount{false}};
     if (!path)
       continue;
     const LowerAndUpperInterval xis =
-        findXBoundsOfPathIntersectionWithHorizontalLines(path,
+        findXBoundsOfPathIntersectionWithHorizontalLines(path.get(),
                                                          Range<CGFloat>{minY - 0.25f, lowerStripeMaxY + 0.25f},
                                                          Range<CGFloat>{upperStripeMinY - 0.25f, maxY + 0.25f},
                                                          0.25f);
@@ -181,7 +182,6 @@ findXBoundsOfIntersectionsOfGlyphsWithHorizontalLine(CGFloat runXOffset,
     if (upperStripeBuffer && xis.upper.start <= xis.upper.end) {
       upperStripeBuffer->add(dilateAndRoundGap(xis.upper));
     }
-    CFRelease(path);
   }
 }
 

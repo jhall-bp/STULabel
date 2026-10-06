@@ -1411,12 +1411,12 @@ private:
       }
       super_display();
     } else if (renderInfo.mode != LabelRenderMode::tiledSublayer) {
-      bool needToReleaseImage = false;
+      RC<CGImage> createdImage;
       if (!image && textFrame_) {
         image_ = createLabelTextFrameImage(textFrame_, renderInfo, params_, nullptr);
         imageMayHaveBeenPurged_ = false;
-        image = image_.createCGImage().toRawPointer();
-        needToReleaseImage = true;
+        createdImage = image_.createCGImage();
+        image = createdImage.get();
         registerAsLabelLayerThatHasImage();
       }
       STU_DEBUG_ASSERT(image != nullptr);
@@ -1427,9 +1427,6 @@ private:
       } else {
         STU_ASSERT(renderInfo.mode == LabelRenderMode::imageInSublayer);
         setContentLayerContents((__bridge id)image);
-      }
-      if (needToReleaseImage) {
-        decrementRefCount(image);
       }
     } else {
       STU_DEBUG_ASSERT(!image);

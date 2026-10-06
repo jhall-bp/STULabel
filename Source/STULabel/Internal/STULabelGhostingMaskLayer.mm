@@ -63,16 +63,16 @@ using namespace stu_label;
   // the alpha channel.
   const CGAffineTransform translation =
       CGAffineTransformMakeTranslation(-_maskedLayerFrame.origin.x, -_maskedLayerFrame.origin.y);
-  const CGPathRef linkPath = [link createPathWithEdgeInsets:UIEdgeInsets {}
-                                               cornerRadius:0
-                    extendTextLinesToCommonHorizontalBounds:false
-                                           fillTextLineGaps:true
-                                                  transform:&translation];
+  const RC<const CGPath> linkPath{[link createPathWithEdgeInsets:UIEdgeInsets {}
+                                                     cornerRadius:0
+                          extendTextLinesToCommonHorizontalBounds:false
+                                                 fillTextLineGaps:true
+                                                        transform:&translation],
+                                  ShouldIncrementRefCount{false}};
   if (!_ghostedLinkPaths) {
     _ghostedLinkPaths = [[NSMutableDictionary alloc] initWithCapacity:4];
   }
-  _ghostedLinkPaths[link] = (__bridge id)linkPath;
-  CFRelease(linkPath);
+  _ghostedLinkPaths[link] = (__bridge id)linkPath.get();
 }
 
 - (void)ghostLink:(STUTextLink *)link
@@ -107,18 +107,16 @@ using namespace stu_label;
 
 - (void)display
 {
-  const CGMutablePathRef path = CGPathCreateMutable();
+  const RC<CGPath> path{CGPathCreateMutable(), ShouldIncrementRefCount{false}};
 
   addReversedRectPath(*path, nil, CGRect{{}, _maskedLayerFrame.size});
 
   NSEnumerator *const enumerator = _ghostedLinkPaths.objectEnumerator;
   while (const CGPathRef linkPath = (__bridge CGPathRef)[enumerator nextObject]) {
-    CGPathAddPath(path, nil, linkPath);
+    CGPathAddPath(path.get(), nil, linkPath);
   }
 
-  self.path = path;
-
-  CFRelease(path);
+  self.path = path.get();
 }
 
 @end
