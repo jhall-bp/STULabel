@@ -10,25 +10,29 @@ template <typename T>
 struct Comparable {
   // We need the TT = T indirection to avoid issues with recursive template instantiations.
   
-  template <typename TT = T, EnableIf<isEqualityComparable<TT>> = 0>
+  template <typename TT = T>
+    requires (isEqualityComparable<TT>)
   STU_CONSTEXPR
   friend bool operator!=(const T& lhs, const T& rhs) noexcept(isNothrowEqualityComparable<TT>) {
     return !(lhs == rhs);
   }
 
-  template <typename TT = T, EnableIf<isLessThanComparable<TT>> = 0>
+  template <typename TT = T>
+    requires (isLessThanComparable<TT>)
   STU_CONSTEXPR
   friend bool operator>(const T& lhs, const T& rhs) noexcept(isNothrowLessThanComparable<TT>) {
     return rhs < lhs;
   }
 
-  template <typename TT = T, EnableIf<isLessThanComparable<TT>> = 0>
+  template <typename TT = T>
+    requires (isLessThanComparable<TT>)
   STU_CONSTEXPR
   friend bool operator>=(const T& lhs, const T& rhs) noexcept(isNothrowLessThanComparable<TT>) {
     return !(lhs < rhs);
   }
 
-  template <typename TT = T, EnableIf<isLessThanComparable<TT>> = 0>
+  template <typename TT = T>
+    requires (isLessThanComparable<TT>)
   STU_CONSTEXPR
   friend bool operator<=(const T& lhs, const T& rhs) noexcept(isNothrowLessThanComparable<TT>) {
     return !(rhs < lhs);

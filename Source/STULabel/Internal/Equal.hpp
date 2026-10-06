@@ -53,8 +53,8 @@ STU_CONSTEXPR
 bool operator!=(const UIEdgeInsets& lhs, const UIEdgeInsets& rhs) { return !(lhs == rhs); }
 
 
-template <typename T, typename U,
-          EnableIf<isConvertible<T*, id> && (isConvertible<T*, U*> || isConvertible<U*,T*>)> = 0>
+template <typename T, typename U>
+  requires (isConvertible<T*, id> && (isConvertible<T*, U*> || isConvertible<U*,T*>))
 STU_INLINE
 bool equal(T* __unsafe_unretained obj1, U* __unsafe_unretained obj2) {
   return (obj1 == obj2 || (obj1 && obj2 && [obj1 isEqual:obj2]));
@@ -69,7 +69,8 @@ bool equal(T (& array1)[n], T (& array2)[n]) {
   return true;
 }
 
-template <typename T, EnableIf<!isPointer<T>> = 0>
+template <typename T>
+  requires (!isPointer<T>)
 STU_CONSTEXPR
 bool equal(T obj1, T obj2) {
   return obj1 == obj2;
