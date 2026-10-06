@@ -13,7 +13,6 @@ using namespace stu_label;
   STUTextLinkArray *_links;
   NSMutableDictionary<STUTextLink *, id> *_ghostedLinkPaths;
   NSMutableArray<STUTextLink *> *_vanishedGhostedLinks;
-  size_t _ghostedLinkCount;
 }
 
 - (instancetype)init
@@ -30,7 +29,7 @@ using namespace stu_label;
   _maskedLayerFrame = maskedLayerFrame;
   _links = links;
   self.frame = CGRect{{}, maskedLayerFrame.size};
-  if (_ghostedLinkCount != 0) {
+  if (_ghostedLinkPaths.count != 0 || _vanishedGhostedLinks.count != 0) {
     NSArray<STUTextLink *> *const oldGhostedLinks = _ghostedLinkPaths.allKeys;
     [_ghostedLinkPaths removeAllObjects];
     NSArray<STUTextLink *> *const oldVanishedLinks = [_vanishedGhostedLinks copy];
@@ -47,9 +46,11 @@ using namespace stu_label;
 
 - (void)stu_addGhostedLink:(STUTextLink *)newLink
 {
-  _ghostedLinkCount += 1;
   STUTextLink *const link = [_links linkMatchingLink:newLink];
   if (!link) {
+    if (!_vanishedGhostedLinks) {
+      _vanishedGhostedLinks = [[NSMutableArray alloc] initWithCapacity:4];
+    }
     [_vanishedGhostedLinks addObject:newLink];
     return;
   }
@@ -94,7 +95,7 @@ using namespace stu_label;
       return false;
     [_vanishedGhostedLinks removeObjectAtIndex:sign_cast(*index)];
   }
-  return --_ghostedLinkCount == 0;
+  return _ghostedLinkPaths.count == 0 && _vanishedGhostedLinks.count == 0;
 }
 
 - (bool)hasGhostedLink:(STUTextLink *)link
