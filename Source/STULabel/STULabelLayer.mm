@@ -617,30 +617,8 @@ private:
   {
     if (stringIsEmpty_)
       return;
-
-    NSMutableAttributedString *const attributedString = [attributedString_ mutableCopy];
-    const NSRange range{0, attributedString.length};
-    [attributedString enumerateAttribute:NSFontAttributeName
-                                 inRange:range
-                                 options:0
-                              usingBlock:^(id value, NSRange range, BOOL *) {
-                                if (!value) {
-                                  [attributedString addAttribute:NSFontAttributeName
-                                                           value:defaultFont().unretained
-                                                           range:range];
-                                }
-                              }];
-    [attributedString enumerateAttribute:NSForegroundColorAttributeName
-                                 inRange:range
-                                 options:0
-                              usingBlock:^(id value, NSRange range, BOOL *) {
-                                if (!value) {
-                                  [attributedString addAttribute:NSForegroundColorAttributeName
-                                                           value:defaultTextColor().unretained
-                                                           range:range];
-                                }
-                              }];
-    attributedString_ = [attributedString copy];
+    attributedString_ = attributedStringByAddingMissingLabelDefaults(
+        attributedString_, [&] { return defaultFont().unretained; });
   }
 
   void updateAttributedStringIfNecessary()

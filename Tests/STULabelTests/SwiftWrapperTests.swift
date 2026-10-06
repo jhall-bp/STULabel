@@ -9,6 +9,22 @@ struct SwiftWrapperTests {
   let font = UIFont(name: "HelveticaNeue", size: 20)!
 
   @Test
+  func fullySpecifiedTextReassignmentPreservesShapedText() {
+    let label = STULabel()
+    let text = NSAttributedString(
+      string: "Reusable text", attributes: [.font: font, .foregroundColor: UIColor.label])
+    label.attributedText = text
+    let shaped = label.shapedText
+    label.attributedText = text
+    #expect(label.shapedText === shaped)
+
+    let mutable = NSMutableAttributedString(attributedString: text)
+    label.attributedText = mutable
+    mutable.replaceCharacters(in: NSRange(location: 0, length: mutable.length), with: "Changed")
+    #expect(label.text == text.string)
+  }
+
+  @Test
   func centeredTextUsesTheInsetContentCenter() {
     let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
     label.contentScaleFactor = 1

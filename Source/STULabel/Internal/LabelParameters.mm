@@ -4,6 +4,31 @@
 
 namespace stu_label {
 
+NSAttributedString *attributedStringByAddingMissingLabelDefaults(
+    NSAttributedString *__unsafe_unretained attributedString,
+    FunctionRef<UIFont *()> defaultFont)
+{
+  NSMutableAttributedString *__block result;
+  const NSRange fullRange{0, attributedString.length};
+  // Enumerate each attribute separately so adjacent missing values coalesce even
+  // when unrelated attributes differ. Copy only when a default is actually needed.
+  for (NSAttributedStringKey key : {NSFontAttributeName, NSForegroundColorAttributeName}) {
+    [attributedString enumerateAttribute:key
+                                 inRange:fullRange
+                                 options:0
+                              usingBlock:^(id value, NSRange range, BOOL *) {
+                                if (value)
+                                  return;
+                                if (!result) {
+                                  result = [attributedString mutableCopy];
+                                }
+                                id defaultValue = key == NSFontAttributeName ? defaultFont() : UIColor.labelColor;
+                                [result addAttribute:key value:defaultValue range:range];
+                              }];
+  }
+  return result ? [result copy] : attributedString;
+}
+
 STU_NO_INLINE
 void LabelParametersWithoutSize::ensureDrawingOptionsIsNotFrozen_slowPath()
 {

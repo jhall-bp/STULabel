@@ -10,8 +10,13 @@
 #import "DisplayScaleRounding.hpp"
 #import "InputClamping.hpp"
 #import "TextFrame.hpp"
+#import "stu/FunctionRef.hpp"
 
 namespace stu_label {
+
+/// Preserves an immutable input when all label defaults are already specified.
+NSAttributedString *attributedStringByAddingMissingLabelDefaults(
+    NSAttributedString *__unsafe_unretained attributedString, FunctionRef<UIFont *()> defaultFont);
 
 struct LabelParametersWithoutSize {
   STUWritingDirection defaultBaseWritingDirection : 1;
