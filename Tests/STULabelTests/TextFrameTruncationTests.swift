@@ -71,6 +71,25 @@ struct TruncationTests {
   }
 
   @Test
+  func archivedTruncationScopePreservesCustomToken() throws {
+    let token = NSAttributedString(string: "[more]", attributes: [.font: font])
+    let scope = STUTruncationScope(
+      maximumNumberOfLines: 1, lastLineTruncationMode: .end, truncationToken: token)
+    let archive = try NSKeyedArchiver.archivedData(
+      withRootObject: scope, requiringSecureCoding: true)
+    let unarchived = try NSKeyedUnarchiver.unarchivedObject(
+      ofClass: STUTruncationScope.self, from: archive)
+    let decoded = try #require(unarchived)
+    let text = NSAttributedString(
+      string: "A paragraph that requires several lines of text",
+      attributes: [.font: font, .stuTruncationScope: decoded])
+    let frame = textFrame(text, width: 140)
+
+    #expect(frame.lines.count == 1)
+    #expect(frame.truncatedAttributedString.string.hasSuffix("[more]"))
+  }
+
+  @Test
   func `Left-to-right line-end truncation`() {
     let width = typographicWidth("Test") + typographicWidth("…")
     let f = textFrame("Testing", width: width + 0.001, maxLineCount: 1)

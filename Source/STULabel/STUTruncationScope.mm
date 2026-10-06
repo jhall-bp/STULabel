@@ -28,8 +28,10 @@ const NSAttributedStringKey STUTruncationScopeAttributeName = @"STUTruncationSco
                             truncationToken:nil];
 }
 
-static void clampTruncationScopeParameters(STUTruncationScope *__nonnull self)
+static void normalizeTruncationScope(STUTruncationScope *__nonnull self)
 {
+  self->_fixedTruncationToken =
+      [self->_truncationToken stu_attributedStringByConvertingNSTextAttachmentsToSTUTextAttachments];
   if (self->_maximumNumberOfLines < 0) {
     self->_maximumNumberOfLines = 0;
   }
@@ -66,8 +68,7 @@ static void clampTruncationScopeParameters(STUTruncationScope *__nonnull self)
   _maximumNumberOfLines = maximumNumberOfLines;
   _lastLineTruncationMode = lastLineTruncationMode;
   _truncationToken = [truncationToken copy];
-  _fixedTruncationToken = [_truncationToken stu_attributedStringByConvertingNSTextAttachmentsToSTUTextAttachments];
-  clampTruncationScopeParameters(self);
+  normalizeTruncationScope(self);
   return self;
 }
 
@@ -98,7 +99,7 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
 #define DECODE(Type, name) decode(decoder, @STU_STRINGIZE(name), Out{_##name});
   FOR_ALL_FIELDS(DECODE)
 #undef DECODE
-  clampTruncationScopeParameters(self);
+  normalizeTruncationScope(self);
   return self;
 }
 
