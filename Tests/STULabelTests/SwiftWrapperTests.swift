@@ -24,6 +24,19 @@ struct SwiftWrapperTests {
     #expect(label.text == text.string)
   }
 
+  @Test(arguments: [false, true])
+  func prerenderedReleasePreferencesTransferIndependently(explicitLayerPreference: Bool) {
+    let prerenderer = STULabelPrerenderer(traitCollection: UITraitCollection.current)
+    prerenderer.releasesShapedStringAfterRendering = true
+    let layer = STULabelLayer()
+    if explicitLayerPreference {
+      layer.releasesShapedStringAfterRendering = false
+    }
+    layer.configure(with: prerenderer)
+    #expect(layer.releasesShapedStringAfterRendering == !explicitLayerPreference)
+    #expect(!layer.releasesTextFrameAfterRendering)
+  }
+
   @Test
   func centeredTextUsesTheInsetContentCenter() {
     let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 200))

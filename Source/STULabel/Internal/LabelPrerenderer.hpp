@@ -295,7 +295,7 @@ public:
   void setReleasesShapedStringAfterRendering(bool releasesShapedStringAfterRendering) {
     checkNotFrozen();
     params_.releasesShapedStringAfterRendering = releasesShapedStringAfterRendering;
-    params_.releasesTextFrameAfterRenderingWasExplicitlySet = true;
+    params_.releasesShapedStringAfterRenderingWasExplicitlySet = true;
   }
 
   void setReleasesTextFrameAfterRendering(bool releasesTextFrameAfterRendering) {
