@@ -32,7 +32,7 @@ calculateTextLineSpansPathBounds(const ArrayRef<const TextLineSpan> spans,
   STU_ASSERT(!spans.isEmpty());
   if (spans.count() == 1) {
     const auto &span = spans[0];
-    return {Rect{span.x, verticalPositions[span.lineIndex].y()},
+    return {.rect = Rect{span.x, verticalPositions[span.lineIndex].y()},
             .pathExtendedToCommonHorizontalTextLineBoundsIsRect = true};
   }
   Int i = 0;
@@ -48,7 +48,7 @@ calculateTextLineSpansPathBounds(const ArrayRef<const TextLineSpan> spans,
     textLineEndsIncluded &= spans[i - 1].isRightEndOfLine;
   }
   const bool isRect = textLineEndsIncluded | xBoundsAreEqual;
-  return {bounds, .pathExtendedToCommonHorizontalTextLineBoundsIsRect = isRect};
+  return {.rect = bounds, .pathExtendedToCommonHorizontalTextLineBoundsIsRect = isRect};
 }
 
 // To construct a CGPath for the outlines of the sequence of text line spans we build an

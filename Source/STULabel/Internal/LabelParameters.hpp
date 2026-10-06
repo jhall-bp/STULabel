@@ -281,18 +281,20 @@ STU_INLINE
 STUDirectionalEdgeInsets directionalEdgeInsets(UIEdgeInsets insets,
                                                 STUWritingDirection layoutDirection)
 {
-  return {.top = insets.top, .bottom = insets.bottom,
+  return {.top = insets.top,
           .leading = layoutDirection == STUWritingDirectionLeftToRight
                    ? insets.left : insets.right,
+          .bottom = insets.bottom,
           .trailing = layoutDirection == STUWritingDirectionLeftToRight
                     ? insets.right : insets.left};
 }
 
 STU_INLINE
 UIEdgeInsets edgeInsets(STUDirectionalEdgeInsets insets, STUWritingDirection layoutDirection) {
-  return {.top = insets.top, .bottom = insets.bottom,
+  return {.top = insets.top,
           .left  = layoutDirection == STUWritingDirectionLeftToRight
                  ? insets.leading : insets.trailing,
+          .bottom = insets.bottom,
           .right = layoutDirection == STUWritingDirectionLeftToRight
                  ? insets.trailing : insets.leading};
 }
@@ -523,8 +525,8 @@ public:
 
 inline UIEdgeInsets roundLabelEdgeInsetsToScale(UIEdgeInsets insets, const DisplayScale& scale) {
   return {.top = roundToScale(insets.top, scale),
-          .bottom = roundToScale(insets.bottom, scale),
           .left = insets.left,
+          .bottom = roundToScale(insets.bottom, scale),
           .right = insets.right};
 }
 

@@ -602,12 +602,12 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
       initialExtraHeadIndent = max(0.f, -initialExtraHeadIndent);
       initialExtraTailIndent = max(0.f, -initialExtraTailIndent);
     }
-    paras.append(ScalingPara{.stringRange = {firstLine.rangeInOriginalString.start, lastLine.rangeInOriginalString.end},
-                             .maxLineCount = n,
+    paras.append(ScalingPara{.maxLineCount = n,
                              .lineCount = n,
                              .originalLineCount = n,
                              .initialLinesCount = initialLinesCount,
                              .lineHeight = (lastLine.originY - firstLine.originY) / (n - 1),
+                             .stringRange = {firstLine.rangeInOriginalString.start, lastLine.rangeInOriginalString.end},
                              .commonHeadIndent = commonHeadIndent,
                              .initialExtraHeadIndent = initialExtraHeadIndent,
                              .initialExtraTailIndent = initialExtraTailIndent,

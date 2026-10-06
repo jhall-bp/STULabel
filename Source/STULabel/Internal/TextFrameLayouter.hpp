@@ -305,7 +305,7 @@ private:
   const Range<Int32> stringRange_;
   TempArray<TextFrameParagraph> paras_;
   TempVector<TextFrameLine> lines_{Capacity{16}};
-  ScaleInfo scaleInfo_{.scale = 1, .inverseScale = 1};
+  ScaleInfo scaleInfo_{.inverseScale = 1, .scale = 1};
   Size<Float64> inverselyScaledFrameSize_{};
   const bool stringRangeIsFullString_;
   STUTextLayoutMode layoutMode_{};

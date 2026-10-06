@@ -105,7 +105,7 @@ STUTextFrameWithOrigin STULabelDrawingBlockParametersGetTextFrameWithOrigin(STUL
   if (self->_pixelAlignBaselines) {
     displayScale = TextFrame::assumedScaleForCTM(CGContextGetCTM(self->_context));
   }
-  return {self->_textFrame, self->_textFrameOrigin, .displayScale = displayScale};
+  return {.textFrame = self->_textFrame, .origin = self->_textFrameOrigin, .displayScale = displayScale};
 }
 
 @end
