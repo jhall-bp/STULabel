@@ -268,6 +268,18 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
   }
   if (stringRange.length == 0)
     return nil;
+  NSAttributedString *label = nil;
+  if (!attachment) {
+    label = mutableAttributedSubstring ?: [params.attributedString attributedSubstringFromRange:stringRange];
+    if (fullRangeLinkValue) {
+      NSMutableAttributedString *const mutableLabel = mutableAttributedSubstring ?: [label mutableCopy];
+      [mutableLabel removeAttribute:NSLinkAttributeName range:NSRange{0, stringRange.length}];
+      label = mutableLabel;
+    }
+    label = [[label stu_attributedStringByReplacingSTUAttachmentsWithStringRepresentations] copy];
+    if (label.length == 0)
+      return nil;
+  }
   const TextFrame &tf = params.textFrame;
   const Range<TextFrameIndex> range = params.isTruncatedString ? tf.range(RangeInTruncatedString{stringRange})
                                                                : tf.range(RangeInOriginalString{stringRange});
@@ -314,14 +326,6 @@ static ActivationPoint findActivationPoint(const ArrayRef<const TextLineSpan> sp
         _accessibilityTraits |= UIAccessibilityTraitNotEnabled;
       }
     }
-    NSAttributedString *label =
-        mutableAttributedSubstring ?: [params.attributedString attributedSubstringFromRange:stringRange];
-    if (fullRangeLinkValue) {
-      NSMutableAttributedString *const mutableLabel = mutableAttributedSubstring ?: [label mutableCopy];
-      [mutableLabel removeAttribute:NSLinkAttributeName range:NSRange{0, stringRange.length}];
-      label = mutableLabel;
-    }
-    label = [[label stu_attributedStringByReplacingSTUAttachmentsWithStringRepresentations] copy];
     { // Copy UIAccessibilitySpeechAttributeLanguage attribute to accessibilityLanguage property
       // if the attribute is effective over the full string range.
       const NSUInteger labelLength = label.length;

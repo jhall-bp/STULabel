@@ -320,6 +320,18 @@ struct TextAttachmentTests {
   }
 
   @Test
+  func unnamedDecorativeAttachmentHasNoAccessibilitySubelement() {
+    let attachment = STUTextAttachment(
+      width: 10, ascent: 10, descent: 0, leading: 0,
+      imageBounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+      colorInfo: [], stringRepresentation: nil)
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    label.attributedText = NSAttributedString(stu_attachment: attachment)
+
+    #expect(label.accessibilityElement.accessibilityElements.isEmpty)
+  }
+
+  @Test
   func `Attributed string adds Core Text run delegates for STU text attachments`() {
     do {
       let string = NSAttributedString()
