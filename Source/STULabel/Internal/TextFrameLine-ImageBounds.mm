@@ -396,7 +396,7 @@ static Rect<Float64> calculateLineImageBoundsUsingExistingGlyphBounds(const Text
             if (shadowInfo) {
               r = lloBoundsEnlargedByShadow(r, *shadowInfo);
             }
-            if (!hasConsistentShadow && !(context.drawingMode & STUTextFrameDrawOnlyForeground)) {
+            if (!consistentShadowInfo && !(context.drawingMode & STUTextFrameDrawOnlyForeground)) {
               if (const TextStyle::BackgroundInfo *const bgInfo = style.backgroundInfo()) {
                 r = lloBoundsEnlargedByRunBackground(r, line, *bgInfo, x, context.displayScale);
               }

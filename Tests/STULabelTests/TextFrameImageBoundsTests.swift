@@ -10,6 +10,22 @@ import UIKit
 @Suite(.snapshots(record: .missing))
 struct TextFrameImageBoundsTests {
   @Test
+  func cachedGlyphBoundsPreserveBackgroundImageBounds() {
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(
+        string: "Background", attributes: [
+          .font: UIFont.systemFont(ofSize: 18), .backgroundColor: UIColor.red,
+        ]), defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 200, height: 100), displayScale: 0)
+    let first = frame.imageBounds(frameOrigin: .zero)
+    let cached = frame.imageBounds(frameOrigin: .zero)
+    #expect(abs(first.minX - cached.minX) < 0.00001)
+    #expect(abs(first.minY - cached.minY) < 0.00001)
+    #expect(abs(first.maxX - cached.maxX) < 0.00001)
+    #expect(abs(first.maxY - cached.maxY) < 0.00001)
+  }
+
+  @Test
   func `CTRun and CTLine image bounds do not account for stroke and underline decorations`() {
     func ctLine(_ string: String, _ attributes: StringAttributes) -> CTLine {
       return CTLineCreateWithAttributedString(
