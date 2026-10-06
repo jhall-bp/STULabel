@@ -441,7 +441,7 @@ ShapedString *__nullable ShapedString::create(NSAttributedString *__unsafe_unret
 
 static CTTypesetter *createTypesetter(CFAttributedStringRef string, Int32 stringLength) CF_RETURNS_RETAINED
 {
-  STU_STATIC_CONST_ONCE(CFDictionaryRef, options, ({
+  STU_STATIC_CONST_ONCE(CFDictionaryRef, options, ([] {
                           // Without this option CTTypesetter stops working properly for texts with a UTF-16 length
                           // longer than 4096. If not setting this option is important to protect against denial-of-
                           // service attacks, then we may have to split up the ShapedString into multiple typesetters.
@@ -450,9 +450,9 @@ static CTTypesetter *createTypesetter(CFAttributedStringRef string, Int32 string
                           // context stack depth) seems incredibly blunt.
                           const void *keys[1] = {kCTTypesetterOptionAllowUnboundedLayout};
                           const void *values[1] = {kCFBooleanTrue};
-                          CFDictionaryCreate(
+                          return CFDictionaryCreate(
                               nil, keys, values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-                        }));
+                        }()));
   if (stringLength > 4096) {
     return CTTypesetterCreateWithAttributedStringAndOptions(string, options);
   }

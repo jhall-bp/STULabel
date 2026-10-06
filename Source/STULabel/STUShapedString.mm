@@ -23,13 +23,13 @@ using namespace stu_label;
 STU_EXPORT
 STUWritingDirection stu_defaultBaseWritingDirection()
 {
-  STU_STATIC_CONST_ONCE(STUWritingDirection, value, ({
+  STU_STATIC_CONST_ONCE(STUWritingDirection, value, [] {
                           // This is the default value used by CoreText and the value returned by
                           // UIApplication.sharedApplication.userInterfaceLayoutDirection
                           const NSWritingDirection value = [NSParagraphStyle defaultWritingDirectionForLanguage:nil];
                           STU_CHECK(value == NSWritingDirectionLeftToRight || value == NSWritingDirectionRightToLeft);
-                          static_cast<STUWritingDirection>(value);
-                        }));
+                          return static_cast<STUWritingDirection>(value);
+                        }());
   return value;
 }
 

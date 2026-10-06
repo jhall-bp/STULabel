@@ -275,19 +275,19 @@ void TextFrameLayouter::truncateLine(TextFrameLine &line,
       }
       NSParagraphStyle *__unsafe_unretained paraStyle;
       if (tokenBaseWritingDirection == STUWritingDirectionLeftToRight) {
-        STU_STATIC_CONST_ONCE(NSParagraphStyle *, ltrStyle, ({
+        STU_STATIC_CONST_ONCE(NSParagraphStyle *, ltrStyle, ([] {
                                 NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
                                 style.baseWritingDirection = NSWritingDirectionLeftToRight;
-                                style;
-                              }));
+                                return style;
+                              }()));
         paraStyle = ltrStyle;
       } else {
         // TODO: Add radar numbers for CoreText RTL bugs.
-        STU_STATIC_CONST_ONCE(NSParagraphStyle *, rtlStyle, ({
+        STU_STATIC_CONST_ONCE(NSParagraphStyle *, rtlStyle, ([] {
                                 NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
                                 style.baseWritingDirection = NSWritingDirectionRightToLeft;
-                                style;
-                              }));
+                                return style;
+                              }()));
         paraStyle = rtlStyle;
       }
       [mutableToken addAttribute:NSParagraphStyleAttributeName value:paraStyle range:NSRange(Range{0, tokenLength})];

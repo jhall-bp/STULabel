@@ -86,8 +86,8 @@ namespace stu_label {
 #endif
 
 #if STU_TRACE_TILED_LAYER
-  #define STU_TRACE(string, ...) printf(string "\n", ##__VA_ARGS__)
-  #define STU_TRACE_IF(condition, string, ...) (condition ? STU_TRACE(string, ##__VA_ARGS__) : 0)
+  #define STU_TRACE(string, ...) printf(string "\n" __VA_OPT__(,) __VA_ARGS__)
+  #define STU_TRACE_IF(condition, string, ...) (condition ? STU_TRACE(string __VA_OPT__(,) __VA_ARGS__) : 0)
 #else
   #define STU_TRACE(string, ...)
   #define STU_TRACE_IF(condition, string, ...)
