@@ -233,7 +233,7 @@ public:
 
   ChangeStatus setSizeAndEdgeInsets(CGSize size, UIEdgeInsets edgeInsets) {
     size = ceilToScale(size, displayScale_);
-    ChangeStatus status = size == size ? ChangeStatus::noChange : ChangeStatus::sizeChanged;
+    ChangeStatus status = size == size_ ? ChangeStatus::noChange : ChangeStatus::sizeChanged;
     size_ = size;
     return setEdgeInsets(edgeInsets) | status;
   }

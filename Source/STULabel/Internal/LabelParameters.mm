@@ -28,7 +28,7 @@ LabelParameters::ChangeStatus LabelParameters::setEdgeInsets(UIEdgeInsets edgeIn
     if (STU_UNLIKELY(edgesWidth > size_.width || edgesHeight > size_.height)) {
       if (edgesWidth > size_.width) {
         edgeInsets.left *= (size_.width / edgesWidth);
-        edgeInsets.right = size_.width - edgeInsets_.left;
+        edgeInsets.right = size_.width - edgeInsets.left;
       }
       if (edgesHeight > size_.height) {
         edgeInsets.top *= (size_.height / edgesHeight);
