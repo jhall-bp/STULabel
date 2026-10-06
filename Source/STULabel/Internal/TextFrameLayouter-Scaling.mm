@@ -116,8 +116,10 @@ void TextFrameLayouter::layoutAndScale(Size<Float64> frameSize,
                                                                    options.fixedTruncationToken,
                                                                    state.lowerBound,
                                                                    hasStepSize ? stepSize / 2 : accuracy);
-  if (estimatedScale.value >= 1 && estimatedScale.isAccurate)
+  if (estimatedScale.value >= 1 && estimatedScale.isAccurate) {
+    layout(frameSize, state.scaleInfo, maxLineCount, options);
     return;
+  }
 
   STU_DEBUG_ASSERT(estimatedScale.value >= state.lowerBound);
 
@@ -160,7 +162,11 @@ void TextFrameLayouter::layoutAndScale(Size<Float64> frameSize,
   if (estimatedScale.isAccurate || initialScaleFactor == state.lowerBound) {
     updateScaleInfo(initialScaleFactor);
     layout(state.inverselyScaledFrameSize, state.scaleInfo, maxLineCount, options);
+    // Scaling cannot remove forced line breaks. Accept their required truncation once
+    // the constrained layout fits, instead of searching for an impossible untruncated fit.
     if (isCancelled() || initialScaleFactor == state.lowerBound ||
+        (estimatedScale.requiresTruncation && lines_.count() <= maxLineCount &&
+         !mayExceedMaxWidth_ && lastLineFitsFrameHeight()) ||
         (!lines_.isEmpty() && (!lines_[$ - 1].hasTruncationToken ||
                                stringParas()[lines_[$ - 1].paragraphIndex].truncationScopeIndex >= 0))) {
       return;
@@ -285,7 +291,8 @@ Float64 TextFrameLayouter::estimateTailTruncationTokenWidth(
       originalTruncationToken = truncationScope.truncationToken;
     }
   }
-  auto *const attributes = attributedString_.attributesAtIndex(line.rangeInOriginalString.end - 1);
+  auto *const attributes = attributedString_.attributesAtIndex(max(line.rangeInOriginalString.start,
+                                                                  line.rangeInOriginalString.end - 1));
   NSAttributedString *token;
   if (!originalTruncationToken) {
     token = [[NSAttributedString alloc] initWithString:@"…" attributes:attributes];
@@ -467,7 +474,7 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
           continue;
         if (newlineCount > maxLineCount)
           break;
-        linesEndIndex = line.lineIndex;
+        linesEndIndex = line.lineIndex + 1;
       }
     }
     if (!lines[$ - 1].isFollowedByTerminatorInOriginalString) {
@@ -475,9 +482,11 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
     }
     if (newlineCount >= maxLineCount) {
       Float64 lastLineExtraWidth = 0;
-      if (STU_UNLIKELY(linesEndIndex < lines.count())) {
+      const bool requiresTruncation = linesEndIndex < lines.count();
+      if (STU_UNLIKELY(requiresTruncation)) {
         lines = lines[{0, linesEndIndex}];
         const TextFrameLine &lastLine = lines[$ - 1];
+        height = lastLine.originY + heightBelowBaselineWithoutExcessSpacing(lastLine) - firstLineOffset;
         if (!lastLine.hasTruncationToken) {
           lastLineExtraWidth = estimateTailTruncationTokenWidth(lastLine, truncationToken);
         }
@@ -546,7 +555,7 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
       if (frameHeight < scale * height) {
         scale = max(minScale, frameHeight / height);
       }
-      return {scale, true};
+      return {scale, true, requiresTruncation};
     }
   }
 
@@ -624,14 +633,14 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
       ScalingPara &para = paras[i];
       para.bisectInverseScaleInterval(isLowerBound, inverseScale, typesetter_, attributedString_.string);
       const Int32 lineCountDiff = para.originalLineCount - para.lineCount;
-      const Float64 heighDiff = lineCountDiff * para.lineHeight;
+      const Float64 heightDiff = lineCountDiff * para.lineHeight;
       if (para.minLineCount != para.maxLineCount) {
         savedLineCount += lineCountDiff;
-        savedHeight += heighDiff;
+        savedHeight += heightDiff;
         return false;
       } else {
         lineCount -= lineCountDiff;
-        height -= lineCountDiff;
+        height -= heightDiff;
         return true;
       }
     });

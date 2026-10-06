@@ -13,6 +13,48 @@ private func createTypesetter(_ string: NSAttributedString) -> CTTypesetter {
 
 struct ShapedStringTests {
   @MainActor
+  @Test(arguments: ["A\nB", "\nB"], [CGFloat(20), 100])
+  func scalingTextWithForcedLineBreakRespectsMaximumLineCount(_ text: String, height: CGFloat) {
+    let font = UIFont.systemFont(ofSize: 18)
+    let options = STUTextFrameOptions { builder in
+      builder.maximumNumberOfLines = 1
+      builder.minimumTextScaleFactor = 0.5
+    }
+    func frame(_ text: String) -> STUTextFrame {
+      STUTextFrame(
+        STUShapedString(NSAttributedString(string: text, attributes: [.font: font]),
+                        defaultBaseWritingDirection: .leftToRight),
+        size: CGSize(width: 200, height: height), displayScale: 0, options: options)
+    }
+    let truncated = frame(text)
+    let visibleText = text.prefix(while: { $0 != "\n" }) + "…"
+    let reference = frame(String(visibleText))
+    #expect(truncated.lines.count == 1)
+    #expect(truncated.flags.contains(.isTruncated))
+    #expect(truncated.truncatedAttributedString.string == visibleText)
+    #expect(abs(truncated.textScaleFactor - reference.textScaleFactor) < 0.0001)
+  }
+
+  @MainActor
+  @Test
+  func scalingSoftWrappedParagraphsFitsBeforeTruncating() {
+    let text = "AAAA AAAA\nAAAA AAAA"
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(
+        string: text, attributes: [.font: UIFont.monospacedSystemFont(ofSize: 18, weight: .regular)]),
+        defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 70, height: 100), displayScale: 0,
+      options: STUTextFrameOptions { builder in
+        builder.maximumNumberOfLines = 2
+        builder.minimumTextScaleFactor = 0.5
+      })
+    #expect(frame.lines.count == 2)
+    #expect(!frame.flags.contains(.isTruncated))
+    #expect(frame.truncatedAttributedString.string == text)
+    #expect(frame.textScaleFactor > 0.5 && frame.textScaleFactor < 1)
+  }
+
+  @MainActor
   @Test
   func discardedTruncationTokenDoesNotIncreaseLineStringRange() throws {
     let frame = STUTextFrame(

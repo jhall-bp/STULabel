@@ -61,6 +61,7 @@ public:
   struct ScaleFactorEstimate {
     Float64 value;
     bool isAccurate;
+    bool requiresTruncation{};
   };
 
   /// Usually returns an exact value or a lower bound that is quite close to the exact value.
