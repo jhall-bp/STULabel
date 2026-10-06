@@ -17,7 +17,7 @@ using namespace stu_label;
 @end
 
 #define FOR_ALL_OBSERVED_NON_SUBLAYER_PROPERTIES(f)                                                                    \
-  f(@"masksToBounds", NSKeyValueObservingOptionNew) f(@"bounds", 0) f(@"bounds", 0) f(@"zPosition", 0)                 \
+  f(@"masksToBounds", NSKeyValueObservingOptionNew) f(@"bounds", 0) f(@"position", 0) f(@"zPosition", 0)                 \
       f(@"anchorPoint", 0) f(@"anchorPointZ", 0) f(@"transform", 0)
 
 @implementation STULabelSuperlayerObserver
@@ -231,7 +231,7 @@ CGRect LayerVisibleBoundsObserver::calculateVisibleBounds()
     if (!sl.masksToBounds())
       continue;
     CALayer *__unsafe_unretained layer = sl.layer().unretained;
-    convertRectAndAccumulateAreaScale(bounds, superlayer, layer_, &areaScale_);
+    bounds = convertRectAndAccumulateAreaScale(bounds, superlayer, layer, &areaScale_);
     bounds = CGRectIntersection(bounds, layer.bounds);
     superlayer = layer;
   }
