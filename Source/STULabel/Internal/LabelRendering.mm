@@ -36,7 +36,7 @@ static Rect<CGFloat> renderBoundsForTextFrameImageBounds(Rect<CGFloat> imageBoun
   }
   case STULabelHorizontalAlignmentCenter: {
     const CGFloat midX =
-        (info.layoutBounds.x.start + info.layoutBounds.x.end) / 2 + (edgeInsets.right - edgeInsets.left);
+        (info.layoutBounds.x.start + info.layoutBounds.x.end) / 2 + (edgeInsets.right - edgeInsets.left) / 2;
     CGFloat width = 2 * max(midX - imageBounds.x.start, imageBounds.x.end - midX);
     exceedsBounds = width > sizeIncludingEdgeInsets.width + 2 * tolerance;
     width = min(width, sizeIncludingEdgeInsets.width);
@@ -66,7 +66,7 @@ static Rect<CGFloat> renderBoundsForTextFrameImageBounds(Rect<CGFloat> imageBoun
   case STULabelVerticalAlignmentCenterCapHeight:
   case STULabelVerticalAlignmentCenterXHeight: {
     const CGFloat midY =
-        (info.layoutBounds.y.start + info.layoutBounds.y.end) / 2 + (edgeInsets.bottom - edgeInsets.top);
+        (info.layoutBounds.y.start + info.layoutBounds.y.end) / 2 + (edgeInsets.bottom - edgeInsets.top) / 2;
     CGFloat height = 2 * max(midY - imageBounds.y.start, imageBounds.y.end - midY);
     exceedsBounds |= height > sizeIncludingEdgeInsets.height + 2 * tolerance;
     height = min(height, sizeIncludingEdgeInsets.height);

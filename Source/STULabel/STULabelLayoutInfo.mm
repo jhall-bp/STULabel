@@ -190,7 +190,7 @@ CGPoint textFrameOriginInLayer(const LabelTextFrameInfo &info, const LabelParame
     break;
   case STULabelHorizontalAlignmentCenter:
     x = (p.size().width / 2 - (info.layoutBounds.x.start + info.layoutBounds.x.end) / 2) +
-        (p.edgeInsets().left - p.edgeInsets().right);
+        (p.edgeInsets().left - p.edgeInsets().right) / 2;
     break;
   }
   CGFloat y;
@@ -205,7 +205,7 @@ CGPoint textFrameOriginInLayer(const LabelTextFrameInfo &info, const LabelParame
   case STULabelVerticalAlignmentCenterCapHeight:
   case STULabelVerticalAlignmentCenterXHeight:
     y = (p.size().height / 2 - (info.layoutBounds.y.start + info.layoutBounds.y.end) / 2) +
-        (p.edgeInsets().top - p.edgeInsets().bottom);
+        (p.edgeInsets().top - p.edgeInsets().bottom) / 2;
     break;
   }
   return {roundToScale(x, p.displayScale()), roundToScale(y, p.displayScale())};

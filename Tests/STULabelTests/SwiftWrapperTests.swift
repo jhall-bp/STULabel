@@ -9,6 +9,20 @@ struct SwiftWrapperTests {
   let font = UIFont(name: "HelveticaNeue", size: 20)!
 
   @Test
+  func centeredTextUsesTheInsetContentCenter() {
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
+    label.contentScaleFactor = 1
+    label.font = font
+    label.text = "Centered"
+    label.textAlignment = .center
+    label.verticalAlignment = .center
+    label.contentInsets = UIEdgeInsets(top: 12, left: 20, bottom: 36, right: 60)
+    let bounds = label.layoutInfo.layoutBounds
+    #expect(abs(bounds.midX - 130) <= 0.5)
+    #expect(abs(bounds.midY - 88) <= 0.5)
+  }
+
+  @Test
   func firstAndLastLineMetricsRemainDistinct() {
     let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
     label.maximumNumberOfLines = 0
