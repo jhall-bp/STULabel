@@ -309,6 +309,21 @@ static Int lastEndIndexOf(const NSStringRef &string, Range<Int> range, Char32 cp
   XCTAssertEqual(NSStringRef(@"x\u00ad ").indexOfTrailingWhitespaceIn({0, 3}), 2);
 }
 
+- (void)testGraphemeClusterSearchDoesNotPairSurrogatesOutsideTheString
+{
+  // The neighboring units deliberately form an emoji with either unpaired boundary surrogate.
+  const Char16 storage[] = {0xD83D, 0xDE00, 0x200D, 0xD83D, 0xDE00};
+  MutableStringRef *nsString = [[MutableStringRef alloc] init];
+  nsString->utf16 = storage;
+  nsString->length = 4;
+  const NSStringRef trailingHighSurrogate{nsString};
+  XCTAssertEqual(trailingHighSurrogate.startIndexOfGraphemeClusterAt(3), 3);
+
+  nsString->utf16 = storage + 1;
+  const NSStringRef leadingLowSurrogate{nsString};
+  XCTAssertNoThrow(XCTAssertEqual(leadingLowSurrogate.indexOfFirstGraphemeClusterBreakNotBefore(1), 2));
+}
+
 - (void)testGraphemeClusterBreakFinding
 {
   self.continueAfterFailure = false;

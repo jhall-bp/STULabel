@@ -895,7 +895,7 @@ Int NSStringRef::indexOfFirstGraphemeClusterBreakNotBeforeImpl(const Int index) 
       category = graphemeClusterCategory(c1);
     } else {
       Char32 cp = c1;
-      if (isLowSurrogate(c1)) {
+      if (isLowSurrogate(c1) && index1 > 0) {
         const Char16 c2 = utf16Buffer()[index1 - 1];
         if (isHighSurrogate(c2)) {
           cp = codePointFromSurrogatePair(c2, c1);
@@ -1016,7 +1016,7 @@ Int NSStringRef::startIndexOfGraphemeClusterAtImpl(const Int index) const
       category = graphemeClusterCategory(c0);
     } else {
       Char32 cp = c0;
-      if (isHighSurrogate(c0)) {
+      if (isHighSurrogate(c0) && index + 1 < count()) {
         const Char16 c = utf16Buffer()[index + 1];
         if (isLowSurrogate(c)) {
           cp = codePointFromSurrogatePair(c0, c);
