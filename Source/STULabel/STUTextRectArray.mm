@@ -53,7 +53,7 @@ struct STUTextRectArrayData
     return {reinterpret_cast<const TextLineVerticalPosition *>(spans().end()), lineCount, unchecked};
   }
 
-  bool operator==(const STUTextRectArrayData &other)
+  bool operator==(const STUTextRectArrayData &other) const
   {
     if (bounds != other.bounds)
       return false;
@@ -82,7 +82,7 @@ struct STUTextRectArrayData
     return true;
   }
 
-  bool operator!=(const STUTextRectArrayData &other) { return !(*this == other); }
+  bool operator!=(const STUTextRectArrayData &other) const { return !(*this == other); }
 };
 
 @implementation STUTextRectArray {
@@ -234,21 +234,36 @@ STUTextRectArray *__nonnull STUTextRectArrayCopyWithOffset(Class cls,
   return instance;
 }
 
+- (const STUTextRectArray *)stu_objectForEquality
+{
+  const DataOrOtherArray d{self};
+  return d.data ? self : [d.otherArray stu_objectForEquality];
+}
+
+- (bool)stu_hasEqualTextRects:(const STUTextRectArray *)object
+{
+  const DataOrOtherArray d{self};
+  if (d.otherArray)
+    return [d.otherArray stu_hasEqualTextRects:object];
+  const DataOrOtherArray other{object};
+  if (other.otherArray)
+    return [self stu_hasEqualTextRects:other.otherArray];
+  return *d.data == *other.data;
+}
+
 - (BOOL)isEqual:(id)object
 {
   if (self == object)
     return true;
-  const DataOrOtherArray d{self};
-  if (d.data) {
-    if (![object isKindOfClass:stuTextRectArrayClass()])
-      return false;
-    const DataOrOtherArray other{static_cast<STUTextRectArray *>(object)};
-    if (other.data) {
-      return d.data == other.data;
-    }
-    return [other.otherArray isEqual:self];
-  }
-  return [d.otherArray isEqual:object];
+  if (![object isKindOfClass:stuTextRectArrayClass()])
+    return false;
+  const STUTextRectArray *const value = [self stu_objectForEquality];
+  const STUTextRectArray *const other = [object stu_objectForEquality];
+  if (value != self || other != object)
+    return [value isEqual:other];
+  if (object_getClass(self) != object_getClass(object))
+    return false;
+  return [self stu_hasEqualTextRects:other];
 }
 
 - (NSUInteger)hash
@@ -356,10 +371,10 @@ STU_INLINE stu_label::Rect<Float64> rectAtIndex(const STUTextRectArrayData &data
 {
   const DataOrOtherArray d{self};
   if (d.data) {
-    const Int i = sign_cast(textLineIndex);
-    STU_CHECK_MSG(sign_cast(i) < sign_cast(d.data->lineCount), "The line index is out of bounds.");
+    const UInt index = textLineIndex - sign_cast(d.data->textLineIndexOffset);
+    STU_CHECK_MSG(index < sign_cast(d.data->lineCount), "The line index is out of bounds.");
     const auto verticalPositions = d.data->textLineVerticalPositions();
-    return narrow_cast<CGFloat>(verticalPositions[i].baseline);
+    return narrow_cast<CGFloat>(verticalPositions[sign_cast(index)].baseline);
   }
   return [d.otherArray baselineForTextLineAtIndex:textLineIndex];
 }

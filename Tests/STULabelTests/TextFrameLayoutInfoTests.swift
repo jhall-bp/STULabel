@@ -224,6 +224,66 @@ struct TextFrameLayoutInfoTests {
   }
 
   @Test
+  func textRectArraysCompareGeometryAndUseFrameLineIndices() throws {
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(
+        string: "a\nb\nc", attributes: [.font: UIFont.systemFont(ofSize: 18)])),
+      size: CGSize(width: 100, height: 200), displayScale: 0)
+    let range = frame.range(forRangeInOriginalString: NSRange(location: 2, length: 3))
+    let origin = CGPoint(x: 4, y: 7)
+    let rects = frame.rects(for: range, frameOrigin: origin)
+    let sameRects = frame.rects(for: range, frameOrigin: origin)
+    let shiftedRects = frame.rects(for: range, frameOrigin: CGPoint(x: 5, y: 7))
+
+    #expect(rects.isEqual(sameRects))
+    #expect(rects.hash == sameRects.hash)
+    #expect(!rects.isEqual(shiftedRects))
+    try #require(rects.textLineRange == NSRange(location: 1, length: 2))
+    #expect(
+      rects.baselineForTextLine(at: 1)
+        == frame.lines[1].baselineOrigin.y + origin.y)
+  }
+
+  @Test
+  func rectAndLinkEqualityPreservesProxySemantics() throws {
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    label.attributedText = NSAttributedString(
+      string: "Link", attributes: [.font: UIFont.systemFont(ofSize: 18), .link: "details"])
+    let links = label.links
+    try #require(links.count == 1)
+    let nativeLink = links[0]
+    let frame = label.textFrame
+    let range = frame.textFrame.range(forRangeInOriginalString: nativeLink.rangeInOriginalString)
+    let rects = frame.rects(for: range)
+    let equivalentLink = STUTextLink(
+      linkAttributeValue: nativeLink.linkAttribute,
+      rangeInOriginalString: nativeLink.rangeInOriginalString,
+      rangeInTruncatedString: nativeLink.rangeInTruncatedString, rects)
+    let differentLink = STUTextLink(
+      linkAttributeValue: "other",
+      rangeInOriginalString: nativeLink.rangeInOriginalString,
+      rangeInTruncatedString: nativeLink.rangeInTruncatedString, rects)
+    let groups: [[STUTextRectArray]] = [
+      [rects, STUTextRectArray(rects), STUTextRectArray(STUTextRectArray(rects))],
+      [nativeLink, equivalentLink, STUTextRectArray(nativeLink), STUTextRectArray(equivalentLink)],
+      [differentLink],
+    ]
+
+    for (leftGroup, leftValues) in groups.enumerated() {
+      for (rightGroup, rightValues) in groups.enumerated() {
+        for left in leftValues {
+          for right in rightValues where left !== right {
+            #expect(left.isEqual(right) == (leftGroup == rightGroup))
+            if leftGroup == rightGroup {
+              #expect(left.hash == right.hash)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
   func `Empty text frame`() {
     let tf = STUTextFrame(
       STUShapedString.empty(withDefaultBaseWritingDirection: .leftToRight),

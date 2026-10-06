@@ -89,16 +89,24 @@ static STUTextLink *__nonnull STUTextLinkCopyWithTextFrameOriginOffset(
   return newLink;
 }
 
+- (const STUTextRectArray *)stu_objectForEquality
+{
+  return (const STUTextRectArray *)self;
+}
+
 - (BOOL)isEqual:(id)object
 {
   if (self == object)
     return true;
-  if (![object isKindOfClass:stuTextLinkClass()])
+  if (![object isKindOfClass:STUTextRectArray.class])
     return false;
-  STUTextLink *const other = object;
+  const STUTextRectArray *const value = [object stu_objectForEquality];
+  if (![value isKindOfClass:stuTextLinkClass()])
+    return false;
+  const STUTextLink *const other = static_cast<const STUTextLink *>(value);
   return _rangeInOriginalString == other->_rangeInOriginalString &&
          _rangeInTruncatedString == other->_rangeInTruncatedString &&
-         equal(_linkAttributeValue, other->_linkAttributeValue) && [super isEqual:other];
+         equal(_linkAttributeValue, other->_linkAttributeValue) && [self stu_hasEqualTextRects:other];
 }
 
 - (NSUInteger)hash

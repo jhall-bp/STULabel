@@ -36,13 +36,13 @@ struct TextLineVerticalPosition {
   }
 
   STU_INLINE
-  bool operator==(const TextLineVerticalPosition& other) {
+  bool operator==(const TextLineVerticalPosition& other) const {
     return baseline == other.baseline
         && ascent == other.ascent
         && descent == other.descent;
   }
   STU_INLINE
-  bool operator!=(const TextLineVerticalPosition& other) {
+  bool operator!=(const TextLineVerticalPosition& other) const {
     return !(*this == other);
   }
 };

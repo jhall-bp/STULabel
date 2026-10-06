@@ -37,6 +37,7 @@ STU_EXPORT
 
 - (CGFloat)baselineForRectAtIndex:(size_t)index;
 
+/// The index is relative to the text frame and must lie in @c textLineRange.
 - (CGFloat)baselineForTextLineAtIndex:(size_t)textLineIndex;
 
 /// Returns the index and distance of the rect closest to the specified point.

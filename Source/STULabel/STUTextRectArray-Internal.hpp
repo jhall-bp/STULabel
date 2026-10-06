@@ -6,6 +6,15 @@
 #import "Internal/TextFrame.hpp"
 #import "Internal/TextLineSpan.hpp"
 
+@interface STUTextRectArray (Internal)
+
+// Transparent proxies forward equality to their underlying value. Subclasses whose own
+// properties participate in equality return self.
+- (const STUTextRectArray* __nonnull)stu_objectForEquality;
+- (bool)stu_hasEqualTextRects:(const STUTextRectArray* __nonnull)other;
+
+@end
+
 STUTextRectArray* __nonnull STUTextRectArrayCreate(
                               __nullable Class cls,
                               stu::ArrayRef<const stu_label::TextLineSpan>,
