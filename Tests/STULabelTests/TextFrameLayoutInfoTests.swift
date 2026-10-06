@@ -58,15 +58,15 @@ struct TextFrameLayoutInfoTests {
     #expect(info0.consistentAlignment == tf.consistentAlignment)
     #expect(info0.textScaleFactor == tf.textScaleFactor)
     #expect(info0.size == tf.size)
-    #expect(Double(info0.firstLineHeight) == tf.firstLineHeight)
-    #expect(Double(info0.firstLineHeightAboveBaseline) == tf.firstLineHeightAboveBaseline)
-    #expect(Double(info0.lastLineHeight) == tf.lastLineHeight)
-    #expect(Double(info0.lastLineHeightBelowBaseline) == tf.lastLineHeightBelowBaseline)
+    #expect(CGFloat(info0.firstLineHeight) == tf.firstLineHeight)
+    #expect(CGFloat(info0.firstLineHeightAboveBaseline) == tf.firstLineHeightAboveBaseline)
+    #expect(CGFloat(info0.lastLineHeight) == tf.lastLineHeight)
+    #expect(CGFloat(info0.lastLineHeightBelowBaseline) == tf.lastLineHeightBelowBaseline)
     #expect(
-      Double(info0.lastLineHeightBelowBaselineWithoutSpacing)
+      CGFloat(info0.lastLineHeightBelowBaselineWithoutSpacing)
         == tf.lastLineHeightBelowBaselineWithoutSpacing)
     #expect(
-      Double(info0.lastLineHeightBelowBaselineWithMinimalSpacing)
+      CGFloat(info0.lastLineHeightBelowBaselineWithMinimalSpacing)
         == tf.lastLineHeightBelowBaselineWithMinimalSpacing)
 
     #expect(Int(info0.lineCount) == tfo.lines.count)
