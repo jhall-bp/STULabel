@@ -82,6 +82,20 @@ struct TextFrameDrawingTests {
   }
 
   @Test
+  func linkColorOverridePreservesTheTextColorOverride() {
+    let options = STUTextFrame.DrawingOptions()
+    options.overrideTextColor = .green
+    options.overrideLinkColor = .red
+
+    #expect(options.overrideTextColor == .green)
+    #expect(options.overrideLinkColor == .red)
+
+    options.overrideLinkColor = nil
+    #expect(options.overrideTextColor == .green)
+    #expect(options.overrideLinkColor == nil)
+  }
+
+  @Test
   func `Base CTM handling`() {
     let font = UIFont(name: "HelveticaNeue", size: 18)!
     let shadow = NSShadow()

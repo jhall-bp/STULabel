@@ -124,7 +124,7 @@ STUTextFrameDrawingOptionsCopy(STUTextFrameDrawingOptions *__nullable other) NS_
 }
 - (void)setOverrideLinkColor:(UIColor *)overrideLinkColor
 {
-  impl.setOverrideTextColor(overrideLinkColor);
+  impl.setOverrideLinkColor(overrideLinkColor);
 }
 
 @end
