@@ -21,18 +21,21 @@ struct HashCode : Comparable<HashCode<UInt>> {
   explicit STU_CONSTEXPR_T
   HashCode(UInt value) : value{value} {}
 
-  template <typename T, EnableIf<isSafelyConvertible<T, UInt>> = 0>
+  template <typename T>
+    requires (isSafelyConvertible<T, UInt>)
   /* implicit */ STU_CONSTEXPR_T
   HashCode(HashCode<T> other)
   : value{other.value} {}
 
-  template <typename T, EnableIf<isNonSafelyConvertible<UInt, T>> = 0>
+  template <typename T>
+    requires (isNonSafelyConvertible<UInt, T>)
   explicit STU_CONSTEXPR_T
   operator HashCode<T>() const {
     return HashCode<T>{static_cast<T>(value)};
   }
 
-  template <typename T, EnableIf<isInteger<T>> = 0>
+  template <typename T>
+    requires (isInteger<T>)
   explicit STU_CONSTEXPR_T
   operator T() const {
     return static_cast<T>(value);
@@ -88,14 +91,16 @@ void hashableBits(Sink sink, HashCode<T> hashCode) {
   sink(hashCode.value);
 }
 
-template <typename Sink, typename T, EnableIf<(isIntegral<T> || isEnum<T>)> = 0>
+template <typename Sink, typename T>
+  requires ((isIntegral<T> || isEnum<T>))
 STU_CONSTEXPR
 void hashableBits(Sink sink, T value) {
   // Sign-extend the value to UInt64.
   sink(static_cast<UInt64>(value));
 }
 
-template <typename T, EnableIf<isOneOf<T, Float32, Float64>> = 0>
+template <typename T>
+  requires (isOneOf<T, Float32, Float64>)
 STU_CONSTEXPR
 Conditional<sizeof(T) == 4, UInt32, UInt64> hashableBits(T value) {
   using U = Conditional<sizeof(T) == 4, UInt32, UInt64>;
@@ -103,13 +108,15 @@ Conditional<sizeof(T) == 4, UInt32, UInt64> hashableBits(T value) {
        : bit_cast<U>(value);
 }
 
-template <typename Sink, typename T, EnableIf<isOneOf<T, Float32, Float64>> = 0>
+template <typename Sink, typename T>
+  requires (isOneOf<T, Float32, Float64>)
 STU_CONSTEXPR
 void hashableBits(Sink sink, T value) {
   sink(hashableBits(value));
 }
 
-template <typename Sink, typename T, EnableIf<isConvertible<T*, NSObject*>> = 0>
+template <typename Sink, typename T>
+  requires (isConvertible<T*, NSObject*>)
 STU_INLINE
 void hashableBits(Sink sink, T* __unsafe_unretained value) {
   sink(value.hash);
@@ -163,26 +170,23 @@ void hashableBits(Sink sink, const A& a, const B& b, const Ts&... rest) {
 namespace detail {
   template <int n, int... indices>
   STU_CONSTEXPR
-  UInt64 hashPairwise(const UInt64 (& array)[n], Indices<indices...>) {
+  UInt64 hashPairwise(const UInt64 (& array)[n], std::integer_sequence<int, indices...>) {
     static_assert(n/2 == sizeof...(indices));
     if constexpr (n == 2) {
       return hash(array[0], array[1]).value;
     } else if constexpr (sizeof...(indices)*2 == n) {
       const UInt64 reduced[] = {hash(array[2*indices], array[2*indices + 1]).value...};
-      return hashPairwise(reduced, MakeIndices<n/4>{});
+      return hashPairwise(reduced, std::make_integer_sequence<int, n/4>{});
     } else {
       const UInt64 reduced[] = {hash(array[2*indices], array[2*indices + 1]).value..., array[n - 1]};
-      return hashPairwise(reduced, MakeIndices<(n/2 + 1)/2>{});
+      return hashPairwise(reduced, std::make_integer_sequence<int, (n/2 + 1)/2>{});
     }
   }
 }
 
 template <typename A, typename... Ts,
-          typename B = FirstType<Ts...>,
-          EnableIf<(sizeof...(Ts) > 1)
-                   || (isFloatingPoint<A> || !isSafelyConvertible<A, UInt64>)
-                   || (sizeof...(Ts) == 1
-                       && (isFloatingPoint<B> || !isSafelyConvertible<B, UInt64>))> = 0>
+          typename B = FirstType<Ts...>>
+  requires ((sizeof...(Ts) > 1) || (isFloatingPoint<A> || !isSafelyConvertible<A, UInt64>) || (sizeof...(Ts) == 1 && (isFloatingPoint<B> || !isSafelyConvertible<B, UInt64>)))
 [[nodiscard]] STU_CONSTEXPR
 HashCode<UInt64> hash(const A& a, const Ts&... args) {
   UInt64 result = 0;
@@ -195,7 +199,7 @@ HashCode<UInt64> hash(const A& a, const Ts&... args) {
       const UInt64 array[] = {bits...};
       // Hashing the arguments recursively pairwise is a simple way to improve instruction-level
       // parallelism.
-      result = detail::hashPairwise(array, MakeIndices<sizeof...(bits)/2>{});
+      result = detail::hashPairwise(array, std::make_integer_sequence<int, sizeof...(bits)/2>{});
     }
   }, a, args...);
   return HashCode{result};

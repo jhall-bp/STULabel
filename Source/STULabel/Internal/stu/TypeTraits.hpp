@@ -26,19 +26,9 @@ using Conditional = typename std::conditional<condition, T1, T2>::type;
 template <typename T1, typename T2>
 constexpr bool isSame = std::is_same<T1, T2>::value;
 
-namespace detail {
-  template <typename T, typename... Ts>
-  struct IsOneOfImpl : False {};
-
-  template <typename T, typename... Ts>
-  struct IsOneOfImpl<T, T, Ts...> : True {};
-
-  template <typename T, typename T2, typename... Ts>
-  struct IsOneOfImpl<T, T2, Ts...> : IsOneOfImpl<T, Ts...> {};
-}
 /// A type trait that indicates whether `T` is one of the types in the `Ts` parameter pack.
 template <typename T, typename... Ts>
-constexpr bool isOneOf = detail::IsOneOfImpl<T, Ts...>::value;
+constexpr bool isOneOf = (isSame<T, Ts> || ...);
 
 template <typename T>
 constexpr bool isPointer = std::is_pointer<T>::value;
@@ -102,29 +92,29 @@ constexpr T delayToInstantiation(T value) { return value; };
 // (can)Apply are inspired by http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4502.pdf
 
 namespace detail {
-  template <typename Default, typename alwaysInt,
-            template <typename...> typename F, typename... Ts>
+  template <typename Default, template <typename...> typename F, typename... Ts>
   struct ApplyImpl : False {
     using Type = Default;
   };
 
-  template <typename Default, template <class...> class F, class... Ts>
-  struct ApplyImpl<Default, EnableIf<isType<F<Ts...>>>, F, Ts...> : True {
+  template <typename Default, template <typename...> typename F, typename... Ts>
+    requires isType<F<Ts...>>
+  struct ApplyImpl<Default, F, Ts...> : True {
     using Type = F<Ts...>;
   };
 } // namespace detail
 
 template <template<class...> class F, class... Ts>
-constexpr bool canApply = detail::ApplyImpl<False, int, F, Ts...>::value;
+constexpr bool canApply = detail::ApplyImpl<False, F, Ts...>::value;
 
 template <template<class...> class F, class... Ts>
-constexpr bool appliedIsTrue = detail::ApplyImpl<False, int, F, Ts...>::Type::value;
+constexpr bool appliedIsTrue = detail::ApplyImpl<False, F, Ts...>::Type::value;
 
 template <template<class...> class F, class... Ts>
-using Apply = typename detail::ApplyImpl<NoType, int, F, Ts...>::Type;
+using Apply = typename detail::ApplyImpl<NoType, F, Ts...>::Type;
 
 template <typename Default, template<class...> class F, class... Ts>
-using ApplyOr = typename detail::ApplyImpl<Default, int, F, Ts...>::Type;
+using ApplyOr = typename detail::ApplyImpl<Default, F, Ts...>::Type;
 
 template <typename Expected, template<class...> class F, class... Ts>
 constexpr bool appliedIs = isSame<Expected, Apply<F, Ts...>>;
@@ -408,7 +398,7 @@ namespace detail {
 
   template <typename T>
   struct UnderlyingTypeImpl<T, false>
-  : ApplyImpl<T, int, NestedUnderlyingType, T>
+  : ApplyImpl<T, NestedUnderlyingType, T>
   {};
 }
 
@@ -462,10 +452,12 @@ template <> constexpr inline float minValue<float> = -FLT_MAX;
 template <> constexpr inline double maxValue<double> =  DBL_MAX;
 template <> constexpr inline double minValue<double> = -DBL_MAX;
 
-template <typename T, EnableIf<isOneOf<T, float, double>> = 0>
+template <typename T>
+  requires (isOneOf<T, float, double>)
 constexpr T infinity = __builtin_inff();
 
-template <typename T, EnableIf<isOneOf<T, float, double>> = 0>
+template <typename T>
+  requires (isOneOf<T, float, double>)
 constexpr T epsilon = isSame<T, float> ? FLT_EPSILON : static_cast<T>(DBL_EPSILON);
 
 /// \brief A type trait that indicates whether `T1` can be safely converted to
@@ -762,24 +754,6 @@ struct IsBitwiseZeroConstructible : IsMemberwiseConstructible<T> {};
 template <typename T>
 constexpr bool isBitwiseZeroConstructible = IsBitwiseZeroConstructible<T>::value;
 
-
-template <int ...>
-struct Indices {};
-
-namespace detail {
-  template <int length, int... tail>
-  struct MakeIndicesImpl {
-    using Type = typename MakeIndicesImpl<length - 1, length - 1, tail...>::Type;
-  };
-
-  template <int... indices>
-  struct MakeIndicesImpl<0, indices...> {
-    using Type = Indices<indices...>;
-  };
-}
-
-template <int length, int... tail>
-using MakeIndices = typename detail::MakeIndicesImpl<length, tail...>::Type;
 
 namespace detail {
   template <typename... Types>
