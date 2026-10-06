@@ -112,18 +112,8 @@ struct FirstAndLastLineHeightInfo
   {}
 
   STU_INLINE
-  friend bool operator==(const FirstAndLastLineHeightInfo &info1, const FirstAndLastLineHeightInfo &info2)
-  {
-    return info1.firstLineHeight == info2.firstLineHeight && info1.lastLineHeight == info2.lastLineHeight &&
-           info1.firstLineHeightAboveBaseline == info2.firstLineHeightAboveBaseline &&
-           info1.lastLineHeightBelowBaseline == info2.lastLineHeightBelowBaseline;
-  }
-
-  STU_INLINE
-  friend bool operator!=(const FirstAndLastLineHeightInfo &info1, const FirstAndLastLineHeightInfo &info2)
-  {
-    return !(info1 == info2);
-  }
+  friend bool operator==(const FirstAndLastLineHeightInfo&,
+                         const FirstAndLastLineHeightInfo&) noexcept(false) = default;
 };
 
 struct alignas(8) SpacingConstraint
