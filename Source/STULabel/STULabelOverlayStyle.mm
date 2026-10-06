@@ -8,7 +8,6 @@
 #import "Internal/NSCoderUtils.hpp"
 #import "Internal/Once.hpp"
 #import "Internal/STUMediaTimingFunctionUtils.h"
-#import "Internal/STUMediaTimingFunctionUtils.h"
 
 using namespace stu;
 using namespace stu_label;
@@ -152,7 +151,6 @@ FOR_ALL_FIELDS(DEFINE_GETTER)
       STULabelOverlayStyle *, style, ([[STULabelOverlayStyle alloc] initWithBlock:^(STULabelOverlayStyleBuilder *b) {
         b.edgeInsets = UIEdgeInsets{-2, -2, -2, -2};
         b.cornerRadius = 4;
-        const CGFloat c = ((CGFloat)26) / 255;
         b.color = UIColor.tertiarySystemFillColor;
         b.fadeInDuration = 0.1;
         b.fadeOutDuration = 0.15;
