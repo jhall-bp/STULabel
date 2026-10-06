@@ -146,7 +146,7 @@ public:
     for (Bucket* p = buckets_.begin(); p != end; ++p) {
       if (!p->isEmpty() && predicate(p->key())) {
         if (d == 0) continue;
-        p[d] = std::move(*p);
+        new (p + d) Bucket(std::move(*p));
       } else {
         --d;
       }

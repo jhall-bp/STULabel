@@ -426,13 +426,14 @@ public:
     for (T* p = begin(); p != end; ++p) {
       if (!predicate(*p)) {
         if (d == 0) continue;
-        p[d] = std::move(*p);
+        new (p + d) T(std::move(*p));
       } else {
         --d;
       }
       p->~T();
     }
     count_ += d;
+    sanitizer::annotateContiguousArray(begin(), capacity_, count_ - d, count_);
   }
 
   STU_INLINE

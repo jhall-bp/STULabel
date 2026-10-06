@@ -1,6 +1,7 @@
 // Copyright 2017–2018 Stephan Tolksdorf
 
 #import "HashTable.hpp"
+#import "stu/UniquePtr.hpp"
 
 #import "AllocatorUtils.hpp"
 #import "TestUtils.h"
@@ -9,6 +10,18 @@
 #import <unordered_set>
 
 using namespace stu_label;
+
+namespace {
+struct Resource {
+  int releaseCount{};
+};
+
+void releaseResource(Resource* resource) noexcept {
+  ++resource->releaseCount;
+}
+
+using ResourceOwner = stu::UniquePtr<Resource, releaseResource>;
+}
 
 @interface HashSetTests : XCTestCase
 @end
@@ -69,6 +82,41 @@ using namespace stu_label;
   XCTAssertEqual(hs.count(), 0);
   for (auto &bucket : hs.buckets()) {
     XCTAssertTrue(bucket.isEmpty());
+  }
+}
+
+- (void)testFilterAndRehashReleasesEachOwnedResourceOnce
+{
+  // Keep resources alive so an erroneous repeated release is observable without a double free.
+  Resource resources[4];
+  {
+    HashSet<ResourceOwner, Malloc> set{uninitialized};
+    set.initializeWithBucketCount(8);
+    for (UInt64 i = 0; i < 4; ++i) {
+      set.insert(HashCode{i}, ResourceOwner{&resources[i]},
+                 [&](const ResourceOwner& owner) { return owner.get() == &resources[i]; });
+    }
+    set.filterAndRehash(MinBucketCount{4}, [&](const ResourceOwner& owner) {
+      return owner.get() == &resources[1] || owner.get() == &resources[3];
+    });
+    XCTAssertEqual(set.count(), 2);
+    XCTAssertEqual(resources[0].releaseCount, 1);
+    XCTAssertEqual(resources[1].releaseCount, 0);
+    XCTAssertEqual(resources[2].releaseCount, 1);
+    XCTAssertEqual(resources[3].releaseCount, 0);
+    for (UInt64 i : {1, 3}) {
+      const auto result = set.insert(HashCode{i}, ResourceOwner{},
+                                    [&](const ResourceOwner& owner) {
+                                      return owner.get() == &resources[i];
+                                    });
+      XCTAssertFalse(result.inserted);
+      XCTAssertEqual(result.value.get(), &resources[i]);
+    }
+    set.filterAndRehash(MinBucketCount{4}, [](const ResourceOwner&) { return true; });
+    XCTAssertEqual(set.count(), 2);
+  }
+  for (const auto& resource : resources) {
+    XCTAssertEqual(resource.releaseCount, 1);
   }
 }
 

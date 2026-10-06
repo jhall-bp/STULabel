@@ -1,6 +1,7 @@
 // Copyright 2018 Stephan Tolksdorf
 
 #include "stu/Vector.hpp"
+#include "stu/UniquePtr.hpp"
 
 #include "TestUtils.hpp"
 
@@ -14,6 +15,11 @@
 @import Foundation;
 
 using namespace stu;
+
+namespace {
+  void countResourceRelease(int* count) noexcept { ++*count; }
+  using ResourceOwner = UniquePtr<int, countResourceRelease>;
+}
 
 TEST_CASE_START(VectorTests)
 
@@ -239,6 +245,39 @@ TEST(RemoveRange)
 #else
   CHECK_EQ(vector.begin()[2].value, -123);
 #endif
+}
+
+TEST(RemoveWhereReleasesEachOwnedResourceOnce)
+{
+  // Keep resources alive so an erroneous repeated release is observable without a double free.
+  int releaseCounts[4]{};
+  {
+    Vector<ResourceOwner> vector;
+    for (int& count : releaseCounts) {
+      vector.append(ResourceOwner{&count});
+    }
+    vector.removeWhere([&](const ResourceOwner& owner) {
+      return owner.get() == &releaseCounts[0] || owner.get() == &releaseCounts[2];
+    });
+    CHECK_EQ(vector.count(), 2);
+    CHECK_EQ(vector[0].get(), &releaseCounts[1]);
+    CHECK_EQ(vector[1].get(), &releaseCounts[3]);
+#if STU_USE_ADDRESS_SANITIZER
+    CHECK(__asan_address_is_poisoned(vector.begin() + 2));
+    CHECK(__asan_address_is_poisoned(vector.begin() + 3));
+#endif
+    CHECK_EQ(releaseCounts[0], 1);
+    CHECK_EQ(releaseCounts[1], 0);
+    CHECK_EQ(releaseCounts[2], 1);
+    CHECK_EQ(releaseCounts[3], 0);
+    vector.removeWhere([](const ResourceOwner&) { return false; });
+    CHECK_EQ(vector.count(), 2);
+    vector.removeWhere([](const ResourceOwner&) { return true; });
+    CHECK_EQ(vector.count(), 0);
+  }
+  for (int count : releaseCounts) {
+    CHECK_EQ(count, 1);
+  }
 }
 
 TEST(SetCapacity)
