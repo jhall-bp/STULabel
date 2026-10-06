@@ -214,9 +214,9 @@ STU_EXPORT
 /// Currently the implementation only supports @c NSTextAttachment instances with a non-null
 /// @c image property. If the @c image property is null, this initializer returns null.
 ///
-/// If @c attachment.isAccessibilityElement is true, this initializer copies non-null
-///  @c accessibilityTraits, @c accessibilityAttributedLabel, @c accessibilityAttributedHint,
-/// @c accessibilityAttributedValue and @c accessibilityLanguage properties from the attachment.
+/// If @c attachment.isAccessibilityElement is true, this initializer copies accessibility traits,
+/// language, label, hint and value from the attachment. Attributed strings take precedence over
+/// their plain string counterparts.
 - (nullable instancetype)initWithNSTextAttachment:(NSTextAttachment *)attachment
                              stringRepresentation:(nullable NSString *)stringRepresentation
     NS_SWIFT_NAME(init(_:stringRepresentation:));

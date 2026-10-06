@@ -95,21 +95,15 @@ static void initCommon(STUTextAttachment *__unsafe_unretained self)
   const bool isAccessible = self.isAccessibilityElement;
   encode(coder, @"isAccessibilityElement", isAccessible);
   if (isAccessible) {
-    bool isAttributed = true;
+    encode(coder, @"accessibilityTraits", self.accessibilityTraits);
     encode(coder, @"hasAttributedAccessibilityStrings", true);
-#define ENCODE(name, attributedName)                                                                                   \
-  if (isAttributed) {                                                                                                  \
-    if (NSAttributedString *const attributedString = self.attributedName) {                                            \
-      encode(coder, @STU_STRINGIZE(attributedName), attributedString);                                                 \
-    }                                                                                                                  \
-  } else {                                                                                                             \
-    if (NSString *const string = self.name) {                                                                          \
-      encode(coder, @STU_STRINGIZE(name), string);                                                                     \
-    }                                                                                                                  \
+#define ENCODE(name)                                                                                                  \
+  if (NSAttributedString *const string = self.name) {                                                                  \
+    encode(coder, @STU_STRINGIZE(name), string);                                                                       \
   }
-    ENCODE(accessibilityLabel, accessibilityAttributedLabel)
-    ENCODE(accessibilityHint, accessibilityAttributedHint)
-    ENCODE(accessibilityValue, accessibilityAttributedValue)
+    ENCODE(accessibilityAttributedLabel)
+    ENCODE(accessibilityAttributedHint)
+    ENCODE(accessibilityAttributedValue)
 #undef ENCODE
     if (NSString *const string = self.accessibilityLanguage) {
       encode(coder, @"accessibilityLanguage", string);
@@ -131,6 +125,9 @@ static void initCommon(STUTextAttachment *__unsafe_unretained self)
   decode(coder, @"isAccessibilityElement", Out{isAccessible});
   if (isAccessible) {
     self.isAccessibilityElement = true;
+    UIAccessibilityTraits traits{};
+    decode(coder, @"accessibilityTraits", Out{traits});
+    self.accessibilityTraits = traits;
     bool isAttributed;
     decode(coder, @"hasAttributedAccessibilityStrings", Out{isAttributed});
 #define DECODE(name, attributedName)                                                                                   \
@@ -356,14 +353,21 @@ static STUTextAttachmentColorInfo attachmentColorInfoForColorSpace(CGColorSpaceR
         stringRepresentation:stringRepresentation];
   if (attachment.isAccessibilityElement) {
     self.isAccessibilityElement = true;
+    self.accessibilityTraits = attachment.accessibilityTraits;
     if (NSAttributedString *const label = attachment.accessibilityAttributedLabel) {
       self.accessibilityAttributedLabel = label;
+    } else {
+      self.accessibilityLabel = attachment.accessibilityLabel;
     }
     if (NSAttributedString *const hint = attachment.accessibilityAttributedHint) {
       self.accessibilityAttributedHint = hint;
+    } else {
+      self.accessibilityHint = attachment.accessibilityHint;
     }
     if (NSAttributedString *const value = attachment.accessibilityAttributedValue) {
       self.accessibilityAttributedValue = value;
+    } else {
+      self.accessibilityValue = attachment.accessibilityValue;
     }
     if (NSString *const value = attachment.accessibilityLanguage) {
       self.accessibilityLanguage = value;

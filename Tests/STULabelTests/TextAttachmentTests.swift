@@ -73,31 +73,45 @@ struct TextAttachmentTests {
     #expect(!attachment2.isAccessibilityElement)
 
     attachment2.isAccessibilityElement = true
-    attachment2.accessibilityAttributedLabel = NSAttributedString(
-      string: "label", attributes: [.baselineOffset: 1])
-    attachment2.accessibilityAttributedHint = NSAttributedString(
-      string: "hint", attributes: [.baselineOffset: 2])
-    attachment2.accessibilityAttributedValue = NSAttributedString(
-      string: "value", attributes: [.baselineOffset: 3])
+    attachment2.accessibilityTraits = [.button, .notEnabled]
     attachment2.accessibilityLanguage = "language"
+    for usesAttributedStrings in [false, true] {
+      if usesAttributedStrings {
+        attachment2.accessibilityAttributedLabel = NSAttributedString(
+          string: "label", attributes: [.baselineOffset: 1])
+        attachment2.accessibilityAttributedHint = NSAttributedString(
+          string: "hint", attributes: [.baselineOffset: 2])
+        attachment2.accessibilityAttributedValue = NSAttributedString(
+          string: "value", attributes: [.baselineOffset: 3])
+      } else {
+        attachment2.accessibilityLabel = "plain label"
+        attachment2.accessibilityHint = "plain hint"
+        attachment2.accessibilityValue = "plain value"
+      }
+      let data2 = try NSKeyedArchiver.archivedData(
+        withRootObject: attachment2, requiringSecureCoding: true)
+      let attachment3 = try NSKeyedUnarchiver.unarchivedObject(
+        ofClass: STUTextAttachment.self, from: data2)!
 
-    let data2 = try NSKeyedArchiver.archivedData(
-      withRootObject: attachment2, requiringSecureCoding: true)
-    let attachment3 = try NSKeyedUnarchiver.unarchivedObject(
-      ofClass: STUTextAttachment.self, from: data2)!
-
-    #expect(attachment3.isAccessibilityElement)
-
-    #expect(
-      attachment3.accessibilityAttributedLabel
-        == NSAttributedString(string: "label", attributes: [.baselineOffset: 1]))
-    #expect(
-      attachment3.accessibilityAttributedHint
-        == NSAttributedString(string: "hint", attributes: [.baselineOffset: 2]))
-    #expect(
-      attachment3.accessibilityAttributedValue
-        == NSAttributedString(string: "value", attributes: [.baselineOffset: 3]))
-    #expect(attachment3.accessibilityLanguage == "language")
+      #expect(attachment3.isAccessibilityElement)
+      #expect(attachment3.accessibilityTraits == [.button, .notEnabled])
+      #expect(attachment3.accessibilityLanguage == "language")
+      if usesAttributedStrings {
+        #expect(
+          attachment3.accessibilityAttributedLabel
+            == NSAttributedString(string: "label", attributes: [.baselineOffset: 1]))
+        #expect(
+          attachment3.accessibilityAttributedHint
+            == NSAttributedString(string: "hint", attributes: [.baselineOffset: 2]))
+        #expect(
+          attachment3.accessibilityAttributedValue
+            == NSAttributedString(string: "value", attributes: [.baselineOffset: 3]))
+      } else {
+        #expect(attachment3.accessibilityLabel == "plain label")
+        #expect(attachment3.accessibilityHint == "plain hint")
+        #expect(attachment3.accessibilityValue == "plain value")
+      }
+    }
   }
 
   @Test
@@ -286,6 +300,23 @@ struct TextAttachmentTests {
       #expect(result.attribute(fixForRDAR36622225Key, at: 2, effectiveRange: nil) as! Int == 2)
       #expect(result.attribute(fixForRDAR36622225Key, at: 5, effectiveRange: nil) as! Int == 1)
     }
+  }
+
+  @Test
+  func attachmentConversionPreservesAccessibilityTraits() throws {
+    let attachment = NSTextAttachment()
+    attachment.image = createTestImage(CGSize(width: 10, height: 10))
+    attachment.isAccessibilityElement = true
+    attachment.accessibilityLabel = "Open details"
+    attachment.accessibilityTraits = [.button, .notEnabled]
+    let text = NSAttributedString(attachment: attachment)
+      .stu_attributedStringByConvertingNSTextAttachmentsToSTUTextAttachments()
+    let converted = try #require(text.attribute(.stuAttachment, at: 0, effectiveRange: nil)
+      as? STUTextAttachment)
+
+    #expect(converted.isAccessibilityElement)
+    #expect(converted.accessibilityLabel == "Open details")
+    #expect(converted.accessibilityTraits == attachment.accessibilityTraits)
   }
 
   @Test
