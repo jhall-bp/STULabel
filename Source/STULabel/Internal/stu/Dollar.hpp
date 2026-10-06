@@ -53,34 +53,39 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
   : value{std::move(value)}
   {}
 
-  template <typename T2, EnableIf<!isSame<T, T2> && isSafelyConvertible<T2&&, T>> = 0>
+  template <typename T2>
+    requires (!isSame<T, T2> && isSafelyConvertible<T2&&, T>)
   /* implicit */ STU_CONSTEXPR_T
   DollarOffset(DollarOffset<T2> offset) noexcept(isNothrowConstructible<T, T2&&>)
   : DollarOffset{std::move(offset.value)}
   {}
 
-  template <typename T2, EnableIf<!isSame<T, T2> && isNonSafelyConvertible<T2&&, T>> = 0>
+  template <typename T2>
+    requires (!isSame<T, T2> && isNonSafelyConvertible<T2&&, T>)
   explicit STU_CONSTEXPR
   DollarOffset(DollarOffset<T2> offset) noexcept(isNothrowConstructible<T, T2&&>)
   : DollarOffset(static_cast<T>(std::move(offset.value)))
   {}
 
 
-  template <bool enable = isIncrementable<T>, EnableIf<enable> = 0>
+  template <bool enable = isIncrementable<T>>
+    requires (enable)
   STU_CONSTEXPR
   DollarOffset& operator++() noexcept(isNothrowIncrementable<T>) {
     ++value;
     return *this;
   }
 
-  template <bool enable = isDecrementable<T>, EnableIf<enable> = 0>
+  template <bool enable = isDecrementable<T>>
+    requires (enable)
   STU_CONSTEXPR
   DollarOffset& operator--() noexcept(isNothrowDecrementable<T>) {
     --value;
     return *this;
   }
 
-  template <bool enable = isIncrementable<T>, EnableIf<enable> = 0>
+  template <bool enable = isIncrementable<T>>
+    requires (enable)
   STU_CONSTEXPR
   DollarOffset operator++(int)
                  noexcept(isNothrowIncrementable<T> && isNothrowCopyConstructible<T>)
@@ -90,7 +95,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return temp;
   }
 
-  template <bool enable = isDecrementable<T>, EnableIf<enable> = 0>
+  template <bool enable = isDecrementable<T>>
+    requires (enable)
   STU_CONSTEXPR
   DollarOffset operator--(int)
                  noexcept(isNothrowDecrementable<T> && isNothrowCopyConstructible<T>)
@@ -112,7 +118,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return *this;
   }
 
-  template <bool enable = isAddable<T> && isCompoundAddable<T>, EnableIf<enable> = 0>
+  template <bool enable = isAddable<T> && isCompoundAddable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend DollarOffset operator+(const T& lhs, DollarOffset rhs)
                         noexcept(noexcept(isNothrowCompoundAddable<T>))
@@ -121,7 +128,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return rhs;
   }
 
-  template <bool enable = isAddable<T> && isCompoundAddable<T>, EnableIf<enable> = 0>
+  template <bool enable = isAddable<T> && isCompoundAddable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend DollarOffset operator+(DollarOffset lhs, const T& rhs)
                         noexcept(noexcept(isNothrowCompoundAddable<T>))
@@ -130,7 +138,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return lhs;
   }
 
-  template <bool enable = isSubtractable<T> && isCompoundSubtractable<T>, EnableIf<enable> = 0>
+  template <bool enable = isSubtractable<T> && isCompoundSubtractable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend DollarOffset operator-(const T& lhs, DollarOffset rhs)
                         noexcept(noexcept(isNothrowCompoundSubtractable<T>))
@@ -139,7 +148,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return rhs;
   }
 
-  template <bool enable = isSubtractable<T> && isCompoundSubtractable<T>, EnableIf<enable> = 0>
+  template <bool enable = isSubtractable<T> && isCompoundSubtractable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend DollarOffset operator-(DollarOffset lhs, const T& rhs)
                         noexcept(noexcept(isNothrowCompoundSubtractable<T>))
@@ -148,7 +158,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return lhs;
   }
 
-  template <bool enable = isEqualityComparable<T>, EnableIf<enable> = 0>
+  template <bool enable = isEqualityComparable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend bool operator==(const DollarOffset& lhs, const DollarOffset& rhs)
                 noexcept(isNothrowEqualityComparable<T>)
@@ -156,7 +167,8 @@ struct DollarOffset : Comparable<DollarOffset<T>> {
     return lhs.value == rhs.value;
   }
 
-  template <bool enable = isLessThanComparable<T>, EnableIf<enable> = 0>
+  template <bool enable = isLessThanComparable<T>>
+    requires (enable)
   STU_CONSTEXPR_T
   friend bool operator<(const DollarOffset& lhs, const DollarOffset& rhs)
                 noexcept(isNothrowLessThanComparable<T>)

@@ -80,13 +80,15 @@ struct Range : RangeBase<T> {
     noexcept(isNothrowMoveConstructible<T> && noexcept(T(startValue + count.value)))
   : start{std::move(startValue)}, end{start + count.value} {}
 
-  template <typename U, EnableIf<!isSame<U, T> && isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSame<U, T> && isSafelyConvertible<U, T>)
   /* implicit */ STU_CONSTEXPR_T
   Range(Range<U> range) noexcept(isNothrowConstructible<T, U&&>)
   : Range(std::move(range.start), std::move(range.end))
   {}
 
-  template <typename U, EnableIf<isNonSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (isNonSafelyConvertible<U, T>)
   explicit STU_CONSTEXPR
   Range(Range<U> range) noexcept(isNothrowConstructible<T, U&&>)
   : Range(static_cast<T>(std::move(range.start)),
@@ -94,8 +96,8 @@ struct Range : RangeBase<T> {
   {}
 
   template <typename R,
-            typename U = RangeBound<R>,
-            EnableIf<isSafelyConvertible<U, T> && !isSame<Decay<R>, Range<U>>> = 0>
+            typename U = RangeBound<R>>
+    requires (isSafelyConvertible<U, T> && !isSame<Decay<R>, Range<U>>)
   /* implicit */ STU_CONSTEXPR_T
   Range(R&& range)
     noexcept(noexcept(Range{RangeConversion<Decay<R>>::toRange(std::forward<R>(range))}))
@@ -103,38 +105,38 @@ struct Range : RangeBase<T> {
   {}
 
   template <typename R,
-            typename U = RangeBound<R>,
-            EnableIf<isNonSafelyConvertible<U, T> && !isSame<Decay<R>, Range<U>>> = 0>
+            typename U = RangeBound<R>>
+    requires (isNonSafelyConvertible<U, T> && !isSame<Decay<R>, Range<U>>)
   explicit STU_CONSTEXPR
   Range(R&& range)
     noexcept(noexcept(Range{RangeConversion<Decay<R>>::toRange(std::forward<R>(range))}))
                     : Range{RangeConversion<Decay<R>>::toRange(std::forward<R>(range))}
   {}
 
-  template <typename R, typename U = RangeBound<R>,
-            EnableIf<isSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>> = 0>
+  template <typename R, typename U = RangeBound<R>>
+    requires (isSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>)
   /* implicit */ STU_CONSTEXPR_T
   operator R() const &
     STU_NOEXCEPT_AUTO_RETURN(RangeConversion<Decay<R>>
                              ::fromRange(implicit_cast<const Range<U>>(*this)))
 
-  template <typename R, typename U = RangeBound<R>,
-            EnableIf<isNonSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>> = 0>
+  template <typename R, typename U = RangeBound<R>>
+    requires (isNonSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>)
   explicit STU_CONSTEXPR
   operator R() const &
     STU_NOEXCEPT_AUTO_RETURN(RangeConversion<Decay<R>>
                              ::fromRange(static_cast<const Range<U>>(*this)))
 
 
-  template <typename R, typename U = RangeBound<R>,
-            EnableIf<isSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>> = 0>
+  template <typename R, typename U = RangeBound<R>>
+    requires (isSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>)
   /* implicit */ STU_CONSTEXPR_T
   operator R() &&
     STU_NOEXCEPT_AUTO_RETURN(RangeConversion<Decay<R>>
                              ::fromRange(implicit_cast<Range<U>>(std::move(*this))))
 
-  template <typename R, typename U = RangeBound<R>,
-            EnableIf<isNonSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>> = 0>
+  template <typename R, typename U = RangeBound<R>>
+    requires (isNonSafelyConvertible<T, U> && !isSame<Decay<R>, Range<U>>)
   explicit STU_CONSTEXPR
   operator R() &&
     STU_NOEXCEPT_AUTO_RETURN(RangeConversion<Decay<R>>
@@ -145,7 +147,8 @@ struct Range : RangeBase<T> {
     return !(start < end);
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   STU_CONSTEXPR
   static Range infinitelyEmpty() { return {infinity<T>, -infinity<T>}; }
 
@@ -266,9 +269,8 @@ struct Range : RangeBase<T> {
     })(range1, range2);
   }
 
-  template <typename Range1, typename Range2,
-            EnableIf<   isConvertible<const Range1&, const Range&>
-                     && isConvertible<const Range2&, const Range&>> = 0>
+  template <typename Range1, typename Range2>
+    requires (isConvertible<const Range1&, const Range&> && isConvertible<const Range2&, const Range&>)
   STU_CONSTEXPR
   friend bool operator!=(const Range1& range1, const Range2& range2) {
     return !(range1 == range2);
@@ -311,7 +313,8 @@ public:
   using Offset = Conditional<isOffsetable<T, Difference>, Difference, NoType>;
 
   /// May overflow.
-  template <bool enable = isType<Count>, EnableIf<enable> = 0>
+  template <bool enable = isType<Count>>
+    requires (enable)
   STU_CONSTEXPR
   Count count() const {
     return max(start, end) - start;
@@ -323,13 +326,15 @@ public:
     return max(start, end) - start;
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   T center() const {
     return start/2 + max(start/2, end/2);
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Range outsetBy(T value) const {
     Range range = *this;
@@ -338,19 +343,22 @@ public:
     return range;
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Range insetBy(T value) const {
     return outsetBy(-value);
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Range roundedToNearbyInt() const {
     return {std::nearbyint(start), std::nearbyint(end)};
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   STU_CONSTEXPR
   void roundToNearbyInt() {
     *this = roundedToNearbyInt();
@@ -367,12 +375,14 @@ public:
     Iterator end() const { return Iterator(max(range.start, range.end)); }
   };
 
-  template <bool enable = isType<Count>, EnableIf<enable> = 0>
+  template <bool enable = isType<Count>>
+    requires (enable)
   Iterable iter() const { return {*this}; }
 
   // TODO: proper constraints
 
-  template <typename U, EnableIf<isType<decltype(declval<T&>() += declval<const U&>())>> = 0>
+  template <typename U>
+    requires (isType<decltype(declval<T&>() += declval<const U&>())>)
   STU_CONSTEXPR
   Range& operator+=(const U& offset) {
     start += offset;
@@ -380,7 +390,8 @@ public:
     return *this;
   }
 
-  template <typename U, EnableIf<isType<decltype(declval<T&>() -= declval<const U&>())>> = 0>
+  template <typename U>
+    requires (isType<decltype(declval<T&>() -= declval<const U&>())>)
   STU_CONSTEXPR
   Range& operator-=(const U& offset) {
     start -= offset;
@@ -388,7 +399,8 @@ public:
     return *this;
   }
 
-  template <typename U, EnableIf<isType<decltype(declval<T&>() *= declval<const U&>())>> = 0>
+  template <typename U>
+    requires (isType<decltype(declval<T&>() *= declval<const U&>())>)
   STU_CONSTEXPR
   Range& operator*=(const U& scale) {
     start *= scale;
@@ -402,7 +414,8 @@ public:
     return *this;
   }
 
-  template <typename U, EnableIf<isType<decltype(declval<T&>() /= declval<const U&>())>> = 0>
+  template <typename U>
+    requires (isType<decltype(declval<T&>() /= declval<const U&>())>)
   STU_CONSTEXPR
   Range& operator/=(const U& scale) {
     start /= scale;
@@ -423,7 +436,8 @@ public:
     range += offset;
     return range;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator+(const Range& range, const U& offset) {
     Range<CommonType<T, U>> result{range};
@@ -435,7 +449,8 @@ public:
   friend Range operator+(const T& offset, Range range) {
     return range + offset;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator+(const U& offset, const Range& range) {
     return range + offset;
@@ -446,7 +461,8 @@ public:
     range -= offset;
     return range;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator-(const Range& range, const U& offset) {
     Range<CommonType<T, U>> result{range};
@@ -458,7 +474,8 @@ public:
     range *= scale;
     return range;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator*(const Range& range, const U& scale) {
     Range<CommonType<T, U>> result{range};
@@ -470,7 +487,8 @@ public:
   friend Range operator*(const T& scale, Range range) {
     return range*scale;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator*(const U& scale, const Range& range) {
     return range*scale;
@@ -481,7 +499,8 @@ public:
     range /= scale;
     return range;
   }
-  template <typename U, EnableIf<!isSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (!isSafelyConvertible<U, T>)
   STU_CONSTEXPR
   friend Range<CommonType<T, U>> operator/(const Range& range, const U& scale) {
     Range<CommonType<T, U>> result{range};
@@ -493,27 +512,29 @@ public:
 template <typename T>
 struct IsMemberwiseConstructible<Range<T>> : IsMemberwiseConstructible<T> {};
 
-template <typename R, EnableIf<isConstructible<Range<RangeBound<R>>, R&&>> = 0>
+template <typename R>
+  requires (isConstructible<Range<RangeBound<R>>, R&&>)
 Range(R&&) -> Range<RangeBound<R>>;
 
 template <typename Start, typename End,
-          typename T = CommonType<Start, End>,
-          EnableIf<isComparable<T>> = 0>
+          typename T = CommonType<Start, End>>
+  requires (isComparable<T>)
 Range(Start start, End end) -> Range<T>;
 
 // The following factory functions are still needed due to a bug in clang 6 that prevents deduction
 // guide-based template parameter inference when the constructor is called within a pair of
 // parentheses (e.g. in a macro expansion).
 
-template <typename R, EnableIf<isConstructible<Range<RangeBound<R>>, R&&>> = 0>
+template <typename R>
+  requires (isConstructible<Range<RangeBound<R>>, R&&>)
 STU_CONSTEXPR
 Range<RangeBound<R>> range(R&& range) {
   return Range<RangeBound<R>>(std::forward<R>(range));
 }
 
 template <typename Start, typename End,
-          typename T = CommonType<Start, End>,
-          EnableIf<isComparable<T>> = 0>
+          typename T = CommonType<Start, End>>
+  requires (isComparable<T>)
 STU_CONSTEXPR_T
 Range<T> range(Start start, End end) {
   return Range<T>(std::move(start), std::move(end));
@@ -525,7 +546,8 @@ Range<T> range(T start, Count<Int> count) {
   return {start, count};
 }
 
-template <typename Int, EnableIf<isInteger<Int>> = 0>
+template <typename Int>
+  requires (isInteger<Int>)
 STU_CONSTEXPR_T
 auto sign_cast(Range<Int> value) noexcept {
   using Result = Conditional<isSigned<Int>, Range<Unsigned<Int>>, Range<Signed<Int>>>;

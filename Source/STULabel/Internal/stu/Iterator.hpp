@@ -103,17 +103,20 @@ protected:
     isConvertible<IteratorCategory, std::random_access_iterator_tag>;
 
 public:
-  template <bool enable = isReference<Reference>, EnableIf<enable> = 0>
+  template <bool enable = isReference<Reference>>
+    requires (enable)
   STU_CONSTEXPR
   Pointer operator->() const
     STU_NOEXCEPT_AUTO_RETURN(Pointer{&derived().operator*()})
 
-  template <bool disable = isReference<Reference>, EnableIf<!disable> = 0>
+  template <bool disable = isReference<Reference>>
+    requires (!disable)
   STU_CONSTEXPR
   Pointer operator->() const // Returns a MemberAccessOperatorProxy.
     STU_NOEXCEPT_AUTO_RETURN(Pointer{derived().operator*()})
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   Reference operator[](Difference index) const
     STU_NOEXCEPT_AUTO_RETURN(Reference{*(derived() + index)})
@@ -126,7 +129,8 @@ public:
     return derived() += Difference(1);
   }
 
-  template <bool enable = isBidirectionalIterator, EnableIf<enable> = 0>
+  template <bool enable = isBidirectionalIterator>
+    requires (enable)
   STU_CONSTEXPR
   Derived& operator--() noexcept(isNothrowCompoundSubtractable<Derived, difference_type>) {
     static_assert(isRandomAccessIterator,
@@ -144,7 +148,8 @@ public:
     return temp;
   }
 
-  template <bool enable = isBidirectionalIterator, EnableIf<enable> = 0>
+  template <bool enable = isBidirectionalIterator>
+    requires (enable)
   STU_CONSTEXPR
   Derived operator--(int)
     noexcept(isNothrowDecrementable<Derived> && isNothrowCopyConstructible<Derived>)
@@ -154,7 +159,8 @@ public:
     return temp;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   Derived operator+(Difference offset) const
     noexcept(isNothrowCopyConstructible<Derived>
@@ -165,7 +171,8 @@ public:
     return temp;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   Derived operator-(Difference offset) const
     noexcept(isNothrowCopyConstructible<Derived>
@@ -221,20 +228,23 @@ public:
     return *this;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   Difference operator-(ReversedIterator other) const noexcept {
     return other.reversed - reversed;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   ReversedIterator& operator+=(Difference n) noexcept {
     reversed -= n;
     return *this;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   ReversedIterator& operator-=(Difference n) noexcept {
     reversed += n;
@@ -248,7 +258,8 @@ public:
     return other.reversed == reversed;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   bool operator<(const ReversedIterator& other) const
          noexcept(isNothrowLessThanComparable<Iterator>)
@@ -303,20 +314,23 @@ public:
     return *this;
   }
 
-  template <bool enable = isBidirectionalIterator, EnableIf<enable> = 0>
+  template <bool enable = isBidirectionalIterator>
+    requires (enable)
   STU_CONSTEXPR
   CountingIterator& operator--() noexcept(isNothrowDecrementable<T>) {
     --value;
     return *this;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   Difference operator-(CountingIterator other) noexcept(isNothrowSubtractable<T>) {
     return value - other.value;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   CountingIterator& operator+=(Difference difference)
     noexcept(isNothrowCompoundAddable<T, Difference>)
@@ -325,7 +339,8 @@ public:
     return *this;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   CountingIterator& operator-=(Difference difference)
     noexcept(isNothrowCompoundSubtractable<T, Difference>)
@@ -341,7 +356,8 @@ public:
     return value == other.value;
   }
 
-  template <bool enable = isRandomAccessIterator, EnableIf<enable> = 0>
+  template <bool enable = isRandomAccessIterator>
+    requires (enable)
   STU_CONSTEXPR
   bool operator<(const CountingIterator& other) const
          noexcept(isNothrowLessThanComparable<T>)

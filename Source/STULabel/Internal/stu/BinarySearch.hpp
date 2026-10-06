@@ -20,8 +20,8 @@ struct ArrayBinarySearchResult {
 /// \pre The array must be partitioned such that all elements for which `predicate` returns `true`
 /// are placed after all elements for which it returns `false`.
 template <typename Array, typename Predicate,
-          typename T = typename decltype(ArrayRef(declval<const Array&>()))::Value,
-          EnableIf<isCallable<Predicate, bool(const T&)>> = 0>
+          typename T = typename decltype(ArrayRef(declval<const Array&>()))::Value>
+  requires (isCallable<Predicate, bool(const T&)>)
 STU_INLINE
 ArrayBinarySearchResult
   binarySearchFirstIndexWhere(const Array& partitionedArray, Predicate&& predicate)
