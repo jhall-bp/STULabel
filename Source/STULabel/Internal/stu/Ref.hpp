@@ -39,7 +39,8 @@ public:
   STU_CONSTEXPR_T
   Ref(const Ref&) noexcept = default;
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Ref(Ref<U> other) noexcept
   : Ref(other.get()) {}
@@ -47,19 +48,22 @@ public:
   STU_CONSTEXPR_T
   Ref& operator=(const Ref&) noexcept = default;
   
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Ref& operator=(Ref<U> other) noexcept {
     pointer_ = &other.get();
     return *this;
   }
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   Ref(std::reference_wrapper<U> other) noexcept
   : Ref(other.get()) {}
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Ref& operator=(std::reference_wrapper<U> other) noexcept {
     pointer_ = &other.get();
@@ -76,8 +80,8 @@ public:
   T* pointer() const noexcept { return pointer_; }
 
   // This deleted overload prevents assignments to the referenced value.
-  template <typename Other,
-            EnableIf<!isRef<RemoveReference<Other>>> = 0>
+  template <typename Other>
+    requires (!isRef<RemoveReference<Other>>)
   Ref& operator=(Other&& other) = delete;
 
   template <typename U = T, typename R = decltype(*declval<U&>())>

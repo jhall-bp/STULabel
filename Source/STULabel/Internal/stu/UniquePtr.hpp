@@ -53,8 +53,8 @@ public:
   : pointer_(std::exchange(other.pointer_, nullptr))
   {}
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE_T
   UniquePtr(UniquePtr<U, deleter...>&& other) noexcept
   : pointer_(std::exchange(other.pointer_, nullptr))
@@ -72,8 +72,8 @@ public:
     return this->template operator=<T>(std::move(other));
   }
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE
   UniquePtr& operator=(UniquePtr<U, deleter...>&& other) noexcept {
     destroy();

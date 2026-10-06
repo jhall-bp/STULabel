@@ -21,7 +21,8 @@ public:
   STU_CONSTEXPR_T
   T& get() const noexcept { return value_; }
 
-  template <typename U, EnableIf<isAssignable<T&, U&&>> = 0>
+  template <typename U>
+    requires (isAssignable<T&, U&&>)
   STU_CONSTEXPR
   T& operator=(U&& other) const noexcept(isNothrowAssignable<T&, U&&>) {
     value_ = std::forward<U>(other);
@@ -49,7 +50,8 @@ public:
   STU_CONSTEXPR_T
   T& get() const noexcept { return value_; }
 
-  template <typename U, EnableIf<isAssignable<T&, U&&>> = 0>
+  template <typename U>
+    requires (isAssignable<T&, U&&>)
   STU_CONSTEXPR
   T& operator=(U&& other) const noexcept(isNothrowAssignable<T&, U&&>) {
     value_ = std::forward<U>(other);

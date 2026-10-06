@@ -76,8 +76,8 @@ public:
     if (pointer_) Traits::incrementRefCount(pointer_);
   }
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE
   RC(const RC<U>& other)
   : pointer_(other.pointer_)
@@ -90,8 +90,8 @@ public:
   : pointer_(std::exchange(other.pointer_, nullptr))
   {}
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE_T
   RC(RC<U>&& other) noexcept
   : pointer_(std::exchange(other.pointer_, nullptr))
@@ -111,8 +111,8 @@ public:
     return *this;
   }
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE
   RC& operator=(const RC<U>& other) {
     *this = other.get();
@@ -124,8 +124,8 @@ public:
     return this->template operator=<T>(std::move(other));
   }
 
-  template <typename U,
-            EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_INLINE
   RC& operator=(RC<U>&& other) noexcept {
     *this = nullptr;
