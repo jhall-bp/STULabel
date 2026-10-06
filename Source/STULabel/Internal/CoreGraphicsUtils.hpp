@@ -13,96 +13,111 @@ CGFloat cgFloatFromNumber(__unsafe_unretained id value) {
 #endif
 }
 
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 Point operator+(Point lhs, Point rhs) {
   return {lhs.x + rhs.x, lhs.y + rhs.y};
 }
 
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 Point operator-(Point lhs, Point rhs) {
   return {lhs.x - rhs.x, lhs.y - rhs.y};
 }
 
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 Point operator-(Point p) {
   return {-p.x, -p.y};
 }
 
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 CGPoint& operator*=(Point& point, CGFloat scale) {
   point.x *= scale;
   point.y *= scale;
   return point;
 }
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 CGPoint operator*(CGFloat scale, Point point) {
   point *= scale;
   return point;
 }
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 CGPoint operator*(Point point, CGFloat scale) {
   point *= scale;
   return point;
 }
 
-template <typename Point, EnableIf<isSame<Point, CGPoint>> = 0>
+template <typename Point>
+  requires (isSame<Point, CGPoint>)
 STU_CONSTEXPR
 CGPoint operator/(Point point, CGFloat scale) {
   return {point.x/scale, point.y/scale};
 }
 
-template <typename Size, EnableIf<isSame<Size, CGSize>> = 0>
+template <typename Size>
+  requires (isSame<Size, CGSize>)
 STU_CONSTEXPR
 CGSize& operator*=(Size& size, CGFloat scale) {
   size.width  *= scale;
   size.height *= scale;
   return size;
 }
-template <typename Size, EnableIf<isSame<Size, CGSize>> = 0>
+template <typename Size>
+  requires (isSame<Size, CGSize>)
 STU_CONSTEXPR
 CGSize operator*(CGFloat scale, Size size) {
   size *= scale;
   return size;
 }
-template <typename Size, EnableIf<isSame<Size, CGSize>> = 0>
+template <typename Size>
+  requires (isSame<Size, CGSize>)
 STU_CONSTEXPR
 CGSize operator*(Size size, CGFloat scale) {
   size *= scale;
   return size;
 }
 
-template <typename Rect, EnableIf<isSame<Rect, CGRect>> = 0>
+template <typename Rect>
+  requires (isSame<Rect, CGRect>)
 STU_CONSTEXPR
 CGRect operator+(CGPoint point, Rect rect) {
   return {.origin = rect.origin + point, .size = rect.size};
 }
 
-template <typename Rect, EnableIf<isSame<Rect, CGRect>> = 0>
+template <typename Rect>
+  requires (isSame<Rect, CGRect>)
 STU_CONSTEXPR
 CGRect operator+(Rect rect, CGPoint point) {
   return point + rect;
 }
 
-template <typename Rect, EnableIf<isSame<Rect, CGRect>> = 0>
+template <typename Rect>
+  requires (isSame<Rect, CGRect>)
 STU_CONSTEXPR
 CGRect& operator*=(Rect& rect, CGFloat scale) {
   rect.origin *= scale;
   rect.size *= scale;
   return rect;
 }
-template <typename Rect, EnableIf<isSame<Rect, CGRect>> = 0>
+template <typename Rect>
+  requires (isSame<Rect, CGRect>)
 STU_CONSTEXPR
 CGRect operator*(CGFloat scale, Rect rect) {
   rect *= scale;
   return rect;
 }
-template <typename Rect, EnableIf<isSame<Rect, CGRect>> = 0>
+template <typename Rect>
+  requires (isSame<Rect, CGRect>)
 STU_CONSTEXPR
 CGRect operator*(Rect rect, CGFloat scale) {
   rect *= scale;

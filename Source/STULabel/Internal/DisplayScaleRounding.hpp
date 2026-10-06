@@ -108,13 +108,15 @@ public:
   #endif
   {}
 
-  template <typename T, EnableIf<isSame<T, Float64>> = 0>
+  template <typename T>
+    requires (isSame<T, Float64>)
   STU_CONSTEXPR
   Pair<T, T> valueAndInverse() const {
     return {value_f64(), inverseValue_f64()};
   }
 
-  template <typename T, EnableIf<isSame<T, Float32>> = 0>
+  template <typename T>
+    requires (isSame<T, Float32>)
   STU_CONSTEXPR
   Pair<T, T> valueAndInverse() const {
     return {value_f32(), inverseValue_f32()};
@@ -187,11 +189,13 @@ DisplayScale DisplayScale::createOrIfInvalidUseOne(CGFloat scale) {
 }
 
 namespace detail {
-  template <typename T, EnableIf<isOneOf<T, float, double>> = 0>
+  template <typename T>
+    requires (isOneOf<T, float, double>)
   constexpr T maxRelDiffForRounding = isSame<T, double> ? 128*DBL_EPSILON : 32*FLT_EPSILON;
 }
 
-template <typename T, EnableIf<isOneOf<T, Float64, Float32>> = 0>
+template <typename T>
+  requires (isOneOf<T, Float64, Float32>)
 [[nodiscard]] STU_CONSTEXPR
 T roundToScale(T value, const DisplayScale& displayScale) {
   const auto [scale, inverseScale] = displayScale.valueAndInverse<T>();
@@ -201,7 +205,8 @@ T roundToScale(T value, const DisplayScale& displayScale) {
 /// Rounds the value down to the previous multiple of 1/displayScale, unless the value is very close
 /// to the next multiple of 1/displayScale, in which case the value is rounded *up* to that
 /// multiple.
-template <typename T, EnableIf<isOneOf<T, Float64, Float32>> = 0>
+template <typename T>
+  requires (isOneOf<T, Float64, Float32>)
 [[nodiscard]] STU_CONSTEXPR
 T floorToScale(T value, const DisplayScale& displayScale) {
   const auto [scale, inverseScale] = displayScale.valueAndInverse<T>();
@@ -216,7 +221,8 @@ T floorToScale(T value, const DisplayScale& displayScale) {
 /// `1/displayScale`, unless `value + scaledOffset/displayScale` is very close to the previous
 /// multiple of `1/displayScale`, in which case the value is rounded *down* to that multiple
 /// minus `scaledOffset/displayScale`.
-template <typename T, EnableIf<isOneOf<T, Float64, Float32>> = 0>
+template <typename T>
+  requires (isOneOf<T, Float64, Float32>)
 [[nodiscard]] STU_CONSTEXPR
 T ceilToScale(T value, const DisplayScale& displayScale, T scaledOffset = 0) {
   const auto [scale, inverseScale] = displayScale.valueAndInverse<T>();
@@ -234,7 +240,8 @@ CGSize ceilToScale(CGSize size, const DisplayScale& scale) {
   return size;
 }
 
-template <typename T, EnableIf<isOneOf<T, Float64, Float32>> = 0>
+template <typename T>
+  requires (isOneOf<T, Float64, Float32>)
 [[nodiscard]] STU_CONSTEXPR
 Rect<T> ceilToScale(Rect<T> rect, const DisplayScale& scale) {
   Rect<T> result;

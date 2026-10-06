@@ -24,13 +24,15 @@ Float32 clampFloatInput(Float32 value) {
        : 0; // Handles NaN values.
 }
 
-template <typename T, EnableIf<isFloatingPoint<T>> = 0>
+template <typename T>
+  requires (isFloatingPoint<T>)
 STU_INLINE
 T clampNonNegativeFloatInput(T value) {
   return value >= 0 ? min(value, maxFloatInputValue) : 0;
 }
 
-template <typename T, EnableIf<isFloatingPoint<T>> = 0>
+template <typename T>
+  requires (isFloatingPoint<T>)
 STU_INLINE
 T clampNonPositiveFloatInput(T value) {
   return value <= 0 ? max(-maxFloatInputValue, value) : 0;
@@ -266,8 +268,8 @@ Range<Int32> clampToInt32IndexRange(NSRange range) {
           narrow_cast<Int32>(min(end, maxValue))};
 }
 
-template <typename Int, typename Float,
-          EnableIf<isSignedInteger<Int> && isFloatingPoint<Float>> = 0>
+template <typename Int, typename Float>
+  requires (isSignedInteger<Int> && isFloatingPoint<Float>)
 STU_CONSTEXPR
 Int truncatePositiveFloatTo(Float value) {
   if (STU_LIKELY(value < maxValue<Unsigned<Int>>/2 + 1)) {
@@ -276,8 +278,8 @@ Int truncatePositiveFloatTo(Float value) {
   return maxValue<Int>;
 }
 
-template <typename Int, typename Float,
-          EnableIf<isSignedInteger<Int> && isFloatingPoint<Float>> = 0>
+template <typename Int, typename Float>
+  requires (isSignedInteger<Int> && isFloatingPoint<Float>)
 STU_CONSTEXPR
 Int truncateFloatTo(Float value) {
   if (STU_LIKELY(value < maxValue<Unsigned<Int>>/2 + 1)) {
