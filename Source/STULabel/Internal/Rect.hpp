@@ -23,49 +23,51 @@ struct Point {
   : x{std::move(x)}, y{std::move(y)}
   {}
 
-  template <typename U, EnableIf<isSafelyConvertible<U, T> && !isSame<U, T>> = 0>
+  template <typename U>
+    requires (isSafelyConvertible<U, T> && !isSame<U, T>)
   /* implicit */ STU_CONSTEXPR_T
   Point(const Point<U>& other)
   : x(other.x), y(other.y)
   {}
 
-  template <typename U, EnableIf<isNonSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (isNonSafelyConvertible<U, T>)
   explicit STU_CONSTEXPR_T
   Point(const Point<U>& other)
   : x{static_cast<T>(other.x)}, y{static_cast<T>(other.y)}
   {}
 
-  template <bool enable = isSafelyConvertible<CGFloat, T>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<CGFloat, T>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   Point(CGPoint other)
   : x{other.x}, y{other.y}
   {}
 
-  template <bool enable = isSafelyConvertible<CGFloat, T>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<CGFloat, T>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   Point(CGVector vector)
   : x{vector.dx}, y{vector.dy}
   {}
 
-  template <bool enable = isSafelyConvertible<T, CGFloat>, EnableIf<enable && 1> = 0>
-  /* implicit */ STU_CONSTEXPR_T
+  template <bool enable = isSafelyConvertible<T, CGFloat>
+                          || isNonSafelyConvertible<T, CGFloat>>
+    requires (enable)
+  explicit(!isSafelyConvertible<T, CGFloat>) STU_CONSTEXPR_T
   operator CGPoint() const {
     return {.x = static_cast<CGFloat>(x), .y = static_cast<CGFloat>(y)};
   }
 
-  template <bool enable = isNonSafelyConvertible<T, CGFloat>, EnableIf<enable && 2> = 0>
-  explicit STU_CONSTEXPR_T
-  operator CGPoint() const {
-    return {.x = static_cast<CGFloat>(x), .y = static_cast<CGFloat>(y)};
-  }
-
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Point roundedToNearbyInt() const {
     return {std::nearbyint(x), std::nearbyint(y)};
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   STU_CONSTEXPR
   void roundToNearbyInt() {
     *this = roundedToNearbyInt();
@@ -134,7 +136,8 @@ struct Point {
     point *= scale;
     return point;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Point<U> operator*(const Point<T>& point, const U& scale) {
     Point<U> result{point};
@@ -147,7 +150,8 @@ struct Point {
   friend Point operator*(const T& scale, const Point& point) {
     return point*scale;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Point<U> operator*(const U& scale, const Point<T>& point) {
     return point*scale;
@@ -158,7 +162,8 @@ struct Point {
     point /= scale;
     return point;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Point<U> operator/(const Point<T>& point, const U& scale) {
     Point<U> result{point};
@@ -199,32 +204,31 @@ struct Size {
   : width{width}, height{height}
   {}
 
-  template <typename U, EnableIf<isSafelyConvertible<U, T> && !isSame<U, T>> = 0>
+  template <typename U>
+    requires (isSafelyConvertible<U, T> && !isSame<U, T>)
   /* implicit */ STU_CONSTEXPR_T
   Size(const Size<U>& other)
   : width(other.width), height(other.height)
   {}
 
-  template <typename U, EnableIf<isNonSafelyConvertible<U, T>> = 0>
+  template <typename U>
+    requires (isNonSafelyConvertible<U, T>)
   explicit STU_CONSTEXPR_T
   Size(const Size<U>& other)
   : width{static_cast<T>(other.width)}, height{static_cast<T>(other.height)}
   {}
 
-  template <bool enable = isSafelyConvertible<CGFloat, T>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<CGFloat, T>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   Size(CGSize other)
   : width{other.width}, height{other.height}
   {}
 
-  template <bool enable = isSafelyConvertible<T, CGFloat>, EnableIf<enable && 1> = 0>
-  /* implicit */ STU_CONSTEXPR_T
-  operator CGSize() const {
-    return {.width = static_cast<CGFloat>(width), .height = static_cast<CGFloat>(height)};
-  }
-
-  template <bool enable = isNonSafelyConvertible<T, CGFloat>, EnableIf<enable && 2> = 0>
-  explicit STU_CONSTEXPR_T
+  template <bool enable = isSafelyConvertible<T, CGFloat>
+                          || isNonSafelyConvertible<T, CGFloat>>
+    requires (enable)
+  explicit(!isSafelyConvertible<T, CGFloat>) STU_CONSTEXPR_T
   operator CGSize() const {
     return {.width = static_cast<CGFloat>(width), .height = static_cast<CGFloat>(height)};
   }
@@ -234,13 +238,15 @@ struct Size {
     return width*height;
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Size roundedToNearbyInt() const {
     return {std::nearbyint(width), std::nearbyint(height)};
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   STU_CONSTEXPR
   void roundToNearbyInt() {
     *this = roundedToNearbyInt();
@@ -265,7 +271,8 @@ struct Size {
     size *= scale;
     return size;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Size<U> operator*(const Size<T>& size, const U& scale) {
     Size<U> result{size};
@@ -277,7 +284,8 @@ struct Size {
   friend Size operator*(const T& scale, const Size& size) {
     return size*scale;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Size<U> operator*(const U& scale, const Size<T>& size) {
     return size*scale;
@@ -288,7 +296,8 @@ struct Size {
     size /= scale;
     return size;
   }
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Size<U> operator/(const Size<T>& size, const U& scale) {
     Size<U> result{size};
@@ -323,7 +332,8 @@ struct EdgeInsets {
 
   EdgeInsets() = delete;
 
-  template <bool enable = isSafelyConvertible<T, CGFloat>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<T, CGFloat>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   operator UIEdgeInsets() const {
     return {.top = top, .left = left, .bottom = bottom, .right = right};
@@ -344,15 +354,18 @@ struct Rect {
   }
 
   /// Returns x.end - x.start, which may be negative or overflow.
-  template <bool enable = isSigned<T>, EnableIf<enable> = 0>
+  template <bool enable = isSigned<T>>
+    requires (enable)
   STU_CONSTEXPR_T T width() const { return x.end - x.start; }
 
   /// Returns y.end - y.start, which may be negative or overflow.
-  template <bool enable = isSigned<T>, EnableIf<enable> = 0>
+  template <bool enable = isSigned<T>>
+    requires (enable)
   STU_CONSTEXPR_T T height() const { return y.end - y.start; }
 
   /// Returns {x.end - x.start, y.end - y.start}, which may have negative components or overflow.
-  template <bool enable = isSigned<T>, EnableIf<enable> = 0>
+  template <bool enable = isSigned<T>>
+    requires (enable)
   STU_CONSTEXPR_T Size<T> size() const { return Size<T>(x.end - x.start, y.end - y.start); }
 
   /// Returns width()*height(), which may be negative or overflow.
@@ -362,7 +375,8 @@ struct Rect {
 
   STU_CONSTEXPR_T Point<T> origin() const { return {x.start, y.start}; }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   /// Returns (x.start + x.end)/2, (y.start + y.end)/2}, which may overflow.
   STU_CONSTEXPR_T Point<T> center() const {
     return {(x.start + x.end)/2, (y.start + y.end)/2};
@@ -386,33 +400,25 @@ struct Rect {
     y{origin.y, origin.y + size.height}
   {}
 
-  template <bool enable = isSafelyConvertible<CGFloat, T>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<CGFloat, T>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   Rect(CGRect r)
   : x{r.origin.x, r.origin.x + r.size.width},
     y{r.origin.y, r.origin.y + r.size.height}
   {}
 
-  template <typename U, EnableIf<isSafelyConvertible<U, T> && !isSame<U, T>> = 0>
-  /* implicit */ STU_CONSTEXPR_T
+  template <typename U>
+    requires ((isSafelyConvertible<U, T> && !isSame<U, T>) || isNonSafelyConvertible<U, T>)
+  explicit(!isSafelyConvertible<U, T>) STU_CONSTEXPR_T
   Rect(const Rect<U>& other)
   : x(other.x), y(other.y)
   {}
 
-  template <typename U, EnableIf<isNonSafelyConvertible<U, T>> = 0>
-  explicit STU_CONSTEXPR_T
-  Rect(const Rect<U>& other)
-  : x(other.x), y(other.y)
-  {}
-
-  template <bool enable = isSafelyConvertible<T, CGFloat>, EnableIf<enable && 1> = 0>
-  /* implicit */ STU_CONSTEXPR_T
-  operator CGRect() const {
-    return {origin(), size()};
-  }
-
-  template <bool enable = isNonSafelyConvertible<T, CGFloat>, EnableIf<enable && 2> = 0>
-  explicit STU_CONSTEXPR_T
+  template <bool enable = isSafelyConvertible<T, CGFloat>
+                          || isNonSafelyConvertible<T, CGFloat>>
+    requires (enable)
+  explicit(!isSafelyConvertible<T, CGFloat>) STU_CONSTEXPR_T
   operator CGRect() const {
     return {static_cast<CGPoint>(origin()), static_cast<CGSize>(size())};
   }
@@ -471,7 +477,8 @@ struct Rect {
             Range{y.start + insets.top,  y.end - insets.bottom}};
   }
 
-  template <bool enable = isSafelyConvertible<CGFloat, T>, EnableIf<enable> = 0>
+  template <bool enable = isSafelyConvertible<CGFloat, T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Rect inset(UIEdgeInsets insets) const {
     return {Range{x.start + insets.left, x.end - insets.right},
@@ -488,13 +495,15 @@ struct Rect {
     return sqrt(squaredDistanceTo(p));
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   [[nodiscard]] STU_CONSTEXPR
   Rect roundedToNearbyInt() const {
     return {x.roundedToNearbyInt(), y.roundedToNearbyInt()};
   }
 
-  template <bool enable = isFloatingPoint<T>, EnableIf<enable> = 0>
+  template <bool enable = isFloatingPoint<T>>
+    requires (enable)
   STU_CONSTEXPR
   void roundToNearbyInt() {
     *this = roundedToNearbyInt();
@@ -541,7 +550,8 @@ struct Rect {
     return rect;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator+(const Rect& rect, const Point<U>& offset) {
     Rect<U> r{rect};
@@ -554,7 +564,8 @@ struct Rect {
     return rect + offset;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator+(const Point<U>& offset, const Rect& rect) {
     return rect + offset;
@@ -566,7 +577,8 @@ struct Rect {
     return rect;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator-(const Rect<T>& rect, const Point<U>& offset) {
     Rect<U> r{rect};
@@ -580,7 +592,8 @@ struct Rect {
     return rect;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator*(const Rect<T>& rect, const U& scale) {
     Rect<U> r{rect};
@@ -593,7 +606,8 @@ struct Rect {
     return rect*scale;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator*(const U& scale, const Rect<T>& rect) {
     return rect*scale;
@@ -606,7 +620,8 @@ struct Rect {
     return rect;
   }
 
-  template <typename U, EnableIf<!isSame<T, U> && isSafelyConvertible<T, U>> = 0>
+  template <typename U>
+    requires (!isSame<T, U> && isSafelyConvertible<T, U>)
   STU_CONSTEXPR
   friend Rect<U> operator/(const Rect<T>& rect, const U& scale) {
     Rect<U> r{rect};
