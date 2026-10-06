@@ -26,6 +26,30 @@ struct ShapedStringTests {
     #expect(frame.paragraphs[0].baseWritingDirection == .rightToLeft)
   }
 
+  @MainActor
+  @Test
+  func untruncatedSubstringCacheIsReleasedWithTextFrame() {
+    let shapedString = STUShapedString(
+      NSAttributedString(string: "prefix retained substring suffix",
+                         attributes: [.font: UIFont.systemFont(ofSize: 18)]),
+      defaultBaseWritingDirection: .leftToRight)
+    weak var cachedSubstring: NSAttributedString?
+    autoreleasepool {
+      let frame = STUTextFrame(
+        shapedString, stringRange: NSRange(location: 7, length: 18),
+        size: CGSize(width: 1000, height: 100), displayScale: 0)
+      #expect(!frame.flags.contains(.isTruncated))
+      cachedSubstring = frame.truncatedAttributedString
+      #expect(cachedSubstring?.string == "retained substring")
+      withExtendedLifetime(frame) {
+        #expect(cachedSubstring != nil)
+      }
+    }
+    withExtendedLifetime(shapedString) {
+      #expect(cachedSubstring == nil)
+    }
+  }
+
   @Test
   func `CTTypesetter thread safety`() {
     seedRand(123)

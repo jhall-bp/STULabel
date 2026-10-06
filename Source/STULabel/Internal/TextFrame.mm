@@ -297,10 +297,10 @@ TextFrame::~TextFrame()
   if (const void *const bs = atomic_load_explicit(&_backgroundSegments, memory_order_relaxed)) {
     free(const_cast<void *>(bs));
   }
+  if (const CFAttributedString *const ts = atomic_load_explicit(&_truncatedAttributedString, memory_order_relaxed)) {
+    discard((__bridge_transfer NSAttributedString *)ts); // Releases the string.
+  }
   if (flags & STUTextFrameIsTruncated) {
-    if (const CFAttributedString *const ts = atomic_load_explicit(&_truncatedAttributedString, memory_order_relaxed)) {
-      discard((__bridge_transfer NSAttributedString *)ts); // Releases the string.
-    }
     for (const TextFrameParagraph &para : paragraphs().reversed()) {
       if (para.truncationToken) {
         decrementRefCount(para.truncationToken);
