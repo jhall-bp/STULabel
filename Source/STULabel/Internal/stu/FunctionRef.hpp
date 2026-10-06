@@ -41,9 +41,8 @@ public:
   Optional(None) noexcept
   : Optional{} {}
 
-  template <typename Callable,
-            EnableIf<isCallable<Callable&&, Signature>
-                     && !isSame<RemoveCVReference<Callable>, Optional>> = 0>
+  template <typename Callable>
+    requires (isCallable<Callable&&, Signature> && !isSame<RemoveCVReference<Callable>, Optional>)
   /* implicit */ STU_CONSTEXPR
   Optional(Callable&& callable) noexcept {
     if constexpr (isFunctionRef<Callable, Signature>) {
@@ -74,9 +73,9 @@ public:
   }
 
   // Prevents some unsafe assignments.
-  template <typename Other,
-            EnableIf<!isFunctionRef<Other, Signature>
-                     && !std::is_function_v<RemovePointer<RemoveReference<Other>>>> = 0>
+  template <typename Other>
+    requires (!isFunctionRef<Other, Signature>
+              && !std::is_function_v<RemovePointer<RemoveReference<Other>>>)
   Optional& operator=(Other&& other) = delete;
 
   STU_CONSTEXPR_T
@@ -110,18 +109,18 @@ class FunctionRef
   using Base::forwarder_;
 public:
 
-  template <typename Callable,
-            EnableIf<isCallable<Callable&&, Signature>
-                     && !isSame<RemoveCVReference<Callable>, FunctionRef>
-                     && !isPointer<RemoveReference<Callable>>
-                     && !isOptional<Callable>> = 0>
+  template <typename Callable>
+    requires (isCallable<Callable&&, Signature>
+              && !isSame<RemoveCVReference<Callable>, FunctionRef>
+              && !isPointer<RemoveReference<Callable>>
+              && !isOptional<Callable>)
   /* implicit */ STU_CONSTEXPR_T
   FunctionRef(Callable&& callable) noexcept
   : FunctionRef{Optional<FunctionRef<Signature>>{std::forward<Callable>(callable)}, unchecked}
   {}
 
-  template <typename Function,
-            EnableIf<isCallable<Function*, Signature>> = 0>
+  template <typename Function>
+    requires (isCallable<Function*, Signature>)
   explicit STU_CONSTEXPR
   FunctionRef(Function* callable) noexcept(!STU_ASSERT_MAY_THROW)
   : FunctionRef{Optional<FunctionRef<Signature>>{callable}}
@@ -145,9 +144,9 @@ public:
   STU_CONSTEXPR_T FunctionRef& operator=(const FunctionRef&) noexcept = default;
 
   // Prevents some unsafe assignments.
-  template <typename Other,
-            EnableIf<!isFunctionRef<Other, Signature>
-                     && !std::is_function_v<RemovePointer<RemoveReference<Other>>>> = 0>
+  template <typename Other>
+    requires (!isFunctionRef<Other, Signature>
+              && !std::is_function_v<RemovePointer<RemoveReference<Other>>>)
   FunctionRef& operator=(Other&& other) = delete;
 
   using Base::operator();
@@ -161,16 +160,18 @@ template <typename Callable, typename Signature = CallableSignature<Callable>>
 FunctionRef(Callable&&) -> FunctionRef<Signature>;
 
 namespace detail {
-  template <typename ReturnValue, typename... Args>
-  struct FunctionRefBase<ReturnValue(Args...) noexcept> {
-    using Signature = ReturnValue(Args...) noexcept;
+  template <typename ReturnValue, bool isNoexcept, typename... Args>
+  struct FunctionRefBase<ReturnValue(Args...) noexcept(isNoexcept)> {
+    using Signature = ReturnValue(Args...) noexcept(isNoexcept);
 
-    STU_CONSTEXPR ReturnValue operator()(Args... args) const noexcept {
+    STU_CONSTEXPR
+    ReturnValue operator()(Args... args) const noexcept(isNoexcept) {
       return forwarder_(callable_, std::forward<Args>(args)...);
     }
 
     template <typename Callable>
-    static ReturnValue call(void* p, Args... args) noexcept {
+    STU_CONSTEXPR
+    static ReturnValue call(void* p, Args... args) noexcept(isNoexcept) {
       if constexpr (isPointer<Callable>) {
         static_assert(std::is_function_v<RemovePointer<Callable>>);
         return reinterpret_cast<Callable>(p)(std::forward<Args>(args)...);
@@ -180,46 +181,19 @@ namespace detail {
       }
     }
 
-    static ReturnValue nullFunctionCall(void* null __unused, Args... args __unused) noexcept {
-      __builtin_trap();
-    }
-
-    using ForwarderFunction = ReturnValue(void* p, Args... args) noexcept;
-
-    void* callable_;
-    ForwarderFunction* forwarder_;
-  };
-
-  template <typename ReturnValue, typename... Args>
-  struct FunctionRefBase<ReturnValue(Args...)> {
-    using Signature = ReturnValue(Args...);
-
-    STU_CONSTEXPR
-    ReturnValue operator()(Args... args) const {
-      return forwarder_(callable_, std::forward<Args>(args)...);
-    }
-
-    template <typename Callable>
-    STU_CONSTEXPR
-    static ReturnValue call(void* p, Args... args) {
-      if constexpr (isPointer<Callable>) {
-        static_assert(std::is_function_v<RemovePointer<Callable>>);
-        return reinterpret_cast<Callable>(p)(std::forward<Args>(args)...);
+    static ReturnValue nullFunctionCall(void* null __unused, Args... args __unused)
+      noexcept(isNoexcept)
+    {
+      if constexpr (isNoexcept || STU_NO_EXCEPTIONS) {
+        __builtin_trap();
       } else {
-        return static_cast<Callable&&>(*(down_cast<AddPointer<Callable>>(p)))
-               (std::forward<Args>(args)...);
+      #if !STU_NO_EXCEPTIONS
+        throw std::bad_function_call();
+      #endif
       }
     }
 
-    static ReturnValue nullFunctionCall(void* null __unused, Args... args __unused) {
-    #if STU_NO_EXCEPTIONS
-      __builtin_trap();
-    #else
-      throw std::bad_function_call();
-    #endif
-    }
-
-    using ForwarderFunction = ReturnValue(void* p, Args... args);
+    using ForwarderFunction = ReturnValue(void* p, Args... args) noexcept(isNoexcept);
 
     void* callable_;
     ForwarderFunction* forwarder_;
