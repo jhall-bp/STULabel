@@ -5,6 +5,7 @@
 #include "stu/Casts.hpp"
 #include "stu/Parameter.hpp"
 
+#include <bit>
 #include <functional>
 #include <new>
 
@@ -24,11 +25,13 @@ struct Count : Parameter<Count<Int>, Int> {
   using Base::Base;
   using Base::operator=;
 
-  template <typename T, EnableIf<isSafelyConvertible<T, Int>> = 0>
+  template <typename T>
+    requires (isSafelyConvertible<T, Int>)
   /* implicit */ STU_CONSTEXPR_T
   Count(Count<T> other) : Base{other.value} {}
 
-  template <typename T, EnableIf<isSafelyConvertible<T, Int>> = 0>
+  template <typename T>
+    requires (isSafelyConvertible<T, Int>)
   /* implicit */ STU_CONSTEXPR_T
   Count& operator=(const Count<T> other) { return *this = other.value; }
 };
@@ -40,11 +43,13 @@ struct Capacity : Parameter<Capacity<Int>, Int> {
   using Base::Base;
   using Base::operator=;
 
-  template <typename T, EnableIf<isSafelyConvertible<T, Int>> = 0>
+  template <typename T>
+    requires (isSafelyConvertible<T, Int>)
   /* implicit */ STU_CONSTEXPR_T
   Capacity(Capacity<T> other) : Base{other.value} {}
 
-  template <typename T, EnableIf<isSafelyConvertible<T, Int>> = 0>
+  template <typename T>
+    requires (isSafelyConvertible<T, Int>)
   /* implicit */ STU_CONSTEXPR_T
   Capacity& operator=(const Capacity<T> other) { return *this = other.value; }
 };
@@ -63,20 +68,7 @@ template <typename UInt>
 STU_CONSTEXPR
 int countLeadingZeroBits(UInt value) {
   static_assert(isUnsigned<UInt>);
-  if (value == 0) return IntegerTraits<UInt>::bits;
-  int result{};
-  if constexpr (sizeof(UInt) < sizeof(unsigned)) {
-    result = __builtin_clz(value) - (IntegerTraits<unsigned>::bits - IntegerTraits<UInt>::bits);
-  } else if constexpr (isSame<UInt, unsigned>) {
-    result = __builtin_clz(value);
-  } else if constexpr (isSame<UInt, unsigned long>) {
-    result = __builtin_clzl(value);
-  } else {
-    static_assert(isSame<UInt, unsigned long long>);
-    result = __builtin_clzll(value);
-  }
-  STU_ASSUME(0 <= result && result < IntegerTraits<UInt>::bits);
-  return result;
+  return std::countl_zero(static_cast<UInt_<sizeof(UInt)*8>>(value));
 }
 
 /// Tests whether the integer argument is a positive power of two.
@@ -85,15 +77,15 @@ STU_CONSTEXPR bool isPowerOfTwo(Int value) {
   return value > 0 && (value & (value - 1)) == 0;
 }
 
-template <auto d, typename Int,
-          EnableIf<isPowerOfTwo(d)> = 0>
+template <auto d, typename Int>
+  requires (isPowerOfTwo(d))
 STU_CONSTEXPR Int roundDownToMultipleOf(Int value) {
   return static_cast<Int>(value & ~static_cast<Int>(d - 1));
 }
 
 /// Doesn't check for overflow.
-template <auto d, typename Int,
-          EnableIf<isPowerOfTwo(d)> = 0>
+template <auto d, typename Int>
+  requires (isPowerOfTwo(d))
 STU_CONSTEXPR Int roundUpToMultipleOf(Int value) {
   return static_cast<Int>((value + (d - 1)) & ~static_cast<Int>(d - 1));
 }
@@ -103,7 +95,7 @@ STU_CONSTEXPR
 UInt roundUpToPowerOfTwo(UInt value) {
   static_assert(isUnsigned<UInt>);
   return STU_LIKELY(2 <= value && value <= IntegerTraits<UInt>::max/2 + 1)
-       ? UInt(1) << (IntegerTraits<UInt>::bits - countLeadingZeroBits(value - 1))
+       ? static_cast<UInt>(std::bit_ceil(static_cast<UInt_<sizeof(UInt)*8>>(value)))
        : value;
 }
 

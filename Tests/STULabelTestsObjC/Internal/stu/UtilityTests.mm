@@ -73,6 +73,7 @@ TEST(CountLeadingZeroBits)
 
   test(UInt8{});
   test(UInt16{});
+  test(char16_t{});
   test(stu::UInt32{});
   test(UInt64{});
 }
@@ -116,6 +117,8 @@ TEST(RoundUpToPowerOfTwo)
   static_assert(roundUpToPowerOfTwo(uint32_t(1u << 31) + 1) == uint32_t(1u << 31) + 1);
   static_assert(roundUpToPowerOfTwo(uint32_t(1u << 31) + 2) == uint32_t(1u << 31) + 2);
   static_assert(roundUpToPowerOfTwo(UINT32_MAX) == UINT32_MAX);
+  static_assert(roundUpToPowerOfTwo(char32_t{3}) == char32_t{4});
+  static_assert(roundUpToPowerOfTwo(char32_t{UINT32_MAX}) == char32_t{UINT32_MAX});
   static_assert(roundUpToPowerOfTwo((1ull << 63) - 1) == 1ull << 63);
   static_assert(roundUpToPowerOfTwo(UINT64_MAX) == UINT64_MAX);
 }
