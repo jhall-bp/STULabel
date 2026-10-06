@@ -402,8 +402,6 @@ ShapedString *__nullable ShapedString::create(NSAttributedString *__unsafe_unret
   if (status.needToFixParagraphStyles | textStyleBuffer.needToFixAttachmentAttributes()) {
     NSMutableAttributedString *const mutableString = [attributedString mutableCopy];
     if (status.needToFixParagraphStyles) {
-      if (isCancelled(cancellationFlag))
-        return nullptr;
       fixParagraphStyles(mutableString, paragraphs);
     }
     // To reliably work around rdar://36622225 the attachments have to be fixed after the paragraph
