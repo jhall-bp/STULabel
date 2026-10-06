@@ -56,6 +56,28 @@ struct ShapedStringTests {
 
   @MainActor
   @Test
+  func baselineOffsetDoesNotCarryIntoFollowingFallbackFontRun() throws {
+    let font = try #require(UIFont(name: "Helvetica", size: 18))
+    let raised = NSAttributedString(string: "A", attributes: [.font: font, .baselineOffset: 20])
+    let normal = NSAttributedString(string: "界", attributes: [.font: font])
+    let combined = NSMutableAttributedString(attributedString: raised)
+    combined.append(normal)
+    func frame(_ string: NSAttributedString) -> STUTextFrame {
+      STUTextFrame(STUShapedString(string, defaultBaseWritingDirection: .leftToRight),
+                   size: CGSize(width: 1000, height: 100), displayScale: 0)
+    }
+    let raisedFrame = frame(raised)
+    let normalFrame = frame(normal)
+    let combinedFrame = frame(combined)
+    let raisedLine = try #require(raisedFrame.lines.first)
+    let normalLine = try #require(normalFrame.lines.first)
+    let combinedLine = try #require(combinedFrame.lines.first)
+    #expect(abs(combinedLine.ascent - max(raisedLine.ascent, normalLine.ascent)) < 0.0001)
+    #expect(abs(combinedLine.descent - max(raisedLine.descent, normalLine.descent)) < 0.0001)
+  }
+
+  @MainActor
+  @Test
   func discardedTruncationTokenDoesNotIncreaseLineStringRange() throws {
     let frame = STUTextFrame(
       STUShapedString(NSAttributedString(string: "A", attributes: [.font: UIFont.systemFont(ofSize: 18)]),

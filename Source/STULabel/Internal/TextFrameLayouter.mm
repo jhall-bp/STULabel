@@ -1012,15 +1012,9 @@ const TextStyle *TextFrameLayouter::initializeTypographicMetricsOfLine(TextFrame
               }
             }
           }
-          if (STU_LIKELY(!style)) {
-            baselineOffset = 0;
-          } else {
-            if (style->flags() & TextFlags::hasAttachment)
-              return;
-            if (style->flags() & TextFlags::hasBaselineOffset) {
-              baselineOffset = style->baselineOffset();
-            }
-          }
+          if (style && style->hasAttachment())
+            return;
+          baselineOffset = style ? style->baselineOffset() : 0;
 
           CTFont *const previousFont = font;
           font = glyphSpan.run().font();
