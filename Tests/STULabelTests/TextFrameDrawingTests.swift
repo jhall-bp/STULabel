@@ -10,6 +10,45 @@ import UIKit
 struct TextFrameDrawingTests {
   let displayScale: CGFloat = 2
 
+  @Test(arguments: [128, 1024])
+  func allBackgroundSegmentsDrawAfterBufferGrowth(_ segmentCount: Int) throws {
+    let text = NSMutableAttributedString()
+    let font = UIFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+    for index in 0..<segmentCount {
+      let background = STUBackgroundAttribute { builder in
+        builder.color = index.isMultiple(of: 2) ? .red : .blue
+        // Distinct attributes prevent equal colors from becoming one segment.
+        builder.edgeInsets = UIEdgeInsets(top: CGFloat(index) / 10000, left: 0, bottom: 0, right: 0)
+      }
+      text.append(NSAttributedString(string: "M", attributes: [.font: font, .stuBackground: background]))
+    }
+    let frame = STUTextFrame(
+      STUShapedString(text, defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 20000, height: 64), displayScale: 1)
+    try #require(frame.lines.count == 1)
+    let width = Int(ceil(frame.layoutBounds.maxX)) + 1
+    let context = try #require(CGContext(
+      data: nil, width: width, height: 64, bitsPerComponent: 8, bytesPerRow: width * 4,
+      space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue))
+    context.translateBy(x: 0, y: 64)
+    context.scaleBy(x: 1, y: -1)
+    let options = STUTextFrame.DrawingOptions()
+    options.drawingMode = .onlyBackground
+    frame.draw(in: context, contextBaseCTM_d: 1, pixelAlignBaselines: true, options: options)
+    let bytes = try #require(context.data).assumingMemoryBound(to: UInt8.self)
+    let advance = frame.layoutBounds.width / CGFloat(segmentCount)
+    let missingSegments = (0..<segmentCount).filter { index in
+      let x = Int(frame.layoutBounds.minX + (CGFloat(index) + 0.5) * advance)
+      let channel = index.isMultiple(of: 2) ? 0 : 2
+      return !(0..<64).contains { y in
+        let offset = y * context.bytesPerRow + x * 4
+        return bytes[offset + channel] == 255 && bytes[offset + 3] == 255
+      }
+    }.count
+    #expect(missingSegments == 0)
+  }
+
   @Test
   func `Base CTM handling`() {
     let font = UIFont(name: "HelveticaNeue", size: 18)!

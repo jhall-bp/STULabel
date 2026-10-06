@@ -42,7 +42,7 @@ class TempBackgroundSegments
 {
   TaggedRangeLineSpans taggedRangeLineSpans_;
   TempVector<Byte> data_;
-  BackgroundSegment *lastSegment_{};
+  Int lastSegmentOffset_{-1};
 
   static TaggedRangeLineSpans findBackgroundLineSpans(const ArrayRef<const TextFrameLine> lines,
                                                       Optional<TextStyleOverride &> styleOverride);
@@ -127,6 +127,7 @@ void TempBackgroundSegments::appendSegment(const TextStyle::BackgroundInfo &info
   const Int32 lineIndexOffset = firstLineIndex;
   const CGFloat strokeWidth = !attrib || !info.borderColorIndex ? 0 : attrib->_borderWidth;
 
+  const Int segmentOffset = data_.count();
   const Int size = sign_cast(sizeof(BackgroundSegment) + inputSpans.arraySizeInBytes());
   auto *p = reinterpret_cast<BackgroundSegment *>(data_.append(repeat(uninitialized, size)));
   *p = BackgroundSegment{.spanCount = static_cast<UInt32>(inputSpans.count()),
@@ -194,10 +195,11 @@ void TempBackgroundSegments::appendSegment(const TextStyle::BackgroundInfo &info
   }
   p->bounds = narrow_cast<Rect<CGFloat>>(bounds);
 
-  if (lastSegment_) {
-    lastSegment_->isLast = false;
+  if (lastSegmentOffset_ >= 0) {
+    // Appending may relocate data_, so recover the previous segment from its offset.
+    reinterpret_cast<BackgroundSegment *>(data_.begin() + lastSegmentOffset_)->isLast = false;
   }
-  lastSegment_ = p;
+  lastSegmentOffset_ = segmentOffset;
 }
 
 } // namespace stu_label
