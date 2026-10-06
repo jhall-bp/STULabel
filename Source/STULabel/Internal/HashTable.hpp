@@ -128,7 +128,8 @@ public:
                                            buckets_.allocator());
   }
 
-  template <bool enable = isBitwiseCopyable<Bucket>, EnableIf<enable> = 0>
+  template <bool enable = isBitwiseCopyable<Bucket>>
+    requires (enable)
   STU_INLINE
   void initializeWithExistingBuckets(ArrayRef<const Bucket> existingBuckets) {
     STU_ASSERT(buckets_.begin() == nullptr);
@@ -138,8 +139,8 @@ public:
     count_ = insertBucketsIntoZeroInitializedArray(existingBuckets, buckets_);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(const Key&)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(const Key&)>)
   void filterAndRehash(MinBucketCount minBucketCount, Predicate&& predicate) {
     Bucket* const end = buckets_.end();
     Int d = 0;
@@ -186,7 +187,8 @@ public:
 
   using typename Base::KeyOrValue;// Conditional<hasValue, ValueRef, KeyRef>;
 
-  template <typename KeyIsEqualTo, EnableIf<hasHasher && isType<KeyIsEqualTo>> = 0>
+  template <typename KeyIsEqualTo>
+    requires (hasHasher && isType<KeyIsEqualTo>)
   STU_INLINE
   Optional<KeyOrValue> find(const Key& key, KeyIsEqualTo&& keyIsEqualTo) {
     return find(Hasher::hash(key), keyIsEqualTo);
@@ -223,7 +225,8 @@ public:
     bool inserted;
   };
 
-  template <typename KeyIsEqualTo, EnableIf<!hasValue && hasHasher && isType<KeyIsEqualTo>> = 0>
+  template <typename KeyIsEqualTo>
+    requires (!hasValue && hasHasher && isType<KeyIsEqualTo>)
   STU_INLINE
   InsertResult insert(Key key, KeyIsEqualTo&& keyIsEqualTo) {
     return insert(Hasher::hash(key), keyIsEqualTo,
@@ -231,8 +234,8 @@ public:
                   []() STU_INLINE_LAMBDA { return none; });
   }
 
-  template <typename IsEqual, typename GetValue,
-            EnableIf<hasValue && hasHasher && isType<IsEqual>> = 0>
+  template <typename IsEqual, typename GetValue>
+    requires (hasValue && hasHasher && isType<IsEqual>)
   STU_INLINE
   InsertResult insert(Key key, IsEqual&& isEqual, GetValue&& getValue) {
     return insert(Hasher::hash(key), isEqual,
@@ -240,7 +243,8 @@ public:
                   getValue);
   }
 
-  template <typename KeyIsEqualTo, EnableIf<!hasValue && isType<KeyIsEqualTo>> = 0>
+  template <typename KeyIsEqualTo>
+    requires (!hasValue && isType<KeyIsEqualTo>)
   STU_INLINE
   InsertResult insert(HashCode<UInt64> hashCode, Key newKey, KeyIsEqualTo&& keyIsEqualTo) {
     return insert(hashCode, keyIsEqualTo,
@@ -248,7 +252,8 @@ public:
                   []() STU_INLINE_LAMBDA { return none; });
   }
 
-  template <typename KeyIsEqualTo, typename GetKey, EnableIf<!hasValue && isType<KeyIsEqualTo>> = 0>
+  template <typename KeyIsEqualTo, typename GetKey>
+    requires (!hasValue && isType<KeyIsEqualTo>)
   STU_INLINE
   InsertResult insert(HashCode<UInt64> hashCode, KeyIsEqualTo&& keyIsEqualTo, GetKey&& getKey) {
     return insert(hashCode, keyIsEqualTo, getKey,
@@ -321,13 +326,15 @@ public:
     }
   }
 
-  template <bool enable = hasHasher && !hasValue, EnableIf<enable> = 0>
+  template <bool enable = hasHasher && !hasValue>
+    requires (enable)
   STU_INLINE
   void insertNew(Key key) {
     insertNew(Hasher::hash(key), key);
   }
 
-  template <bool enable = !hasValue, EnableIf<enable> = 0>
+  template <bool enable = !hasValue>
+    requires (enable)
   STU_INLINE
   void insertNew(HashCode<UInt64> hashCode, Key key) {
     insert(hashCode,
@@ -342,13 +349,15 @@ public:
            []() STU_INLINE_LAMBDA { return none; });
   }
 
-  template <typename T, EnableIf<hasHasher && hasValue && isType<T>> = 0>
+  template <typename T>
+    requires (hasHasher && hasValue && isType<T>)
   STU_INLINE
   void insertNew(Key key, T&& value) {
     insertNew(Hasher::hash(key), key, std::forward<T>(value));
   }
 
-  template <typename T, EnableIf<hasValue && isType<T>> = 0>
+  template <typename T>
+    requires (hasValue && isType<T>)
   STU_INLINE
   void insertNew(HashCode<UInt64> hashCode, Key key, T&& value) {
     insert(hashCode,
@@ -373,7 +382,8 @@ private:
   using Base::insertBucketsIntoZeroInitializedArray;
   using typename Base::InsertBucketsResult;
 
-  template <bool enable = !needToTrackBucketWhenResizingArrayAfterInsert, EnableIf<enable> = 0>
+  template <bool enable = !needToTrackBucketWhenResizingArrayAfterInsert>
+    requires (enable)
   STU_NO_INLINE 
   void grow() {
     Array<Bucket, AllocatorRef> newBuckets{zeroInitialized,
@@ -389,7 +399,8 @@ private:
     buckets_ = std::move(newBuckets);
   }
 
-  template <bool enable = needToTrackBucketWhenResizingArrayAfterInsert, EnableIf<enable> = 0>
+  template <bool enable = needToTrackBucketWhenResizingArrayAfterInsert>
+    requires (enable)
   STU_NO_INLINE
   Bucket* grow(const Bucket* trackedBucket) {
     Array<Bucket, AllocatorRef> newBuckets{zeroInitialized,
@@ -548,7 +559,8 @@ struct HashTableBase {
     }
   }
 
-  template <bool enable = needToTrackBucketWhenResizingArrayAfterInsert, EnableIf<enable> = 0>
+  template <bool enable = needToTrackBucketWhenResizingArrayAfterInsert>
+    requires (enable)
   STU_INLINE
   static Int moveBucketsIntoZeroInitializedArrayImpl(OldBuckets oldBuckets,
                                                      ArrayRef<Bucket> newBuckets)
@@ -556,7 +568,8 @@ struct HashTableBase {
     return moveBucketsIntoZeroInitializedArrayImpl({oldBuckets, nullptr}, newBuckets).count;
   }
 
-  template <bool enable = isBitwiseCopyable<Bucket>, EnableIf<enable> = 0>
+  template <bool enable = isBitwiseCopyable<Bucket>>
+    requires (enable)
   STU_INLINE
   static Int insertBucketsIntoZeroInitializedArray(ArrayRef<const Bucket> oldBuckets,
                                                    ArrayRef<Bucket> newBuckets)
@@ -564,8 +577,8 @@ struct HashTableBase {
     return moveBucketsIntoZeroInitializedArrayImpl(oldBuckets, newBuckets);
   }
 
-  template <bool enable = isBitwiseCopyable<Bucket> && needToTrackBucketWhenResizingArrayAfterInsert,
-            EnableIf<enable> = 0>
+  template <bool enable = isBitwiseCopyable<Bucket> && needToTrackBucketWhenResizingArrayAfterInsert>
+    requires (enable)
   STU_INLINE
   static CountAndTrackedBucket insertBucketsIntoZeroInitializedArray(
                                  ArrayRef<const Bucket> oldBuckets, const Bucket* trackedOldBucket,
@@ -587,8 +600,8 @@ struct HashTableBase {
     return result;
   }
 
-  template <typename AllocatorRef,
-            EnableIf<needToTrackBucketWhenResizingArrayAfterInsert && isType<AllocatorRef>> = 0>
+  template <typename AllocatorRef>
+    requires (needToTrackBucketWhenResizingArrayAfterInsert && isType<AllocatorRef>)
   STU_INLINE
   static CountAndTrackedBucket insertBucketsIntoZeroInitializedArray(
                                  Array<Bucket, AllocatorRef>&& oldBuckets,
