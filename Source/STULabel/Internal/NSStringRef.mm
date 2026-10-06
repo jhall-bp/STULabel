@@ -239,7 +239,8 @@ private:
   Int indexInArray_;
 };
 
-template <NSStringRefBufferKind kind, typename Predicate, EnableIf<isCallable<Predicate, bool(Int index, Char16)>> = 0>
+template <NSStringRefBufferKind kind, typename Predicate>
+  requires (isCallable<Predicate, bool(Int index, Char16)>)
 STU_INLINE Int indexOfFirstUTF16CharWhereImpl(const NSStringRef &string, const Range<Int> range, Predicate &&predicate)
 {
   STU_DEBUG_ASSERT(range.start < range.end);
@@ -256,7 +257,8 @@ STU_INLINE Int indexOfFirstUTF16CharWhereImpl(const NSStringRef &string, const R
   return index;
 }
 
-template <NSStringRefBufferKind kind, typename Predicate, EnableIf<isCallable<Predicate, bool(Int index, Char32)>> = 0>
+template <NSStringRefBufferKind kind, typename Predicate>
+  requires (isCallable<Predicate, bool(Int index, Char32)>)
 STU_INLINE Int indexOfFirstCodePointWhereImpl(const NSStringRef &string, const Range<Int> range, Predicate &&predicate)
 {
   STU_DEBUG_ASSERT(range.start < range.end);
@@ -292,8 +294,8 @@ STU_INLINE Int indexOfFirstCodePointWhereImpl(const NSStringRef &string, const R
 }
 
 template <NSStringRefBufferKind kind,
-          typename Predicate,
-          EnableIf<isCallable<Predicate, bool(Int endIndex, Char32)>> = 0>
+          typename Predicate>
+  requires (isCallable<Predicate, bool(Int endIndex, Char32)>)
 STU_INLINE Int indexOfEndOfLastCodePointWhereImpl(const NSStringRef &string,
                                                   const Range<Int> range,
                                                   Predicate &&predicate)

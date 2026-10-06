@@ -4,7 +4,8 @@
 
 namespace stu_label {
 
-template <typename T, EnableIf<isIntegral<T>> = 0>
+template <typename T>
+  requires (isIntegral<T>)
 STU_INLINE
 void encode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained key, T value) {
   if constexpr (isSame<T, bool>) {
@@ -17,7 +18,8 @@ void encode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained ke
   }
 }
 
-template <typename T, EnableIf<isIntegral<T>> = 0>
+template <typename T>
+  requires (isIntegral<T>)
 STU_INLINE
 void decode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained key, Out<T> value) {
   if constexpr (isSame<T, bool>) {
@@ -30,12 +32,14 @@ void decode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained ke
   }
 }
 
-template <typename T, EnableIf<isEnum<T>> = 0>
+template <typename T>
+  requires (isEnum<T>)
 STU_INLINE
 void encode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained key, T value) {
   encode(coder, key, static_cast<UnderlyingType<T>>(value));
 }
-template <typename T, EnableIf<isEnum<T>> = 0>
+template <typename T>
+  requires (isEnum<T>)
 STU_INLINE
 void decode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained key,
             Out<T> outValue)
@@ -123,7 +127,8 @@ void encode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained ke
     [coder encodeObject:object forKey:key];
   }
 }
-template <typename T, EnableIf<isConvertible<T*, NSObject<NSSecureCoding>*>> = 0>
+template <typename T>
+  requires (isConvertible<T*, NSObject<NSSecureCoding>*>)
 STU_INLINE
 void decode(NSCoder* __unsafe_unretained coder, NSString* __unsafe_unretained key,
             Out<T*> outObject)

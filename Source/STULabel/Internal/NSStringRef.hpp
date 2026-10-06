@@ -45,7 +45,8 @@ public:
 
   // The index is a template parameter here in order to avoid ambiguities for non-Int arguments
   // that arise due to the implicit conversion operator to CFString*.
-  template <typename Integer, EnableIf<isSafelyConvertible<Integer, Int>> = 0>
+  template <typename Integer>
+    requires (isSafelyConvertible<Integer, Int>)
   STU_INLINE_T
   Char16 operator[](const Integer index) const {
     const Int i = index;
@@ -168,7 +169,8 @@ public:
   Int copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
         Range<Int> stringRange, ArrayRef<Range<Int>> outStringRanges) const;
 
-  template <typename Predicate, EnableIf<isCallable<Predicate, bool(Char16)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(Char16)>)
   /// Returns `range.start` if no code point in the range satisfies the predicate.
   STU_INLINE
   Int indexOfFirstUTF16CharWhere(Range<Int> range, Predicate&& predicate) const {
@@ -197,7 +199,8 @@ public:
     return result;
   }
 
-  template <typename Predicate, EnableIf<isCallable<Predicate, bool(Char32)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(Char32)>)
   /// Returns `range.start` if no code point in the range satisfies the predicate.
   STU_INLINE
   Int indexOfFirstCodePointWhere(Range<Int> range, Predicate&& predicate) const {
@@ -226,7 +229,8 @@ public:
     return result;
   }
 
-  template <typename Predicate, EnableIf<isCallable<Predicate, bool(Char32)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(Char32)>)
   /// Returns `range.start` if no code point in the range satisfies the predicate.
   STU_INLINE
   Int indexOfEndOfLastCodePointWhere(Range<Int> range, Predicate&& predicate) const {
