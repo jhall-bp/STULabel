@@ -9,6 +9,20 @@ struct SwiftWrapperTests {
   let font = UIFont(name: "HelveticaNeue", size: 20)!
 
   @Test
+  func firstAndLastLineMetricsRemainDistinct() {
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 200))
+    label.maximumNumberOfLines = 0
+    let text = NSMutableAttributedString(
+      string: "Large\n", attributes: [.font: UIFont.systemFont(ofSize: 40)])
+    text.append(NSAttributedString(
+      string: "Small", attributes: [.font: UIFont.systemFont(ofSize: 10)]))
+    label.attributedText = text
+    let info = label.layoutInfo
+    #expect(info.lineCount == 2)
+    #expect(info.firstLineHeight > 2 * info.lastLineHeight)
+  }
+
+  @Test
   func `STULabelSwift re-exports STULabel`() {
     let label = STULabel()
     label.text = "SwiftPM"

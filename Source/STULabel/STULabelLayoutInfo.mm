@@ -147,7 +147,7 @@ stuLabelLayoutInfo(const LabelTextFrameInfo &info, CGPoint textFrameOrigin, cons
       .verticalAlignment = info.verticalAlignment,
       .firstBaseline = textFrameOrigin.y + info.firstBaseline,
       .lastBaseline = textFrameOrigin.y + info.lastBaseline,
-      .firstLineHeight = info.lastLineHeight,
+      .firstLineHeight = info.firstLineHeight,
       .firstLineHeightAboveBaseline = info.firstLineHeightAboveBaseline,
       .lastLineHeight = info.lastLineHeight,
       .lastLineHeightBelowBaseline = info.lastLineHeightBelowBaseline,
