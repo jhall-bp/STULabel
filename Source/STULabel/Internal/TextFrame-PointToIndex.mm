@@ -159,10 +159,10 @@ auto TextFrameLine::rangeOfGraphemeClusterAtXOffset(Float64 xOffset) const -> Te
             string.copyRangesOfGraphemeClustersSkippingTrailingIgnorables(stringRange, graphemeClusterStringRanges);
         if (graphemeClusterCount == 1) {
           stringRange = graphemeClusterStringRanges[0];
-        } else if (graphemeClusterStringRanges[0].start < stringRange.start ||
-                   stringRange.end <
-                       graphemeClusterStringRanges[graphemeClusterCount - 1]
-                           .end) { // There's likely another glyph whose string range overlaps with stringRange.
+        } else if (1 < graphemeClusterCount && graphemeClusterCount <= graphemeClusterStringRanges.count() &&
+                   (graphemeClusterStringRanges[0].start < stringRange.start ||
+                    stringRange.end < graphemeClusterStringRanges[graphemeClusterCount - 1].end)) {
+          // There's likely another glyph whose string range overlaps with stringRange.
           stringRange.start = graphemeClusterStringRanges[0].start;
           stringRange.end = graphemeClusterStringRanges[graphemeClusterCount - 1].end;
         }

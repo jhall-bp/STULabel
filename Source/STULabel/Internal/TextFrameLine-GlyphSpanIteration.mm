@@ -520,32 +520,27 @@ forEachStyledGlyphSpanSubspan(StyledGlyphSpan &span,
         if (!string) {
           string.emplace(span.attributedString.string);
         }
-        ligatureInnerPositionCount = string->copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
-                                         glyphStringRange, graphemeClusterStringRanges) -
-                                     1;
-        if (ligatureInnerPositionCount != 0) {
-          if (glyphStringRange.end < graphemeClusterStringRanges[ligatureInnerPositionCount].end ||
-              graphemeClusterStringRanges[0].start < glyphStringRange.start) {
-            // There's likely another glyph whose string range overlaps with glyphStringRange.
-            ligatureInnerPositionCount = 0;
-          } else if (ligatureInnerPositionCount + 1 > graphemeClusterStringRanges.count()) {
-            STU_DEBUG_ASSERT(false && "Is this really an extremely long ligature?");
-            ligatureInnerPositionCount = 0;
-          } else {
-            glyphIsDrawn = drawnRange.overlaps(graphemeClusterStringRanges[0]);
-            glyphIsOverridden = overrideRange.overlaps(graphemeClusterStringRanges[0]);
-            bool shouldSplitLigature = false;
-            for (const auto &r : graphemeClusterStringRanges[{1, ligatureInnerPositionCount + 1}]) {
-              if (glyphIsDrawn != drawnRange.contains(r) || glyphIsOverridden != overrideRange.contains(r)) {
-                shouldSplitLigature = true;
-                break;
-              }
+        const Int graphemeClusterCount = string->copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
+            glyphStringRange, graphemeClusterStringRanges);
+        // Split only when all cluster boundaries fit and belong to this glyph. Otherwise
+        // retain the whole glyph, as we do for overlapping glyph ranges without caret offsets.
+        if (1 < graphemeClusterCount && graphemeClusterCount <= graphemeClusterStringRanges.count() &&
+            glyphStringRange.contains(graphemeClusterStringRanges[0]) &&
+            glyphStringRange.contains(graphemeClusterStringRanges[graphemeClusterCount - 1])) {
+          ligatureInnerPositionCount = graphemeClusterCount - 1;
+          glyphIsDrawn = drawnRange.overlaps(graphemeClusterStringRanges[0]);
+          glyphIsOverridden = overrideRange.overlaps(graphemeClusterStringRanges[0]);
+          bool shouldSplitLigature = false;
+          for (const auto &r : graphemeClusterStringRanges[{1, graphemeClusterCount}]) {
+            if (glyphIsDrawn != drawnRange.contains(r) || glyphIsOverridden != overrideRange.contains(r)) {
+              shouldSplitLigature = true;
+              break;
             }
-            if (!shouldSplitLigature ||
-                !GlyphSpan{run, Range{0, runGlyphCount}, unchecked}.copyInnerCaretOffsetsForLigatureGlyphAtIndex(
-                    glyphIndex, ligatureInnerOffsets[{0, ligatureInnerPositionCount}])) {
-              ligatureInnerPositionCount = 0;
-            }
+          }
+          if (!shouldSplitLigature ||
+              !GlyphSpan{run, Range{0, runGlyphCount}, unchecked}.copyInnerCaretOffsetsForLigatureGlyphAtIndex(
+                  glyphIndex, ligatureInnerOffsets[{0, ligatureInnerPositionCount}])) {
+            ligatureInnerPositionCount = 0;
           }
         }
       }

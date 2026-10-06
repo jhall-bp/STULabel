@@ -28,6 +28,38 @@ struct ShapedStringTests {
 
   @MainActor
   @Test
+  func hitTestingGlyphThatRepresentsManyGraphemeClusters() throws {
+    let text = "abcdefghijklmnopq"
+    let font = CTFontCreateWithName("Helvetica" as CFString, 18, nil)
+    let glyph = CTFontGetGlyphWithName(font, "A" as CFString)
+    let glyphInfo = try #require(CTGlyphInfoCreateWithGlyph(glyph, font, text as CFString))
+    let string = NSAttributedString(
+      string: text,
+      attributes: [
+        .font: font,
+        NSAttributedString.Key(kCTGlyphInfoAttributeName as String): glyphInfo,
+      ])
+    // Require the platform to exercise the oversized glyph-to-string mapping.
+    let line = CTLineCreateWithAttributedString(string)
+    try #require(CTLineGetGlyphCount(line) == 1)
+    let frame = STUTextFrame(
+      STUShapedString(string, defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 1000, height: 100), displayScale: 0)
+    let bounds = frame.layoutBounds
+    let cluster = frame.rangeOfGraphemeCluster(
+      closestTo: CGPoint(x: bounds.midX, y: bounds.midY),
+      ignoringTrailingWhitespace: true, frameOrigin: .zero)
+    #expect(cluster.range == frame.indices)
+    #expect(!cluster.bounds.isEmpty)
+
+    let firstCharacter = frame.range(forRangeInOriginalString: NSRange(location: 0, length: 1))
+    let imageBounds = frame.imageBounds(frameOrigin: .zero)
+    #expect(!imageBounds.isEmpty)
+    #expect(frame.imageBounds(for: firstCharacter, frameOrigin: .zero) == imageBounds)
+  }
+
+  @MainActor
+  @Test
   func untruncatedSubstringCacheIsReleasedWithTextFrame() {
     let shapedString = STUShapedString(
       NSAttributedString(string: "prefix retained substring suffix",
