@@ -16,6 +16,9 @@
 
 #import <CoreText/CoreText.h>
 
+#include <array>
+#include <bit>
+
 #import <stdalign.h>
 
 #include "DefineUIntOnCatalystToWorkAroundGlobalNamespacePollution.h"
@@ -436,7 +439,7 @@ private:
   friend class TextStyleOverride;
 
   static const Int32 stringIndexMask[2];
-  static const UInt8 infoOffsets[256];
+  static const std::array<UInt8, 256> infoOffsets;
 
   STU_INLINE
   const void* nonnullOwnInfo(TextFlags component) const {
@@ -444,7 +447,7 @@ private:
     static_assert(BitIndex::flags == 1);
     const UInt32 flagBit = implicit_cast<UInt32>(static_cast<UInt16>(component)) << BitIndex::flags;
     const UInt index = narrow_cast<UInt>(bits & (flagBit - 1));
-    STU_DEBUG_ASSERT(index < arrayLength(infoOffsets));
+    STU_DEBUG_ASSERT(index < infoOffsets.size());
     const void* const p = reinterpret_cast<const Byte*>(this) + infoOffsets[index];
     STU_ASSUME(p != nullptr);
     return p;
@@ -600,7 +603,7 @@ const void* TextStyle::nonnullInfoFromOverride(TextFlags component) const {
   static_assert(static_cast<Int>(TextFlags::hasBackground) == 2);
   static_assert(static_cast<Int>(TextFlags::hasLink) == 1);
   // - 1 because hasBackground is the first overridable component, cf. TextStyleOverride::applyTo
-  const int index = __builtin_ctz(static_cast<UInt16>(component)) - 1;
+  const int index = std::countr_zero(static_cast<UInt16>(component)) - 1;
   STU_DEBUG_ASSERT(0 <= index && index < arrayLength(so.styleInfos_));
   const void* const pointer = so.styleInfos_[index];
   STU_ASSUME(pointer != nullptr);

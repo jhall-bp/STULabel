@@ -34,15 +34,13 @@ STU_CONSTEXPR UInt8 infoOffset(UInt16 flags)
          ((flags & (STUTextHasAttachment << 1)) ? sizeof(TextStyle::AttachmentInfo) : 0);
 };
 
-#define OFFSETS8(i)                                                                                                    \
-  infoOffset(i), infoOffset(i + 1), infoOffset(i + 2), infoOffset(i + 3), infoOffset(i + 4), infoOffset(i + 5),        \
-      infoOffset(i + 6), infoOffset(i + 7)
-
-#define OFFSETS64(i)                                                                                                   \
-  OFFSETS8(i), OFFSETS8(i + 8), OFFSETS8(i + 8 * 2), OFFSETS8(i + 8 * 3), OFFSETS8(i + 8 * 4), OFFSETS8(i + 8 * 5),    \
-      OFFSETS8(i + 8 * 6), OFFSETS8(i + 8 * 7)
-
-constexpr UInt8 TextStyle::infoOffsets[256] = {OFFSETS64(0), OFFSETS64(64), OFFSETS64(2 * 64), OFFSETS64(3 * 64)};
+constexpr std::array<UInt8, 256> TextStyle::infoOffsets = [] {
+  std::array<UInt8, 256> offsets{};
+  for (UInt16 flags = 0; flags < offsets.size(); ++flags) {
+    offsets[flags] = infoOffset(flags);
+  }
+  return offsets;
+}();
 
 STU_NO_INLINE
 const TextStyle &TextStyle::styleForStringIndex(Int32 stringIndex) const
@@ -105,7 +103,7 @@ void TextStyleOverride::applyTo(const TextStyle &style)
   // - 1 because hasBackground is the first overridable component, cf. nonnullInfoFromOverride
 
 #define setStyleInfo(component, styleInfoName)                                                                         \
-  styleInfos_[__builtin_ctz(static_cast<UInt16>(component)) - 1] =                                                     \
+  styleInfos_[std::countr_zero(static_cast<UInt16>(component)) - 1] =                                                     \
       !(preservedFlags & component) ? &highlightStyle_->info.styleInfoName : style.nonnullOwnInfo(component)
 
   setStyleInfo(TextFlags::hasBackground, background);
@@ -116,7 +114,7 @@ void TextStyleOverride::applyTo(const TextStyle &style)
 
 #undef setStyleInfo
 
-  styleInfos_[__builtin_ctz(STUTextHasAttachment) - 1] =
+  styleInfos_[std::countr_zero(static_cast<UInt16>(STUTextHasAttachment)) - 1] =
       !(effectiveFlags & TextFlags::hasAttachment) ? nil : style.nonnullOwnInfo(TextFlags::hasAttachment);
 }
 
