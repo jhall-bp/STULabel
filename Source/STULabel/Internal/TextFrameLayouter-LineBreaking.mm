@@ -27,6 +27,24 @@ static Float64 typographicOffset(const NSArrayRef<CTRun *> &runs, const RunGlyph
   return width;
 }
 
+struct HyphenLeftPart {
+  RunGlyphIndex end;
+  Float64 width;
+};
+
+static STU_INLINE HyphenLeftPart hyphenLeftPart(const NSArrayRef<CTRun*>& runs,
+                                               Int trailingRunIndex,
+                                               bool isRightToLeft,
+                                               Float64 lineWidth,
+                                               Float64 hyphenWidth)
+{
+  const RunGlyphIndex end{trailingRunIndex + 1 - isRightToLeft, 0};
+  if (end.runIndex == runs.count()) {
+    return {{-1, -1}, lineWidth - hyphenWidth};
+  }
+  return {end, typographicOffset(runs, end)};
+}
+
 /// @returns The index of the last run in string order with positive width,
 ///          or -1 if there is no such run or if there's a run with negative width.
 /// @pre Assumes all runs have a string range <= stringEndIndex.
@@ -106,15 +124,8 @@ auto TextFrameLayouter ::breakLineAt(TextFrameLine &line,
             CFRelease(hyphenLine.line);
             return {.success = false, .ctLineWidthWithoutHyphen = ctLineWidth};
           }
-          // The following lines are duplicated below in justifyLine.
-          RunGlyphIndex leftPartEnd{trailingRunIndex + 1 - run.isRightToLeft(), 0};
-          Float64 leftPartWidth;
-          if (leftPartEnd.runIndex == runs.count()) {
-            leftPartEnd = RunGlyphIndex{-1, -1};
-            leftPartWidth = width - hyphenLine.width;
-          } else {
-            leftPartWidth = typographicOffset(runs, leftPartEnd);
-          }
+          const auto [leftPartEnd, leftPartWidth] =
+              hyphenLeftPart(runs, trailingRunIndex, run.isRightToLeft(), width, hyphenLine.width);
           const TextStyle *const style =
               &firstOriginalStringStyle(line)->styleForStringIndex(narrow_cast<Int32>(stringIndex - 1));
           STU_ASSUME(hyphenLine.line != nullptr);
@@ -196,16 +207,9 @@ void TextFrameLayouter::justifyLine(STUTextFrameLine &line) const
   if (!line.hasInsertedHyphen) {
     line.leftPartWidth = line.width;
   } else {
-    // The following lines are duplicated above in breakLineAt.
-    const bool isRTL = GlyphRunRef{runs[trailingRunIndex]}.isRightToLeft();
-    RunGlyphIndex leftPartEnd{trailingRunIndex + 1 - isRTL, 0};
-    Float64 leftPartWidth;
-    if (leftPartEnd.runIndex == runs.count()) {
-      leftPartEnd = RunGlyphIndex{-1, -1};
-      leftPartWidth = width - line.tokenWidth;
-    } else {
-      leftPartWidth = typographicOffset(runs, leftPartEnd);
-    }
+    const auto [leftPartEnd, leftPartWidth] =
+        hyphenLeftPart(runs, trailingRunIndex, GlyphRunRef{runs[trailingRunIndex]}.isRightToLeft(),
+                       width, line.tokenWidth);
     line._leftPartEnd = leftPartEnd;
     line._rightPartStart = leftPartEnd;
     line.leftPartWidth = narrow_cast<Float32>(leftPartWidth);
