@@ -196,33 +196,32 @@ TextFrameLayouter::~TextFrameLayouter()
   destroyLinesAndParagraphs();
 }
 
-void TextFrameLayouter::destroyLinesAndParagraphs()
+static STU_INLINE void releaseLinesAndParagraphTokens(ArrayRef<const TextFrameLine> lines,
+                                                       ArrayRef<const TextFrameParagraph> paragraphs)
 {
-  STU_ASSERT(ownsCTLinesAndParagraphTruncationTokens_);
   static_assert(isTriviallyDestructible<TextFrameLine>);
-  for (TextFrameLine &line : lines_.reversed()) {
+  static_assert(isTriviallyDestructible<TextFrameParagraph>);
+  for (const TextFrameLine& line : lines.reversed()) {
     line.releaseCTLines();
   }
-  static_assert(isTriviallyDestructible<TextFrameParagraph>);
-  for (TextFrameParagraph &para : paras_.reversed()) {
+  for (const TextFrameParagraph& para : paragraphs.reversed()) {
     if (para.truncationToken) {
       decrementRefCount(para.truncationToken);
     }
   }
 }
 
+void TextFrameLayouter::destroyLinesAndParagraphs()
+{
+  STU_ASSERT(ownsCTLinesAndParagraphTruncationTokens_);
+  releaseLinesAndParagraphTokens(lines_, paras_);
+}
+
 void TextFrameLayouter::SavedLayout::clear()
 {
   if (!data_)
     return;
-  for (TextFrameLine &line : data_->lines.reversed()) {
-    line.releaseCTLines();
-  }
-  for (TextFrameParagraph &para : data_->paragraphs.reversed()) {
-    if (para.truncationToken) {
-      decrementRefCount(para.truncationToken);
-    }
-  }
+  releaseLinesAndParagraphTokens(data_->lines, data_->paragraphs);
   ThreadLocalAllocatorRef{}.get().deallocate(reinterpret_cast<Byte *>(data_), data_->size);
   data_ = nullptr;
 }
