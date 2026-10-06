@@ -20,13 +20,14 @@ struct Parameter {
   STU_CONSTEXPR_T Parameter& operator=(const Parameter&) = default;
   STU_CONSTEXPR_T Parameter& operator=(Parameter&&) = default;
 
-  template <bool enable = isIntegral<T>, EnableIf<enable> = 0>
+  template <bool enable = isIntegral<T>>
+    requires (enable)
   explicit STU_CONSTEXPR
   Parameter(T value) noexcept
   : value(value) {}
 
-  template <typename... Args,
-            EnableIf<!isIntegral<T> && isConstructible<T, Args&&...>> = 0>
+  template <typename... Args>
+    requires (!isIntegral<T> && isConstructible<T, Args&&...>)
   explicit STU_CONSTEXPR
   Parameter(Args&&... args) noexcept(isNothrowConstructible<T, Args&&...>)
   : value(std::forward<Args>(args)...) {}
@@ -34,18 +35,20 @@ struct Parameter {
   explicit STU_CONSTEXPR_T
   operator T() const noexcept { return value; }
 
-  template <bool enable = !isSame<T, bool> && isExplicitlyConvertible<T, bool>,
-            EnableIf<enable> = 0>
+  template <bool enable = !isSame<T, bool> && isExplicitlyConvertible<T, bool>>
+    requires (enable)
   explicit STU_CONSTEXPR_T
   operator bool() const noexcept { return value; }
 
-  template <bool enable = !isReference<T>, EnableIf<enable> = 0>
+  template <bool enable = !isReference<T>>
+    requires (enable)
   STU_CONSTEXPR
   Parameter& operator=(T other) {
     value = other;
     return *this;
   }
-  template <bool enable = !isReference<T>, EnableIf<enable> = 0>
+  template <bool enable = !isReference<T>>
+    requires (enable)
   STU_CONSTEXPR
   Parameter& operator=(EnableIf<enable, T&&> other) {
     value = std::move(other);

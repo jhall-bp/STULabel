@@ -25,21 +25,23 @@ struct EnumBitwiseOpResult;
 
 namespace OptionsEnumOperators {
 
-  template <typename Enum, EnableIf<isOptionsEnum<Enum>> = 0>
+  template <typename Enum>
+    requires (isOptionsEnum<Enum>)
   STU_CONSTEXPR_T
   bool operator!(Enum value) {
     return !static_cast<UnderlyingType<Enum>>(value);
   }
 
-  template <typename Enum, EnableIf<isOptionsEnum<Enum>> = 0>
+  template <typename Enum>
+    requires (isOptionsEnum<Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator~(Enum value) {
     return EnumBitwiseOpResult<Enum>{
              static_cast<Enum>(~static_cast<UnderlyingType<Enum>>(value))};
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator|(Enum lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -47,8 +49,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(lhs) | static_cast<U>(static_cast<Enum>(rhs)))};
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator&(Enum lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -56,8 +58,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(lhs) & static_cast<U>(static_cast<Enum>(rhs)))};
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator^(Enum lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -65,9 +67,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(lhs) ^ static_cast<U>(static_cast<Enum>(rhs)))};
   }
 
-  template <typename T, typename Enum,
-            EnableIf<!isOptionsEnum<T> && isOptionsEnum<Enum>
-                     && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename T, typename Enum>
+    requires (!isOptionsEnum<T> && isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator|(T&& lhs, Enum rhs) {
     using U = UnderlyingType<Enum>;
@@ -75,9 +76,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(static_cast<Enum>(lhs)) | static_cast<U>(rhs))};
   }
 
-  template <typename T, typename Enum,
-            EnableIf<!isOptionsEnum<T> && isOptionsEnum<Enum>
-                     && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename T, typename Enum>
+    requires (!isOptionsEnum<T> && isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator&(T&& lhs, Enum rhs) {
     using U = UnderlyingType<Enum>;
@@ -85,9 +85,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(static_cast<Enum>(lhs)) & static_cast<U>(rhs))};
   }
 
-  template <typename T, typename Enum,
-            EnableIf<!isOptionsEnum<T> && isOptionsEnum<Enum>
-                     && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename T, typename Enum>
+    requires (!isOptionsEnum<T> && isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   EnumBitwiseOpResult<Enum> operator^(T&& lhs, Enum rhs) {
     using U = UnderlyingType<Enum>;
@@ -95,8 +94,8 @@ namespace OptionsEnumOperators {
              static_cast<Enum>(static_cast<U>(static_cast<Enum>(lhs)) ^ static_cast<U>(rhs))};
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   Enum& operator|=(Enum& lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -104,8 +103,8 @@ namespace OptionsEnumOperators {
     return lhs;
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   Enum& operator&=(Enum& lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -113,8 +112,8 @@ namespace OptionsEnumOperators {
     return lhs;
   }
 
-  template <typename Enum, typename T,
-            EnableIf<isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>> = 0>
+  template <typename Enum, typename T>
+    requires (isOptionsEnum<Enum> && isSafelyConvertible<T&&, Enum>)
   STU_CONSTEXPR_T
   Enum& operator^=(Enum& lhs, T&& rhs) {
     using U = UnderlyingType<Enum>;
@@ -135,9 +134,8 @@ struct EnumBitwiseOpResult : Comparable<EnumBitwiseOpResult<Enum>> {
   /* implicit */ STU_CONSTEXPR_T
   operator Enum() const noexcept { return value; }
 
-  template <typename T,
-            EnableIf<!isSame<RemoveCVReference<T>, Enum>
-                     && isExplicitlyConvertible<const Enum&, T>> = 0>
+  template <typename T>
+    requires (!isSame<RemoveCVReference<T>, Enum> && isExplicitlyConvertible<const Enum&, T>)
   explicit STU_CONSTEXPR_T
   operator T() const noexcept(noexcept(static_cast<T>(value))) {
     return static_cast<T>(value);
