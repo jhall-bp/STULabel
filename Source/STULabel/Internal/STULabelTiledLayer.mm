@@ -390,7 +390,8 @@ private:
 
   // MARK: - Size calculations
 
-  template <typename Int, EnableIf<isSignedInteger<Int>> = 0> static STU_INLINE Int sub_saturated(Int a, Int b)
+  template <typename Int> requires isSignedInteger<Int>
+  static STU_INLINE Int sub_saturated(Int a, Int b)
   {
     Int result;
     if (STU_UNLIKELY(__builtin_sub_overflow(a, b, &result))) {
@@ -399,7 +400,8 @@ private:
     return result;
   }
 
-  template <typename Int, EnableIf<isInteger<Int>> = 0> static STU_INLINE Int mul_positive_saturated(Int a, Int b)
+  template <typename Int> requires isInteger<Int>
+  static STU_INLINE Int mul_positive_saturated(Int a, Int b)
   {
     STU_ASSUME(a >= 0);
     STU_ASSUME(b >= 0);
@@ -559,9 +561,8 @@ private:
     return tile;
   }
 
-  template <typename F,
-            bool isTilePredicate = isCallable<F, bool(Point<SInt>, Tile *&)>,
-            EnableIf<isTilePredicate || isCallable<F, void(Point<SInt>, Tile *&)>> = 0>
+  template <typename F, bool isTilePredicate = isCallable<F, bool(Point<SInt>, Tile *&)>>
+    requires (isTilePredicate || isCallable<F, void(Point<SInt>, Tile *&)>)
   STU_INLINE auto forEachTileIn(Rect<SInt> rect, F &&f) -> Conditional<isTilePredicate, bool, void>
   {
     STU_DEBUG_ASSERT(tileRect_.contains(rect));
@@ -1173,7 +1174,8 @@ private:
 
   static TiledLayer *lastTiledLayer;
 
-  template <typename F, EnableIf<isCallable<F &&, void(TiledLayer &)>> = 0> static void forAllTiledLayers(F &&f)
+  template <typename F> requires isCallable<F &&, void(TiledLayer &)>
+  static void forAllTiledLayers(F &&f)
   {
     STU_ASSERT(is_main_thread());
     TiledLayer *layer = lastTiledLayer;

@@ -392,8 +392,8 @@ struct TextFrameParagraph : STUTextFrameParagraph {
                                             body);
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, void(const TextStyle&, StyledStringRange)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, void(const TextStyle&, StyledStringRange)>)
   STU_INLINE
   void forEachStyledStringRange(Optional<TextStyleOverride&> styleOverride, Body&& body) const {
     forEachStyledStringRange(styleOverride,
@@ -445,7 +445,8 @@ struct FlagsRequiringIndividualRunIteration {
   TextFlags flags;
   explicit FlagsRequiringIndividualRunIteration() = default;
 
-  template <typename T, EnableIf<isConvertible<const T&, TextFlags>> = 0>
+  template <typename T>
+    requires (isConvertible<const T&, TextFlags>)
   STU_CONSTEXPR
   explicit FlagsRequiringIndividualRunIteration(const T& flags) : flags(flags) {}
 };
@@ -538,9 +539,8 @@ struct TextFrameLine : STUTextFrameLine {
                                       Optional<GlyphSpan>)> body)
              const;
 
-  template <typename Body,
-            EnableIf<isCallable<Body, void(TextLinePart, CTLineXOffset, CTLine&,
-                                           Optional<GlyphSpan>)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, void(TextLinePart, CTLineXOffset, CTLine&, Optional<GlyphSpan>)>)
   STU_INLINE
   void forEachCTLineSegment(FlagsRequiringIndividualRunIteration mask, Body&& body) const {
     forEachCTLineSegment(mask, [&](TextLinePart part, CTLineXOffset offset, CTLine& line,
@@ -551,8 +551,8 @@ struct TextFrameLine : STUTextFrameLine {
                                });
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, ShouldStop(TextLinePart, CTLineXOffset, GlyphSpan)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, ShouldStop(TextLinePart, CTLineXOffset, GlyphSpan)>)
   STU_INLINE
   ShouldStop forEachGlyphSpan(Body&& body) const {
     return forEachCTLineSegment(FlagsRequiringIndividualRunIteration{detail::everyRunFlag},
@@ -563,8 +563,8 @@ struct TextFrameLine : STUTextFrameLine {
            });
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, void(TextLinePart, CTLineXOffset, GlyphSpan)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, void(TextLinePart, CTLineXOffset, GlyphSpan)>)
   STU_INLINE
   void forEachGlyphSpan(Body&& body) const {
     forEachCTLineSegment(FlagsRequiringIndividualRunIteration{detail::everyRunFlag},
@@ -576,17 +576,15 @@ struct TextFrameLine : STUTextFrameLine {
       });
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, void(const StyledGlyphSpan&, const TextStyle&,
-                                           Range<Float64> xOffset)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, void(const StyledGlyphSpan&, const TextStyle&, Range<Float64> xOffset)>)
   STU_INLINE
   void forEachStyledGlyphSpan(Optional<TextStyleOverride&> styleOverride, Body&& body) const {
     return forEachStyledGlyphSpan(detail::everyRunFlag, styleOverride, body);
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, ShouldStop(const StyledGlyphSpan&, const TextStyle&,
-                                                 Range<Float64> xOffset)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, ShouldStop(const StyledGlyphSpan&, const TextStyle&, Range<Float64> xOffset)>)
   STU_INLINE
   ShouldStop forEachStyledGlyphSpan(Optional<TextStyleOverride&> styleOverride,
                                     Body&& body)
@@ -595,9 +593,8 @@ struct TextFrameLine : STUTextFrameLine {
     return forEachStyledGlyphSpan(detail::everyRunFlag, styleOverride, body);
   }
 
-  template <typename Body,
-            EnableIf<isCallable<Body, void(const StyledGlyphSpan&, const TextStyle&,
-                                           Range<Float64> xOffset)>> = 0>
+  template <typename Body>
+    requires (isCallable<Body, void(const StyledGlyphSpan&, const TextStyle&, Range<Float64> xOffset)>)
   STU_INLINE
   void forEachStyledGlyphSpan(TextFlags flagsFilterMask, Optional<TextStyleOverride&> styleOverride,
                               Body&& body) const

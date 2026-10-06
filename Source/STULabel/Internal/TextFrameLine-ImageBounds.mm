@@ -161,7 +161,7 @@ void adjustFastTextFrameLineBoundsToAccountForDecorationsAndAttachments(TextFram
 
 } // namespace detail
 
-template <typename T, EnableIf<isOneOf<T, CGFloat, Float64>> = 0>
+template <typename T> requires isOneOf<T, CGFloat, Float64>
 static Rect<T> getTextAttachmentRunImageBoundsLLO(Range<T> x,
                                                   CGFloat baselineOffset,
                                                   const STUTextAttachment *__unsafe_unretained attachment)

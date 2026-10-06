@@ -85,10 +85,8 @@ struct TaggedRangeLineSpans {
   /// The number of tags with at least one associated span.
   Int32 spanTagCount;
 
-  template <typename Callable,
-           EnableIf<isCallable<Callable,
-                               void(ArrayRef<const TextLineSpan> spans,
-                                    FirstLastRange<const TaggedStringRange&> ranges)>> = 0>
+  template <typename Callable>
+    requires (isCallable<Callable, void(ArrayRef<const TextLineSpan> spans, FirstLastRange<const TaggedStringRange&> ranges)>)
   STU_INLINE
   void forEachTaggedLineSpanSequence(Callable callable) const {
     Int i = 0;

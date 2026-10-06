@@ -379,7 +379,8 @@ public:
     });
   }
 
-  template <typename Scheduler, EnableIf<isCallable<Scheduler, void(void*, void(*)(void*))>> = 0>
+  template <typename Scheduler>
+    requires (isCallable<Scheduler, void(void*, void(*)(void*))>)
   void renderUsingScheduler(Scheduler&& scheduler) {
     if (stringIsEmpty_ && !hasLayoutInfo_) {
       layout();
