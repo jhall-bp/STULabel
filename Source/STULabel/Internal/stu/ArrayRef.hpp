@@ -33,98 +33,99 @@ struct IndexRange {
   : startIndex{std::move(startIndex)}, endIndex{std::move(endIndex)}
   {}
 
-  template <typename Int,
-            EnableIf<isSame<LowerBound, UpperBound> && DelayCheckToInstantiation<Int>::value> = 0>
+  template <typename Int>
+    requires (isSame<LowerBound, UpperBound> && DelayCheckToInstantiation<Int>::value)
   STU_CONSTEXPR_T
   IndexRange(LowerBound start, Count<Int> count)
   : startIndex{std::move(start)}, endIndex{startIndex + count.value}
   {}
 
-  template <bool enable = true, EnableIf<enable && isSame<LowerBound, UpperBound>> = 0>
+  template <bool enable = true>
+    requires (enable && isSame<LowerBound, UpperBound>)
   STU_CONSTEXPR_T
   IndexRange(Range<LowerBound> range)
   : startIndex{std::move(range.start)}, endIndex{std::move(range.end)}
   {}
 
-  template <typename R,
-            EnableIf<isSame<LowerBound, UpperBound>
-                     && !isSame<RemoveCVReference<R>, Range<LowerBound>>
-                     && isSafelyConvertible<RangeBound<R>, LowerBound>> = 0>
+  template <typename R>
+    requires (isSame<LowerBound, UpperBound>
+              && !isSame<RemoveCVReference<R>, Range<LowerBound>>
+              && isSafelyConvertible<RangeBound<R>, LowerBound>)
   STU_CONSTEXPR_T
   IndexRange(R&& range)
   : IndexRange(Range<LowerBound>{std::move(range)})
   {}
 
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>)
   STU_CONSTEXPR
   bool isValidForArrayWithLength(Int length) const {
     return 0 <= startIndex && startIndex <= length
         && 0 <= endIndex && endIndex <= length;
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int>
-                     && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   bool isValidForArrayWithLength(Int length) const {
     return 0 <= startIndex && startIndex <= length
         && endIndex.value <= 0 && endIndex.value + length >= 0;
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, OffsetFromEnd<Int>>
-                                    && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int>
+              && isSame<LowerBound, OffsetFromEnd<Int>>
+              && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   bool isValidForArrayWithLength(Int length) const {
     return startIndex.value <= 0 && startIndex.value + length >= 0
         && endIndex.value <= 0 && endIndex.value + length >= 0;
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>)
   STU_CONSTEXPR
   Range<Int> forArrayWithLength(Int length, Unchecked) const {
     discard(length);
     return {startIndex, endIndex};
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int>
-                     && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   Range<Int> forArrayWithLength(Int length, Unchecked) const {
     return {startIndex, length + endIndex.value};
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, OffsetFromEnd<Int>>
-                                    && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int>
+              && isSame<LowerBound, OffsetFromEnd<Int>>
+              && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   Range<Int> forArrayWithLength(Int length, Unchecked) const {
     return {this->startIndex.value + length, this->endIndex.value + length};
   }
 
   /// \pre isValidIndexRangeForArrayWithLength(length)
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, Int>)
   STU_CONSTEXPR
   StartIndexAndCount<Int> startIndexAndCountForArrayWithLength(Int length, Unchecked) const {
     discard(length);
     return {startIndex, max(0, endIndex - startIndex)};
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int>
-                     && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int> && isSame<LowerBound, Int> && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   StartIndexAndCount<Int> startIndexAndCountForArrayWithLength(Int length, Unchecked) const {
     return {startIndex, max(0, length + endIndex.value - startIndex)};
   }
 
-  template <typename Int,
-            EnableIf<isInteger<Int> && isSame<LowerBound, OffsetFromEnd<Int>>
-                                    && isSame<UpperBound, OffsetFromEnd<Int>>> = 0>
+  template <typename Int>
+    requires (isInteger<Int>
+              && isSame<LowerBound, OffsetFromEnd<Int>>
+              && isSame<UpperBound, OffsetFromEnd<Int>>)
   STU_CONSTEXPR
   StartIndexAndCount<Int> startIndexAndCountForArrayWithLength(Int length, Unchecked) const {
     return {startIndex.value + length, max(0, endIndex.value - startIndex.value)};
@@ -172,7 +173,8 @@ public:
     return derived().count() == 0;
   }
 
-  template <bool enable = isSame<ArrayRef, stu::ArrayRef<RemoveReference<R>>>, EnableIf<enable> = 0>
+  template <bool enable = isSame<ArrayRef, stu::ArrayRef<RemoveReference<R>>>>
+    requires (enable)
   STU_CONSTEXPR_T
   UInt arraySizeInBytes() const {
     return sizeof(Value)*sign_cast(derived().count());
@@ -213,7 +215,8 @@ public:
     discard(index);
     discard(count);
   }
-  template <typename UInt, EnableIf<isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>> = 0>
+  template <typename UInt>
+    requires (isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>)
   STU_CONSTEXPR
   void assumeValidIndex(UInt index) const {
     const auto count = sign_cast(derived().count());
@@ -247,7 +250,8 @@ public:
     return derived().begin()[index];
   }
 
-  template <typename UInt, EnableIf<isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>> = 0>
+  template <typename UInt>
+    requires (isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>)
   STU_CONSTEXPR
   ValueRef operator[](UInt index) {
     const auto count = sign_cast(derived().count());
@@ -255,7 +259,8 @@ public:
     return derived().begin()[index];
   }
 
-  template <typename UInt, EnableIf<isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>> = 0>
+  template <typename UInt>
+    requires (isUnsigned<UInt> && !isSafelyConvertible<UInt, Int>)
   STU_CONSTEXPR
   ValueRef_const operator[](UInt index) const {
     const auto count = sign_cast(derived().count());
@@ -309,60 +314,60 @@ public:
     return subarray(indexRange);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> indexWhere(Predicate&& predicate) const {
     return indexWhereImpl(IndexRange<Int>{0, derived().count()}, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> indexWhere(IndexRange<Int> indexRange, Predicate&& predicate) const {
     return indexWhereImpl(indexRange, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> indexWhere(IndexRange<Int, OffsetFromEnd<Int>> indexRange,
                            Predicate&& predicate) const {
     return indexWhereImpl(indexRange, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> indexWhere(IndexRange<OffsetFromEnd<Int>> indexRange, Predicate&& predicate) const
   {
     return indexWhereImpl(indexRange, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> lastIndexWhere(Predicate&& predicate) const {
     return lastIndexWhere(IndexRange<Int>{0, derived().count()}, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> lastIndexWhere(IndexRange<Int> indexRange, Predicate&& predicate) const {
     return lastIndexWhere(indexRange, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> lastIndexWhere(IndexRange<Int, OffsetFromEnd<Int>> indexRange,
                                Predicate&& predicate) const {
     return lastIndexWhere(indexRange, predicate);
   }
 
-  template <typename Predicate,
-            EnableIf<isCallable<Predicate, bool(ConstValueRef)>> = 0>
+  template <typename Predicate>
+    requires (isCallable<Predicate, bool(ConstValueRef)>)
   STU_CONSTEXPR
   Optional<Int> lastIndexWhere(IndexRange<OffsetFromEnd<Int>> indexRange,
                                Predicate&& predicate) const
@@ -370,9 +375,8 @@ public:
     return lastIndexWhere(indexRange, predicate);
   }
 
-  template <typename LessThan,
-            EnableIf<!isConst<Value>
-                     && isCallable<LessThan, bool(ConstValueRef, ConstValueRef)>> = 0>
+  template <typename LessThan>
+    requires (!isConst<Value> && isCallable<LessThan, bool(ConstValueRef, ConstValueRef)>)
   void sort(LessThan&& lessThan) {
     std::sort(derived().begin(), derived().end(), lessThan);
   }
@@ -489,43 +493,37 @@ public:
   : ArrayRef{arrayBegin, arrayEnd - arrayBegin, unchecked}
   {}
 
-  template <typename Array, typename U, typename CU,
-            EnableIf<!isSame<Array, ArrayRef> && isConvertibleArrayPointer<U*, T*>> = 0>
+  template <typename Array, typename U, typename CU>
+    requires (!isSame<Array, ArrayRef> && isConvertibleArrayPointer<U*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   ArrayRef(ArrayBase<Array, U&, CU&>& other) noexcept
   : ArrayRef{down_cast<Array&>(other).begin(), down_cast<Array&>(other).count(), unchecked}
   {}
 
-  template <typename Array, typename U, typename CU,
-            EnableIf<!isSame<Array, ArrayRef> && isConvertibleArrayPointer<CU*, T*>> = 0>
+  template <typename Array, typename U, typename CU>
+    requires (!isSame<Array, ArrayRef> && isConvertibleArrayPointer<CU*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   ArrayRef(const ArrayBase<Array, U&, CU&>& other) noexcept
   : ArrayRef{down_cast<const Array&>(other).begin(), down_cast<const Array&>(other).count(),
              unchecked}
   {}
 
-  template <typename Array,
-            EnableIf<isConstructible<ArrayRef, Array&>> = 0>
+  template <typename Array>
+    requires (isConstructible<ArrayRef, Array&>)
   /* implicit */ STU_CONSTEXPR_T
   ArrayRef(Ref<Array> other) noexcept
   : ArrayRef{other.get()}
   {}
 
-  template <typename T2, int N,
-            EnableIf<!isCharacter<T2> && isConst<T> && isConvertibleArrayPointer<T2*, T*>> = 0>
-  /* implicit */ STU_CONSTEXPR_T
+  template <typename T2, int N>
+    requires (!isCharacter<T2> && isConvertibleArrayPointer<T2*, T*>)
+  explicit(!isConst<T>) STU_CONSTEXPR_T
   ArrayRef(T2 (& array)[N]) noexcept
   : ArrayRef{array, N, unchecked}
   {}
 
-  template <typename T2, int N,
-            EnableIf<!isCharacter<T2> && !isConst<T> && isConvertibleArrayPointer<T2*, T*>> = 0>
-  explicit STU_CONSTEXPR_T
-  ArrayRef(T2 (& array)[N]) noexcept
-  : ArrayRef{array, N, unchecked}
-  {}
-
-  template <bool enable = !isIntegral<T> && !isPointer<T>, EnableIf<enable> = 0>
+  template <bool enable = !isIntegral<T> && !isPointer<T>>
+    requires (enable)
   /* implicit */ STU_CONSTEXPR_T
   ArrayRef(std::initializer_list<RemoveConst<T>> list) noexcept
   : ArrayRef{list.begin(), sign_cast(list.size()), unchecked}
