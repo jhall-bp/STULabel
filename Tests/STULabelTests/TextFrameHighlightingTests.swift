@@ -75,6 +75,42 @@ struct TextFrameHighlightingTests {
   }
 
   @Test
+  func highlightedBackgroundDrawsBothFillAndBorder() throws {
+    let frame = textFrame("Highlight")
+    let style = STUTextHighlightStyle { builder in
+      builder.background = STUBackgroundAttribute { background in
+        background.color = .blue
+        background.borderColor = .red
+        background.borderWidth = 4
+      }
+    }
+    let options = STUTextFrame.DrawingOptions()
+    options.drawingMode = .onlyBackground
+    options.highlightStyle = style
+    let context = try #require(CGContext(
+      data: nil, width: 256, height: 64, bitsPerComponent: 8, bytesPerRow: 256 * 4,
+      space: CGColorSpaceCreateDeviceRGB(),
+      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+    context.translateBy(x: 0, y: 64)
+    context.scaleBy(x: 1, y: -1)
+    frame.draw(
+      at: CGPoint(x: 8, y: 8), in: context, contextBaseCTM_d: 1,
+      pixelAlignBaselines: true, options: options)
+
+    let pixels = try #require(context.data).assumingMemoryBound(to: UInt8.self)
+    var hasRedBorder = false
+    var hasBlueFill = false
+    for index in stride(from: 0, to: 256 * 64 * 4, by: 4) {
+      hasRedBorder = hasRedBorder
+        || (pixels[index] > 240 && pixels[index + 1] < 16 && pixels[index + 2] < 16)
+      hasBlueFill = hasBlueFill
+        || (pixels[index] < 16 && pixels[index + 1] < 16 && pixels[index + 2] > 240)
+    }
+    #expect(hasRedBorder)
+    #expect(hasBlueFill)
+  }
+
+  @Test
   func `Truncated line highlighting`() {
     let string = NSMutableAttributedString()
     string.append(

@@ -255,14 +255,13 @@ static TextHighlightStyle resolvedStyle(STUTextHighlightStyle *__unsafe_unretain
     setFlags(TextFlags::hasShadow, isNotClear, true);
   }
   if (self->_background) {
-    const bool hasBackground =
-        setColor(
-            colors, true, self->_background->_color, backgroundColorIndex, Out{style.info.background.colorIndex}) ||
-        setColor(colors,
-                 true,
-                 self->_background->_borderWidth == 0 ? nil : self->_background->_borderColor,
-                 backgroundBorderColorIndex,
-                 Out{style.info.background.borderColorIndex});
+    const bool hasFill =
+        setColor(colors, true, self->_background->_color,
+                 backgroundColorIndex, Out{style.info.background.colorIndex});
+    const bool hasBorder =
+        setColor(colors, true, self->_background->_borderWidth == 0 ? nil : self->_background->_borderColor,
+                 backgroundBorderColorIndex, Out{style.info.background.borderColorIndex});
+    const bool hasBackground = hasFill || hasBorder;
     if (hasBackground) {
       style.info.background.stuAttribute = self->_background;
     }
