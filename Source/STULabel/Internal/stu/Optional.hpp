@@ -83,13 +83,15 @@ public:
   /* implicit */ STU_CONSTEXPR_T
   Optional(const None&) noexcept {}
 
-  template <typename U, EnableIf<isSafelyConvertible<U&&, T>> = 0>
+  template <typename U>
+    requires (isSafelyConvertible<U&&, T>)
   /* implicit */ STU_CONSTEXPR
   Optional(U&& value) noexcept(isNothrowConstructible<T, U&&>) {
     this->constructValue(std::forward<U>(value));
   }
 
-  template <typename... Args, EnableIf<isConstructible<T, Args&&...>> = 0>
+  template <typename... Args>
+    requires (isConstructible<T, Args&&...>)
   explicit STU_CONSTEXPR
   Optional(InPlace, Args&&... args) noexcept(isNothrowConstructible<T, Args&&...>) {
     this->constructValue(std::forward<Args>(args)...);
@@ -101,36 +103,18 @@ public:
   STU_CONSTEXPR
   Optional(Optional&& other) = default;
 
-  template <typename U, typename R = decltype(*declval<const Optional<U>&>()),
-            EnableIf<isSafelyConvertible<R, T>> = 0>
-  /* implicit */ STU_CONSTEXPR
+  template <typename U, typename R = decltype(*declval<const Optional<U>&>())>
+    requires (isSafelyConvertible<R, T> || isNonSafelyConvertible<R, T>)
+  explicit(!isSafelyConvertible<R, T>) STU_CONSTEXPR
   Optional(const Optional<U>& other) noexcept(isNothrowConstructible<T, R>) {
     if (other) {
       this->constructValue(*other);
     }
   }
 
-  template <typename U, typename R = decltype(*declval<const Optional<U>&>()),
-            EnableIf<isNonSafelyConvertible<R, T>> = 0>
-  explicit STU_CONSTEXPR
-  Optional(const Optional<U>& other) noexcept(isNothrowConstructible<T, R>) {
-    if (other) {
-      this->constructValue(*other);
-    }
-  }
-
-  template <typename U, typename R = decltype(*declval<Optional<U>&&>()),
-            EnableIf<isSafelyConvertible<R, T>> = 0>
-  /* implicit */ STU_CONSTEXPR
-  Optional(Optional<U>&& other) noexcept(isNothrowConstructible<T, R>) {
-    if (other) {
-      this->constructValue(*std::move(other));
-    }
-  }
-
-  template <typename U, typename R = decltype(*declval<Optional<U>&&>()),
-            EnableIf<isNonSafelyConvertible<R, T>> = 0>
-  explicit STU_CONSTEXPR
+  template <typename U, typename R = decltype(*declval<Optional<U>&&>())>
+    requires (isSafelyConvertible<R, T> || isNonSafelyConvertible<R, T>)
+  explicit(!isSafelyConvertible<R, T>) STU_CONSTEXPR
   Optional(Optional<U>&& other) noexcept(isNothrowConstructible<T, R>) {
     if (other) {
       this->constructValue(*std::move(other));
@@ -152,7 +136,8 @@ public:
     return *this;
   }
 
-  template <typename U, EnableIf<isAssignable<T&, U&&> && isConstructible<T, U&&>> = 0>
+  template <typename U>
+    requires (isAssignable<T&, U&&> && isConstructible<T, U&&>)
   STU_CONSTEXPR
   Optional& operator=(U&& value)
               noexcept(isNothrowAssignable<T&, U&&> && isNothrowConstructible<T, U&&>)
@@ -165,8 +150,8 @@ public:
     return *this;
   }
 
-  template <typename U, typename R = decltype(*declval<const Optional<U>&>()),
-            EnableIf<isAssignable<T&, R> && isConstructible<T, R>> = 0>
+  template <typename U, typename R = decltype(*declval<const Optional<U>&>())>
+    requires (isAssignable<T&, R> && isConstructible<T, R>)
   STU_CONSTEXPR
   Optional& operator=(const Optional<U>& other)
               noexcept(isNothrowAssignable<T&, R> && isNothrowConstructible<T, R>)
@@ -179,8 +164,8 @@ public:
     return *this;
   }
 
-  template <typename U, typename R = decltype(*declval<Optional<U>&&>()),
-            EnableIf<isAssignable<T&, R> && isConstructible<T, R>> = 0>
+  template <typename U, typename R = decltype(*declval<Optional<U>&&>())>
+    requires (isAssignable<T&, R> && isConstructible<T, R>)
   STU_CONSTEXPR
   Optional& operator=(Optional<U>&& other)
               noexcept(isNothrowAssignable<T&, R> && isNothrowConstructible<T, R>)
@@ -291,7 +276,8 @@ private:
   }
 public:
 
-  template <typename... Args, EnableIf<isConstructible<T, Args&&...>> = 0>
+  template <typename... Args>
+    requires (isConstructible<T, Args&&...>)
   STU_CONSTEXPR
   T& emplace(Args&&... args) {
     *this = none;
@@ -308,7 +294,8 @@ public:
   STU_CONSTEXPR
   friend bool operator!=(const None&, const Optional<T>& rhs) noexcept { return !!rhs; }
 
-  template <typename U, EnableIf<!isOptional<U> && isEqualityComparable<T, U>> = 0>
+  template <typename U>
+    requires (!isOptional<U> && isEqualityComparable<T, U>)
   STU_CONSTEXPR
   friend bool operator==(const Optional& lhs, const U& rhs)
                 noexcept(isNothrowEqualityComparable<T, U>)
@@ -316,7 +303,8 @@ public:
     return !!lhs && *lhs == rhs;
   }
 
-  template <typename U, EnableIf<!isOptional<U> && isEqualityComparable<T, U>> = 0>
+  template <typename U>
+    requires (!isOptional<U> && isEqualityComparable<T, U>)
   STU_CONSTEXPR
   friend bool operator!=(const Optional& lhs, const U& rhs)
                 noexcept(isNothrowEqualityComparable<T, U>)
@@ -324,14 +312,16 @@ public:
     return !(lhs == rhs);
   }
 
-  template <typename U, EnableIf<!isOptional<U> && isEqualityComparable<U, T>> = 0>
+  template <typename U>
+    requires (!isOptional<U> && isEqualityComparable<U, T>)
   STU_CONSTEXPR
   friend bool operator==(const U& lhs, const Optional& rhs)
                 noexcept(isNothrowEqualityComparable<U, T>)
   {
     return !!rhs && lhs == *rhs;
   }
-  template <typename U, EnableIf<!isOptional<U> && isEqualityComparable<U, T>> = 0>
+  template <typename U>
+    requires (!isOptional<U> && isEqualityComparable<U, T>)
   STU_CONSTEXPR
   friend bool operator!=(const U& lhs, const Optional& rhs)
                 noexcept(isNothrowEqualityComparable<U, T>)
@@ -339,14 +329,16 @@ public:
     return !(lhs == rhs);
   }
 
-  template <typename U, EnableIf<isEqualityComparable<T, U> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isEqualityComparable<T, U> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   friend bool operator==(const Optional& lhs, const Optional<U>& rhs)
                 noexcept(isNothrowEqualityComparable<T, U>)
   {
     return !!lhs == !!rhs && (!lhs || *lhs == *rhs);
   }
-  template <typename U, EnableIf<isEqualityComparable<T, U> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isEqualityComparable<T, U> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   friend bool operator!=(const Optional& lhs, const Optional<U>& rhs)
                 noexcept(isNothrowEqualityComparable<T, U>)
@@ -354,22 +346,26 @@ public:
     return !(lhs == rhs);
   }
 
-  template <typename U, EnableIf<isLessThanComparable<T, U> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isLessThanComparable<T, U> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   bool operator<(const Optional<U>& other) noexcept(isNothrowLessThanComparable<T, U>) {
     return !!other && (!*this || **this < *other);
   }
-  template <typename U, EnableIf<isLessThanComparable<U, T> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isLessThanComparable<U, T> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   bool operator>(const Optional<U>& other) noexcept(isNothrowLessThanComparable<U, T>) {
     return other < *this;
   }
-  template <typename U, EnableIf<isLessThanComparable<U, T> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isLessThanComparable<U, T> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   bool operator<=(const Optional<U>& other) noexcept(isNothrowLessThanComparable<U, T>) {
     return !(other < *this);
   }
-  template <typename U, EnableIf<isLessThanComparable<T, U> && !Optional<U>::isSpecialized> = 0>
+  template <typename U>
+    requires (isLessThanComparable<T, U> && !Optional<U>::isSpecialized)
   STU_CONSTEXPR
   bool operator>=(const Optional<U>& other) noexcept(isNothrowLessThanComparable<T, U>) {
     return !(*this < other);
@@ -418,23 +414,21 @@ public:
   STU_CONSTEXPR_T
   Optional(const Optional& other) noexcept = default;
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   Optional(const Optional<U&>& other) noexcept
   : pointer_(static_cast<U*>(other)) {}
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   Optional(const Optional<Ref<U>>& other) noexcept
   : pointer_(static_cast<U*>(other)) {}
 
-  template <typename U, EnableIf<isConst<T> && isConvertible<U*, T*>> = 0>
-  /* implicit */ STU_CONSTEXPR
-  Optional(const Optional<U>& other) noexcept
-  : pointer_(other ? &*other : nullptr) {}
-
-  template <typename U, EnableIf<!isConst<T> && isConvertible<U*, T*>> = 0>
-  explicit STU_CONSTEXPR
+  template <typename U>
+    requires (isConvertible<U*, T*>)
+  explicit(!isConst<T>) STU_CONSTEXPR
   Optional(const Optional<U>& other) noexcept
   : pointer_(other ? &*other : nullptr) {}
 
@@ -448,21 +442,24 @@ public:
   STU_CONSTEXPR_T
   Optional& operator=(const Optional& other) noexcept = default;
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Optional& operator=(U* other) noexcept {
     pointer_ = other;
     return *this;
   }
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Optional& operator=(const Optional<U&>& other) noexcept {
     pointer_ = static_cast<U*>(other);
     return *this;
   }
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Optional& operator=(const Optional<Ref<U>>& other) noexcept {
     pointer_ = static_cast<U*>(other);
@@ -491,7 +488,8 @@ public:
     return *pointer_;
   }
 
-  template <typename U, EnableIf<isConvertible<U&&, T&>> = 0>
+  template <typename U>
+    requires (isConvertible<U&&, T&>)
   STU_CONSTEXPR
   T& emplace(U&& arg) {
     pointer_ = &implicit_cast<T&>(std::forward<U>(arg));
@@ -532,7 +530,8 @@ public:
   STU_CONSTEXPR_T
   Optional(const Optional& other) noexcept = default;
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   /* implicit */ STU_CONSTEXPR_T
   Optional(const Optional<Ref<U>>& other) noexcept
   : pointer_(static_cast<U*>(other)) {}
@@ -545,7 +544,8 @@ public:
   STU_CONSTEXPR_T
   Optional& operator=(const Optional& other) noexcept = default;
 
-  template <typename U, EnableIf<isConvertible<U*, T*>> = 0>
+  template <typename U>
+    requires (isConvertible<U*, T*>)
   STU_CONSTEXPR_T
   Optional& operator=(const Optional<Ref<U>>& other) noexcept
   {
@@ -574,7 +574,8 @@ public:
     return *pointer_;
   }
 
-  template <typename U, EnableIf<isConstructible<Ref<T>, U&&>> = 0>
+  template <typename U>
+    requires (isConstructible<Ref<T>, U&&>)
   STU_CONSTEXPR
   T& emplace(U&& arg) {
     pointer_ = Ref<T>(std::forward<U>(arg)).pointer();
@@ -631,7 +632,8 @@ public:
     return *pointer_;
   }
 
-  template <typename U, EnableIf<isConstructible<Out<T>, U&&>> = 0>
+  template <typename U>
+    requires (isConstructible<Out<T>, U&&>)
   STU_CONSTEXPR_T
   T& emplace(U&& arg) {
     pointer_ = &Out<T>(std::forward<U>(arg)).get();
