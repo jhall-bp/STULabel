@@ -140,7 +140,9 @@ template <>
 class stu::OptionalValueStorage<stu_label::DisplayScale> {
   friend stu_label::DisplayScale;
 public:
-  STU_CONSTEXPR CGFloat displayScaleOrZero() const { return value_.value(); }
+  STU_CONSTEXPR CGFloat displayScaleOrZero() const {
+    return static_cast<CGFloat>(value_.scale_f64_);
+  }
 protected:
   stu_label::DisplayScale value_{};
   STU_CONSTEXPR bool hasValue() const noexcept { return value_.scale_f64_ != 0; }

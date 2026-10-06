@@ -57,10 +57,14 @@ static double naiveCeilToScale(double x, double scale) { return ceil(x * scale) 
   Optional<DisplayScale> scale = DisplayScale::oneAsOptional();
   XCTAssertTrue(scale);
   XCTAssertEqual(scale, 1);
+  XCTAssertEqual(scale.storage().displayScaleOrZero(), 1);
   scale = none;
   XCTAssertFalse(scale);
+  XCTAssertEqual(scale.storage().displayScaleOrZero(), 0);
   scale = DisplayScale::create(3);
   XCTAssertEqual(scale, 3);
+  XCTAssertEqual(scale.storage().displayScaleOrZero(), 3);
+  XCTAssertEqual(DisplayScale::none.storage().displayScaleOrZero(), 0);
 }
 
 - (void)testRounding
