@@ -100,7 +100,7 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
 
 @interface STUWeakFontReference : NSObject {
 @package // fileprivate
-  UIFont *font;
+  UIFont *__weak font;
 }
 @end
 @implementation STUWeakFontReference
