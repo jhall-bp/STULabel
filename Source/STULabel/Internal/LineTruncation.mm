@@ -216,12 +216,12 @@ Int Iterator::glyphStringIndex_slowPath()
     if (!isRightToLeftLine_) {
       STU_DISABLE_LOOP_UNROLL
       for (Int &stringIndex : stringIndexBuffer_) {
-        stringIndex = maxIndex = max(stringIndex, stringIndex);
+        stringIndex = maxIndex = max(maxIndex, stringIndex);
       }
     } else {
       STU_DISABLE_LOOP_UNROLL
       for (Int &stringIndex : stringIndexBuffer_.reversed()) {
-        stringIndex = maxIndex = max(stringIndex, stringIndex);
+        stringIndex = maxIndex = max(maxIndex, stringIndex);
       }
     }
   }
