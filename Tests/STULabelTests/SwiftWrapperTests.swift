@@ -86,12 +86,12 @@ struct SwiftWrapperTests {
   @Test
   func `STULabel preserves disabled link color through tint and hierarchy changes`() {
     let label = STULabel()
-    let defaultDisabledLinkColor = UIColor.link.withProminence(.tertiary)
+    let defaultDisabledLinkColor = UIColor.link.withProminence(.secondary)
     #expect(label.disabledLinkColor == defaultDisabledLinkColor)
     label.isEnabled = false
     #expect(label.layer.overrideLinkColor == defaultDisabledLinkColor)
     label.isEnabled = true
-    #expect(label.layer.overrideLinkColor == .link)
+    #expect(label.layer.overrideLinkColor == label.tintColor)
 
     let disabledLinkColor = UIColor.systemRed
     label.disabledLinkColor = disabledLinkColor
@@ -115,7 +115,7 @@ struct SwiftWrapperTests {
     #expect(label.layer.overrideLinkColor == label.tintColor)
 
     label.isEnabled = true
-    #expect(label.layer.overrideLinkColor == .link)
+    #expect(label.layer.overrideLinkColor == label.tintColor)
   }
 
   // Currently we just test here that these properties are actually callable (without causing a
