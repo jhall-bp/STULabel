@@ -105,32 +105,15 @@ bool equal(NSString *__unsafe_unretained key, NSString *__unsafe_unretained stri
   return key == string || CFEqual((__bridge CFStringRef)key, (__bridge CFStringRef)string);
 }
 
+template <typename... UnequalKeys>
+  requires ((isSame<UnequalKeys, NSString*> && ...))
 STU_INLINE
 bool equalAndNot(NSString *__unsafe_unretained key,
                  NSString *__unsafe_unretained equalKey,
-                 NSString *__unsafe_unretained unequalKey)
+                 NSString *__unsafe_unretained unequalKey,
+                 UnequalKeys __unsafe_unretained... unequalKeys)
 {
-  return key == equalKey || (key != unequalKey && CFEqual((__bridge CFStringRef)key, (__bridge CFStringRef)equalKey));
-}
-
-STU_INLINE
-bool equalAndNot(NSString *__unsafe_unretained key,
-                 NSString *__unsafe_unretained equalKey,
-                 NSString *__unsafe_unretained unequalKey1,
-                 NSString *__unsafe_unretained unequalKey2)
-{
-  return key == equalKey || (key != unequalKey1 && key != unequalKey2 &&
-                             CFEqual((__bridge CFStringRef)key, (__bridge CFStringRef)equalKey));
-}
-
-STU_INLINE
-bool equalAndNot(NSString *__unsafe_unretained key,
-                 NSString *__unsafe_unretained equalKey,
-                 NSString *__unsafe_unretained unequalKey1,
-                 NSString *__unsafe_unretained unequalKey2,
-                 NSString *__unsafe_unretained unequalKey3)
-{
-  return key == equalKey || (key != unequalKey1 && key != unequalKey2 && key != unequalKey3 &&
+  return key == equalKey || (key != unequalKey && ((key != unequalKeys) && ...) &&
                              CFEqual((__bridge CFStringRef)key, (__bridge CFStringRef)equalKey));
 }
 
