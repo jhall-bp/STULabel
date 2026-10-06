@@ -13,6 +13,22 @@ private func createTypesetter(_ string: NSAttributedString) -> CTTypesetter {
 
 struct ShapedStringTests {
   @MainActor
+  @Test
+  func discardedTruncationTokenDoesNotIncreaseLineStringRange() throws {
+    let frame = STUTextFrame(
+      STUShapedString(NSAttributedString(string: "A", attributes: [.font: UIFont.systemFont(ofSize: 18)]),
+                      defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 1, height: 100), displayScale: 0,
+      options: STUTextFrameOptions { builder in
+        builder.maximumNumberOfLines = 1
+        builder.truncationToken = NSAttributedString(string: "LONG TOKEN")
+      })
+    #expect(frame.truncatedAttributedString.string == "A")
+    let line = try #require(frame.lines.first)
+    #expect(line.rangeInTruncatedString == NSRange(location: 0, length: 1))
+  }
+
+  @MainActor
   @Test(arguments: [
     "\u{2069}אבג",
     "\u{2069}\u{2069}אבג",

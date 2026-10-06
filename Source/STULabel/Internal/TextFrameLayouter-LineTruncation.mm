@@ -423,6 +423,7 @@ void TextFrameLayouter::truncateLine(TextFrameLine &line,
     CFRelease(tokenLine);
     tokenLine = nullptr;
     tokenWidth = 0;
+    tokenLength = 0;
     tokenStylesOffset = line._textStylesOffset;
     tokenTextFlags = TextFlags{};
   }
