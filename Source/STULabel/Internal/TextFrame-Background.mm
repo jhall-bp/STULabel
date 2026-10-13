@@ -287,18 +287,17 @@ void TextFrame::drawBackground(Range<Int> clipLineRange, DrawingContext &context
 
   const ArrayRef<const TextFrameLine> lines = this->lines();
 
-  // Depending on the background attribute options the shape of a background decoration may depend
-  // on the background of adjacent lines.
-  while (clipLineRange.start > 0 && (lines[clipLineRange.start - 1].textFlags() & TextFlags::hasBackground)) {
-    clipLineRange.start -= 1;
-  }
-  while (clipLineRange.end < lines.count() && (lines[clipLineRange.end].textFlags() & TextFlags::hasBackground)) {
-    clipLineRange.end += 1;
-  }
-
   const Optional<TextStyleOverride &> styleOverride = context.styleOverride();
   if (styleOverride &&
       (!(styleOverride->flagsMask & TextFlags::hasBackground) || !styleOverride->drawnRange.contains(range()))) {
+    // Depending on the background attribute options the shape of a background decoration may depend
+    // on the background of adjacent lines.
+    while (clipLineRange.start > 0 && (lines[clipLineRange.start - 1].textFlags() & TextFlags::hasBackground)) {
+      clipLineRange.start -= 1;
+    }
+    while (clipLineRange.end < lines.count() && (lines[clipLineRange.end].textFlags() & TextFlags::hasBackground)) {
+      clipLineRange.end += 1;
+    }
     TempBackgroundSegments ts{*this, clipLineRange, styleOverride};
     drawBackgroundSegments(ts.first(), lines, context);
     return;
