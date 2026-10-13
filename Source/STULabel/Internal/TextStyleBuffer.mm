@@ -383,8 +383,6 @@ ColorIndex TextStyleBuffer::addColor(UIColor *__unsafe_unretained uiColor)
       ++i1;
     }
   }
-  Optional<RGBA> rgba = RGBA::of(uiColor);
-  const ColorFlags colorFlags = rgba ? stu_label::colorFlags(*rgba) : ColorFlags::isNotGray;
   if (STU_UNLIKELY(colorIndices_.count() == 0)) {
     if (oldColors_.first.isEmpty()) {
       colorIndices_.initializeWithBucketCount(16);
@@ -407,6 +405,8 @@ ColorIndex TextStyleBuffer::addColor(UIColor *__unsafe_unretained uiColor)
       !inserted) {
     return ColorIndex{i};
   }
+  Optional<RGBA> rgba = RGBA::of(uiColor);
+  const ColorFlags colorFlags = rgba ? stu_label::colorFlags(*rgba) : ColorFlags::isNotGray;
   colors_.append(ColorRef{uiColor, colorFlags});
   return ColorIndex{newIndex};
 }
