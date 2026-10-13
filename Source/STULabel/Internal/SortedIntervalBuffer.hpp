@@ -42,6 +42,7 @@ void SortedIntervalBuffer<Bound>::add(Range<Bound> interval) {
       }
     }
   }
+  previousIndex_ = i;
   // array_[i - 1].end < interval.start <= array_[i].end
   if (i == count || interval.end < array_[i].start) {
     array_.insert(i, interval);
@@ -56,7 +57,6 @@ void SortedIntervalBuffer<Bound>::add(Range<Bound> interval) {
   // array_[j].start <= interval.end < array_[j + 1].start
   array_[i].start = min(interval.start, array_[i].start);
   array_[i].end = max(interval.end, array_[j].end);
-  previousIndex_ = i;
   array_.removeRange({i + 1, j + 1});
 }
 
