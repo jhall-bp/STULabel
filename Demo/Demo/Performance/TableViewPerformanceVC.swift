@@ -627,7 +627,7 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
     prerenderer.textLayoutMode = .textKit
     prerenderer.clipsContentToBounds = true
     prerenderer.maximumNumberOfLines = 0
-    prerenderer.backgroundColor = labelBackgroundColor?.cgColor
+    prerenderer.backgroundColor = labelBackgroundColor?.resolvedColor(with: traitCollection).cgColor
     let text: NSAttributedString
     switch testCase {
     case .emojicalypse: text = emojiText(index: index)
@@ -744,7 +744,8 @@ class TableViewPerformanceVC: UITableViewController, UITableViewDataSourcePrefet
     case .stuLabel:
       let cell = cell as! STULabelCell
       cell.labelDelegate = self
-      cell.labelBackgroundColor = labelBackgroundColor
+      // Prerenderer configuration imports a static color, so apply the dynamic background afterward.
+      defer { cell.labelBackgroundColor = labelBackgroundColor }
       if usesPrefetchLayout || usesPrefetchRendering {
         var prerenderer: STULabelPrerenderer?
         if let item = prefetchItems.removeValue(forKey: index) {
