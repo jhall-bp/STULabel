@@ -107,6 +107,9 @@ let package = Package(
         .headerSearchPath("../../Source/STULabel/Internal"),
         .define("STU_IMPLEMENTATION"),
         .unsafeFlags(["-fobjc-arc", "-fno-rtti", "-fcxx-modules"]),
+        // Internal C++ headers must use the library's Release exception/assert policy.
+        // Keep Objective-C exceptions enabled for XCTest's assertion macros.
+        .unsafeFlags(["-fno-exceptions", "-UNDEBUG"], .when(configuration: .release)),
       ],
     ),
     .testTarget(
@@ -127,6 +130,9 @@ let package = Package(
         .headerSearchPath("../../Source/STULabel/Internal"),
         .define("STU_IMPLEMENTATION"),
         .unsafeFlags(["-fno-objc-arc", "-fno-rtti", "-fcxx-modules"]),
+        // Internal C++ headers must use the library's Release exception/assert policy.
+        // Keep Objective-C exceptions enabled for XCTest's assertion macros.
+        .unsafeFlags(["-fno-exceptions", "-UNDEBUG"], .when(configuration: .release)),
       ],
     ),
   ],
