@@ -29,6 +29,7 @@ void LabelRenderTask::abandonedByLabel(LabelLayer &label)
     STU_DEBUG_ASSERT(label_ == &label);
     label_ = nullptr;
     isCancelled_.setCancelled();
+    renderingIsCancelled_.setCancelled();
     if (releaseReferenceAndReturnTrueIfItWasTheLast(Referers::layerOrPrerenderer)) {
       destroyAndDeallocateNonPrerenderTask();
     }
@@ -92,10 +93,6 @@ void LabelRenderTask::renderImage(const STUCancellationFlag *__nullable cancella
 void LabelRenderTask::renderImageInCurrentTraitCollection(const STUCancellationFlag *__nullable cancellationFlag)
 {
   STU_DEBUG_ASSERT(textFrame_);
-  if (params_.releasesShapedStringAfterRendering && type_ != Type::render) {
-    auto &self = down_cast<LabelLayoutAndRenderTask &>(*this);
-    self.shapedString_ = nil;
-  }
   renderInfo_ = labelTextFrameRenderInfo(textFrame_,
                                          textFrameInfo_,
                                          textFrameOriginInLayer_,
@@ -105,9 +102,6 @@ void LabelRenderTask::renderImageInCurrentTraitCollection(const STUCancellationF
                                          cancellationFlag);
   if (renderInfo_.mode != LabelRenderMode::tiledSublayer) {
     image_ = createLabelTextFrameImage(textFrame_, renderInfo_, params_, cancellationFlag);
-    if (params_.releasesTextFrameAfterRendering) {
-      textFrame_ = nil;
-    }
   }
 }
 

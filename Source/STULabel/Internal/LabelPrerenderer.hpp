@@ -353,6 +353,16 @@ public:
     return stringIsEmpty_ ? emptySTUTextFrame().unretained : textFrame_;
   }
 
+  // Published layout remains immutable until the main-thread handoff is complete.
+  void releaseLayoutAfterRendering() {
+    if (params_.releasesShapedStringAfterRendering) {
+      shapedString_ = nil;
+    }
+    if (params_.releasesTextFrameAfterRendering && renderInfo_.mode != LabelRenderMode::tiledSublayer) {
+      textFrame_ = nil;
+    }
+  }
+
   // MARK: - Starting the rendering
 
   void render() {
@@ -363,6 +373,7 @@ public:
     }
     if (!stringIsEmpty_) {
       renderImage(nullptr);
+      releaseLayoutAfterRendering();
       hasShapedString_ = !params_.releasesShapedStringAfterRendering;
       hasTextFrame_ = !params_.releasesTextFrameAfterRendering;
     }

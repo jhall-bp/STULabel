@@ -1334,7 +1334,7 @@ private:
     setHasBackgroundColor(true);
     params_.freezeDrawingOptions();
     const dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
-    if (textFrameInfoIsValidForCurrentSize_) {
+    if (textFrameInfoIsValidForCurrentSize_ && textFrame_) {
       task_ = LabelRenderTask::dispatchAsync(queue,
                                              *this,
                                              traitCollection_,
@@ -2093,6 +2093,7 @@ void LabelRenderTask::finish_onMainThread(void *taskPointer)
     while (Optional<LabelLayer &> const optLabel = prerender.popLabelFromWaitingSet()) {
       assignTaskTo(*optLabel);
     }
+    prerender.releaseLayoutAfterRendering();
     if (prerender.releaseReferenceAndReturnTrueIfItWasTheLast(Referers::task)) {
       prerender.destroyAndDeallocate();
     }
