@@ -1,5 +1,6 @@
 // Copyright 2018 Stephan Tolksdorf
 
+import CoreText
 import Foundation
 import STULabelSwift
 import SnapshotTesting
@@ -116,6 +117,71 @@ struct TextFrameLineBreakingTests {
       #expect(lines[2].width == typographicWidth("😀"))
       #expect(lines[2].trailingWhitespaceInTruncatedStringUTF16Length == 3)
     }
+  }
+
+  @Test(arguments: ["\n", "\r\n", "\u{2028}"], [CGFloat(0), 0.001])
+  func oversizedGraphemeConsumesTrailingWhitespace(
+    terminator: String, width: CGFloat
+  ) throws {
+    let grapheme = "👩🏽‍🚀"
+    let prefix = grapheme + " \t" + terminator
+    let frame = textFrame(prefix + terminator + "T", width: width)
+    let lines = frame.lines
+
+    try #require(lines.count == 3)
+    #expect(lines[0].rangeInOriginalString == NSRange(0..<grapheme.utf16.count))
+    #expect(lines[0].width == typographicWidth(grapheme))
+    #expect(
+      lines[0].trailingWhitespaceInTruncatedStringUTF16Length
+        == 2 + terminator.utf16.count)
+    #expect(lines[1].rangeInOriginalString == NSRange(prefix.utf16.count..<prefix.utf16.count))
+    #expect(lines[1].width == 0)
+    #expect(
+      lines[1].trailingWhitespaceInTruncatedStringUTF16Length == terminator.utf16.count)
+    let finalStart = prefix.utf16.count + terminator.utf16.count
+    #expect(lines[2].rangeInOriginalString == NSRange(finalStart..<finalStart + 1))
+    #expect(lines[2].width == typographicWidth("T"))
+  }
+
+  @Test func oversizedGraphemeDoesNotSplitFollowingCombiningSequence() throws {
+    let frame = textFrame("😀 \u{0301}T", width: 0)
+    let lines = frame.lines
+    try #require(lines.count == 3)
+    #expect(lines[0].rangeInOriginalString == NSRange(0..<2))
+    #expect(lines[1].rangeInOriginalString == NSRange(2..<4))
+    #expect(lines[2].rangeInOriginalString == NSRange(4..<5))
+  }
+
+  @Test(arguments: ["\u{00A0}", "\u{2007}", "\u{202F}"])
+  func nonbreakingWhitespacePreservesCoreTextBreak(_ whitespace: String) throws {
+    let nextWord = whitespace + "b"
+    let width = typographicWidth(nextWord) + 0.01
+    let string = NSAttributedString(string: "a " + nextWord, attributes: [.font: font])
+    let typesetter = CTTypesetterCreateWithAttributedString(string)
+    // Core Text can include narrow no-break space in the preceding line. Preserve
+    // its selected break instead of absorbing additional nonbreaking whitespace.
+    let expectedBreak = CTTypesetterSuggestLineBreak(typesetter, 0, Double(width))
+    let frame = textFrame(string, width: width)
+    let lines = frame.lines
+    try #require(lines.count == 2)
+    #expect(lines[0].rangeInOriginalString == NSRange(0..<1))
+    #expect(lines[0].trailingWhitespaceInTruncatedStringUTF16Length == expectedBreak - 1)
+    #expect(lines[1].rangeInOriginalString == NSRange(expectedBreak..<4))
+    let remainingString = (string.string as NSString).substring(from: expectedBreak)
+    #expect(lines[1].width == typographicWidth(remainingString))
+  }
+
+  @Test(arguments: [false, true])
+  func softHyphenBeforeWordSpaceDoesNotInsertHyphen(_ hyphenWouldFit: Bool) throws {
+    let width = typographicWidth(hyphenWouldFit ? "Test‐" : "Test") + 0.01
+    let frame = textFrame("Test\u{00AD} Test", width: width)
+    let lines = frame.lines
+    try #require(lines.count == 2)
+    #expect(lines[0].rangeInOriginalString == NSRange(0..<5))
+    #expect(lines[0].trailingWhitespaceInTruncatedStringUTF16Length == 1)
+    #expect(!lines[0].hasInsertedHyphen)
+    #expect(lines[0].width == typographicWidth("Test"))
+    #expect(lines[1].rangeInOriginalString == NSRange(6..<10))
   }
 
   @Test func `Soft hyphen`() {

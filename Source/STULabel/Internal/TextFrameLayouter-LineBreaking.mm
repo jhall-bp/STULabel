@@ -353,6 +353,12 @@ static bool isLikelyGoodLineBreakLocation(const NSAttributedStringRef &attribute
   }
 }
 
+static STU_INLINE bool isBreakableWhitespace(Char16 ch)
+{
+  // Do not consume Unicode White_Space characters with Line_Break=GL across a chosen break.
+  return isUnicodeWhitespace(ch) && ch != 0x00A0 && ch != 0x2007 && ch != 0x202F;
+}
+
 void TextFrameLayouter::breakLine(TextFrameLine &line, Int paraStringEndIndex)
 {
   STU_DEBUG_ASSERT(line._ctLine == nil);
@@ -363,10 +369,27 @@ void TextFrameLayouter::breakLine(TextFrameLine &line, Int paraStringEndIndex)
   Int end =
       min(paraStringEndIndex, start + CTTypesetterSuggestLineBreakWithOffset(typesetter_, start, maxWidth, headIndent));
   const NSStringRef &string = attributedString_.string;
-  if (STU_UNLIKELY(end <= start)) {
-    end = string.endIndexOfGraphemeClusterAt(start);
-  }
   for (;;) {
+    // Core Text can split a grapheme or omit trailing whitespace when no cluster fits.
+    // Normalize every suggestion, including retries after a hyphen does not fit.
+    end = min(paraStringEndIndex,
+              end <= start ? string.endIndexOfGraphemeClusterAt(start)
+                           : string.indexOfFirstGraphemeClusterBreakNotBefore(end));
+    if (end < paraStringEndIndex && !isLineTerminator(string[end - 1])
+        && isBreakableWhitespace(string[end])) {
+      const Int whitespaceEnd = string.indexOfFirstUTF16CharWhere(
+          {end, paraStringEndIndex}, [](Char16 ch) {
+            return !isBreakableWhitespace(ch) || isLineTerminator(ch);
+          });
+      if (whitespaceEnd == paraStringEndIndex) {
+        end = whitespaceEnd;
+      } else if (isLineTerminator(string[whitespaceEnd])) {
+        end = min(paraStringEndIndex, whitespaceEnd + (string.hasCRLFAtIndex(whitespaceEnd) ? 2 : 1));
+      } else if (whitespaceEnd > end) {
+        // Do not consume only the space in a space-plus-combining-mark grapheme.
+        end = string.startIndexOfGraphemeClusterAt(whitespaceEnd);
+      }
+    }
     const Char16 lastChar = string[end - 1];
     line.isFollowedByTerminatorInOriginalString = isLineTerminator(lastChar);
     const Char32 hyphen = lastChar == softHyphenCodePoint ? hyphenCodePoint : 0;
