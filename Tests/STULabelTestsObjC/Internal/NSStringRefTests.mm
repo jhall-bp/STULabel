@@ -405,6 +405,8 @@ static Int lastEndIndexOf(const NSStringRef &string, Range<Int> range, Char32 cp
     for (int sample = 0; sample < 7; ++sample) {
       const CFAbsoluteTime begin = CFAbsoluteTimeGetCurrent();
       for (int iteration = 0; iteration < 200; ++iteration) {
+        // Each pass must read the string again; the search functions are declared pure.
+        asm volatile("" : : "g"(&string) : "memory");
         checksum += string.endIndexOfGraphemeClusterAt(0);
         checksum += string.indexOfLastGraphemeClusterBreakBefore(string.count());
       }
@@ -435,6 +437,8 @@ static Int lastEndIndexOf(const NSStringRef &string, Range<Int> range, Char32 cp
     for (int sample = 0; sample < 7; ++sample) {
       const CFAbsoluteTime begin = CFAbsoluteTimeGetCurrent();
       for (int iteration = 0; iteration < 200; ++iteration) {
+        // Each pass must read the string again; the search functions are declared pure.
+        asm volatile("" : : "g"(&string) : "memory");
         for (Int index = 0; index < string.count();) {
           index = string.endIndexOfGraphemeClusterAt(index);
           checksum += index;
