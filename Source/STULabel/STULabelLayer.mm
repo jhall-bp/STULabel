@@ -1144,22 +1144,18 @@ public:
     const bool renderingTraitsMatch = prerenderer.renderingTraitsMatch(traitCollection_);
     if (!isInvalidated_) {
       invalidateLayout_slowPath_main(false);
-      shapedString_ = nil;
     } else {
       STU_DEBUG_ASSERT(!task_);
     }
 
-    // Copy over configuration from prerenderer.
+    // Replace all content-derived state, including text prepared before the first display.
     clearStringProperties();
     isInvalidated_ = false;
     const bool canReuseShapedString =
         renderingTraitsMatch && !prerenderer.stringIsEmpty() && prerenderer.hasShapedString();
-    if (canReuseShapedString) {
-      shapedString_ = prerenderer.shapedString().unretained;
-      attributedString_ = shapedString_->shapedString->attributedString;
-    } else {
-      attributedString_ = prerenderer.attributedString();
-    }
+    shapedString_ = canReuseShapedString ? prerenderer.shapedString().unretained : nil;
+    attributedString_ =
+        shapedString_ ? shapedString_->shapedString->attributedString : prerenderer.attributedString();
     stringIsEmpty_ = prerenderer.stringIsEmpty();
     fontIsExplicit_ = prerenderer.fontIsExplicit();
     if (!canReuseShapedString) {
@@ -1565,28 +1561,15 @@ private:
     contentLayer_.contentsScale = params_.displayScale();
     ((STULabelTiledLayer *)contentLayer_).imageFormat = renderInfo.imageFormat;
 
-    STUTextFrame *const textFrame = textFrame_;
-    const STUTextFrameRange range = STUTextFrameGetRange(textFrame);
-    CGPoint const textFrameOrigin = -contentBoundsInTextFrame_.origin;
-    STUTextFrameDrawingOptions *const drawingOptions = params_.frozenDrawingOptions().unretained;
-    STULabelDrawingBlock const drawingBlock = params_.drawingBlock;
-    // Retain the same immutable environment used to select renderInfo.imageFormat.
-    // Both visible and prerendered tiles invoke this closure after the parent trait scope ends.
-    UITraitCollection *const traits = traitCollection_;
+    // Retain the same environment used to select renderInfo.imageFormat for deferred tiles.
     ((STULabelTiledLayer *)contentLayer_).drawingBlock =
-        ^(CGContext *context, CGRect __unused rect, const STUCancellationFlag *cancellationFlag) {
-          [traits performAsCurrentTraitCollection:^{
-            drawLabelTextFrame(textFrame,
-                               range,
-                               textFrameOrigin,
-                               context,
-                               ContextBaseCTM_d{1},
-                               PixelAlignBaselines{true},
-                               drawingOptions,
-                               drawingBlock,
-                               cancellationFlag);
-          }];
-        };
+        createLabelTextFrameDrawingBlock(textFrame_,
+                                         STUTextFrameGetRange(textFrame_),
+                                         -contentBoundsInTextFrame_.origin,
+                                         ContextBaseCTM_d{1},
+                                         params_.frozenDrawingOptions().unretained,
+                                         params_.drawingBlock,
+                                         traitCollection_);
   }
 
   void setContentLayerContents(id contents)

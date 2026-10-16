@@ -1,5 +1,6 @@
 // Copyright 2026 Stephan Tolksdorf
 
+import CoreText
 import Foundation
 import STULabelSwift
 import Testing
@@ -1226,6 +1227,125 @@ struct UITextInputTests {
         interaction,
         configurationForMenuAtLocation: linkPoint) == nil)
     #expect(recorder.callCount == 2)
+  }
+
+  @Test(arguments: [false, true])
+  func regionalIndicatorCaretsPreserveGeometryAcrossLines(reverse: Bool) throws {
+    let font = UIFont.systemFont(ofSize: 24)
+    let flag = "🇦🇺"
+    let singleFlag = NSAttributedString(string: flag, attributes: [.font: font])
+    let flagWidth = CGFloat(CTLineGetTypographicBounds(
+      CTLineCreateWithAttributedString(singleFlag), nil, nil, nil))
+    let text = NSAttributedString(
+      string: String(repeating: flag, count: 600), attributes: [.font: font])
+    let label = label(with: text, size: CGSize(width: 7 * flagWidth + 0.1, height: 30_000))
+    let input: any UITextInput = label
+    let frame = label.textFrame
+    let lines = Array(frame.textFrame.lines)
+    try #require(lines.count > 1)
+    #expect(input.offset(from: input.beginningOfDocument, to: input.endOfDocument) == text.length)
+
+    for line in reverse ? Array(lines.reversed()) : lines {
+      let range = line.rangeInTruncatedString
+      try #require(range.location % flag.utf16.count == 0)
+      try #require(range.length % flag.utf16.count == 0)
+      var offsets = Array(stride(from: 0, to: range.length, by: flag.utf16.count))
+      if reverse { offsets.reverse() }
+      for offset in offsets {
+        let start = try #require(input.position(
+          from: input.beginningOfDocument, offset: range.location + offset))
+        let end = try #require(input.position(from: start, offset: flag.utf16.count))
+        let flagRange = try #require(input.textRange(from: start, to: end))
+        let left = try #require(input.position(within: flagRange, farthestIn: .left))
+        let right = try #require(input.position(within: flagRange, farthestIn: .right))
+        let expectedLeft = frame.origin.x + line.baselineOrigin.x
+          + CGFloat(offset / flag.utf16.count) * flagWidth
+        #expect(abs(input.caretRect(for: left).midX - expectedLeft) < 0.01)
+        #expect(abs(input.caretRect(for: right).midX - expectedLeft - flagWidth) < 0.01)
+      }
+    }
+  }
+
+  @Test(arguments: ["لا", "لإ", "الله"])
+  func arabicLigaturesPreserveLogicalCaretTraversal(text: String) throws {
+    let label = label(
+      with: NSAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: 24)]),
+      size: CGSize(width: 300, height: 80))
+    let input: any UITextInput = label
+    let beginning = input.beginningOfDocument
+    let end = input.endOfDocument
+    #expect(input.caretRect(for: beginning).midX > input.caretRect(for: end).midX)
+
+    for direction in [UITextLayoutDirection.left, .right] {
+      var position = direction == .left ? beginning : end
+      let expectedOffsets = direction == .left
+        ? Array(0...text.utf16.count)
+        : Array((0...text.utf16.count).reversed())
+      for (step, expectedOffset) in expectedOffsets.enumerated() {
+        if step > 0 {
+          let previousX = input.caretRect(for: position).midX
+          position = try #require(input.position(from: position, in: direction, offset: 1))
+          let nextX = input.caretRect(for: position).midX
+          #expect(direction == .left ? nextX < previousX : nextX > previousX)
+        }
+        #expect(input.offset(from: beginning, to: position) == expectedOffset)
+      }
+      #expect(input.position(from: position, in: direction, offset: 1) == nil)
+    }
+  }
+
+  @Test
+  func arabicLigatureHitTestingAndSelectionFollowVisualOrder() throws {
+    let label = label(
+      with: NSAttributedString(string: "لا", attributes: [.font: UIFont.systemFont(ofSize: 24)]),
+      size: CGSize(width: 300, height: 80))
+    let input: any UITextInput = label
+    let document = try #require(documentRange(for: input))
+    let bounds = input.firstRect(for: document)
+    try #require(bounds.width > 0)
+    for (fraction, character) in [(CGFloat(0.25), "ا"), (CGFloat(0.75), "ل")] {
+      let point = CGPoint(x: bounds.minX + fraction * bounds.width, y: bounds.midY)
+      let range = try #require(input.characterRange(at: point))
+      #expect(input.text(in: range) == character)
+      let selection = input.firstRect(for: range)
+      #expect(fraction < 0.5 ? selection.midX < bounds.midX : selection.midX > bounds.midX)
+    }
+  }
+
+  @Test(arguments: [false, true])
+  func disabledSelectionHonorsTextFrameReleaseAcrossRedraws(transientSelection: Bool) {
+    let label = STULabel(frame: CGRect(x: 0, y: 0, width: 300, height: 80))
+    label.font = .systemFont(ofSize: 24)
+    label.text = "Release inactive selection layout"
+
+    weak var selectedFrame: STUTextFrame?
+    autoreleasepool {
+      label.isSelectable = true
+      label.layer.display()
+      selectedFrame = label.textFrame.textFrame
+      let input: any UITextInput = label
+      input.selectedTextRange = input.textRange(
+        from: input.beginningOfDocument, to: input.endOfDocument)
+      label.isSelectable = false
+      label.releasesTextFrameAfterRendering = true
+    }
+    #expect(selectedFrame == nil)
+
+    weak var redrawnFrame: STUTextFrame?
+    autoreleasepool {
+      if transientSelection {
+        // Link menus may temporarily select text while ordinary selection is disabled.
+        let input: any UITextInput = label
+        input.selectedTextRange = input.textRange(
+          from: input.beginningOfDocument, to: input.endOfDocument)
+      }
+      label.text = "Redrawn with selection still disabled"
+      label.layer.display()
+      redrawnFrame = label.textFrame.textFrame
+      // Release the frame recreated by the explicit layout query above.
+      label.releasesTextFrameAfterRendering = true
+    }
+    #expect(redrawnFrame == nil)
   }
 
   @Test

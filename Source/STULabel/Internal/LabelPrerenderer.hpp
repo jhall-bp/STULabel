@@ -105,8 +105,8 @@ public:
   }
 
   bool renderingTraitsMatch(UITraitCollection* __unsafe_unretained traitCollection) const {
-    return params_.displayScale() == DisplayScale::createOrIfInvalidUseOne(traitCollection.displayScale)
-        && [traitCollection_ isEqual:traitCollection];
+    // The requested raster scale is separate configuration and is imported with the result.
+    return [traitCollection_ isEqual:traitCollection];
   }
 
   NSAttributedString* __nullable attributedString() const { return attributedString_; }

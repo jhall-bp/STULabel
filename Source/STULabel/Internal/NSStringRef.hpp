@@ -20,6 +20,14 @@ namespace detail {
 
 using TempStringBuffer = TempArray<Char16>;
 
+/// A caller-owned cache for repeated grapheme searches in one unchanged string.
+/// The range is a known prefix of a consecutive regional-indicator run. Reusing it keeps
+/// forward and backward traversal linear without mutable state in NSStringRef.
+/// Do not share a cache across threads or reuse it after changing/replacing its source string.
+struct RegionalIndicatorRunCache {
+  Range<Int> range{0, 0};
+};
+
 /// A non-owning reference to an NSString instance.
 ///
 /// @note All indices are expected to be code point aligned. Be careful with +/- 1 index offsets!
@@ -114,27 +122,27 @@ public:
 
   // "Grapheme cluster" here always means "default Unicode extended grapheme cluster"
 
-  Int endIndexOfGraphemeClusterAt(Int index) const {
+  Int endIndexOfGraphemeClusterAt(Int index, RegionalIndicatorRunCache* cache = nullptr) const {
     const Int count = this->count();
     STU_PRECONDITION(0 <= index && index < count);
-    Int result = endIndexOfGraphemeClusterAtImpl(index);
+    Int result = endIndexOfGraphemeClusterAtImpl(index, cache);
     STU_ASSUME(index < result && result <= count);
     return result;
   }
 
-  Int indexOfLastGraphemeClusterBreakBefore(Int index) const {
+  Int indexOfLastGraphemeClusterBreakBefore(Int index, RegionalIndicatorRunCache* cache = nullptr) const {
     const Int count = this->count();
     STU_PRECONDITION(0 < index && index <= count);
-    Int result = indexOfLastGraphemeClusterBreakBeforeImpl(index);
+    Int result = indexOfLastGraphemeClusterBreakBeforeImpl(index, cache);
     STU_ASSUME(0 <= result && result < index);
     return result;
   }
 
-  Int indexOfFirstGraphemeClusterBreakNotBefore(Int index) const {
+  Int indexOfFirstGraphemeClusterBreakNotBefore(Int index, RegionalIndicatorRunCache* cache = nullptr) const {
     const Int count = this->count();
     Int result;
     if (0 < index && index < count) {
-      result = indexOfFirstGraphemeClusterBreakNotBeforeImpl(index);
+      result = indexOfFirstGraphemeClusterBreakNotBeforeImpl(index, cache);
     } else {
       STU_PRECONDITION(0 <= index && index <= count);
       result = index;
@@ -143,11 +151,11 @@ public:
     return result;
   }
 
-  Int startIndexOfGraphemeClusterAt(Int index) const {
+  Int startIndexOfGraphemeClusterAt(Int index, RegionalIndicatorRunCache* cache = nullptr) const {
     const Int count = this->count();
     Int result;
     if (0 < index && index < count) {
-      result = startIndexOfGraphemeClusterAtImpl(index);
+      result = startIndexOfGraphemeClusterAtImpl(index, cache);
     } else {
       STU_PRECONDITION(0 <= index && index <= count);
       result = index;
@@ -167,7 +175,8 @@ public:
   /// @returns The number of non-ignorable grapheme clusters, which maybe larger than
   ///          `outStringIndices.count()`.
   Int copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
-        Range<Int> stringRange, ArrayRef<Range<Int>> outStringRanges) const;
+        Range<Int> stringRange, ArrayRef<Range<Int>> outStringRanges,
+        RegionalIndicatorRunCache* cache = nullptr) const;
 
   template <typename Predicate>
     requires (isCallable<Predicate, bool(Char16)>)
@@ -312,19 +321,19 @@ private:
 
   Int indexOfEndOfLastCodePointWhereImpl(Range<Int> range, FunctionRef<bool(Int, Char32)>) const;
 
-  Int endIndexOfGraphemeClusterAtImpl(Int index) const STU_PURE;
+  Int endIndexOfGraphemeClusterAtImpl(Int index, RegionalIndicatorRunCache*) const;
   Int endIndexOfGraphemeClusterAtImpl_utf16Buffer(Int index, GraphemeClusterCategory,
-                                                  Int nextIndex) const STU_PURE;
+                                               Int nextIndex, RegionalIndicatorRunCache*) const;
 
-  Int indexOfFirstGraphemeClusterBreakNotBeforeImpl(Int index) const STU_PURE;
-  Int indexOfFirstGraphemeClusterBreak_noBuffer(bool greaterThan, Int index) const STU_PURE;
+  Int indexOfFirstGraphemeClusterBreakNotBeforeImpl(Int index, RegionalIndicatorRunCache*) const;
+  Int indexOfFirstGraphemeClusterBreak_noBuffer(bool greaterThan, Int index, RegionalIndicatorRunCache*) const;
 
-  Int indexOfLastGraphemeClusterBreakBeforeImpl(Int index) const STU_PURE;
-  Int indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int index,
-                                                            GraphemeClusterCategory) const STU_PURE;
+  Int indexOfLastGraphemeClusterBreakBeforeImpl(Int index, RegionalIndicatorRunCache*) const;
+  Int indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int index, GraphemeClusterCategory,
+                                                         RegionalIndicatorRunCache*) const;
 
-  Int startIndexOfGraphemeClusterAtImpl(Int index) const STU_PURE;
-  Int indexOfLastGraphemeClusterBreakImpl_noBuffer(bool lessThan, Int index) const STU_PURE;
+  Int startIndexOfGraphemeClusterAtImpl(Int index, RegionalIndicatorRunCache*) const;
+  Int indexOfLastGraphemeClusterBreakImpl_noBuffer(bool lessThan, Int index, RegionalIndicatorRunCache*) const;
 
   STU_INLINE_T
   const Char16* utf16Buffer() const {

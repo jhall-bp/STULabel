@@ -255,6 +255,31 @@ void drawLabelTextFrame(const STUTextFrame *__unsafe_unretained textFrame,
   }
 }
 
+LabelTextFrameDrawingBlock createLabelTextFrameDrawingBlock(
+    const STUTextFrame *textFrame,
+    STUTextFrameRange range,
+    CGPoint origin,
+    ContextBaseCTM_d contextBaseCTM_d,
+    const STUTextFrameDrawingOptions *__nullable options,
+    __nullable STULabelDrawingBlock drawingBlock,
+    UITraitCollection *traitCollection)
+{
+  UITraitCollection *const traits = [traitCollection copy];
+  return ^(CGContext *context, CGRect __unused rect, const STUCancellationFlag *cancellationFlag) {
+    [traits performAsCurrentTraitCollection:^{
+      drawLabelTextFrame(textFrame,
+                         range,
+                         origin,
+                         context,
+                         contextBaseCTM_d,
+                         PixelAlignBaselines{true},
+                         options,
+                         drawingBlock,
+                         cancellationFlag);
+    }];
+  };
+}
+
 PurgeableImage createLabelTextFrameImage(const STUTextFrame *__unsafe_unretained textFrame,
                                          const LabelTextFrameRenderInfo &renderInfo,
                                          const LabelParameters &params,

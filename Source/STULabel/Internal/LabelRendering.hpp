@@ -10,6 +10,8 @@
 
 #import "PurgeableImage.hpp"
 
+#import <UIKit/UITraitCollection.h>
+
 namespace stu_label {
 
 enum class LabelRenderMode : UInt8 {
@@ -42,6 +44,15 @@ void drawLabelTextFrame(
        __nullable CGContextRef context, ContextBaseCTM_d, PixelAlignBaselines,
        const STUTextFrameDrawingOptions* __nullable,
        __nullable STULabelDrawingBlock, const STUCancellationFlag* __nullable);
+
+using LabelTextFrameDrawingBlock =
+    void (^)(CGContext*, CGRect, const STUCancellationFlag* __nullable);
+
+// Retains the text and its environment for drawing after the current trait scope ends.
+LabelTextFrameDrawingBlock createLabelTextFrameDrawingBlock(
+    const STUTextFrame*, STUTextFrameRange, CGPoint origin, ContextBaseCTM_d,
+    const STUTextFrameDrawingOptions* __nullable, __nullable STULabelDrawingBlock,
+    UITraitCollection*);
 
 PurgeableImage createLabelTextFrameImage(const STUTextFrame*,
                                          const LabelTextFrameRenderInfo&,

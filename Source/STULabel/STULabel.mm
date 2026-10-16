@@ -1782,18 +1782,13 @@ void setDragSessionCurrentlyLiftedLink(id<UIDragSession> session, STUTextLink *_
   view.contentScaleFactor = contentsScale;
   view.frame = bounds;
   const CGPoint drawingOrigin = _layer.textFrameOrigin - bounds.origin;
-  const STULabelDrawingBlock drawingBlock = _layer.drawingBlock;
-  [view setDrawingBlock:^(CGContext *context, CGRect rect __unused, const STUCancellationFlag *cancellationFlag) {
-    drawLabelTextFrame(textFrame,
-                       range,
-                       drawingOrigin,
-                       context,
-                       ContextBaseCTM_d{0},
-                       PixelAlignBaselines{true},
-                       drawingOptions,
-                       drawingBlock,
-                       cancellationFlag);
-  }];
+  [view setDrawingBlock:createLabelTextFrameDrawingBlock(textFrame,
+                                                        range,
+                                                        drawingOrigin,
+                                                        ContextBaseCTM_d{0},
+                                                        drawingOptions,
+                                                        _layer.drawingBlock,
+                                                        self.traitCollection)];
 
   UIDragPreviewParameters *params = nil;
   if (isAttachment) {
@@ -1979,11 +1974,13 @@ static void initializeTextInteraction(STULabel *self)
       gesture.delaysTouchesEnded = false;
     }
   } else {
+    _bits.isSelectable = false;
     if (_textInteraction) {
       self.selectedTextRange = nil;
       [self removeInteraction:_textInteraction.stu_interaction];
+      // Removal can query UITextInput again. None of that layout is needed while disabled.
+      _textInteraction.stu_document = nil;
     }
-    _bits.isSelectable = false;
   }
 }
 

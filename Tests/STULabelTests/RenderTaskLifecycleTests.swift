@@ -15,10 +15,9 @@ nonisolated private final class RenderGate: @unchecked Sendable {
 
   func draw(_ parameters: STULabelDrawingBlockParameters) {
     entered.signal()
-    guard resume.wait(timeout: .now() + 10) == .success else {
-      finished.signal()
-      return
-    }
+    // The test controls this pause and always releases it in defer. A deadline here can
+    // expire while unrelated tests occupy the main actor, before cancellation is requested.
+    resume.wait()
     let value = parameters.cancellationFlag.map { STUCancellationFlagGetValue($0) } ?? false
     lock.withLock { cancelled = value }
     parameters.draw()

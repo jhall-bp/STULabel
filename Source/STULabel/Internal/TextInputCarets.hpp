@@ -29,6 +29,11 @@ struct TextInputCaret {
   }
 };
 
+struct TextInputGraphemeCache {
+  CFString *source = nullptr; // The document generation owns the source through its text frame.
+  RegionalIndicatorRunCache regionalIndicators;
+};
+
 class TextInputLineCarets {
   struct LogicalPosition {
     NSUInteger key;
@@ -39,7 +44,7 @@ class TextInputLineCarets {
 public:
   std::vector<TextInputCaret> visual;
 
-  TextInputLineCarets(const TextFrameLine &line, NSString *string) {
+  TextInputLineCarets(const TextFrameLine &line, NSString *string, TextInputGraphemeCache &graphemeCache) {
     ThreadLocalArenaAllocator::InitialBuffer<2048> buffer;
     ThreadLocalArenaAllocator allocator{Ref{buffer}};
     const auto append = [](std::vector<TextInputCaret> &carets, NSUInteger index, CGFloat x, bool leading) {
@@ -76,6 +81,10 @@ public:
       boundaries.push_back(span.stringRange.end);
       std::sort(boundaries.begin(), boundaries.end());
       const NSStringRef source{span.attributedString.string};
+      if (graphemeCache.source != source) {
+        graphemeCache.source = source;
+        graphemeCache.regionalIndicators = {};
+      }
       // A grapheme may cross a run boundary. Clip only to the visible line part.
       Range<Int> visibleRange{0, source.count()};
       if (span.part == TextLinePart::originalString) {
@@ -97,7 +106,8 @@ public:
         }
         const Range<Int> glyphRange{indices[i], *end};
         Array<Range<Int>, Fixed, 16> ranges;
-        const Int count = source.copyRangesOfGraphemeClustersSkippingTrailingIgnorables(glyphRange, ranges);
+        const Int count = source.copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
+            glyphRange, ranges, &graphemeCache.regionalIndicators);
         Array<CGFloat, Fixed, 15> offsets;
         const bool split = count > 1 && count <= ranges.count()
             && glyphRange.contains(ranges[0]) && glyphRange.contains(ranges[count - 1])
@@ -111,7 +121,7 @@ public:
           Float64 startX = x;
           for (Int j = 0; j < count; ++j) {
             const Float64 endX = split && j + 1 < count ? min(x + offsets[j], nextX) : nextX;
-            add(ranges[j], {startX, endX});
+            add(ranges[logicalLigatureClusterIndex(j, count, !leftToRight)], {startX, endX});
             if (split)
               startX = endX;
           }
@@ -188,6 +198,15 @@ public:
 
 // The cache is owned by the immutable document generation and shared by its
 // selection-only copies. It is populated only by UITextInput queries on the main thread.
-using TextInputCaretCache = std::map<int32_t, TextInputLineCarets>;
+// Share the RI run context across lines so a long wrapped run is scanned only once.
+class TextInputCaretCache {
+  std::map<int32_t, TextInputLineCarets> lines_;
+  TextInputGraphemeCache graphemes_;
+
+public:
+  const TextInputLineCarets &forLine(const TextFrameLine &line, NSString *string) {
+    return lines_.try_emplace(line.lineIndex, line, string, graphemes_).first->second;
+  }
+};
 
 } // namespace stu_label

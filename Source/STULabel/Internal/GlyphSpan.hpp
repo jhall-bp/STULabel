@@ -40,6 +40,13 @@ Float64 typographicWidth(CTLine* __nullable line) {
   return max(0, CTLineGetTypographicBounds(line, nullptr, nullptr, nullptr));
 }
 
+// Grapheme ranges use logical string order; ligature caret offsets use increasing x.
+STU_INLINE
+Int logicalLigatureClusterIndex(Int visualIndex, Int clusterCount, bool isRightToLeft) {
+  STU_DEBUG_ASSERT(0 <= visualIndex && visualIndex < clusterCount);
+  return isRightToLeft ? clusterCount - 1 - visualIndex : visualIndex;
+}
+
 class GlyphSpan;
 
 template <typename T>

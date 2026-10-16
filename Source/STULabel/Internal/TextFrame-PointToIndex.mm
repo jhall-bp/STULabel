@@ -176,7 +176,8 @@ auto TextFrameLine::rangeOfGraphemeClusterAtXOffset(Float64 xOffset) const -> Te
               if (innerOffset < ligatureInnerOffsets[i])
                 break;
             }
-            stringRange = graphemeClusterStringRanges[i];
+            stringRange = graphemeClusterStringRanges[logicalLigatureClusterIndex(
+                i, graphemeClusterCount, writingDirection == STUWritingDirectionRightToLeft)];
           }
         }
 

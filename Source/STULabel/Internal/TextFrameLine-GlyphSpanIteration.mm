@@ -392,8 +392,6 @@ template <int maxInnerOffsetCount>
     Range<Int> overrideRange,
     const TextStyle *__nullable nonOverrideStyle,
     const TextStyle *__nullable overrideStyle,
-    bool firstGraphemeClusterIsDrawn,
-    bool firstGraphemeClusterIsOverridden,
     const Array<Range<Int>, Fixed, maxInnerOffsetCount + 1> &graphemeClusterStringRanges,
     const Array<CGFloat, Fixed, maxInnerOffsetCount> &innerOffsets,
     Int innerOffsetCount,
@@ -401,15 +399,20 @@ template <int maxInnerOffsetCount>
 {
   STU_ASSERT(0 < innerOffsetCount && innerOffsetCount <= maxInnerOffsetCount);
   span.isPartialLigature = true;
-  bool spanIsDrawn = firstGraphemeClusterIsDrawn;
-  bool spanIsOverridden = firstGraphemeClusterIsOverridden;
+  const bool isRightToLeft = span.glyphSpan.run().isRightToLeft();
+  const auto clusterRange = [&](Int visualIndex) {
+    return graphemeClusterStringRanges[logicalLigatureClusterIndex(
+        visualIndex, innerOffsetCount + 1, isRightToLeft)];
+  };
+  bool spanIsDrawn = drawnRange.overlaps(clusterRange(0));
+  bool spanIsOverridden = overrideRange.overlaps(clusterRange(0));
   for (Int i = -1;;) {
     bool nextIsDrawn = false;
     bool nextIsOverridden = false;
     const Int i0 = i;
     while (++i < innerOffsetCount) {
-      nextIsDrawn = drawnRange.overlaps(graphemeClusterStringRanges[i + 1]);
-      nextIsOverridden = overrideRange.overlaps(graphemeClusterStringRanges[i + 1]);
+      nextIsDrawn = drawnRange.overlaps(clusterRange(i + 1));
+      nextIsOverridden = overrideRange.overlaps(clusterRange(i + 1));
       if ((spanIsDrawn != nextIsDrawn) | (spanIsOverridden != nextIsOverridden))
         break;
     }
@@ -422,7 +425,7 @@ template <int maxInnerOffsetCount>
         const bool rightEndOfLigatureIsClipped = i != innerOffsetCount;
         span.rightEndOfLigatureIsClipped = rightEndOfLigatureIsClipped;
         const Float64 spanMaxX = !rightEndOfLigatureIsClipped ? maxX : minX + innerOffsets[i];
-        span.stringRange = Range<Int32>{graphemeClusterStringRanges[i0 + 1].convexHull(graphemeClusterStringRanges[i])};
+        span.stringRange = Range<Int32>{clusterRange(i0 + 1).convexHull(clusterRange(i))};
         const auto shouldStop = body(span, *style, Range{spanMinX, spanMaxX});
         if (shouldStop)
           return shouldStop;
@@ -601,8 +604,6 @@ forEachStyledGlyphSpanSubspan(StyledGlyphSpan &span,
                                                             overrideRange,
                                                             nonOverrideStyle,
                                                             overrideStyle,
-                                                            glyphIsDrawn,
-                                                            glyphIsOverridden,
                                                             graphemeClusterStringRanges,
                                                             ligatureInnerOffsets,
                                                             ligatureInnerPositionCount,

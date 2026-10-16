@@ -437,7 +437,7 @@ static const stu_label::TextInputLineCarets &lineCarets(STULabelTextInputDocumen
   if (!document->_carets)
     document->_carets = std::make_shared<stu_label::TextInputCaretCache>();
   const auto &frameLine = stu_label::textFrameRef(document.textFrame).lines()[line->lineIndex];
-  return document->_carets->try_emplace(line->lineIndex, frameLine, document.string).first->second;
+  return document->_carets->forLine(frameLine, document.string);
 }
 
 static CGRect lineBounds(STULabelTextInputDocument *document, const STUTextFrameLine *line)
@@ -710,8 +710,16 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
 - (void)stu_textDidDisplay
 {
   STULabel *const label = _label;
-  if (label)
+  if (!label)
+    return;
+  // A link context menu can own a selection even when ordinary selection is disabled.
+  // Otherwise leave layout lazy, respecting the renderer's frame-release preferences.
+  if (label.isSelectable || _stu_document.selectedTextRange) {
     updateVisibleDocument(label, self);
+  }
+  if (!label.isSelectable && !_stu_document.selectedTextRange) {
+    _stu_document = nil;
+  }
 }
 
 - (BOOL)interactionShouldBegin:(UITextInteraction *__unused)interaction atPoint:(CGPoint)point
@@ -771,11 +779,13 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
     }
   }
   STULabelTextInputRange *const oldRange = document.selectedTextRange;
-  if (oldRange == newRange || [oldRange isEqual:newRange])
-    return;
-  [interaction.stu_inputDelegate selectionWillChange:self];
-  interaction.stu_document = [document documentWithSelectedTextRange:newRange];
-  [interaction.stu_inputDelegate selectionDidChange:self];
+  if (oldRange != newRange && ![oldRange isEqual:newRange]) {
+    [interaction.stu_inputDelegate selectionWillChange:self];
+    interaction.stu_document = [document documentWithSelectedTextRange:newRange];
+    [interaction.stu_inputDelegate selectionDidChange:self];
+  }
+  if (!self.isSelectable && !interaction.stu_document.selectedTextRange)
+    interaction.stu_document = nil;
 }
 
 - (nullable UITextRange *)markedTextRange

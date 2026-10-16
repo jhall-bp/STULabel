@@ -30,6 +30,7 @@ struct Iterator
 {
   const NSAttributedStringRef &attributedString_;
   const NSStringRef string_;
+  RegionalIndicatorRunCache regionalIndicatorRunCache_;
   const Range<Int> lineStringRange_;
   const NSArrayRef<CTRun *> runs_;
 
@@ -255,10 +256,10 @@ void Iterator::advanceToInitialMinOffset(const Float64 minOffset)
   runIndex_ = runIndex - minusOneIfRightToLeftIterator;
   if (stringIndex > stringIndex_) {
     STU_DEBUG_ASSERT(isStringForwardIterator_);
-    stringIndex_ = string_.indexOfFirstGraphemeClusterBreakNotBefore(stringIndex);
+    stringIndex_ = string_.indexOfFirstGraphemeClusterBreakNotBefore(stringIndex, &regionalIndicatorRunCache_);
   } else if (stringIndex < stringIndex_) {
     STU_DEBUG_ASSERT(!isStringForwardIterator_);
-    stringIndex_ = string_.startIndexOfGraphemeClusterAt(stringIndex);
+    stringIndex_ = string_.startIndexOfGraphemeClusterAt(stringIndex, &regionalIndicatorRunCache_);
   }
   loadNextRun();
   while (offset_ < minOffset) {
@@ -315,8 +316,9 @@ template <bool isStringForwardIter> STU_NO_INLINE bool Iterator::advanceImpl()
   const Int minusOneIfRightToLeftIter = one_minusOne_Int[isRightToLeftIterator_];
   if (!skipRun_) {
     const Int stringIndex = glyphStringIndex();
-    stringIndex_ = isStringForwardIter ? string_.endIndexOfGraphemeClusterAt(stringIndex)
-                                       : string_.startIndexOfGraphemeClusterAt(stringIndex);
+    stringIndex_ = isStringForwardIter
+                     ? string_.endIndexOfGraphemeClusterAt(stringIndex, &regionalIndicatorRunCache_)
+                     : string_.startIndexOfGraphemeClusterAt(stringIndex, &regionalIndicatorRunCache_);
     STU_ASSUME(!skipRun_);
   }
   for (;;) {
@@ -339,8 +341,8 @@ template <bool isStringForwardIter> STU_NO_INLINE bool Iterator::advanceImpl()
           return true;
         STU_DISABLE_CLANG_WARNING("-Wconditional-uninitialized")
         stringIndex_ = isStringForwardIter // clang analyzer false positive
-                           ? string_.endIndexOfGraphemeClusterAt(stringIndex)
-                           : string_.startIndexOfGraphemeClusterAt(stringIndex);
+                           ? string_.endIndexOfGraphemeClusterAt(stringIndex, &regionalIndicatorRunCache_)
+                           : string_.startIndexOfGraphemeClusterAt(stringIndex, &regionalIndicatorRunCache_);
         STU_REENABLE_CLANG_WARNING
       }
     } else {
@@ -348,11 +350,12 @@ template <bool isStringForwardIter> STU_NO_INLINE bool Iterator::advanceImpl()
       if (!runStringRange_.isEmpty()) {
         if (isStringForwardIter) {
           if (runStringRange_.end > stringIndex_) {
-            stringIndex_ = string_.indexOfFirstGraphemeClusterBreakNotBefore(runStringRange_.end);
+            stringIndex_ = string_.indexOfFirstGraphemeClusterBreakNotBefore(
+                runStringRange_.end, &regionalIndicatorRunCache_);
           }
         } else {
           if (runStringRange_.start < stringIndex_) {
-            stringIndex_ = string_.startIndexOfGraphemeClusterAt(runStringRange_.start);
+            stringIndex_ = string_.startIndexOfGraphemeClusterAt(runStringRange_.start, &regionalIndicatorRunCache_);
           }
         }
       }

@@ -185,17 +185,15 @@ public:
     checkNotDisplaying();
     needsLayout_ = false;
 
-    if (visibleBoundsObserver_.window()) {
-      baseDisplayScale_ = contentsScale_;
-    } else if (layoutEvenWithoutWindow) {
-      baseDisplayScale_ = displayScale_;
-    } else {
+    if (!visibleBoundsObserver_.window() && !layoutEvenWithoutWindow) {
       // Let's wait until the layer has a window and actually needs to be displayed before we update
       // the tiles.
       baseDisplayScale_ = 0;
       setNeedsDisplay();
       return;
     }
+    // Derive zoom limits from the requested raster scale, never a previous downsampled result.
+    baseDisplayScale_ = contentsScale_;
     if (!(baseDisplayScale_ > 0)) {
       baseDisplayScale_ = 1;
     }

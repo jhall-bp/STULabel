@@ -370,13 +370,14 @@ struct ScalingPara
         nonInitialMaxWidth += extraTailIndent;
       }
     }
+    RegionalIndicatorRunCache regionalIndicatorRunCache;
     for (Int32 n = 1, index = stringRange.start, endIndex;; ++n, index = endIndex) {
       const Float64 maxWidth = n <= initialLinesCount ? initialMaxWidth : nonInitialMaxWidth;
       const Float64 headIndent = n <= initialLinesCount ? initialHeadIndent : nonInitialHeadIndent;
       endIndex =
           index + narrow_cast<Int32>(CTTypesetterSuggestLineBreakWithOffset(typesetter, index, maxWidth, headIndent));
       if (STU_UNLIKELY(endIndex <= index)) {
-        endIndex = narrow_cast<Int32>(string.endIndexOfGraphemeClusterAt(index));
+        endIndex = narrow_cast<Int32>(string.endIndexOfGraphemeClusterAt(index, &regionalIndicatorRunCache));
       }
       if (endIndex >= stringRange.end) {
         lineCount = n;

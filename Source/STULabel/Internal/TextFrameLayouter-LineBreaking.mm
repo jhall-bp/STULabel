@@ -373,8 +373,8 @@ void TextFrameLayouter::breakLine(TextFrameLine &line, Int paraStringEndIndex)
     // Core Text can split a grapheme or omit trailing whitespace when no cluster fits.
     // Normalize every suggestion, including retries after a hyphen does not fit.
     end = min(paraStringEndIndex,
-              end <= start ? string.endIndexOfGraphemeClusterAt(start)
-                           : string.indexOfFirstGraphemeClusterBreakNotBefore(end));
+              end <= start ? string.endIndexOfGraphemeClusterAt(start, &regionalIndicatorRunCache_)
+                           : string.indexOfFirstGraphemeClusterBreakNotBefore(end, &regionalIndicatorRunCache_));
     if (end < paraStringEndIndex && !isLineTerminator(string[end - 1])
         && isBreakableWhitespace(string[end])) {
       const Int whitespaceEnd = string.indexOfFirstUTF16CharWhere(
@@ -387,7 +387,7 @@ void TextFrameLayouter::breakLine(TextFrameLine &line, Int paraStringEndIndex)
         end = min(paraStringEndIndex, whitespaceEnd + (string.hasCRLFAtIndex(whitespaceEnd) ? 2 : 1));
       } else if (whitespaceEnd > end) {
         // Do not consume only the space in a space-plus-combining-mark grapheme.
-        end = string.startIndexOfGraphemeClusterAt(whitespaceEnd);
+        end = string.startIndexOfGraphemeClusterAt(whitespaceEnd, &regionalIndicatorRunCache_);
       }
     }
     const Char16 lastChar = string[end - 1];
@@ -431,7 +431,8 @@ void TextFrameLayouter::breakLine(TextFrameLine &line, Int paraStringEndIndex)
   }
   // `hyphenateLineInRange` will try to break the line with a hyphen in the specified range. If
   // successful, the result in `line` will be overwritten, otherwise `line` is not changed.
-  hyphenateLineInRange(line, Range{isGoodBreak ? end : start, string.endIndexOfGraphemeClusterAt(maxEnd)});
+  hyphenateLineInRange(line, Range{isGoodBreak ? end : start,
+                                 string.endIndexOfGraphemeClusterAt(maxEnd, &regionalIndicatorRunCache_)});
 }
 
 } // namespace stu_label

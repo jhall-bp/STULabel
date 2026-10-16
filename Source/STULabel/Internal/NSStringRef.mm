@@ -94,12 +94,14 @@ void NSStringRef::copyUTF16Chars_slowPath(NSRange utf16IndexRange, Char16 *out) 
                          utf16IndexRange);
 }
 
-Int NSStringRef::copyRangesOfGraphemeClustersSkippingTrailingIgnorables(Range<Int> stringRange,
-                                                                        ArrayRef<Range<Int>> outStringRanges) const
+Int NSStringRef::copyRangesOfGraphemeClustersSkippingTrailingIgnorables(
+    Range<Int> stringRange, ArrayRef<Range<Int>> outStringRanges, RegionalIndicatorRunCache* cache) const
 {
+  RegionalIndicatorRunCache localCache;
+  if (!cache) cache = &localCache;
   Int count = 0;
-  for (Int i = startIndexOfGraphemeClusterAt(stringRange.start); i < stringRange.end;) {
-    const Range<Int> graphemeClusterRange = {i, endIndexOfGraphemeClusterAt(i)};
+  for (Int i = startIndexOfGraphemeClusterAt(stringRange.start, cache); i < stringRange.end;) {
+    const Range<Int> graphemeClusterRange = {i, endIndexOfGraphemeClusterAt(i, cache)};
     if (count < outStringRanges.count()) {
       outStringRanges[count] = graphemeClusterRange;
     }
@@ -114,8 +116,9 @@ Int NSStringRef::copyRangesOfGraphemeClustersSkippingTrailingIgnorables(Range<In
 
 Int NSStringRef::countGraphemeClusters() const
 {
+  RegionalIndicatorRunCache cache;
   Int graphemeCount = 0;
-  for (Int i = 0, count = this->count(); i < count; i = endIndexOfGraphemeClusterAt(i)) {
+  for (Int i = 0, count = this->count(); i < count; i = endIndexOfGraphemeClusterAt(i, &cache)) {
     ++graphemeCount;
   }
   return graphemeCount;
@@ -528,9 +531,11 @@ struct BreakFinder
   Category previousCategory;
   Category startCategory;
   const NSStringRef &string;
+  RegionalIndicatorRunCache* const regionalIndicatorRunCache;
   Int startIndex;
 
-  explicit BreakFinder(const NSStringRef &string) : string{string}, startIndex{-1} {}
+  explicit BreakFinder(const NSStringRef &string, RegionalIndicatorRunCache* cache)
+      : string{string}, regionalIndicatorRunCache{cache}, startIndex{-1} {}
 
   STU_INLINE
   void startForwardsSearchAt(Int index, Category category)
@@ -612,8 +617,10 @@ struct BreakFinder
       newState = State::other;
       break;
     case Case::ri_ri:
-      if (state == State::ri_ri ||
-          (state == State::maybe_ri_ri && numberOfConsecutiveRegionalIndicatorsBefore(string, startIndex) % 2 != 0)) {
+      if (state == State::ri_ri
+          || (state == State::maybe_ri_ri
+              && numberOfConsecutiveRegionalIndicatorsBefore(
+                     string, startIndex, regionalIndicatorRunCache) % 2 != 0)) {
         return false;
       }
       newState = State::ri_ri;
@@ -675,7 +682,9 @@ struct BreakFinder
       startIndex = startIndexOfPictoZWJSequence(string, index);
       return false;
     case Case::ri_ri:
-      if (state == State::ri_ri || numberOfConsecutiveRegionalIndicatorsBefore(string, index) % 2 != 0) {
+      if (state == State::ri_ri
+          || numberOfConsecutiveRegionalIndicatorsBefore(
+                 string, index, regionalIndicatorRunCache) % 2 != 0) {
         return false;
       }
       newState = State::ri_ri;
@@ -783,22 +792,30 @@ struct BreakFinder
   }
 
   STU_NO_INLINE
-  static UInt numberOfConsecutiveRegionalIndicatorsBefore(const NSStringRef &string, Int index)
+  static UInt numberOfConsecutiveRegionalIndicatorsBefore(const NSStringRef &string, Int index,
+                                                          RegionalIndicatorRunCache* cache)
   {
-    UInt count = 0;
-    string.indexOfEndOfLastCodePointWhere(Range{0, index}, [&](Char32 cp) -> bool {
-      const bool isRegionalIndicator = stu_label::isRegionalIndicator(cp);
-      count += isRegionalIndicator;
-      return !isRegionalIndicator || count == 1000;
-    });
-    return count;
+    if (cache && cache->range.start <= index && index <= cache->range.end) {
+      return sign_cast((index - cache->range.start)/2);
+    }
+    // Every regional indicator occupies two UTF-16 units. A known run prefix supplies its
+    // exact parity; scan only the uncached suffix when searches advance through the run.
+    const Int lowerBound = cache && cache->range.end < index ? cache->range.end : 0;
+    Int start = string.indexOfEndOfLastCodePointWhere(
+        Range{lowerBound, index}, [](Char32 cp) { return !stu_label::isRegionalIndicator(cp); });
+    if (cache) {
+      if (start == cache->range.end) start = cache->range.start;
+      cache->range = {start, index};
+    }
+    return sign_cast((index - start)/2);
   }
 }; // BreakFinder
 
 } // namespace grapheme_cluster
 
 STU_NO_INLINE
-Int NSStringRef::indexOfFirstGraphemeClusterBreak_noBuffer(const bool greaterThan, const Int index) const
+Int NSStringRef::indexOfFirstGraphemeClusterBreak_noBuffer(const bool greaterThan, const Int index,
+                                                         RegionalIndicatorRunCache* cache) const
 {
   STU_DEBUG_ASSERT(kind_ == BufferKind::none);
   const Int count = this->count();
@@ -812,7 +829,7 @@ Int NSStringRef::indexOfFirstGraphemeClusterBreak_noBuffer(const bool greaterTha
   return detail::indexOfFirstCodePointWhereImpl<BufferKind::none>(
       *this,
       Range{index0, count},
-      [index, isFirst = true, finder = BreakFinder(*this)](Int i, Char32 cp) STU_INLINE_LAMBDA mutable -> bool {
+      [index, isFirst = true, finder = BreakFinder(*this, cache)](Int i, Char32 cp) STU_INLINE_LAMBDA mutable -> bool {
         if (!isFirst) {
           return !finder.advanceForwards(i, graphemeClusterCategory(cp));
         } else {
@@ -826,7 +843,8 @@ Int NSStringRef::indexOfFirstGraphemeClusterBreak_noBuffer(const bool greaterTha
 }
 
 STU_NO_INLINE
-Int NSStringRef::indexOfLastGraphemeClusterBreakImpl_noBuffer(const bool lessThan, const Int index) const
+Int NSStringRef::indexOfLastGraphemeClusterBreakImpl_noBuffer(const bool lessThan, const Int index,
+                                                           RegionalIndicatorRunCache* cache) const
 {
   STU_DEBUG_ASSERT(kind_ == BufferKind::none);
   const Int count = this->count();
@@ -836,7 +854,7 @@ Int NSStringRef::indexOfLastGraphemeClusterBreakImpl_noBuffer(const bool lessTha
     STU_DEBUG_ASSERT(0 < index && index < count);
   }
   using namespace grapheme_cluster;
-  BreakFinder finder{*this};
+  BreakFinder finder{*this, cache};
   bool isFirst = true;
   const Int endIndex = detail::indexOfEndOfLastCodePointWhereImpl<BufferKind::none>(
       *this, Range{0, min(index + (lessThan ? 0 : 2), count)}, [&](Int i, Char32 cp) STU_INLINE_LAMBDA -> bool {
@@ -856,7 +874,7 @@ Int NSStringRef::indexOfLastGraphemeClusterBreakImpl_noBuffer(const bool lessTha
 }
 
 STU_NO_INLINE
-Int NSStringRef::endIndexOfGraphemeClusterAtImpl(Int index) const
+Int NSStringRef::endIndexOfGraphemeClusterAtImpl(Int index, RegionalIndicatorRunCache* cache) const
 {
   const BufferKind kind = kind_;
   const Int count = this->count();
@@ -893,18 +911,19 @@ Int NSStringRef::endIndexOfGraphemeClusterAtImpl(Int index) const
       STU_ASSUME(cp >= minSurrogateCodeUnit);
       category = graphemeClusterCategory(cp);
     }
-    return endIndexOfGraphemeClusterAtImpl_utf16Buffer(index, category, index1);
+    return endIndexOfGraphemeClusterAtImpl_utf16Buffer(index, category, index1, cache);
   } else {
-    return indexOfFirstGraphemeClusterBreak_noBuffer(true, index);
+    return indexOfFirstGraphemeClusterBreak_noBuffer(true, index, cache);
   }
 }
 STU_NO_INLINE
-Int NSStringRef ::endIndexOfGraphemeClusterAtImpl_utf16Buffer(Int index,
-                                                              GraphemeClusterCategory category,
-                                                              Int nextIndex) const
+Int NSStringRef::endIndexOfGraphemeClusterAtImpl_utf16Buffer(Int index,
+                                                          GraphemeClusterCategory category,
+                                                          Int nextIndex,
+                                                          RegionalIndicatorRunCache* cache) const
 {
   using namespace grapheme_cluster;
-  BreakFinder finder{*this};
+  BreakFinder finder{*this, cache};
   finder.startForwardsSearchAt(index, category);
   index = nextIndex;
   const Char16 *const utf16 = utf16Buffer();
@@ -936,7 +955,8 @@ Int NSStringRef ::endIndexOfGraphemeClusterAtImpl_utf16Buffer(Int index,
 }
 
 STU_NO_INLINE
-Int NSStringRef::indexOfFirstGraphemeClusterBreakNotBeforeImpl(const Int index) const
+Int NSStringRef::indexOfFirstGraphemeClusterBreakNotBeforeImpl(const Int index,
+                                                           RegionalIndicatorRunCache* cache) const
 {
   STU_DEBUG_ASSERT(0 < index && index < count());
   const BufferKind kind = kind_;
@@ -971,14 +991,14 @@ Int NSStringRef::indexOfFirstGraphemeClusterBreakNotBeforeImpl(const Int index) 
       STU_ASSUME(cp >= minSurrogateCodeUnit);
       category = graphemeClusterCategory(cp);
     }
-    return endIndexOfGraphemeClusterAtImpl_utf16Buffer(index1, category, index);
+    return endIndexOfGraphemeClusterAtImpl_utf16Buffer(index1, category, index, cache);
   } else {
-    return indexOfFirstGraphemeClusterBreak_noBuffer(false, index);
+    return indexOfFirstGraphemeClusterBreak_noBuffer(false, index, cache);
   }
 }
 
 STU_NO_INLINE
-Int NSStringRef::indexOfLastGraphemeClusterBreakBeforeImpl(Int index) const
+Int NSStringRef::indexOfLastGraphemeClusterBreakBeforeImpl(Int index, RegionalIndicatorRunCache* cache) const
 {
   using namespace grapheme_cluster;
   STU_DEBUG_ASSERT(0 < index && index <= count());
@@ -1014,17 +1034,18 @@ Int NSStringRef::indexOfLastGraphemeClusterBreakBeforeImpl(Int index) const
       STU_ASSUME(cp >= minSurrogateCodeUnit);
       category = graphemeClusterCategory(cp);
     }
-    return indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(index1, category);
+    return indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(index1, category, cache);
   } else {
-    return indexOfLastGraphemeClusterBreakImpl_noBuffer(true, index);
+    return indexOfLastGraphemeClusterBreakImpl_noBuffer(true, index, cache);
   }
 }
 STU_NO_INLINE
-Int NSStringRef ::indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int index,
-                                                                        GraphemeClusterCategory category) const
+Int NSStringRef::indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int index,
+                                                                   GraphemeClusterCategory category,
+                                                                   RegionalIndicatorRunCache* cache) const
 {
   using namespace grapheme_cluster;
-  BreakFinder finder{*this};
+  BreakFinder finder{*this, cache};
   finder.startBackwardsSearchAt(index, category);
   const Char16 *const utf16 = utf16Buffer();
   STU_DEBUG_ASSERT(index > 0);
@@ -1058,7 +1079,7 @@ Int NSStringRef ::indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int inde
 }
 
 STU_NO_INLINE
-Int NSStringRef::startIndexOfGraphemeClusterAtImpl(const Int index) const
+Int NSStringRef::startIndexOfGraphemeClusterAtImpl(const Int index, RegionalIndicatorRunCache* cache) const
 {
   STU_DEBUG_ASSERT(0 < index && index < count());
   const BufferKind kind = kind_;
@@ -1091,9 +1112,9 @@ Int NSStringRef::startIndexOfGraphemeClusterAtImpl(const Int index) const
       STU_ASSUME(cp >= minSurrogateCodeUnit);
       category = graphemeClusterCategory(cp);
     }
-    return indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(index, category);
+    return indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(index, category, cache);
   } else {
-    return indexOfLastGraphemeClusterBreakImpl_noBuffer(false, index);
+    return indexOfLastGraphemeClusterBreakImpl_noBuffer(false, index, cache);
   }
 }
 

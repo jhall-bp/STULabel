@@ -89,6 +89,31 @@ struct TruncationTests {
     #expect(frame.truncatedAttributedString.string.hasSuffix("[more]"))
   }
 
+  @Test(arguments: [STULastLineTruncationMode.start, .middle, .end])
+  nonisolated func `Long regional indicator runs truncate at flag boundaries`(
+    mode: STULastLineTruncationMode
+  ) throws {
+    let options = STUTextFrameOptions {
+      $0.textLayoutMode = .textKit
+      $0.defaultTextAlignment = .start
+      $0.lastLineTruncationMode = mode
+      $0.maximumNumberOfLines = 1
+    }
+    let frame = STUTextFrame(
+      STUShapedString(
+        NSAttributedString(
+          string: String(repeating: "🇦🇺", count: 1200),
+          attributes: [.font: UIFont.systemFont(ofSize: 20)]),
+        defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 12000, height: 10000), displayScale: 2, options: options)
+    try #require(frame.lines.count == 1)
+    let excisedRange = try #require(frame.lines[0].excisedRangeInOriginalString)
+    #expect(excisedRange.length > 0)
+    #expect(excisedRange.length < 4800)
+    #expect(excisedRange.location % 4 == 0)
+    #expect(NSMaxRange(excisedRange) % 4 == 0)
+  }
+
   @Test
   func `Left-to-right line-end truncation`() {
     let width = typographicWidth("Test") + typographicWidth("…")

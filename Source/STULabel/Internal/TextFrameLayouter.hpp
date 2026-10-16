@@ -298,6 +298,7 @@ private:
   const STUCancellationFlag& cancellationFlag_;
   CTTypesetter* const typesetter_;
   const NSAttributedStringRef attributedString_;
+  RegionalIndicatorRunCache regionalIndicatorRunCache_;
   const TextStyleSpan originalStringStyles_;
   const ArrayRef<const FontMetrics> originalStringFontMetrics_;
   const ArrayRef<const TruncationScope> truncationScopes_;

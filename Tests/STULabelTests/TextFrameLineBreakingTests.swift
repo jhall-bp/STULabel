@@ -57,6 +57,28 @@ struct TextFrameLineBreakingTests {
       })
   }
 
+  @Test(arguments: [false, true])
+  nonisolated func `Long regional indicator runs preserve flag boundaries`(precededByAnotherRun: Bool) {
+    // A preceding odd-length run must not affect pairing after a paragraph break.
+    let prefix = precededByAnotherRun ? String(repeating: "\u{1F1E6}", count: 1001) + "\n" : ""
+    let flagCount = 600
+    let string = prefix + String(repeating: "🇦🇺", count: flagCount)
+    let frame = STUTextFrame(
+      STUShapedString(
+        NSAttributedString(string: string, attributes: [.font: UIFont.systemFont(ofSize: 20)]),
+        defaultBaseWritingDirection: .leftToRight),
+      size: CGSize(width: 30, height: 100000), displayScale: 2)
+    let prefixLength = prefix.utf16.count
+    let flagLineRanges = frame.lines.map(\.rangeInOriginalString).filter {
+      $0.location >= prefixLength
+    }
+    #expect(flagLineRanges.count == flagCount)
+    let firstInvalidRange = flagLineRanges.enumerated().first {
+      $0.element != NSRange(location: prefixLength + 4 * $0.offset, length: 4)
+    }?.element
+    #expect(firstInvalidRange == nil)
+  }
+
   @Test func `Empty lines`() {
     let f = textFrame("\n\r\n", width: 0)
     let lines = f.lines
