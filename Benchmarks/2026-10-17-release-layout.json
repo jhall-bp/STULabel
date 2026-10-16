@@ -1,0 +1,1577 @@
+{
+  "date": "2026-10-17",
+  "environment": {
+    "xcode": "27.0 RC",
+    "os": "iOS Simulator 27.0 (24A434)",
+    "device": "iPhone 17 Pro",
+    "architecture": "arm64",
+    "scheme": "STULabel-Release",
+    "clangOptimization": "-Os",
+    "swiftOptimization": "-O -whole-module-optimization",
+    "coverage": false
+  },
+  "variants": {
+    "pre": "0cb7dc0 parent line-breaking implementation; all other production files from 0cb7dc0",
+    "fixed": "0cb7dc0 production source",
+    "candidate": "fixed plus experimental UTF16 first-pair isBreak early return; discarded"
+  },
+  "layout": [
+    {
+      "variant": "pre",
+      "run": 1,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90465, State: expired",
+      "started": "2026-10-17 08:30:54.487",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38408.771,
+            37728.47925,
+            36527.71875,
+            38674.48975,
+            37843.54175,
+            36880.07275,
+            37346.34375,
+            38006.125,
+            37583.729
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            77661.39575,
+            75922.75,
+            75393.354,
+            75240.2605,
+            76021.27075,
+            77138.72925,
+            75333.5,
+            76502,
+            84938.2605
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17986.7605,
+            16948.2395,
+            17980.15625,
+            17794.26025,
+            17685.65625,
+            17905.70825,
+            16986.89575,
+            17432.396,
+            40184.14575
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            24096.71875,
+            23406.03125,
+            23251.33325,
+            25135.91675,
+            24057.802,
+            24214.9375,
+            23823.54175,
+            24208.41675,
+            25197.677
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "pre",
+      "run": 2,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90536, State: expired",
+      "started": "2026-10-17 08:31:10.030",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            39225.302,
+            38394,
+            38658.2605,
+            37027.30225,
+            37776.2395,
+            38903.4895,
+            38804.4375,
+            39712.45825,
+            38924.6665
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            75922.1875,
+            75555.55225,
+            74793.11475,
+            76680.64575,
+            75161.58325,
+            85755,
+            76863.95825,
+            75454.72925,
+            74423.41675
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17210.29175,
+            16853.698,
+            16670.67725,
+            17574.073,
+            17020.323,
+            17945.91675,
+            17205.59375,
+            17173.09375,
+            16627.70825
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23086.58325,
+            22955.4585,
+            22828.323,
+            22834.71875,
+            23751.1875,
+            23658.5,
+            23399.4585,
+            23944.0105,
+            22966.75
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "pre",
+      "run": 3,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90575, State: expired",
+      "started": "2026-10-17 08:31:17.231",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            39031.98975,
+            38629.3855,
+            38758.177,
+            38437.802,
+            41154.8335,
+            38674.71875,
+            38301.35425,
+            37520.02075,
+            38656.5
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            76239.375,
+            76161.33325,
+            76553.96875,
+            76317.5,
+            77467.8645,
+            76153.5105,
+            75167.552,
+            74934.0415,
+            76275.61475
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16954.23975,
+            16737.7605,
+            17634.677,
+            17057.02075,
+            17507.75,
+            17025.604,
+            17181.41675,
+            16700.948,
+            17121.58325
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23563.125,
+            23176.1665,
+            23820.71875,
+            23285.83325,
+            23665.052,
+            23743.5,
+            23626.53125,
+            22841.2395,
+            24149.54175
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "pre",
+      "run": 4,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 92555, State: expired",
+      "started": "2026-10-17 08:35:58.515",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            39712.33325,
+            37022.58325,
+            39703.1875,
+            36973.771,
+            39875.323,
+            37531.896,
+            39027.396,
+            37104.65625,
+            37241.4375
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            79249.2915,
+            78706.5835,
+            75705.04175,
+            78352.84375,
+            74457.3125,
+            75638.85425,
+            76776.7395,
+            75483.76025,
+            75003.71875
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            19162.53125,
+            17418.854,
+            17747.65625,
+            17084.302,
+            17030.646,
+            17423.96875,
+            17440.479,
+            17472.302,
+            17465.21875
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            25033.64575,
+            23478.8125,
+            40033.71875,
+            23270.3645,
+            23513.875,
+            23701.8855,
+            24357.625,
+            23519.1145,
+            23360.17725
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "pre",
+      "run": 5,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 92591, State: expired",
+      "started": "2026-10-17 08:36:06.773",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            39348.11475,
+            38767.52075,
+            38591.104,
+            37999.58325,
+            39182.823,
+            38490.3855,
+            38965.85425,
+            38207.16675,
+            39810.875
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            76895.73975,
+            76583.302,
+            77681.78125,
+            75561.84375,
+            75251.91675,
+            75998.97925,
+            76501.47925,
+            75685.91675,
+            76525.11475
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17559.91675,
+            17448.3125,
+            17293.104,
+            17388.75,
+            17085.3855,
+            17156.823,
+            17092.7085,
+            18223.1875,
+            16858.0625
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23719.54175,
+            23414.625,
+            23396.896,
+            22944.052,
+            23401.16675,
+            22957.448,
+            24599.65625,
+            24326.7395,
+            23120.6665
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run": 1,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90262, State: expired",
+      "started": "2026-10-17 08:30:26.628",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            36921.1145,
+            35610.0625,
+            36561,
+            36026.85425,
+            37412.573,
+            37981.47925,
+            37507.84375,
+            38318.46875,
+            36763.52075
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            75644.52075,
+            74014.052,
+            74652.948,
+            74754.66675,
+            74792.9895,
+            84293.5,
+            75161.32275,
+            76003.19775,
+            74341.55225
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16802.927,
+            16997.625,
+            17163.52075,
+            16994.78125,
+            16672.3855,
+            16981.177,
+            16840.54175,
+            17460.75,
+            16772.28125
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            22924.396,
+            23156.354,
+            25024.02075,
+            23613.802,
+            22890.354,
+            23477.302,
+            23086.86475,
+            23784.94775,
+            23306.698
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run": 2,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90740, State: expired",
+      "started": "2026-10-17 08:31:33.765",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38855.9165,
+            38941.625,
+            38653.44775,
+            38673,
+            38130.45825,
+            38717.30225,
+            38633.073,
+            37977.125,
+            38290.573
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            77327.3125,
+            76670.88525,
+            78448.34375,
+            78651.573,
+            77653.8125,
+            77088.66675,
+            77568.0105,
+            77490.10425,
+            77712.80225
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17484.146,
+            18115.02075,
+            17762.69775,
+            17451.08325,
+            17604.375,
+            17565.83325,
+            17644.5,
+            17536.19775,
+            17262.3855
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23570.19775,
+            24298.0625,
+            24577.41675,
+            23968.823,
+            23683.27075,
+            23854.38525,
+            24013.72925,
+            23962.22925,
+            24383.573
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run": 3,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 90772, State: expired",
+      "started": "2026-10-17 08:31:41.836",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38807.7395,
+            39998.71875,
+            39564.59375,
+            40180.96875,
+            41055.271,
+            39894.573,
+            39648.0105,
+            39420.90625,
+            40086.979
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            75542.59375,
+            76851.95825,
+            76207.42725,
+            80130.6875,
+            79102.16675,
+            77730.28125,
+            77973.375,
+            76701.9895,
+            78612.8855
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16880.125,
+            17315.073,
+            17168.8645,
+            17712.25,
+            17885.6145,
+            17672.05225,
+            17413.15625,
+            17215.21875,
+            18705.302
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23118.3125,
+            23753.78125,
+            23613.45825,
+            23325.1875,
+            24177.625,
+            24432.38525,
+            24253.08325,
+            23609.61475,
+            24561.375
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run": 4,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 91768, State: expired",
+      "started": "2026-10-17 08:34:17.880",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38643.552,
+            40197.0415,
+            39795.65625,
+            39206.15625,
+            37861.1145,
+            39433.71875,
+            39226.45825,
+            39498.3125,
+            39747.26025
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            77243.8855,
+            78603.875,
+            78322.3855,
+            76526.10425,
+            75763.573,
+            77646.0415,
+            76863.38525,
+            77250.48975,
+            78087.83325
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17465.354,
+            17723.948,
+            18004.14575,
+            16868.8855,
+            17219.375,
+            17340.71875,
+            17812.427,
+            17659.60425,
+            17368.3855
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23765.59375,
+            24718.6875,
+            24508.66675,
+            24069.79175,
+            23630.55225,
+            23807.677,
+            23370.948,
+            23936.4375,
+            24001.45825
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "fixed",
+      "run": 5,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 92330, State: expired",
+      "started": "2026-10-17 08:35:33.958",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            37824.26025,
+            37372.6355,
+            37088.83325,
+            37458.229,
+            37194.4165,
+            38143.3125,
+            38632.896,
+            37755.75,
+            39149.9895
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            76326.02075,
+            76139.0105,
+            75823.96875,
+            75770.354,
+            75466.21875,
+            77088.52075,
+            75138.34375,
+            76714.896,
+            78398.8855
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17446.96875,
+            16867.573,
+            17487.77075,
+            17315.51025,
+            17190.323,
+            17298.42725,
+            27622.13525,
+            16982.8645,
+            17664.22925
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23619.10425,
+            23426.95825,
+            23453.5105,
+            24215.9375,
+            23749.177,
+            23363.77075,
+            24411.78125,
+            23697.3125,
+            24175.6355
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 1,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 91397, State: expired",
+      "started": "2026-10-17 08:33:32.421",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            36791.875,
+            37136.40625,
+            37280.73975,
+            37273.91675,
+            36837.05225,
+            37393.47925,
+            37505.448,
+            37201.3125,
+            37656.3645
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            73590.8125,
+            76952.14575,
+            74904,
+            75308.40625,
+            73568.51025,
+            73199.8645,
+            74934.82275,
+            76977.104,
+            74878.35425
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16791,
+            16684.78125,
+            17219.875,
+            16918.302,
+            16806.875,
+            16574.59375,
+            16887.96875,
+            17739.05225,
+            16826.5
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23552.09375,
+            23375.875,
+            23467.22925,
+            23600.65625,
+            22361.66675,
+            23653.448,
+            23107.34375,
+            23590.854,
+            23602.2395
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 2,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 91464, State: expired",
+      "started": "2026-10-17 08:33:41.243",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38883.22925,
+            39122.70825,
+            39161.79175,
+            39033.04175,
+            38823.6875,
+            39287.0835,
+            38634.28125,
+            38897.8335,
+            39173.1355
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            75521.8125,
+            76684.22925,
+            77100.448,
+            77531.90625,
+            75251.2085,
+            75774.19775,
+            76494.59375,
+            80170.521,
+            77197.2605
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17372.8645,
+            17359.10425,
+            18562.3125,
+            17537.229,
+            17171.0415,
+            17825.96875,
+            17292.05225,
+            17528.271,
+            17746.86475
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23479.9585,
+            23254.4895,
+            23733.625,
+            23170.875,
+            22853.5625,
+            24006.14575,
+            22888.823,
+            24130.4585,
+            23483.52075
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 3,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 91499, State: expired",
+      "started": "2026-10-17 08:33:49.173",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38342.40625,
+            38346.73975,
+            38759.3125,
+            38472.854,
+            39740.6875,
+            38477.69775,
+            38794.45825,
+            38304.948,
+            37775.0625
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            76615.11475,
+            75773.71875,
+            75645.28125,
+            76276.15625,
+            77675.177,
+            76160.78125,
+            76172.59375,
+            76610.8125,
+            75076.71875
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16667.34375,
+            16690.89575,
+            17133.396,
+            17496.80225,
+            17411.27075,
+            18613.198,
+            17274.83325,
+            17306.89575,
+            16867.677
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23183.479,
+            23031.948,
+            23522.7605,
+            23394.23975,
+            23015.198,
+            24070.71875,
+            23466.53125,
+            23952.7395,
+            23424.802
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 4,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 92103, State: expired",
+      "started": "2026-10-17 08:35:06.027",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            36700.198,
+            37795.9895,
+            37826.521,
+            36839.71875,
+            37224.177,
+            36907.01025,
+            38187.677,
+            36766.396,
+            37287.375
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            76055.7605,
+            76094.2605,
+            75335.65625,
+            76809.54175,
+            74166.70825,
+            75047.198,
+            75587.8335,
+            74893.84375,
+            74481.66675
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17754.65625,
+            16829.625,
+            17060.44775,
+            16914.42725,
+            16700.40625,
+            17199.479,
+            16709.271,
+            17287.84375,
+            17065.271
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23859.8125,
+            23374.5,
+            24086.823,
+            23055.66675,
+            22637.875,
+            24137.35425,
+            23058.53125,
+            23194.84375,
+            22913.94775
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "run": 5,
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 92137, State: expired",
+      "started": "2026-10-17 08:35:13.350",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            39174.44775,
+            38280.63525,
+            38098.448,
+            38631.573,
+            38655.28125,
+            37887.552,
+            37798.15625,
+            40374.7395,
+            39458.28125
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            75003.79175,
+            75807.2395,
+            76384.83325,
+            76157.927,
+            77156.02075,
+            76357.58325,
+            77063.71875,
+            76939.3125,
+            79166.58325
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            16988.03125,
+            16664.34375,
+            17119.4375,
+            17195.0625,
+            17052.2915,
+            17527.8125,
+            17639.6145,
+            17907.90625,
+            17528.25
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23597.28125,
+            23189.58325,
+            22969.1355,
+            24016.59375,
+            23688.823,
+            23740.5625,
+            23395.41675,
+            23858.13525,
+            24328.41675
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    }
+  ],
+  "scanLogs": [
+    {
+      "key": "scan_fixed_1_all",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 90895, State: expired",
+      "measurements": [
+        "2026-10-17 08:32:02.705629+1100 [90895:757027] Grapheme search ASCII: median 0.002025 s / 200 forward+backward passes, 4140 UTF-16 units",
+        "2026-10-17 08:32:02.724392+1100 [90895:757027] Grapheme search Latin combining: median 0.002651 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:32:02.750107+1100 [90895:757027] Grapheme search Emoji: median 0.003652 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:32:02.786081+1100 [90895:757027] Grapheme search Indic conjuncts: median 0.005130 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:32:02.795485+1100 [90895:757027] Long Indic conjunct: median 0.000023 s / 200 forward+backward passes, 4097 UTF-16 units",
+        "2026-10-17 08:32:02.795909+1100 [90895:757027] Long Indic conjunct: median 0.000045 s / 200 forward+backward passes, 8193 UTF-16 units"
+      ]
+    },
+    {
+      "key": "scan_fixed_barrier_1",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 91756, State: expired",
+      "measurements": [
+        "2026-10-17 08:34:15.737102+1100 [91756:763511] Grapheme search ASCII: median 0.002029 s / 200 forward+backward passes, 4140 UTF-16 units",
+        "2026-10-17 08:34:15.755996+1100 [91756:763511] Grapheme search Latin combining: median 0.002717 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:15.781512+1100 [91756:763511] Grapheme search Emoji: median 0.003639 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:15.816951+1100 [91756:763511] Grapheme search Indic conjuncts: median 0.005086 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:15.842058+1100 [91756:763511] Long Indic conjunct: median 0.003430 s / 200 forward+backward passes, 4097 UTF-16 units",
+        "2026-10-17 08:34:15.890419+1100 [91756:763511] Long Indic conjunct: median 0.006897 s / 200 forward+backward passes, 8193 UTF-16 units"
+      ]
+    },
+    {
+      "key": "scan_candidate_barrier_1",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 91575, State: expired",
+      "measurements": [
+        "2026-10-17 08:34:01.017476+1100 [91575:762231] Grapheme search ASCII: median 0.002046 s / 200 forward+backward passes, 4140 UTF-16 units",
+        "2026-10-17 08:34:01.036664+1100 [91575:762231] Grapheme search Latin combining: median 0.002744 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:01.061641+1100 [91575:762231] Grapheme search Emoji: median 0.003573 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:01.096512+1100 [91575:762231] Grapheme search Indic conjuncts: median 0.004972 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:34:01.121772+1100 [91575:762231] Long Indic conjunct: median 0.003399 s / 200 forward+backward passes, 4097 UTF-16 units",
+        "2026-10-17 08:34:01.172450+1100 [91575:762231] Long Indic conjunct: median 0.007230 s / 200 forward+backward passes, 8193 UTF-16 units"
+      ]
+    },
+    {
+      "key": "scan_candidate_barrier_2",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 92203, State: expired",
+      "measurements": [
+        "2026-10-17 08:35:27.595118+1100 [92203:766877] Grapheme search ASCII: median 0.002004 s / 200 forward+backward passes, 4140 UTF-16 units",
+        "2026-10-17 08:35:27.614015+1100 [92203:766877] Grapheme search Latin combining: median 0.002703 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:35:27.639345+1100 [92203:766877] Grapheme search Emoji: median 0.003613 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:35:27.674218+1100 [92203:766877] Grapheme search Indic conjuncts: median 0.004975 s / 200 forward+backward passes, 4104 UTF-16 units",
+        "2026-10-17 08:35:27.700274+1100 [92203:766877] Long Indic conjunct: median 0.003572 s / 200 forward+backward passes, 4097 UTF-16 units",
+        "2026-10-17 08:35:27.747355+1100 [92203:766877] Long Indic conjunct: median 0.006746 s / 200 forward+backward passes, 8193 UTF-16 units"
+      ]
+    }
+  ],
+  "boundaryLogs": [
+    {
+      "key": "boundary_fixed_1",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 92874, State: expired",
+      "completed": true,
+      "nanosecondsPerQuery": [
+        4.289941803645928,
+        4.273967918584974,
+        4.273967918584974,
+        4.256921160646792,
+        4.271941380927988,
+        4.003961577815862,
+        4.150945161996134
+      ],
+      "endpoints": 11,
+      "queriesPerSample": 1000010,
+      "checksum": 841328400
+    },
+    {
+      "key": "boundary_candidate_1",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 93032, State: expired",
+      "completed": true,
+      "nanosecondsPerQuery": [
+        4.053909770655712,
+        4.008968317909594,
+        4.075963268687626,
+        4.125911461527474,
+        4.097063101939781,
+        4.00491524259562,
+        4.008968317909594
+      ],
+      "endpoints": 11,
+      "queriesPerSample": 1000010,
+      "checksum": 841328400
+    },
+    {
+      "key": "boundary_fixed_2",
+      "session": "Launch Session: STULabelTestsObjC, ref: 0, PID: 93152, State: expired",
+      "completed": true,
+      "nanosecondsPerQuery": [
+        4.125911461527474,
+        4.268007513711484,
+        4.281954861115452,
+        4.252987293430288,
+        4.25787482542655,
+        4.260020571181007,
+        4.278974658678706
+      ],
+      "endpoints": 11,
+      "queriesPerSample": 1000010,
+      "checksum": 841328400
+    }
+  ],
+  "exploratoryFixedSmokeRun": {
+    "started": "2026-10-17 08:27:02.369",
+    "note": "Completed before the repeated comparison series; not included in the five-run table",
+    "completed": true,
+    "records": [
+      {
+        "iterationsPerSample": 4000,
+        "lineCountChecksum": 876000,
+        "nanosecondsPerLayout": [
+          37991.698,
+          38848.65625,
+          39218.33325,
+          37888.198,
+          37531.0105,
+          38026.11475,
+          37671.8855,
+          38368.35425,
+          39448
+        ],
+        "os": "Version 27.0 (Build 24A434)",
+        "warmupIterations": 500,
+        "workload": "Latin"
+      },
+      {
+        "iterationsPerSample": 4000,
+        "lineCountChecksum": 584000,
+        "nanosecondsPerLayout": [
+          79156.04175,
+          78111.8645,
+          78886.8125,
+          78511.86475,
+          77569.78125,
+          78518.177,
+          77809.42725,
+          77043.14575,
+          79014.14575
+        ],
+        "os": "Version 27.0 (Build 24A434)",
+        "warmupIterations": 500,
+        "workload": "Arabic"
+      },
+      {
+        "iterationsPerSample": 4000,
+        "lineCountChecksum": 438000,
+        "nanosecondsPerLayout": [
+          18121.21875,
+          17873.47925,
+          17784.229,
+          18055.90625,
+          17728.47925,
+          17549.323,
+          17790.552,
+          17662.5105,
+          17328.25
+        ],
+        "os": "Version 27.0 (Build 24A434)",
+        "warmupIterations": 500,
+        "workload": "Emoji"
+      },
+      {
+        "iterationsPerSample": 4000,
+        "lineCountChecksum": 438000,
+        "nanosecondsPerLayout": [
+          24027.13525,
+          24489.1875,
+          23967.8855,
+          24215.6875,
+          23583.771,
+          24028.354,
+          23684.85425,
+          24100.8125,
+          23997.302
+        ],
+        "os": "Version 27.0 (Build 24A434)",
+        "warmupIterations": 500,
+        "workload": "Indic"
+      }
+    ]
+  },
+  "finalTestPlanVerificationRuns": [
+    {
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 95097, State: expired",
+      "started": "2026-10-17 08:42:44.287",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38105.53125,
+            38331.13525,
+            39421.65625,
+            37191.01025,
+            37885.3125,
+            41369.63525,
+            38025.30225,
+            38857.41675,
+            38385.96875
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            77104.7605,
+            78615.2605,
+            78296.625,
+            77512.29175,
+            77292.7605,
+            77591.15625,
+            77830.03125,
+            78171.78125,
+            76806.802
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17573.84375,
+            17731.28125,
+            18186.71875,
+            17604.9585,
+            17474.67725,
+            19945.65625,
+            18083.65625,
+            17815.9375,
+            17405.29175
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            24190.02075,
+            24134.08325,
+            24330.15625,
+            24368.1875,
+            23694.84375,
+            25916.14575,
+            24508.85425,
+            23680.02075,
+            23643.58325
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    },
+    {
+      "session": "Launch Session: STULabelTests, ref: 0, PID: 95141, State: expired",
+      "started": "2026-10-17 08:42:55.764",
+      "completed": true,
+      "records": [
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 876000,
+          "nanosecondsPerLayout": [
+            38333.198,
+            39144.39575,
+            38975.41675,
+            39068.64575,
+            39211.41675,
+            39605.75,
+            41064.125,
+            40409.03125,
+            39059.28125
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Latin"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 584000,
+          "nanosecondsPerLayout": [
+            77844.08325,
+            77440.96875,
+            77928.021,
+            76994.927,
+            76996.64575,
+            77283.75,
+            87722.78125,
+            77761.9375,
+            78505.29175
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Arabic"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            17909.7915,
+            17352.7605,
+            17653.7395,
+            17353.72925,
+            17558.80225,
+            18534.271,
+            18077.46875,
+            17706.3335,
+            18158.896
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Emoji"
+        },
+        {
+          "iterationsPerSample": 4000,
+          "lineCountChecksum": 438000,
+          "nanosecondsPerLayout": [
+            23974.45825,
+            23745.42725,
+            24188.698,
+            23939.052,
+            24198.2395,
+            24386.42725,
+            24516.052,
+            24437.5105,
+            24112.0625
+          ],
+          "os": "Version 27.0 (Build 24A434)",
+          "warmupIterations": 500,
+          "workload": "Indic"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "configurations": [
+    {
+      "id": "D86B329A-5643-4E1E-93C7-64EDE1F4EBBD",
+      "name": "Release",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "codeCoverage": false,
+    "environmentVariableEntries": [
+      {
+        "key": "STU_LAYOUT_BENCHMARKS",
+        "value": "1"
+      }
+    ]
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:",
+        "identifier": "STULabelTests",
+        "name": "STULabelTests"
+      }
+    },
+    {
+      "target": {
+        "containerPath": "container:",
+        "identifier": "STULabelTestsObjC",
+        "name": "STULabelTestsObjC"
+      }
+    },
+    {
+      "target": {
+        "containerPath": "container:",
+        "identifier": "STULabelTestsObjCNoARC",
+        "name": "STULabelTestsObjCNoARC"
+      }
+    }
+  ],
+  "version": 1
+}

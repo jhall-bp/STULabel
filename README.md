@@ -94,6 +94,8 @@ The STULabel source contains an [LLDB Python script](STULabel/stu_label_lldb_for
   
 ## Running the tests
 
+For reproducible Release layout measurements, use the shared `STULabel-Release` scheme and follow [the benchmark instructions and recorded results](Benchmarks/README.md).
+
 Open the package in Xcode, select the `STULabel-Package` scheme and **iPhone 17 (iOS 27.0)**, then run the tests. `just test` uses the same pinned destination and runs the Swift, Objective-C ARC, and Objective-C no-ARC targets.
 
 The checked-in image references were recorded on iOS 27.0. Core Text font rasterization differs across OS versions; an iOS 26.2 run can produce correct layout with different glyph-edge pixels. Keep the snapshot runtime fixed instead of rerecording references or loosening comparisons to accommodate a different OS. Nonvisual correctness tests can also run on supported iOS 26 destinations.
