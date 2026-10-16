@@ -1002,9 +1002,46 @@ static STULabelTextInputPosition *positionFarthestInDirection(STULabelTextInputD
   if (r.empty)
     return r.startPosition;
   STULabelTextInputPosition *const p = positionClosestToPoint(document, point);
-  return p.index < r.startPosition.index ? r.startPosition
-         : p.index > r.endPosition.index ? r.endPosition
-                                        : p;
+  const NSUInteger start = r.startPosition.index;
+  const NSUInteger end = r.endPosition.index;
+  if (start <= p.index && p.index <= end)
+    return p;
+
+  // Logical order is not visual order inside a bidirectional line. Restrict the
+  // visual caret search instead of clamping an unrestricted hit's string index.
+  const STUTextFrameLine *const first = lineForPosition(document, textPosition(start));
+  const STUTextFrameLine *const last =
+      lineForPosition(document, textPosition(end, UITextStorageDirectionBackward));
+  if (!first || !last)
+    return r.startPosition;
+  const STUTextFrameLine *const line = std::clamp(lineClosestToY(document, point.y), first, last);
+  const CGFloat scale = __STUTextFrameGetData(document.textFrame)->textScaleFactor;
+  const CGFloat x = (point.x - document.frameOrigin.x) / scale - line->originX;
+  const stu_label::TextInputCaret *closest = nullptr;
+  UITextStorageDirection affinity = UITextStorageDirectionForward;
+  CGFloat distance = CGFLOAT_MAX;
+  for (const auto &caret : lineCarets(document, line).visual) {
+    if (caret.index < start || caret.index > end)
+      continue;
+    const auto candidateAffinity = caret.index == start ? UITextStorageDirectionForward
+        : caret.index == end ? UITextStorageDirectionBackward : caret.affinityForMovement(caret.x >= x);
+    if (!caret.hasBothAffinities && caret.affinity != candidateAffinity)
+      continue;
+    const CGFloat candidateDistance = ABS(caret.x - x);
+    if (!closest || candidateDistance < distance ||
+        (candidateDistance == distance && caret.x > closest->x)) {
+      closest = &caret;
+      affinity = candidateAffinity;
+      distance = candidateDistance;
+    }
+  }
+  if (closest)
+    return textPosition(closest->index, affinity);
+  // A permitted UTF-16 range can lie entirely inside a composed character.
+  const CGRect startCaret = caretRect(document, r.startPosition);
+  const CGRect endCaret = caretRect(document, r.endPosition);
+  return ABS(CGRectGetMidX(startCaret) - point.x) <= ABS(CGRectGetMidX(endCaret) - point.x)
+      ? r.startPosition : r.endPosition;
 }
 
 - (nullable UITextRange *)characterRangeAtPoint:(CGPoint)point
