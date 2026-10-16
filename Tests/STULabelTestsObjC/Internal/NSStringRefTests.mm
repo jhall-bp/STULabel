@@ -4,25 +4,7 @@
 
 #import "TestUtils.h"
 
-#import <unicode/uchar.h>
-
-extern "C" {
-typedef struct UBreakIterator UBreakIterator;
-
-typedef enum UBreakIteratorType
-{
-  UBRK_CHARACTER = 0,
-} UBreakIteratorType;
-
-UBreakIterator *
-ubrk_open(UBreakIteratorType type, const char *locale, const UChar *string, int32_t stringLength, UErrorCode *);
-void ubrk_close(UBreakIterator *);
-
-void ubrk_setText(UBreakIterator *, const UChar *string, int32_t stringLength, UErrorCode *);
-
-int32_t ubrk_next(UBreakIterator *);
-int32_t ubrk_previous(UBreakIterator *);
-}
+#include <vector>
 
 using namespace stu_label;
 
@@ -324,189 +306,151 @@ static Int lastEndIndexOf(const NSStringRef &string, Range<Int> range, Char32 cp
   XCTAssertNoThrow(XCTAssertEqual(leadingLowSurrogate.indexOfFirstGraphemeClusterBreakNotBefore(1), 2));
 }
 
-- (void)testGraphemeClusterBreakFinding
+- (void)testUnicode17GraphemeClusterBreakFinding
 {
-  self.continueAfterFailure = false;
-
-  Char32 codePoints[] = {
-      'x',     0xFFFD,  0x10000,          // other
-      '\r',    '\n',    0x0000,  0xE0001, // control
-      0xA9,    0x1F603,                   // extended pictographic
-      0x300,                              // extend, Emoji modifier
-      0x1F3FB,                            // extend (Emoji modifier)
-      0x200D,                             // ZWJ
-      0x1F1E6,                            // regional indicator
-      0x0903,  0x11000,                   // spacing mark
-      0x0600,  0x111C2,                   // prepend
-      0x1100,                             // Hangul L
-      0x1160,                             // Hangul V
-      0x11A8,                             // Hangul T
-      0xAC00,                             // Hangul LV
-      0xAC01,                             // Hangul LVT
-      0xD800                              // Unpaired high surrogate
-  };
-  const UInt8 codePointCount = arrayLength(codePoints);
-  const int n = 7;
-  UInt testCaseCount = 1;
-  for (UInt i = 0; i < n; ++i) {
-    testCaseCount *= n;
-  }
-
-  UInt8 indices[n];
-  Char32 utf32[n];
-
-  bool stringIsAscii = true;
-
-  Char16 utf16[2 * n];
-  Int32 utf16Length = 0;
-
-  char ascii[n];
-
-  MutableStringRef *nsString = [[MutableStringRef alloc] init];
-  nsString->doNotReturnPointer = true;
-  nsString->utf16 = utf16;
-  nsString->length = n;
-
-  NSStringRef string{nsString};
-  const auto stringGutsMethod = string._private_guts().method;
-  XCTAssert(stringGutsMethod);
-
-  UErrorCode ec = U_ZERO_ERROR;
-  UBreakIterator *const iterator = ubrk_open(UBRK_CHARACTER, nullptr, nullptr, 0, &ec);
-  XCTAssert(U_SUCCESS(ec));
-
-  const auto convertString32ToUTF16 = [&]() {
-    utf16Length = 0;
-    for (int j = 0; j < n; ++j) {
-      const Char32 codePoint = utf32[j];
-      if (codePoint <= 0xffff) {
-        utf16[utf16Length] = static_cast<Char16>(codePoint);
-        utf16Length += 1;
-      } else {
-        UTF16Char cs[2];
-        CFStringGetSurrogatePairForLongCharacter(codePoint, cs);
-        utf16[utf16Length] = cs[0];
-        utf16[utf16Length + 1] = cs[1];
-        utf16Length += 2;
+  // The conformance fixture owns the expected boundaries. System ICU may use an older UCD.
+  static const char corpus[] =
+#include "Unicode17GraphemeBreakTest.inc"
+  ;
+  NSString *text = [[NSString alloc] initWithUTF8String:corpus];
+  NSUInteger caseCount = 0;
+  for (NSString *line in [text componentsSeparatedByString:@"\n"]) {
+    NSString *data = [[line componentsSeparatedByString:@"#"] firstObject];
+    NSArray<NSString *> *tokens = [data componentsSeparatedByCharactersInSet:
+                                  [NSCharacterSet whitespaceCharacterSet]];
+    NSMutableString *input = [NSMutableString string];
+    NSMutableArray<NSNumber *> *breaks = [NSMutableArray array];
+    for (NSString *token in tokens) {
+      if ([token isEqualToString:@"÷"]) {
+        [breaks addObject:@(input.length)];
+      } else if (token.length != 0 && ![token isEqualToString:@"×"]) {
+        unsigned int scalar = 0;
+        XCTAssertTrue([[NSScanner scannerWithString:token] scanHexInt:&scalar]);
+        UTF16Char units[2];
+        if (scalar <= 0xffff) {
+          units[0] = static_cast<UTF16Char>(scalar);
+          [input appendString:[NSString stringWithCharacters:units length:1]];
+        } else {
+          CFStringGetSurrogatePairForLongCharacter(scalar, units);
+          [input appendString:[NSString stringWithCharacters:units length:2]];
+        }
       }
     }
-  };
-
-  const auto nextString = [&]() {
-    for (int j = 0; j < n; ++j) {
-      UInt8 index = indices[j] + 1;
-      if (index == codePointCount) {
-        index = 0;
+    if (input.length == 0) continue;
+    ++caseCount;
+    const Int count = sign_cast(input.length);
+    std::vector<Char16> units(input.length);
+    [input getCharacters:reinterpret_cast<UTF16Char *>(units.data()) range:NSMakeRange(0, input.length)];
+    MutableStringRef *wrapper = [[MutableStringRef alloc] init];
+    wrapper->utf16 = units.data();
+    wrapper->length = input.length;
+    wrapper->doNotReturnPointer = true;
+    NSStringRef string{wrapper};
+    const auto method = string._private_guts().method;
+    for (const bool buffered : {false, true}) {
+      if (buffered) string._private_setGuts({.count = count, .method = method});
+      else string._private_setGuts({.count = count, .utf16 = units.data()});
+      for (NSUInteger cluster = 0; cluster + 1 < breaks.count; ++cluster) {
+        const Int start = breaks[cluster].integerValue;
+        const Int end = breaks[cluster + 1].integerValue;
+        for (Int index = start; index < end; index += 1 + (string.codePointAtUTF16Index(index) > 0xffff)) {
+          XCTAssertEqual(string.startIndexOfGraphemeClusterAt(index), start, @"%@ (%d)", line, buffered);
+          XCTAssertEqual(string.endIndexOfGraphemeClusterAt(index), end, @"%@ (%d)", line, buffered);
+          XCTAssertEqual(string.indexOfFirstGraphemeClusterBreakNotBefore(index),
+                         index == start ? start : end, @"%@ (%d)", line, buffered);
+          if (index > start) {
+            XCTAssertEqual(string.indexOfLastGraphemeClusterBreakBefore(index), start, @"%@ (%d)", line, buffered);
+          }
+        }
+        XCTAssertEqual(string.indexOfLastGraphemeClusterBreakBefore(end), start, @"%@ (%d)", line, buffered);
       }
-      indices[j] = index;
-      utf32[j] = codePoints[index];
-      if (index != 0)
-        break;
     }
+  }
+  XCTAssertEqual(caseCount, 766U);
+}
 
-    convertString32ToUTF16();
-    nsString->length = sign_cast(utf16Length);
-
-    stringIsAscii = utf16Length == n;
-    if (stringIsAscii) {
-      for (int j = 0; j < n; ++j) {
-        if (utf32[j] < 128) {
-          ascii[j] = static_cast<char>(utf32[j]);
-          continue;
-        }
-        stringIsAscii = false;
-        break;
+- (void)testLongIndicConjunctSearch
+{
+  // GB9c applies across arbitrarily many linkers and extends, including NSString buffer refills.
+  NSMutableString *chain = [NSMutableString string];
+  for (int index = 0; index < 4096; ++index) [chain appendString:@"क्"];
+  [chain appendString:@"ष"];
+  NSMutableString *marks = [NSMutableString stringWithString:@"क"];
+  for (int index = 0; index < 4096; ++index) [marks appendString:@"\u0300"];
+  [marks appendString:@"्"];
+  for (int index = 0; index < 4096; ++index) [marks appendString:@"\u0300"];
+  [marks appendString:@"ष"];
+  for (NSString *input in @[chain, marks]) {
+    for (const bool buffered : {false, true}) {
+      NSString *backing = buffered ? [[StringWrapper alloc] initWithString:input] : input;
+      NSStringRef string{backing};
+      for (const Int index : {Int(0), Int(1), Int(63), Int(64), Int(4096), string.count() - 1}) {
+        XCTAssertEqual(string.startIndexOfGraphemeClusterAt(index), 0);
+        XCTAssertEqual(string.endIndexOfGraphemeClusterAt(index), string.count());
       }
+      XCTAssertEqual(string.countGraphemeClusters(), 1);
     }
-  };
-
-  for (int i = 0; i < n; ++i) {
-    indices[i] = codePointCount - 1;
   }
-  nextString();
+}
 
-  for (UInt testCase = 0; testCase < testCaseCount; ++testCase, nextString()) {
-    ubrk_setText(iterator, reinterpret_cast<const UChar *>(utf16), utf16Length, &ec);
-    XCTAssert(U_SUCCESS(ec));
-    string._private_setGuts(NSStringRef::Guts{.count = utf16Length, .utf16 = utf16});
-    const char *kind = "UTF-16";
-    Int index = 0;
-    do {
-      const Int nextIndex = ubrk_next(iterator);
-      for (bool asciiTest = false, bufferedTest = false;;) {
-        XCTAssertEqual(
-            string.startIndexOfGraphemeClusterAt(index), index, "testCase: %lu, index: %li %s", testCase, index, kind);
-        XCTAssertEqual(string.indexOfFirstGraphemeClusterBreakNotBefore(index),
-                       index,
-                       "testCase: %lu, index: %li %s",
-                       testCase,
-                       index,
-                       kind);
-        XCTAssertEqual(string.endIndexOfGraphemeClusterAt(index),
-                       nextIndex,
-                       "testCase: %lu, index: %li %s",
-                       testCase,
-                       index,
-                       kind);
-        XCTAssertEqual(string.indexOfLastGraphemeClusterBreakBefore(nextIndex),
-                       index,
-                       "testCase: %lu, index: %li %s",
-                       testCase,
-                       index,
-                       kind);
-        for (Int index1 = index;;) {
-          index1 += 1 + (string.codePointAtUTF16Index(index1) > 0xffff);
-          if (index1 == nextIndex)
-            break;
-
-          XCTAssertEqual(string.endIndexOfGraphemeClusterAt(index1),
-                         nextIndex,
-                         "testCase: %lu, index1: %li %s",
-                         testCase,
-                         index1,
-                         kind);
-          XCTAssertEqual(string.indexOfFirstGraphemeClusterBreakNotBefore(index1),
-                         nextIndex,
-                         "testCase: %lu, index1: %li %s",
-                         testCase,
-                         index1,
-                         kind);
-          XCTAssertEqual(string.indexOfLastGraphemeClusterBreakBefore(index1),
-                         index,
-                         "testCase: %lu, index1: %li %s",
-                         testCase,
-                         index1,
-                         kind);
-          XCTAssertEqual(string.startIndexOfGraphemeClusterAt(index1),
-                         index,
-                         "testCase: %lu, index1: %li %s",
-                         testCase,
-                         index1,
-                         kind);
-        }
-        if (!asciiTest && stringIsAscii) {
-          asciiTest = true;
-          kind = "ASCII";
-          string._private_setGuts({.count = utf16Length, .ascii = ascii});
-          continue;
-        }
-        if (!bufferedTest) {
-          asciiTest = false;
-          bufferedTest = true;
-          kind = "buffered UTF-16";
-          string._private_setGuts({.count = utf16Length, .method = stringGutsMethod});
-          continue;
-        }
-        bufferedTest = false;
-        kind = "UTF-16";
-        string._private_setGuts({.count = utf16Length, .utf16 = utf16});
-        break;
-      } // for (;;)
-      index = nextIndex;
-    } while (index < utf16Length);
+- (void)testLongIndicConjunctSearchPerformance
+{
+  for (const Int count : {Int(2048), Int(4096)}) {
+    NSMutableString *input = [NSMutableString string];
+    for (Int index = 0; index < count; ++index) [input appendString:@"क्"];
+    [input appendString:@"ष"];
+    NSStringRef string{input};
+    NSMutableArray<NSNumber *> *samples = [NSMutableArray array];
+    Int checksum = 0;
+    for (int sample = 0; sample < 7; ++sample) {
+      const CFAbsoluteTime begin = CFAbsoluteTimeGetCurrent();
+      for (int iteration = 0; iteration < 200; ++iteration) {
+        checksum += string.endIndexOfGraphemeClusterAt(0);
+        checksum += string.indexOfLastGraphemeClusterBreakBefore(string.count());
+      }
+      [samples addObject:@(CFAbsoluteTimeGetCurrent() - begin)];
+    }
+    [samples sortUsingSelector:@selector(compare:)];
+    NSLog(@"Long Indic conjunct: median %.6f s / 200 forward+backward passes, %lu UTF-16 units",
+          samples[3].doubleValue, input.length);
+    XCTAssertGreaterThan(checksum, 0);
   }
+}
 
-  ubrk_close(iterator);
+- (void)testGraphemeClusterSearchPerformance
+{
+  // Repeat the same public string workloads before and after segmentation changes.
+  // These measurements are informational: correctness is asserted by the UCD corpus.
+  NSArray<NSString *> *patterns = @[@"The quick brown fox jumps over the lazy dog. ",
+                                    @"Café e\u0301cole A\u0308pfel ",
+                                    @"👩🏽‍🚀👨‍👩‍👦🇦🇺",
+                                    @"क्षि क्\u200Dष त्र ज्ञ "];
+  NSArray<NSString *> *names = @[@"ASCII", @"Latin combining", @"Emoji", @"Indic conjuncts"];
+  for (NSUInteger workload = 0; workload < patterns.count; ++workload) {
+    NSMutableString *input = [NSMutableString string];
+    while (input.length < 4096) [input appendString:patterns[workload]];
+    NSStringRef string{input};
+    NSMutableArray<NSNumber *> *samples = [NSMutableArray array];
+    Int checksum = 0;
+    for (int sample = 0; sample < 7; ++sample) {
+      const CFAbsoluteTime begin = CFAbsoluteTimeGetCurrent();
+      for (int iteration = 0; iteration < 200; ++iteration) {
+        for (Int index = 0; index < string.count();) {
+          index = string.endIndexOfGraphemeClusterAt(index);
+          checksum += index;
+        }
+        for (Int index = string.count(); index > 0;) {
+          index = string.indexOfLastGraphemeClusterBreakBefore(index);
+          checksum += index;
+        }
+      }
+      [samples addObject:@(CFAbsoluteTimeGetCurrent() - begin)];
+    }
+    [samples sortUsingSelector:@selector(compare:)];
+    NSLog(@"Grapheme search %@: median %.6f s / 200 forward+backward passes, %lu UTF-16 units",
+          names[workload], samples[3].doubleValue, input.length);
+    XCTAssertGreaterThan(checksum, 0);
+  }
 }
 
 @end

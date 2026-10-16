@@ -56,16 +56,26 @@ enum class GraphemeClusterCategory : UInt8 {
   hangulLV,
   hangulL,
   hangulV,
-  hangulT
+  hangulT,
+  indicConsonant
 };
-constexpr int graphemeClusterCategoryCount = (int)GraphemeClusterCategory::hangulT + 1;
+constexpr int graphemeClusterCategoryCount = (int)GraphemeClusterCategory::indicConsonant + 1;
+
+enum class IndicConjunctBreak : UInt8 {
+  none,
+  consonant,
+  extend,
+  linker
+};
+
+IndicConjunctBreak indicConjunctBreak(Char32 codePoint) noexcept __attribute__((const));
 
 struct CodePointProperties {
   UInt8 bits;
 
   CodePointProperties() = default;
 
-  // Used by the ICU comparison tests to avoid comparing different UCD versions.
+  // The implementation and versioned conformance fixtures use this UCD version.
   static const UInt8 unicodeDataVersionMajor;
 
   STU_INLINE

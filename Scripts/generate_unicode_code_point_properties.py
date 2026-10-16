@@ -17,7 +17,12 @@ The property byte layout matches UnicodeCodePointProperties.hpp:
     bits 0..1  BidiStrongType
     bit  2     isIgnorable
     bit  3     isWhitespace
-    bits 4..7  GraphemeClusterCategory
+    bits 4..7  GraphemeClusterCategory (including Indic consonants)
+
+Indic_Conjunct_Break uses a separate 3-stage, 2-bit table queried only while
+resolving Indic conjuncts. The ASCII and ordinary grapheme property paths retain
+their existing byte layout. --test-fixtures-dir also copies the matching UCD
+source records and GraphemeBreakTest corpus for platform-independent tests.
 
 By default the script downloads the required UCD files for Unicode 17.0.0 into
 an on-disk cache. Pass --ucd-dir to use an already unpacked UCD tree instead.
@@ -76,6 +81,7 @@ class GraphemeClusterCategory(IntEnum):
     HANGUL_L = 12
     HANGUL_V = 13
     HANGUL_T = 14
+    INDIC_CONSONANT = 15
 
 
 BIDI_STRONG_BY_UCD: Final[dict[str, BidiStrongType]] = {
@@ -113,7 +119,7 @@ GCB_BY_UCD: Final[dict[str, GraphemeClusterCategory]] = {
 }
 
 # These were grapheme-break values in the ICU 62 / Unicode 11 era. STULabel's
-# tests require them only in Apple's private-use range U+F7F3..<U+F900.
+# compatibility profile retains them only in Apple's private-use range U+F7F3..<U+F900.
 LEGACY_EMOJI_GCB: Final[frozenset[str]] = frozenset(
     {"E_Base", "E_Base_GAZ", "E_Modifier", "Glue_After_Zwj", "Glue_After_ZWJ"}
 )
@@ -177,6 +183,7 @@ class PropertySources:
     default_ignorable: tuple[RangeValue, ...]
     grapheme_break: tuple[RangeValue, ...]
     extended_pictographic: tuple[RangeValue, ...]
+    indic_conjunct_break: tuple[RangeValue, ...]
 
 
 T = TypeVar("T", bound=tuple[int, ...])
@@ -220,7 +227,7 @@ def _parse_property_file(path: Path, *, include_missing: bool = False) -> tuple[
         if len(fields) < 2:
             raise ValueError(f"Malformed UCD record in {path}: {raw_line!r}")
         start, end = _parse_code_point_range(fields[0])
-        explicit.append(RangeValue(start, end, fields[1]))
+        explicit.append(RangeValue(start, end, "; ".join(fields[1:])))
 
     return tuple([*missing, *explicit])
 
@@ -271,6 +278,10 @@ def load_property_sources(files: SourceFiles) -> PropertySources:
         default_ignorable=_filter_property(derived_core, "Default_Ignorable_Code_Point"),
         grapheme_break=gcb,
         extended_pictographic=_filter_property(emoji, "Extended_Pictographic"),
+        indic_conjunct_break=tuple(
+            RangeValue(record.start, record.end, record.value.removeprefix("InCB; "))
+            for record in derived_core if record.value.startswith("InCB; ")
+        ),
     )
 
 
@@ -287,6 +298,7 @@ def build_property_bytes(sources: PropertySources, *, limit: int = TABLE2_END) -
     ignorable = _materialize_bool(sources.default_ignorable, limit=limit)
     gcb = _materialize_values(sources.grapheme_break, limit=limit, default="Other")
     pictographic = _materialize_bool(sources.extended_pictographic, limit=limit)
+    incb = _materialize_values(sources.indic_conjunct_break, limit=limit, default="None")
 
     result = bytearray(limit)
     for cp in range(limit):
@@ -321,6 +333,18 @@ def build_property_bytes(sources: PropertySources, *, limit: int = TABLE2_END) -
                 category = GCB_BY_UCD[gcb_name]
             except KeyError as exc:
                 raise ValueError(f"unsupported Grapheme_Cluster_Break value {gcb_name!r} at U+{cp:04X}") from exc
+
+        # Reserve the last nibble value for GB9c candidates. Markers keep their
+        # ordinary grapheme categories, so unrelated searches need no InCB lookup.
+        if incb[cp] == "Consonant":
+            if category != GraphemeClusterCategory.OTHER:
+                raise ValueError(f"InCB Consonant has unexpected GCB at U+{cp:04X}")
+            category = GraphemeClusterCategory.INDIC_CONSONANT
+        elif incb[cp] in {"Extend", "Linker"}:
+            if category not in {GraphemeClusterCategory.EXTEND, GraphemeClusterCategory.ZWJ}:
+                raise ValueError(f"InCB marker has unexpected GCB at U+{cp:04X}")
+        elif incb[cp] != "None":
+            raise ValueError(f"unsupported InCB value {incb[cp]!r}")
 
         value = int(strong)
         if is_ignorable:
@@ -504,7 +528,35 @@ def _unicode_version_major(unicode_version: str) -> int:
     return major
 
 
-def render_cpp(tables: Tables, *, unicode_version: str) -> str:
+def _format_indic_conjunct_break_tables(records: Sequence[RangeValue]) -> str:
+    values = {"None": 0, "Consonant": 1, "Extend": 2, "Linker": 3}
+    full = [values[value] for value in _materialize_values(
+        records, limit=MAX_UNICODE + 1, default="None"
+    )]
+    for cp in range(TABLE2_END, MAX_UNICODE + 1):
+        expected = 2 if (0xE0020 <= cp <= 0xE007F) or (0xE0100 <= cp <= 0xE01EF) else 0
+        if full[cp] != expected:
+            raise ValueError(f"unexpected Indic_Conjunct_Break tail at U+{cp:04X}")
+    leaves, unpacked = _intern_blocks(_chunks(full[:TABLE2_END], 16))
+    indices, middle = _intern_blocks(_chunks(leaves, 16))
+    packed = tuple(sum(unpacked[index + offset] << (2 * offset) for offset in range(4))
+                   for index in range(0, len(unpacked), 4))
+    for cp, expected in enumerate(full[:TABLE2_END]):
+        leaf = middle[(indices[cp >> 8] << 4) + ((cp >> 4) & 15)]
+        actual = (packed[(leaf << 2) + ((cp >> 2) & 3)] >> ((cp & 3) << 1)) & 3
+        if actual != expected:
+            raise AssertionError(f"Indic_Conjunct_Break round-trip failed at U+{cp:04X}")
+    return "\n".join(
+        _format_array(name, data, hexadecimal=False, columns=16).replace(
+            f"const UInt8 CodePointProperties::{name}",
+            f"static constexpr UInt8 indicConjunctBreak{name}",
+        )
+        for name, data in (("Indices", indices), ("Middle", middle), ("Data", packed))
+    )
+
+
+def render_cpp(tables: Tables, *, unicode_version: str,
+               indic_conjunct_break: Sequence[RangeValue]) -> str:
     return "\n".join(
         [
             f"// Generated from Unicode {unicode_version} data. DO NOT EDIT.\n"
@@ -516,8 +568,50 @@ def render_cpp(tables: Tables, *, unicode_version: str) -> str:
             _format_array("indices1", tables.indices1, hexadecimal=False, columns=16),
             _format_array("indices2", tables.indices2, hexadecimal=False, columns=16),
             _format_array("data2", tables.data2, hexadecimal=True, columns=16),
+            _format_indic_conjunct_break_tables(indic_conjunct_break),
         ]
     )
+
+
+def write_test_fixtures(files: SourceFiles, directory: Path, unicode_version: str) -> None:
+    """Copy published UCD records without deriving expected values from production tables."""
+    major = _unicode_version_major(unicode_version)
+    directory.mkdir(parents=True, exist_ok=True)
+    grapheme_source = files.grapheme_break_property.with_name("GraphemeBreakTest.txt")
+    corpus = "\n".join(line.rstrip() for line in grapheme_source.read_text(encoding="utf-8").splitlines()) + "\n"
+    (directory / f"Unicode{major}GraphemeBreakTest.inc").write_text(
+        f"// Unicode {unicode_version} conformance fixture, copied with trailing whitespace normalized from\n"
+        f"// https://www.unicode.org/Public/{unicode_version}/ucd/auxiliary/GraphemeBreakTest.txt\n"
+        'R"UCD(\n' + corpus + ')UCD"\n', encoding="utf-8"
+    )
+    parts = [
+        f"// Unicode {unicode_version} property records from https://www.unicode.org/Public/{unicode_version}/ucd/\n"
+        "// © 2025 Unicode®, Inc. Unicode and the Unicode Logo are registered trademarks.\n"
+        "// Terms of use: https://www.unicode.org/terms_of_use.html\n"
+        "// Source records are copied without descriptive comments; @missing defaults are retained.\n"
+        "// This test oracle is independent of STULabel's packed property tables.\n"
+    ]
+    for name, path, property_name, include_missing in (
+        ("BidiClass", files.derived_bidi_class, None, True),
+        ("WhiteSpace", files.prop_list, "White_Space", False),
+        ("DefaultIgnorable", files.derived_core_properties, "Default_Ignorable_Code_Point", False),
+        ("GraphemeBreak", files.grapheme_break_property, None, False),
+        ("ExtendedPictographic", files.emoji_data, "Extended_Pictographic", False),
+        ("IndicConjunctBreak", files.derived_core_properties, "InCB", False),
+    ):
+        records: list[str] = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if include_missing and line.startswith("# @missing:"):
+                records.append(line)
+            elif line and line[0] in "0123456789ABCDEF":
+                data = line.partition("#")[0].rstrip()
+                if property_name is None or data.split(";")[1].strip() == property_name:
+                    records.append(data)
+        parts.append(
+            f"// {path.name}\nstatic const char unicode{major}{name}[] = R\"UCD(\n"
+            + "\n".join(records) + '\n)UCD";\n'
+        )
+    (directory / f"Unicode{major}PropertyData.inc").write_text("\n".join(parts), encoding="utf-8")
 
 
 def _required_relative_paths() -> tuple[str, ...]:
@@ -526,6 +620,7 @@ def _required_relative_paths() -> tuple[str, ...]:
         "DerivedCoreProperties.txt",
         "PropList.txt",
         "auxiliary/GraphemeBreakProperty.txt",
+        "auxiliary/GraphemeBreakTest.txt",
         "emoji/emoji-data.txt",
     )
 
@@ -582,7 +677,7 @@ def _sha256(path: Path) -> str:
 
 def _print_stats(tables: Tables, files: SourceFiles) -> None:
     print(
-        "generated tables:\n"
+        "generated main property tables (Indic tables are separate):\n"
         f"  indices : {len(tables.indices):5d} bytes, {len(tables.data1) // LEAF1_SIZE:3d} unique 32-byte leaves\n"
         f"  data1   : {len(tables.data1):5d} bytes\n"
         f"  indices1: {len(tables.indices1):5d} bytes\n"
@@ -626,6 +721,10 @@ def _build_argument_parser() -> argparse.ArgumentParser:
         help="write generated C++ table definitions here (default: stdout)",
     )
     parser.add_argument(
+        "--test-fixtures-dir", type=Path,
+        help="also copy versioned Unicode property and grapheme conformance fixtures here",
+    )
+    parser.add_argument(
         "--verify-tail",
         action="store_true",
         help="also verify that U+20000..U+10FFFF matches the historical hard-coded shortcut",
@@ -646,13 +745,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.verify_tail:
         verify_historical_tail(sources)
 
-    output = render_cpp(tables, unicode_version=unicode_version)
+    output = render_cpp(tables, unicode_version=unicode_version,
+                        indic_conjunct_break=sources.indic_conjunct_break)
     if args.output is None:
         sys.stdout.write(output)
     else:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(output, encoding="utf-8")
         print(f"wrote {args.output}", file=sys.stderr)
+
+    if args.test_fixtures_dir is not None:
+        write_test_fixtures(files, args.test_fixtures_dir, unicode_version)
 
     _print_stats(tables, files)
     return 0

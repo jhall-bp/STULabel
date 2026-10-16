@@ -30,4 +30,16 @@ UInt8 CodePointProperties::lookupCodePointGreaterThanD7FF(Char32 cp) noexcept
 // Regenerate this file with `just generate-unicode-code-point-properties`.
 #include "UnicodeCodePointProperties.generated.inc"
 
+IndicConjunctBreak indicConjunctBreak(Char32 cp) noexcept
+{
+  if (cp < 0x20000) {
+    const UInt block = indicConjunctBreakIndices[cp >> 8];
+    const UInt leaf = indicConjunctBreakMiddle[(block << 4) + ((cp >> 4) & 15)];
+    const UInt byte = indicConjunctBreakData[(leaf << 2) + ((cp >> 2) & 3)];
+    return IndicConjunctBreak((byte >> ((cp & 3) << 1)) & 3);
+  }
+  return (0xE0020 <= cp && cp <= 0xE007F) || (0xE0100 <= cp && cp <= 0xE01EF)
+       ? IndicConjunctBreak::extend : IndicConjunctBreak::none;
+}
+
 } // namespace stu_label

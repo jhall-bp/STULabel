@@ -389,7 +389,7 @@ Int NSStringRef::indexOfTrailingWhitespaceIn(Range<Int> range) const
 
 namespace grapheme_cluster {
 
-// This is based on the Unicode 11 default extended grapheme cluster specification.
+// Unicode 17 default extended grapheme clusters (UAX #29, including GB9c).
 
 enum class CategoryPairCase : Int8
 {
@@ -402,9 +402,10 @@ enum class CategoryPairCase : Int8
   zwj_picto,
   ri_ri,
   prepend_ri,
-  prepend_prepend
+  prepend_prepend,
+  indic_consonant
 };
-constexpr CategoryPairCase lastCategoryPairCase STU_APPEARS_UNUSED = CategoryPairCase::prepend_prepend;
+constexpr CategoryPairCase lastCategoryPairCase STU_APPEARS_UNUSED = CategoryPairCase::indic_consonant;
 
 using Category = GraphemeClusterCategory;
 
@@ -418,6 +419,10 @@ static constexpr CategoryPairCase categoryPairCase_init(Category a, Category b)
     return Case::isBreak;
   switch (b) {
   case C::other:
+    break;
+  case C::indicConsonant:
+    if (a == C::extend || a == C::zwj)
+      return Case::indic_consonant;
     break;
   case C::prepend:
     if (a == C::prepend)
@@ -517,6 +522,8 @@ struct BreakFinder
     maybe_ri_ri,
   };
 
+  enum class IndicState : UInt8 { none, unknownPrefix, consonant, linkedConsonant };
+  IndicState indicState;
   State state;
   Category previousCategory;
   Category startCategory;
@@ -532,6 +539,9 @@ struct BreakFinder
     startIndex = index;
     startCategory = category;
     previousCategory = category;
+    indicState = category == Category::indicConsonant ? IndicState::consonant
+               : category == Category::extend || category == Category::zwj ? IndicState::unknownPrefix
+               : IndicState::none;
     static_assert((int)Category::extend + 1 == (int)Category::zwj);
     static_assert((int)Category::extend + 2 == (int)Category::regionalIndicator);
     static_assert((int)State::maybe_picto_extend + 1 == (int)State::maybe_picto_zwj);
@@ -554,7 +564,7 @@ struct BreakFinder
   }
 
   STU_INLINE
-  bool advanceForwards(Category category)
+  bool advanceForwards(Int index, Category category)
   {
     STU_DEBUG_ASSERT(startIndex >= 0);
     using Case = CategoryPairCase;
@@ -579,9 +589,8 @@ struct BreakFinder
       newState = state == State::picto_extend || state == State::maybe_picto_extend ? state : State::other;
       break;
     case Case::extend_zwj:
-      newState = state == State::picto_extend         ? State::picto_zwj
-                 : state == State::maybe_picto_extend ? State::maybe_picto_zwj
-                                                      : State::other;
+      newState = state == State::picto_extend ? State::picto_zwj
+               : state == State::maybe_picto_extend ? State::maybe_picto_zwj : State::other;
       break;
     case Case::zwj_picto:
       if (state == State::maybe_picto_zwj) {
@@ -596,6 +605,12 @@ struct BreakFinder
     case Case::prepend_ri:
       newState = State::other;
       break;
+    case Case::indic_consonant:
+      if (indicState != IndicState::linkedConsonant
+          && !(indicState == IndicState::unknownPrefix
+               && startIndexOfIndicConjunctSequence(string, index) < index)) return false;
+      newState = State::other;
+      break;
     case Case::ri_ri:
       if (state == State::ri_ri ||
           (state == State::maybe_ri_ri && numberOfConsecutiveRegionalIndicatorsBefore(string, startIndex) % 2 != 0)) {
@@ -606,6 +621,19 @@ struct BreakFinder
     }
     state = newState;
     previousCategory = category;
+    if (category == Category::indicConsonant) {
+      indicState = IndicState::consonant;
+    } else if (indicState != IndicState::none) {
+      if (category != Category::extend && category != Category::zwj) {
+        indicState = IndicState::none;
+      } else {
+        const auto property = indicConjunctBreak(string.codePointAtUTF16Index(index));
+        if (property == IndicConjunctBreak::none) indicState = IndicState::none;
+        else if (property == IndicConjunctBreak::linker && indicState == IndicState::consonant) {
+          indicState = IndicState::linkedConsonant;
+        }
+      }
+    }
     return true;
   }
 
@@ -619,9 +647,8 @@ struct BreakFinder
     state = State::other;
   }
 
-  // If this function encounters a zwj-picto pair, it will scan the string backwards to find
-  // the beginning of the emoji zwj sequence and store the start index in `startIndex` before
-  // returning true.
+  // Context-dependent emoji and Indic pairs resolve their complete prefix once and store
+  // its start in startIndex before returning false.
   STU_INLINE
   bool advanceBackwards(Int index, Category category)
   {
@@ -657,10 +684,46 @@ struct BreakFinder
     case Case::prepend_prepend:
       newState = state == State::ri_ri ? State::ri_ri : State::other;
       break;
+    case Case::indic_consonant:
+      startIndex = startIndexOfIndicConjunctSequence(
+          string, index + 1 + (string.codePointAtUTF16Index(index) > 0xffff));
+      return false;
     }
     state = newState;
     previousCategory = category;
     return true;
+  }
+
+  STU_NO_INLINE
+  static Int startIndexOfIndicConjunctSequence(const NSStringRef &string, Int index)
+  {
+    // GB9c: Consonant (Extend|Linker)* Linker (Extend|Linker)* × Consonant.
+    // Resolve the whole prefix once, so backward searches do not scan its markers again.
+    // Forward searches only need this when starting inside a conjunct.
+    Int start = index;
+    bool hasLinker = false;
+    string.indexOfEndOfLastCodePointWhere(Range{0, index}, [&](Int scalarIndex, Char32 cp) -> bool {
+      switch (indicConjunctBreak(cp)) {
+      case IndicConjunctBreak::extend:
+        return false;
+      case IndicConjunctBreak::linker:
+        hasLinker = true;
+        return false;
+      case IndicConjunctBreak::consonant:
+        if (!hasLinker) return true;
+        start = scalarIndex;
+        hasLinker = false;
+        return false;
+      case IndicConjunctBreak::none:
+        if (scalarIndex + 1 + (cp > 0xffff) == start
+            && graphemeClusterCategory(cp) == Category::prepend) {
+          start = scalarIndex;
+          return false;
+        }
+        return true;
+      }
+    });
+    return start;
   }
 
   STU_NO_INLINE
@@ -751,7 +814,7 @@ Int NSStringRef::indexOfFirstGraphemeClusterBreak_noBuffer(const bool greaterTha
       Range{index0, count},
       [index, isFirst = true, finder = BreakFinder(*this)](Int i, Char32 cp) STU_INLINE_LAMBDA mutable -> bool {
         if (!isFirst) {
-          return !finder.advanceForwards(graphemeClusterCategory(cp));
+          return !finder.advanceForwards(i, graphemeClusterCategory(cp));
         } else {
           if (i != index - 2 || cp > 0xffff) {
             isFirst = false;
@@ -788,7 +851,7 @@ Int NSStringRef::indexOfLastGraphemeClusterBreakImpl_noBuffer(const bool lessTha
         }
         return false;
       });
-  // The finder may store the start of the emoji ZWJ sequence in finder.startIndex.
+  // The finder may store the start of an emoji ZWJ or Indic conjunct sequence.
   return min(endIndex, finder.startIndex);
 }
 
@@ -865,7 +928,7 @@ Int NSStringRef ::endIndexOfGraphemeClusterAtImpl_utf16Buffer(Int index,
       STU_ASSUME(cp >= minSurrogateCodeUnit);
       category = graphemeClusterCategory(cp);
     }
-    if (!finder.advanceForwards(category))
+    if (!finder.advanceForwards(index, category))
       break;
     index = nextIndex;
   } while (index != count);
@@ -989,7 +1052,7 @@ Int NSStringRef ::indexOfLastGraphemeClusterBreakBeforeImpl_utf16Buffer(Int inde
         continue;
       return 0;
     }
-    // The finder may store the start of the emoji ZWJ sequence in finder.startIndex.
+    // The finder may store the start of an emoji ZWJ or Indic conjunct sequence.
     return min(endIndex, finder.startIndex);
   } // for (;;)
 }

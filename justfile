@@ -102,4 +102,5 @@ generate-unicode-code-point-properties:
     uv run Scripts/generate_unicode_code_point_properties.py \
           --unicode-version {{ unicode_version }} \
           --verify-tail \
-          --output Source/STULabel/Internal/UnicodeCodePointProperties.generated.inc
+          --output Source/STULabel/Internal/UnicodeCodePointProperties.generated.inc \
+          --test-fixtures-dir Tests/STULabelTestsObjC/Internal
