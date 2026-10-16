@@ -16,8 +16,11 @@ concurrency:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: macos-26
+    # Match the toolchain and runtime used by the checked-in snapshot references.
+    runs-on: xcode-27
     timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
 
     steps:
       - name: Check out source
@@ -25,11 +28,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Require Xcode 26
+      - name: Require Xcode 27.0
         run: |
           xcode_version="$(xcodebuild -version)"
           echo "$xcode_version"
-          grep -q '^Xcode 26\.' <<< "$xcode_version"
+          grep -q '^Xcode 27\.0$' <<< "$xcode_version"
 
       - name: Install just
         run: brew install just

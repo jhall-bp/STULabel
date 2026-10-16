@@ -13,7 +13,8 @@ demo_scheme := "Demo"
 consumer_workspace := "Integration/PackageConsumer/.swiftpm/xcode/package.xcworkspace"
 consumer_scheme := "STULabelConsumer"
 unicode_version := "17.0.0"
-simulator_destination := env_var_or_default("SIMULATOR_DESTINATION", "platform=iOS Simulator,OS=26.2,name=iPhone 17 Pro")
+# Snapshot references use the iOS 27.0 font rasterizer; keep this runtime explicit.
+simulator_destination := env("SIMULATOR_DESTINATION", "platform=iOS Simulator,OS=27.0,name=iPhone 17")
 package_xcodebuild := "xcodebuild -workspace " + package_workspace + " -scheme " + package_scheme + " -quiet -derivedDataPath " + package_derived_data_dir
 demo_xcodebuild := "xcodebuild -project " + demo_project + " -scheme " + demo_scheme + " -quiet -derivedDataPath " + demo_derived_data_dir
 consumer_xcodebuild := "xcodebuild -workspace " + consumer_workspace + " -scheme " + consumer_scheme + " -quiet -derivedDataPath " + consumer_derived_data_dir

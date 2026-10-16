@@ -92,6 +92,14 @@ The package uses required unsafe compiler flags to preserve the core's ARC/no-AR
 
 The STULabel source contains an [LLDB Python script](STULabel/stu_label_lldb_formatters.py) that defines data formatters for various types defined by the library. If you find yourself stepping through STULabel code in Xcode, importing this script will improve your debugging experience.
   
+## Running the tests
+
+Open the package in Xcode, select the `STULabel-Package` scheme and **iPhone 17 (iOS 27.0)**, then run the tests. `just test` uses the same pinned destination and runs the Swift, Objective-C ARC, and Objective-C no-ARC targets.
+
+The checked-in image references were recorded on iOS 27.0. Core Text font rasterization differs across OS versions; an iOS 26.2 run can produce correct layout with different glyph-edge pixels. Keep the snapshot runtime fixed instead of rerecording references or loosening comparisons to accommodate a different OS. Nonvisual correctness tests can also run on supported iOS 26 destinations.
+
+SnapshotTesting is temporarily pinned to 1.18.9 because 1.19.x can read beyond grayscale or RGB image buffers while producing a failure image. `SnapshotComparisonTests` exercises that failure-reporting path, including perceptual comparison; run it on both supported runtimes before upgrading the dependency. Snapshot failure images remain available at the paths printed in the test log; this version does not attach them directly to Swift Testing issues.
+
 ## Support
 
 If you've found a bug, please create a GitHub issue. If possible, please provide sample code that reproduces the issue.
