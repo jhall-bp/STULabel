@@ -951,14 +951,22 @@ static STULabelBaselinesLayoutGuide *baselinesLayoutGuide(STULabel *__unsafe_unr
           STULabel *const label = weakSelf;
           if (!label)
             return false;
-          STUTextLink *link = [links linkClosestToPoint:point maxDistance:0];
-          if (range.type == STURangeInOriginalString &&
-              (!link ||
-               link.rangeInOriginalString != range.range)) { // The truncated string does not contain this link.
+          const bool isOriginalRange = range.type == STURangeInOriginalString;
+          const STUTextFrameRange frameRange = isOriginalRange
+              ? [textFrame rangeForRangeInOriginalString:range.range]
+              : [textFrame rangeForRangeInTruncatedString:range.range];
+          const NSRange originalRange = isOriginalRange
+              ? range.range : [textFrame rangeInOriginalStringForRange:frameRange];
+          const NSRange truncatedRange = isOriginalRange
+              ? STUTextFrameRangeGetRangeInTruncatedString(frameRange) : range.range;
+          // Link identity survives origin-only moves; geometry belongs to the current layer.
+          STUTextLink *link = [label.links linkMatchingAttributeValue:linkValue
+                                               rangeInOriginalString:originalRange
+                                              rangeInTruncatedString:truncatedRange];
+          if (!link && isOriginalRange) { // The truncated string does not contain this link.
             link = [[STUTextLink alloc] initWithLinkAttributeValue:linkValue
-                                             rangeInOriginalString:range.range
-                                            rangeInTruncatedString:STUTextFrameRangeGetRangeInTruncatedString([textFrame
-                                                                       rangeForRangeInOriginalString:range.range])
+                                             rangeInOriginalString:originalRange
+                                            rangeInTruncatedString:truncatedRange
                                                      textRectArray:nil];
           }
           if (!link)
