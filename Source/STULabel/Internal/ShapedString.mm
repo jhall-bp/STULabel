@@ -317,20 +317,22 @@ static void fixParagraphStyles(NSMutableAttributedString *const attributedString
     const auto &para = paragraphs[i];
     if (!para.paragraphStyleNeededFix)
       continue;
-    NSRange range;
+    const NSUInteger paragraphStart = sign_cast(para.stringRange.start);
+    NSRange effectiveRange;
     NSParagraphStyle *const style = [attributedString attribute:NSParagraphStyleAttributeName
-                                                        atIndex:sign_cast(para.stringRange.start)
-                                                 effectiveRange:&range];
+                                                        atIndex:paragraphStart
+                                                 effectiveRange:&effectiveRange];
     NSMutableParagraphStyle *const newStyle = style ? [style mutableCopy] : [[NSMutableParagraphStyle alloc] init];
     const auto writingDirection = para.baseWritingDirection;
     newStyle.baseWritingDirection = NSWritingDirection(writingDirection);
-    const NSUInteger rangeEnd = range.location + range.length;
-    NSUInteger paraStringRangeEnd;
-    while (rangeEnd > (paraStringRangeEnd = sign_cast(paragraphs[i].stringRange.end)) // Assignment
+    const NSUInteger rangeEnd = effectiveRange.location + effectiveRange.length;
+    NSUInteger paragraphEnd;
+    while (rangeEnd > (paragraphEnd = sign_cast(paragraphs[i].stringRange.end)) // Assignment
            && paragraphs[i + 1].baseWritingDirection == writingDirection) {
       ++i;
     }
-    range.length = paraStringRangeEnd - range.location;
+    // The attribute's effective range can include earlier paragraphs with a different direction.
+    const NSRange range = {paragraphStart, paragraphEnd - paragraphStart};
     [attributedString addAttribute:NSParagraphStyleAttributeName value:newStyle range:range];
   }
 }

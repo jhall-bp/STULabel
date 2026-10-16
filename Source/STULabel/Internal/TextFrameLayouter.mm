@@ -366,7 +366,7 @@ MinLineHeightInfo TextFrameLayouter::minLineHeightInfo(const LineHeightParams &p
     return {.minHeight = narrow_cast<Float32>(h),
             .minHeightWithoutSpacingBelowBaseline = narrow_cast<Float32>(min((ad + h) / 2, h)),
             .minHeightBelowBaselineWithoutSpacing = narrow_cast<Float32>(minHeightBelowBaselineWithoutSpacing),
-            .minSpacingBelowBaseline = narrow_cast<Float32>(minHeightBelowBaselineWithoutSpacing)};
+            .minSpacingBelowBaseline = narrow_cast<Float32>(minSpacingBelowBaseline)};
   } else {
     static_assert(mode == STUTextLayoutModeTextKit);
     const CGFloat hm = ad * params.lineHeightMultiple;
