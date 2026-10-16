@@ -1,6 +1,7 @@
 // Copyright 2017–2018 Stephan Tolksdorf
 
 #import "UIFont+STUDynamicTypeFontScaling.h"
+#import "Internal/DynamicTypeFontScaling.h"
 
 #import "stu_mutex.h"
 
@@ -106,6 +107,47 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
 @implementation STUWeakFontReference
 @end
 
+static Class weakFontReferenceClass;
+
+static void initializeFontScaling(void)
+{
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    nsNumberClass = NSNumber.class;
+    nsStringClass = NSString.class;
+    weakFontReferenceClass = STUWeakFontReference.class;
+    atomic_store_explicit(&canScaleNonPreferredFonts, true, memory_order_relaxed);
+  });
+}
+
+static UIFont *fontAdjustedForTraitCollection(UIFont *source, UITraitCollection *traits)
+{
+  UIFontTextStyle style = [source.fontDescriptor objectForKey:UIFontDescriptorTextStyleAttribute];
+  const bool isPreferredFont = style && [style hasPrefix:@"UICTFontTextStyle"];
+  CGFloat sizeForScaling = 0;
+  if (!isPreferredFont) {
+    if (!(style = stringForFontKey(source, @"textStyleForScaling"))
+        || !floatForFontKey(source, @"pointSizeForScaling", &sizeForScaling) || !(sizeForScaling > 0)) {
+      return source;
+    }
+  }
+
+  UIFont *font = !isPreferredFont
+      ? [source fontWithSize:sizeForScaling]
+      : [UIFont preferredFontForTextStyle:style compatibleWithTraitCollection:traits];
+  if (!font)
+    return source;
+
+  CGFloat maxSize = 0;
+  if (!floatForFontKey(source, @"maximumPointSizeAfterScaling", &maxSize) && !isPreferredFont)
+    return source;
+  if (!isPreferredFont || maxSize > 0) {
+    UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
+    font = [metrics scaledFontForFont:font maximumPointSize:maxSize compatibleWithTraitCollection:traits];
+  }
+  return font;
+}
+
 @implementation UIFont (STUDynamicTypeScaling)
 
 - (UIFont *)stu_fontAdjustedForContentSizeCategory:(__unsafe_unretained UIContentSizeCategory)category
@@ -116,20 +158,12 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   }
   const size_t index = (size_t)stuCategory - 1;
 
-  static Class weakFontReferenceClass;
-
   STU_DISABLE_CLANG_WARNING("-Wgnu-folding-constant")
   static dispatch_once_t onces[STUContentSizeCategoryCount - 1];
   static UITraitCollection *traitCollections[STUContentSizeCategoryCount - 1];
   STU_REENABLE_CLANG_WARNING
 
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    nsNumberClass = NSNumber.class;
-    nsStringClass = NSString.class;
-    weakFontReferenceClass = STUWeakFontReference.class;
-    atomic_store_explicit(&canScaleNonPreferredFonts, true, memory_order_relaxed);
-  });
+  initializeFontScaling();
   dispatch_once(&onces[index], ^{
     traitCollections[index] = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:category];
   });
@@ -150,36 +184,12 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
     }
   }
 
-  UIFontTextStyle style = [self.fontDescriptor objectForKey:UIFontDescriptorTextStyleAttribute];
-  const bool isPreferredFont = style && [style hasPrefix:@"UICTFontTextStyle"];
-  CGFloat sizeForScaling = 0;
-  if (!isPreferredFont) {
-    if (!(style = stringForFontKey(self, @"textStyleForScaling")) // assignment
-        || !floatForFontKey(self, @"pointSizeForScaling", &sizeForScaling) || !(sizeForScaling > 0)) {
-    FontCanNotBeScaled:
-      if (atomic_load_explicit(&canScaleNonPreferredFonts, memory_order_relaxed)) {
-        objc_setAssociatedObject(self, associatedObjectKey, (__bridge id)kCFNull, OBJC_ASSOCIATION_ASSIGN);
-      }
-      return self;
+  UIFont *const font = fontAdjustedForTraitCollection(self, traitCollections[index]);
+  if (font == self) {
+    if (atomic_load_explicit(&canScaleNonPreferredFonts, memory_order_relaxed)) {
+      objc_setAssociatedObject(self, associatedObjectKey, (__bridge id)kCFNull, OBJC_ASSOCIATION_ASSIGN);
     }
-  }
-
-  UIFont *font = !isPreferredFont
-                     ? [self fontWithSize:sizeForScaling]
-                     : [UIFont preferredFontForTextStyle:style compatibleWithTraitCollection:traitCollections[index]];
-  if (!font)
-    goto FontCanNotBeScaled;
-
-  CGFloat maxSize = 0;
-  if (!floatForFontKey(self, @"maximumPointSizeAfterScaling", &maxSize)) {
-    if (!isPreferredFont)
-      goto FontCanNotBeScaled;
-  }
-  if (!isPreferredFont || maxSize > 0) {
-    UIFontMetrics *const metrics = [[UIFontMetrics alloc] initForTextStyle:style];
-    font = [metrics scaledFontForFont:font
-                     maximumPointSize:maxSize
-        compatibleWithTraitCollection:traitCollections[index]];
+    return self;
   }
 
   if (!weakRef) {
@@ -189,6 +199,18 @@ static bool floatForFontKey(UIFont *__unsafe_unretained font, NSString *__unsafe
   objc_setAssociatedObject(self, associatedObjectKey, weakRef, OBJC_ASSOCIATION_RETAIN); // atomic
 
   return font;
+}
+
+@end
+
+@implementation UIFont (STUDynamicTypeScalingInternal)
+
+- (UIFont *)stu_fontAdjustedForTraitCollection:(UITraitCollection *)traits
+{
+  if (!stuContentSizeCategory(traits.preferredContentSizeCategory))
+    return self;
+  initializeFontScaling();
+  return fontAdjustedForTraitCollection(self, traits);
 }
 
 @end

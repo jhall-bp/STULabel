@@ -90,8 +90,8 @@ STU_EXPORT
 /// Tracks the view frame without the content insets.
 @property (readonly, nonnull) UILayoutGuide *contentLayoutGuide;
 
-/// Indicates whether the label scales fonts when
-/// @c self.traitCollection.preferredContentSizeCategory changes.
+/// Indicates whether the label updates fonts when its preferred content size category or
+/// legibility weight (Bold Text) changes.
 ///
 /// The default value is false.
 ///

@@ -4,8 +4,7 @@
 #import "STULabel+UITextInput-Internal.h"
 #import "STULabelSwiftExtensions.h"
 
-#import "NSAttributedString+STUDynamicTypeFontScaling.h"
-#import "UIFont+STUDynamicTypeFontScaling.h"
+#import "Internal/DynamicTypeFontScaling.h"
 
 #import "STULabelLayoutInfo-Internal.hpp"
 
@@ -568,6 +567,7 @@ static void updateLayoutGuides(STULabel *label);
   STULabelBaselinesLayoutGuide *_baselinesLayoutGuide;
   STULabelContentLayoutGuide *_contentLayoutGuide;
   UIContentSizeCategory _contentSizeCategory;
+  UILegibilityWeight _fontLegibilityWeight;
   UITouch *_currentTouch;
   STULabelOverlayStyle *_activeLinkOverlayStyle;
   /// A STULabelLinkOverlayLayer if _bits.hasActiveLinkOverlayLayer, else a STUTextLink, or null.
@@ -1030,7 +1030,7 @@ STU_INLINE UIContentSizeCategory preferredContentSizeCategory(UIView *self)
   _bits.adjustsFontForContentSizeCategory = value;
   if (value) {
     _contentSizeCategory = nil;
-    [self updateFontForContentSizeCategory];
+    [self updateFontsForCurrentTraits];
   } else {
     _contentSizeCategory = nil;
   }
@@ -1059,21 +1059,28 @@ static_assert((int)UIUserInterfaceLayoutDirectionRightToLeft == (int)STUWritingD
   [self updateRenderingEnvironment];
 }
 
-- (void)updateFontForContentSizeCategory
+- (void)updateFontsForCurrentTraits
 {
+  UITraitCollection *traits = self.traitCollection;
   const UIContentSizeCategory newCategory = preferredContentSizeCategory(self);
-  if (![newCategory isEqualToString:_contentSizeCategory]) {
+  if (![newCategory isEqualToString:_contentSizeCategory] || traits.legibilityWeight != _fontLegibilityWeight) {
     _contentSizeCategory = newCategory;
+    _fontLegibilityWeight = traits.legibilityWeight;
+    if (![newCategory isEqualToString:traits.preferredContentSizeCategory]) {
+      traits = [UITraitCollection traitCollectionWithTraitsFromCollections:@[
+        traits, [UITraitCollection traitCollectionWithPreferredContentSizeCategory:newCategory]
+      ]];
+    }
     if (STULabelLayerIsAttributed(_layer)) {
       if (NSAttributedString *const text = _layer.attributedText) {
-        auto *const newText = [text stu_copyWithFontsAdjustedForContentSizeCategory:newCategory];
+        auto *const newText = [text stu_copyWithFontsAdjustedForTraitCollection:traits];
         if (text != newText) {
           [_layer stu_setAttributedTextAfterAdjustingFonts:newText];
         }
       }
     } else {
       UIFont *const font = _layer.font;
-      UIFont *const newFont = [font stu_fontAdjustedForContentSizeCategory:newCategory];
+      UIFont *const newFont = [font stu_fontAdjustedForTraitCollection:traits];
       // Assign even when UIKit returns the same object. For an implicit default this materializes
       // the font selected for the layer's current rendering environment and invalidates any
       // attributed string that was previously constructed with an older default.
@@ -1100,7 +1107,7 @@ static void updateDisplayedBackgroundColor(STULabel *__unsafe_unretained self)
   }
   _layer.userInterfaceLayoutDirection = effectiveUILayoutDirection(self);
   if (_bits.adjustsFontForContentSizeCategory) {
-    [self updateFontForContentSizeCategory];
+    [self updateFontsForCurrentTraits];
   }
   if (traitsChanged) {
     _layer.displayedBackgroundColor = [_backgroundColor resolvedColorWithTraitCollection:traits].CGColor;
