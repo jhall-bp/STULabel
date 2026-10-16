@@ -119,16 +119,10 @@ void LabelPrerenderer::deregisterWaitingLabelLayer(LabelLayer &label)
 
 Optional<LabelLayer &> LabelPrerenderer::popLabelFromWaitingSet()
 {
-  LabelLayer *label = label_;
+  LabelLayer *const label = label_;
   if (label) {
-    auto &node = WaitingLabelSetNode::get(*label);
-    STU_DEBUG_ASSERT(node.nextLabel == nil);
-    label_ = node.previousLabel;
-    if (label_) {
-      WaitingLabelSetNode::get(*label_).nextLabel = nil;
-    } else {
-      decrementRefCount(((__bridge id)implicit_cast<void *>(objcObjectStorage)));
-    }
+    STU_DEBUG_ASSERT(WaitingLabelSetNode::get(*label).nextLabel == nullptr);
+    deregisterWaitingLabelLayer(*label);
   }
   return label;
 }
