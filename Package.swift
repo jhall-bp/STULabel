@@ -15,7 +15,9 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/pointfreeco/swift-snapshot-testing",
-      from: "1.19.4",
+      // 1.19.x can read past image buffers when reporting a failed snapshot.
+      // https://github.com/pointfreeco/swift-snapshot-testing/issues/1097
+      exact: "1.18.9",
     )
   ],
   targets: [
