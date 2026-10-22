@@ -201,7 +201,9 @@ void TextFrameLayouter::layoutAndScale(Size<Float64> frameSize,
         updateScaleInfo(scale);
         scaleInfo_ = state.scaleInfo;
         inverselyScaledFrameSize_ = state.inverselyScaledFrameSize;
-        realignCenteredAndRightAlignedLines();
+        if (r.needsRealignment) {
+          realignCenteredAndRightAlignedLines();
+        }
       }
     }
     const CGFloat lowerBoundPlusAccuracy = state.lowerBound + accuracyPlusEps;
@@ -564,8 +566,6 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
 
   TempVector<ScalingPara> paras{freeCapacityInCurrentThreadLocalAllocatorBuffer, paras_.allocator()};
 
-  STU_APPEARS_UNUSED
-  bool multiLineParaHasHyphenation = false;
   for (Int32 i0 = 0, i = 0; i < lines.count(); i0 = i) {
     while (!lines[i++].isFollowedByTerminatorInOriginalString && i < lines.count()) {
       continue;
@@ -581,7 +581,6 @@ auto TextFrameLayouter::estimateScaleFactorNeededToFit(Float64 frameHeight,
       continue;
     const Int32 initialLinesEndIndex = paras_[firstLine.paragraphIndex].initialLinesEndIndex;
     const ShapedString::Paragraph &p = stringParas()[firstLine.paragraphIndex];
-    multiLineParaHasHyphenation |= p.hyphenationFactor > 0;
     Float64 commonHeadIndent = 0;
     CGFloat initialExtraHeadIndent = 0;
     CGFloat initialExtraTailIndent = 0;
