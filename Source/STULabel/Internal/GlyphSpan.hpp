@@ -95,7 +95,6 @@ public:
 };
 
 using StringIndicesArray = OptionallyAllocatedArray<Int>;
-using AdvancesArray = OptionallyAllocatedArray<CGSize>;
 
 /// A non-owning CTRun reference.
 class GlyphRunRef {
@@ -149,11 +148,6 @@ private:
   }
 
   STU_INLINE STU_PURE
-  const CGSize* __nullable advancesPointer() const {
-    return CTRunGetAdvancesPtr(run_);
-  }
-
-  STU_INLINE STU_PURE
   const Int* __nullable stringIndicesPointer() const {
     return CTRunGetStringIndicesPtr(run_);
   }
@@ -172,10 +166,6 @@ class LocalGlyphBoundsCache;
 ///  argument are somewhat dangerous to use in high-level code, because if you pass in a zero-length
 ///  range, the functions will copy all elements from the range's start index to the end of the run,
 ///  potentially overflowing the output buffer. This class protects against that danger.
-///
-/// @note
-///  This class also works around the issue that CTRunGetAdvances may return an aggregate advance
-///  value if one doesn't also ask for the following advance (rdar://38554856).
 ///
 /// @note
 ///  Even const methods of this method are currently NOT thread-safe.
@@ -287,6 +277,8 @@ public:
     return {startIndex_, Count{countOrMinus1_}};
   }
 
+  // Negative advances can make a run's typographic width exceed their sum, particularly for RTL.
+  // Ask Core Text for the bounds instead of summing glyph advances.
   STU_INLINE
   Float64 typographicWidth() const {
     if (const Optional<CFRange> range = ctRunGlyphRange()) {
@@ -403,15 +395,6 @@ public:
     return stringIndicesArray_slowPath(run_, Range{startIndex_, Count{count()}});
   }
 
-  // Note: Don't use advances for determining the typographic width. Use typographicWidth() instead.
-  // An advance 'width' can be negative and a negative advance width that is less than minus the
-  // typographic offset of the glyph within the run may increase the typographic width of the run to
-  // more than the sum of the glyph advance widths, at least for an right-to-left run. (It is not
-  // clear whether this is intended CoreText behaviour.)
-
-  class AdvancesRef;
-  STU_INLINE AdvancesRef advances() const { return {*this}; }
-
   class GlyphsRef {
     const CGGlyph* array_;
     Int count_;
@@ -472,38 +455,10 @@ public:
     }
   };
 
-  class AdvancesRef {
-    const CGSize* array_;
-    Int count_;
-    Int startIndex_;
-    CTRun* run_;
-    Int runCount_;
-  public:
-    /* implicit */ STU_INLINE
-    AdvancesRef(const GlyphSpan& span)
-    : array_{span.run_.advancesPointer()}, count_{span.count()}, startIndex_{span.startIndex_},
-      run_{span.run_.ctRun()}, runCount_{span.run_.count()}
-    {}
-
-    STU_INLINE
-    CGSize operator[](Int index) const {
-      STU_ASSERT(0 <= index && index < count_);
-      if (array_) {
-        return array_[startIndex_ + index];
-      }
-      // CTRunGetAdvances may return an aggregate advance value if we don't also ask for the
-      // following advance (rdar://38554856).
-      CGSize advances[2];
-      CTRunGetAdvances(run_, startIndex_ + Range{index, min(index + 2, runCount_)}, advances);
-      return advances[0];
-    }
-  };
-
 private:
   static GlyphsWithPositions getGlyphsWithPositionsImpl(GlyphRunRef, CFRange);
   static Rect<CGFloat> imageBoundsImpl(GlyphRunRef, CFRange, LocalGlyphBoundsCache&);
   static StringIndicesArray stringIndicesArray_slowPath(GlyphRunRef, CFRange);
-  static AdvancesArray advancesArray_slowPath(GlyphRunRef, Range<Int>);
   static Range<Int> stringRangeImpl(GlyphRunRef, Range<Int> glyphRange);
   static bool copyInnerCaretOffsetsForLigatureGlyphAtIndexImpl(GlyphRunRef, Int index,
                                                                ArrayRef<CGFloat> outOffsets);

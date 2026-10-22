@@ -64,24 +64,6 @@ StringIndicesArray GlyphSpan::stringIndicesArray_slowPath(GlyphRunRef run, CFRan
 }
 
 STU_NO_INLINE
-AdvancesArray GlyphSpan::advancesArray_slowPath(GlyphRunRef run, Range<Int> glyphRange)
-{
-  if (STU_UNLIKELY(glyphRange.isEmpty()))
-    return {};
-  // CTRunGetAdvances may return an aggregate advance value if we don't also ask for the
-  // following advance (rdar://38554856).
-  const Int extraOne = glyphRange.end < run.count();
-  const Int count = glyphRange.count();
-  auto &alloc = ThreadLocalAllocatorRef().get();
-  CGSize *p = alloc.allocate<CGSize>(count + extraOne);
-  CTRunGetAdvances(run.ctRun(), {glyphRange.start, count + extraOne}, p);
-  if (extraOne) {
-    p = alloc.decreaseCapacity(p, count, count + extraOne, count);
-  }
-  return {ArrayRef{p, count}, alloc};
-}
-
-STU_NO_INLINE
 Range<Int> GlyphSpan::stringRangeImpl(const GlyphRunRef run, Range<Int> glyphRange)
 {
   const GlyphSpan runSpan{run};
