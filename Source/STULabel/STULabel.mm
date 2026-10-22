@@ -1339,20 +1339,19 @@ static void clearCurrentLabelTouch(STULabel *self)
       // We don't overwrite the style if it was chosen by the delegate.
       if (overlay.overlayStyle != oldStyle)
         return;
-      overlay.overlayStyle = style;
     } else {
       removeActiveLinkOverlay(self, true);
     }
   }
   if (!style || !_activeLinkOrOverlayLayer)
     return;
-  STUTextLink *link = _activeLinkOrOverlayLayer;
+  STUTextLink *link = activeLink(self);
   if (_activeLinkContentOrigin != _contentBounds.origin) {
     _activeLinkContentOrigin = _contentBounds.origin;
     link = [_layer.links linkMatchingLink:link];
     STU_ASSERT(link != nil);
   }
-  addActiveLinkOverlay(self, style, activeLink(self), _bits.activeLinkOverlayIsHidden);
+  addActiveLinkOverlay(self, style, link, _bits.activeLinkOverlayIsHidden);
   updateActiveLinkOverlayIsHidden(self);
 }
 
