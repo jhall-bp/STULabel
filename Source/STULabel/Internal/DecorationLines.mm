@@ -231,6 +231,39 @@ removeLinePartsNotIntersectingClipRectAndMergeIdenticallyStyledAdjacentUnderline
   }
 }
 
+struct UnderlineMetrics
+{
+  CGFloat minY;
+  CGFloat thickness;
+};
+
+STU_INLINE
+static UnderlineMetrics
+underlineMetrics(const StyledGlyphSpan &span,
+                 const TextStyle &style,
+                 const TextStyle::UnderlineInfo &info,
+                 CTFont *font,
+                 const Optional<DisplayScale> &displayScale,
+                 LocalFontInfoCache &fontInfoCache)
+{
+  CGFloat minY;
+  CGFloat thickness;
+  if (!style.isOverrideStyle() || !(style.styleOverride()->flags & TextFlags::hasUnderline)) {
+    minY = info.originalFontUnderlineMinY(displayScale);
+    thickness = info.originalFontUnderlineThickness;
+  } else {
+    const auto originalFontInfo = fontInfoCache[span.originalFont()];
+    minY = originalFontInfo.underlineMinY(displayScale);
+    thickness = originalFontInfo.underlineThickness;
+  }
+  const CachedFontInfo &fontInfo = fontInfoCache[font];
+  if (!fontInfo.shouldBeIgnoredForDecorationLineThicknessWhenUsedAsFallbackFont) {
+    minY = max(minY, fontInfo.underlineMinY(displayScale));
+    thickness = max(thickness, fontInfo.underlineThickness);
+  }
+  return {.minY = minY, .thickness = thickness};
+}
+
 Underlines Underlines::find(const TextFrameLine &line, DrawingContext &context)
 {
   bool hasShadow = false;
@@ -257,19 +290,10 @@ Underlines Underlines::find(const TextFrameLine &line, DrawingContext &context)
               minY = previous->offsetLLO;
               thickness = previous->thickness;
             } else {
-              if (!style.isOverrideStyle() || (!(context.styleOverride()->flags & TextFlags::hasUnderline))) {
-                minY = info.originalFontUnderlineMinY(context.displayScale());
-                thickness = info.originalFontUnderlineThickness;
-              } else {
-                const auto originalFontInfo = context.fontInfo((__bridge CTFont *)span.originalFont());
-                minY = originalFontInfo.underlineMinY(context.displayScale());
-                thickness = originalFontInfo.underlineThickness;
-              }
-              const CachedFontInfo &fontInfo = context.fontInfo(font);
-              if (!fontInfo.shouldBeIgnoredForDecorationLineThicknessWhenUsedAsFallbackFont) {
-                minY = max(minY, fontInfo.underlineMinY(context.displayScale()));
-                thickness = max(thickness, fontInfo.underlineThickness);
-              }
+              const auto metrics = underlineMetrics(span, style, info, font,
+                                                    context.displayScale(), context.fontInfoCache());
+              minY = metrics.minY;
+              thickness = metrics.thickness;
             }
             const bool isContinuation = previous && previous->x.end == x.start && previous->style == lineStyle;
             CGFloat fullLineXStart = x.start;
@@ -439,19 +463,9 @@ Rect<Float64> Underlines::imageBoundsLLO(const TextFrameLine &line,
                                   minY = previousMinY;
                                   thickness = previousThickness;
                                 } else {
-                                  if (!style.isOverrideStyle() || (!(styleOverride->flags & TextFlags::hasUnderline))) {
-                                    minY = info.originalFontUnderlineMinY(displayScale);
-                                    thickness = info.originalFontUnderlineThickness;
-                                  } else {
-                                    const auto originalFontInfo = fontInfoCache[span.originalFont()];
-                                    minY = originalFontInfo.underlineMinY(displayScale);
-                                    thickness = originalFontInfo.underlineThickness;
-                                  }
-                                  const CachedFontInfo &fontInfo = fontInfoCache[font];
-                                  if (!fontInfo.shouldBeIgnoredForDecorationLineThicknessWhenUsedAsFallbackFont) {
-                                    minY = max(minY, fontInfo.underlineMinY(displayScale));
-                                    thickness = max(thickness, fontInfo.underlineThickness);
-                                  }
+                                  const auto metrics = underlineMetrics(span, style, info, font, displayScale, fontInfoCache);
+                                  minY = metrics.minY;
+                                  thickness = metrics.thickness;
                                 }
                                 if (previousXEnd == x.start && previousUnderlineStyle == underlineStyle) {
                                   previousMinY = max(minY, previousMinY);
