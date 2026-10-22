@@ -1,0 +1,631 @@
+{
+  "date": "2026-10-22",
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "scheme": "STULabel-Release",
+  "destination": {
+    "architecture": "arm64",
+    "displayTitle": "iPhone 18 Pro",
+    "group": "Simulators",
+    "isActive": true,
+    "isEligible": true,
+    "isGenericDevice": false,
+    "isSimulator": true,
+    "osVersion": "27.0",
+    "platformIdentifier": "com.apple.platform.iphonesimulator",
+    "sdkDisplayName": "Simulator - iOS 27.1"
+  },
+  "os": "Version 27.0 (Build 24A434)",
+  "comparison": "Only the existing needsRealignment guard was toggled. Other working-tree changes were retained.",
+  "fixture": "Eight hyphenated, wrapped Latin paragraphs, HelveticaNeue18, minimumScale0.4, unlimited lines, scaleStep0; scaled left/center/right plus existing unscaled multilingual controls. Fixture removed after testing.",
+  "result": "No regression distinguishable from run-to-run noise; no demonstrated speedup.",
+  "limitations": [
+    "Simulator timings, not physical-device measurements.",
+    "Exact guard branch was not confirmed with a breakpoint; 13 layout iterations were observed.",
+    "Initial 1000-iteration calibration exceeded the tool's300-second timeout and was stopped; excluded from all results.",
+    "All four RunSomeTests calls reported incomplete result bundles; complete GetConsoleOutput logs showed each Swift Testing run passed1/1 and exited0."
+  ],
+  "runs": [
+    {
+      "id": "A1",
+      "variant": "baseline",
+      "consoleSession": "Launch Session: STULabelTests, ref: 0, PID: 16062, State: expired",
+      "testPassed": true,
+      "seconds": 38.627
+    },
+    {
+      "id": "B1",
+      "variant": "candidate",
+      "consoleSession": "Launch Session: STULabelTests, ref: 0, PID: 17153, State: expired",
+      "testPassed": true,
+      "seconds": 38.578
+    },
+    {
+      "id": "B2",
+      "variant": "candidate",
+      "consoleSession": "Launch Session: STULabelTests, ref: 0, PID: 17457, State: expired",
+      "testPassed": true,
+      "seconds": 37.552
+    },
+    {
+      "id": "A2",
+      "variant": "baseline",
+      "consoleSession": "Launch Session: STULabelTests, ref: 0, PID: 17673, State: expired",
+      "testPassed": true,
+      "seconds": 37.42
+    }
+  ],
+  "workloads": [
+    {
+      "workload": "ScaledLeft",
+      "width": 180,
+      "height": 1082,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 56000,
+      "scaleChecksum": 795.10498046875,
+      "layoutIterations": 13,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12597202.5,
+            12680144.59,
+            12546656.25,
+            12759872.92,
+            12783863.33,
+            12690921.25,
+            12659771.25,
+            12719299.58,
+            12782941.67
+          ],
+          "medianNS": 12690921.25
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12543251.67,
+            12719909.17,
+            13846336.67,
+            12861735.42,
+            12693537.08,
+            12631640,
+            12738116.25,
+            12618861.67,
+            12625282.92
+          ],
+          "medianNS": 12693537.08
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12701502.92,
+            12238350,
+            12307508.75,
+            12364154.16,
+            12430573.75,
+            12222617.91,
+            12743696.25,
+            12285732.5,
+            12249706.25
+          ],
+          "medianNS": 12307508.75
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12302707.91,
+            12236449.58,
+            12683097.5,
+            12264381.25,
+            12299184.17,
+            12267366.25,
+            12410969.59,
+            12382277.5,
+            12317061.67
+          ],
+          "medianNS": 12302707.91
+        }
+      ],
+      "pooledBaselineMedianNS": 12571929.375,
+      "pooledCandidateMedianNS": 12622072.295,
+      "pooledMedianPercentChange": 0.39884824758649184
+    },
+    {
+      "workload": "ScaledCenter",
+      "width": 180,
+      "height": 1082,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 56000,
+      "scaleChecksum": 795.10498046875,
+      "layoutIterations": 13,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12647590.41,
+            12590689.59,
+            12616019.58,
+            12596708.34,
+            12606017.08,
+            12619618.33,
+            12607838.33,
+            12716611.66,
+            13438131.25
+          ],
+          "medianNS": 12616019.58
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12652586.25,
+            12572646.25,
+            12742238.34,
+            12631238.75,
+            12565449.17,
+            12623286.25,
+            12608476.25,
+            12671252.5,
+            12679528.75
+          ],
+          "medianNS": 12631238.75
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12275340,
+            12588117.5,
+            12300229.17,
+            12357500.42,
+            12392726.66,
+            12560202.09,
+            12439462.92,
+            12255930.42,
+            12311092.5
+          ],
+          "medianNS": 12357500.42
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12424129.17,
+            12381477.5,
+            12440472.5,
+            12283312.5,
+            12372892.09,
+            12361811.67,
+            12295713.75,
+            12383767.92,
+            12304596.67
+          ],
+          "medianNS": 12372892.09
+        }
+      ],
+      "pooledBaselineMedianNS": 12515581.045,
+      "pooledCandidateMedianNS": 12569047.71,
+      "pooledMedianPercentChange": 0.42720082118250513
+    },
+    {
+      "workload": "ScaledRight",
+      "width": 180,
+      "height": 1082,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 56000,
+      "scaleChecksum": 795.10498046875,
+      "layoutIterations": 13,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12605719.59,
+            12725549.17,
+            12569864.17,
+            12576528.34,
+            12667225.42,
+            12696495.83,
+            12753435,
+            12612059.58,
+            14135094.17
+          ],
+          "medianNS": 12667225.42
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12750532.92,
+            12755477.5,
+            12827045.84,
+            12736466.25,
+            12688381.66,
+            12710633.33,
+            12886165.42,
+            12786069.17,
+            12728243.75
+          ],
+          "medianNS": 12750532.92
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            12572442.92,
+            12246277.5,
+            12404184.58,
+            12312472.09,
+            12260021.25,
+            12509136.25,
+            12344581.25,
+            12388157.5,
+            12338783.34
+          ],
+          "medianNS": 12344581.25
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            12327112.92,
+            12358699.59,
+            12344199.59,
+            12333372.92,
+            12530297.5,
+            12534475.42,
+            12447080,
+            12193206.67,
+            12412533.75
+          ],
+          "medianNS": 12358699.59
+        }
+      ],
+      "pooledBaselineMedianNS": 12552169.795,
+      "pooledCandidateMedianNS": 12630412.29,
+      "pooledMedianPercentChange": 0.6233384050553958
+    },
+    {
+      "workload": "UnscaledLatin",
+      "width": 120,
+      "height": 10000,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 24000,
+      "scaleChecksum": 1000,
+      "layoutIterations": 1,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            44507.5,
+            38872.91,
+            41749.59,
+            40016.25,
+            38952.92,
+            39938.33,
+            40871.25,
+            37916.25,
+            42347.92
+          ],
+          "medianNS": 40016.25
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            40040.41,
+            38115.42,
+            38523.75,
+            39544.17,
+            39290,
+            39167.92,
+            38914.58,
+            37903.75,
+            39562.09
+          ],
+          "medianNS": 39167.92
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            35185.42,
+            35915,
+            36294.16,
+            36368.75,
+            36007.09,
+            34467.5,
+            35953.33,
+            36847.09,
+            36542.91
+          ],
+          "medianNS": 36007.09
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            37504.58,
+            37933.33,
+            36663.75,
+            36835.84,
+            61142.09,
+            37421.67,
+            37962.92,
+            36116.25,
+            38330.42
+          ],
+          "medianNS": 37504.58
+        }
+      ],
+      "pooledBaselineMedianNS": 38601.665,
+      "pooledCandidateMedianNS": 37375.42,
+      "pooledMedianPercentChange": -3.1766634936601923
+    },
+    {
+      "workload": "UnscaledArabic",
+      "width": 120,
+      "height": 10000,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 16000,
+      "scaleChecksum": 1000,
+      "layoutIterations": 1,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            76374.59,
+            78504.58,
+            77516.66,
+            78420.84,
+            78932.09,
+            80630.42,
+            78495,
+            77577.09,
+            86573.75
+          ],
+          "medianNS": 78495
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            80435.41,
+            77803.33,
+            78194.58,
+            79009.16,
+            81504.16,
+            78904.16,
+            79246.25,
+            80216.67,
+            80652.92
+          ],
+          "medianNS": 79246.25
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            74349.16,
+            77332.08,
+            75867.91,
+            76930.83,
+            76670.42,
+            76669.16,
+            78075.41,
+            77233.75,
+            77257.91
+          ],
+          "medianNS": 76930.83
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            75875.42,
+            76271.25,
+            76867.5,
+            75933.33,
+            78096.67,
+            77293.33,
+            78747.91,
+            75770,
+            76380
+          ],
+          "medianNS": 76380
+        }
+      ],
+      "pooledBaselineMedianNS": 77546.875,
+      "pooledCandidateMedianNS": 77939.37,
+      "pooledMedianPercentChange": 0.5061390288132017
+    },
+    {
+      "workload": "UnscaledEmoji",
+      "width": 120,
+      "height": 10000,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 12000,
+      "scaleChecksum": 1000,
+      "layoutIterations": 1,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            17425.42,
+            17832.91,
+            18078.33,
+            18673.75,
+            17331.66,
+            20247.92,
+            18143.75,
+            17672.92,
+            16947.08
+          ],
+          "medianNS": 17832.91
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            17522.5,
+            17263.33,
+            17840,
+            20701.66,
+            18997.08,
+            18345,
+            17475.41,
+            17795.83,
+            17912.5
+          ],
+          "medianNS": 17840
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            16916.67,
+            17156.25,
+            17247.91,
+            17195,
+            17170.42,
+            17755.84,
+            17374.17,
+            17360.84,
+            17218.33
+          ],
+          "medianNS": 17218.33
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            16839.17,
+            17008.75,
+            17325.42,
+            16988.75,
+            17665,
+            20151.25,
+            17797.92,
+            16796.25,
+            17023.33
+          ],
+          "medianNS": 17023.33
+        }
+      ],
+      "pooledBaselineMedianNS": 17545.21,
+      "pooledCandidateMedianNS": 17424.79,
+      "pooledMedianPercentChange": -0.6863411723199597
+    },
+    {
+      "workload": "UnscaledIndic",
+      "width": 120,
+      "height": 10000,
+      "iterationsPerSample": 100,
+      "warmupIterations": 100,
+      "lineCountChecksum": 12000,
+      "scaleChecksum": 1000,
+      "layoutIterations": 1,
+      "frameSignatureEqualAcrossRuns": true,
+      "checksumsEqualAcrossRuns": true,
+      "entries": [
+        {
+          "run": "A1",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            25155,
+            25581.67,
+            24680,
+            25958.75,
+            24715.83,
+            26167.5,
+            25065.42,
+            25332.5,
+            24400.83
+          ],
+          "medianNS": 25155
+        },
+        {
+          "run": "B1",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            23648.75,
+            24830,
+            24898.34,
+            26453.75,
+            23748.33,
+            26373.75,
+            25440.83,
+            24787.08,
+            26137.91
+          ],
+          "medianNS": 24898.34
+        },
+        {
+          "run": "B2",
+          "variant": "candidate",
+          "nanosecondsPerLayout": [
+            24193.34,
+            24432.92,
+            24495.83,
+            27881.25,
+            24508.75,
+            24185.83,
+            24340,
+            24364.16,
+            24365
+          ],
+          "medianNS": 24365
+        },
+        {
+          "run": "A2",
+          "variant": "baseline",
+          "nanosecondsPerLayout": [
+            24080.41,
+            24489.59,
+            24070.83,
+            25109.58,
+            24491.66,
+            27781.66,
+            24165.84,
+            23707.09,
+            24119.17
+          ],
+          "medianNS": 24165.84
+        }
+      ],
+      "pooledBaselineMedianNS": 24697.915,
+      "pooledCandidateMedianNS": 24502.29,
+      "pooledMedianPercentChange": -0.7920709096294165
+    }
+  ]
+}
