@@ -185,7 +185,7 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame *__unsafe_u
 
   // Not using grayscale pixel formats when synchronously drawing into a CALayer context seems
   // to improve performance.
-  bool isGrayscale =
+  const bool isGrayscale =
       mode != LabelRenderMode::drawInCAContext && !params.neverUseGrayscaleBitmapFormat &&
       !(frameFlags & STUTextFrameMayNotBeGrayscale) &&
       (!params.drawingBlock || (params.drawingBlockColorOptions & STULabelDrawingBlockOnlyUsesTextColors));
@@ -204,14 +204,9 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame *__unsafe_u
   }
 
   if (shouldDrawBackgroundColor && isGrayscale && (params.backgroundColorFlags() & ColorFlags::isNotGray)) {
-    if (mode == LabelRenderMode::drawInCAContext) {
-      isGrayscale = false;
-    } else {
-      shouldDrawBackgroundColor = false;
-    }
+    shouldDrawBackgroundColor = false;
   }
 
-  const bool isOpaque = shouldDrawBackgroundColor && (params.backgroundColorFlags() & ColorFlags::isOpaque);
   const auto imageFormat = isGrayscale         ? STUPredefinedCGImageFormatGrayscale
                            : !useExtendedColor ? STUPredefinedCGImageFormatRGB
                                                : STUPredefinedCGImageFormatExtendedRGB;
@@ -219,7 +214,7 @@ LabelTextFrameRenderInfo labelTextFrameRenderInfo(const STUTextFrame *__unsafe_u
           .mode = mode,
           .imageFormat = imageFormat,
           .shouldDrawBackgroundColor = shouldDrawBackgroundColor,
-          .isOpaque = isOpaque,
+          .isOpaque = shouldDrawBackgroundColor,
           .mayBeClipped = mayBeClipped};
 }
 
