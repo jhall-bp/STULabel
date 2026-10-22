@@ -54,7 +54,7 @@ static void initCommon(STUTextAttachment *__unsafe_unretained self)
   STU_STATIC_CONST_ONCE(
       DrawMethod,
       trivialDrawMethod,
-      (DrawMethod)class_getInstanceMethod(STUTextAttachment.class, @selector(drawInContext:imageBounds:)));
+      (DrawMethod)class_getMethodImplementation(STUTextAttachment.class, @selector(drawInContext:imageBounds:)));
   if (self->_drawMethod == trivialDrawMethod) {
     self->_drawMethod = nullptr;
   }
