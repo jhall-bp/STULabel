@@ -905,6 +905,24 @@ private:
     textFrameOrigin_ = textFrameOriginInLayer(textFrameInfo_, params_);
   }
 
+  void createLinks(STUTextFrame *__unsafe_unretained frame)
+  {
+    STU_ASSERT(frame != nil);
+    const TextFrame &textFrame = textFrameRef(frame);
+    links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
+        textFrame, textFrameOrigin_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
+  }
+
+  void releaseTextFrames()
+  {
+    // Preserve the geometry that links() needs after the layout objects are released.
+    if ((textFrameInfo_.flags & STUTextFrameHasLink) && !links_) {
+      createLinks(textFrame_);
+    }
+    textFrame_ = nil;
+    measuringTextFrame_ = nil;
+  }
+
 public:
   const LabelTextFrameInfo &currentTextFrameInfo()
   {
@@ -937,10 +955,7 @@ public:
       return emptySTUTextLinkArray();
     }
     if (links_ == nil) {
-      STU_ASSERT(textFrame_ != nil); // We never clear the frame without setting links_ if necessary.
-      const TextFrame &textFrame = textFrameRef(textFrame_);
-      links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
-          textFrameRef(textFrame_), textFrameOrigin_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
+      createLinks(textFrame_);
     } else if (textFrameOrigin_ != STUTextLinkArrayGetTextFrameOrigin(links_)) {
       links_ = STUTextLinkArrayCopyWithShiftedTextFrameOrigin(links_, textFrameOrigin_);
     }
@@ -1038,8 +1053,9 @@ public:
   {
     params_.releasesTextFrameAfterRendering = releasesTextFrameAfterRendering;
     params_.releasesTextFrameAfterRenderingWasExplicitlySet = true;
-    if (releasesTextFrameAfterRendering && textFrame_ && !isInvalidated_ && hasContent_) {
-      textFrame_ = nil;
+    if (releasesTextFrameAfterRendering && textFrame_ && !isInvalidated_ && hasContent_ &&
+        renderMode_ != LabelRenderMode::tiledSublayer) {
+      releaseTextFrames();
     }
   }
 
@@ -1308,16 +1324,8 @@ private:
         params_.freezeDrawingOptions();
       }
       setContents(renderInfo, nil);
-      const bool releaseFrame =
-          renderInfo.mode != LabelRenderMode::tiledSublayer && params_.releasesTextFrameAfterRendering;
-      if (releaseFrame) {
-        if ((textFrameInfo_.flags & STUTextFrameHasLink) && !links_) {
-          const TextFrame &textFrame = textFrameRef(textFrame_);
-          links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
-              textFrame, textFrameOrigin_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
-        }
-        textFrame_ = nil;
-        measuringTextFrame_ = nil;
+      if (params_.releasesTextFrameAfterRendering && renderInfo.mode != LabelRenderMode::tiledSublayer) {
+        releaseTextFrames();
       }
       if (params_.releasesShapedStringAfterRendering) {
         shapedString_ = nil;
@@ -2028,9 +2036,7 @@ void LabelRenderTask::assignResultTo(LabelLayer &label)
   if (!keepTextFrame) {
     if ((textFrameInfo_.flags & STUTextFrameHasLink) && !label.links_) {
       if (STUTextFrame *__unsafe_unretained const tf = textFrame_ ?: label.textFrame_) {
-        const TextFrame &textFrame = textFrameRef(tf);
-        label.links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
-            textFrame, label.textFrameOrigin_, TextFrameScaleAndDisplayScale{textFrame, label.params_.displayScale()});
+        label.createLinks(tf);
       }
     }
     if (label.textFrame_) {

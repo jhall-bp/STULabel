@@ -93,4 +93,63 @@ struct RenderTaskLifecycleTests {
     try #require(finished == .success)
     #expect(gate.observedCancellation)
   }
+  enum DisplayMode: String, CaseIterable, Sendable {
+    case synchronous, asynchronous, tiled
+  }
+
+  @Test(arguments: DisplayMode.allCases, [false, true])
+  func releasedFramesPreserveUncachedLinks(mode: DisplayMode, releaseAfterDisplay: Bool) async throws {
+    let layer = STULabelLayer()
+    let tiled = mode == .tiled
+    layer.bounds = tiled ? CGRect(x: 0, y: 0, width: 200, height: 2400)
+                         : CGRect(x: 0, y: 0, width: 240, height: 80)
+    layer.contentsScale = 3
+    layer.maximumNumberOfLines = 0
+    layer.verticalAlignment = .center
+    layer.attributedText = NSAttributedString(
+      string: tiled ? String(repeating: "A line of text\n", count: 100)
+                    : "A link survives frame release",
+      attributes: [.font: UIFont.systemFont(ofSize: 20),
+                   .link: URL(string: "https://example.com")!])
+    layer.releasesTextFrameAfterRendering = !releaseAfterDisplay
+    let delegate = RenderDisplayDelegate()
+    if mode == .asynchronous {
+      layer.labelLayerDelegate = delegate
+      layer.displaysAsynchronously = true
+    } else if tiled {
+      layer.drawingBlock = { $0.draw() }
+      layer.drawingBlockImageBounds = .viewBounds
+    }
+    weak var frame: STUTextFrame?
+    autoreleasepool {
+      frame = layer.__textFrame
+      layer.display()
+    }
+    if mode == .asynchronous {
+      for _ in 0..<500 where delegate.displayCount == 0 {
+        try await Task.sleep(for: .milliseconds(10))
+      }
+      try #require(delegate.displayCount == 1)
+    }
+    if releaseAfterDisplay {
+      layer.releasesTextFrameAfterRendering = true
+    }
+    #expect((frame != nil) == tiled)
+    try #require(layer.links.count == 1)
+    let bounds = layer.links[0].bounds
+    #expect(!bounds.isEmpty)
+    if tiled {
+      // Deferred tile drawing still needs the original layout.
+      #expect(layer.__textFrame === frame)
+    } else {
+      // The preserved geometry must still follow a later origin-only change.
+      let origin = layer.__textFrameOrigin
+      layer.bounds.size.height += 40
+      let newOrigin = layer.__textFrameOrigin
+      #expect(layer.links[0].bounds == bounds.offsetBy(dx: newOrigin.x - origin.x,
+                                                     dy: newOrigin.y - origin.y))
+    }
+  }
+
+
 }
