@@ -1,0 +1,673 @@
+{
+  "date": "2026-11-07",
+  "baselineCommit": "a1660c4",
+  "scope": "Review issues 2 (frame release and link lifetime) and 5 (cancellation during asynchronous layout)",
+  "environment": {
+    "xcode": "27.2.0",
+    "scheme": "STULabel-Release",
+    "testPlan": "STULabel-Release",
+    "configuration": "Release",
+    "destination": "iPhone 18 Pro (27.0)",
+    "sdk": "iOS Simulator 27.2",
+    "architecture": "arm64",
+    "os": "27.0 (24A434)",
+    "codeCoverage": false,
+    "thermalState": "nominal in every recorded rendering run"
+  },
+  "implementation": {
+    "sourceVerifiedAgainstCapturedOriginalAndFinal": true,
+    "files": [
+      "Source/STULabel/Internal/LabelRenderTask.hpp",
+      "Source/STULabel/Internal/LabelRenderTask.mm",
+      "Source/STULabel/Internal/LabelPrerenderer.mm",
+      "Source/STULabel/STULabelLayer.mm"
+    ],
+    "changes": [
+      "Preserve link geometry before releasing either cached text frame; keep the layout required by deferred tiled drawing.",
+      "Share link creation; share setter/synchronous frame release while preserving the existing asynchronous result-transfer ownership checks.",
+      "Pass the task cancellation flag into text-frame creation and publish layout only when a frame was produced.",
+      "Centralize whole-task cancellation; retain the distinct rendering-only flag for layout reuse.",
+      "Remove unused non-prerender release-preference overrides and the redundant link-precomputation branch."
+    ]
+  },
+  "method": {
+    "finalProtocol": "Both variants use identical Swift Testing benchmark sources and the same Release destination; every benchmark runs alone.",
+    "comparisonOrder": [
+      "handoff baseline 1",
+      "handoff baseline 2",
+      "render baseline 1",
+      "render baseline 2",
+      "render final 1",
+      "render final 2",
+      "handoff final 1",
+      "handoff final 2"
+    ],
+    "aggregate": "Median of the two launch medians. Each rendering/handoff launch has nine samples. All samples from these final-protocol launches are retained.",
+    "normalIterationsPerSample": 500,
+    "normalWarmupIterations": 100,
+    "handoffIterationsPerSample": 100000,
+    "handoffWarmupIterations": 500000,
+    "handoffFixture": "One reused layer, alternating two matching-trait prerendered results. Hold their CGImages alive to keep bitmap data resident. Flush Core Animation every 1000 assignments outside timing.",
+    "clocks": "DispatchTime uptime for elapsed time and CLOCK_THREAD_CPUTIME_ID for CPU time; asynchronous worker clocks surround the worker function.",
+    "cancellationWarmupIterations": 2,
+    "cancellationSamplesPerLaunch": 15,
+    "cancellationEndpoint": "Pause the first hyphenation callback, replace text and clear the finder, then measure from resuming the worker until the old task releases its finder.",
+    "control": "display/plain/retain does not execute the changed frame-release logic.",
+    "supersededExploration": [
+      "Earlier measurements of an all-path frame-release helper were superseded by the final implementation, which preserves asynchronous retention/cleanup ordering.",
+      "The original handoff fixture used mismatched traits and exercised relayout; it is now correctly named relayout/mismatched-traits/links.",
+      "Repeated handoff without retaining cached images could hit an existing purged-image assertion in both variants; those attempts are not comparable handoff measurements.",
+      "Large elapsed-time variation prompted fresh baseline/final runs with both CPU and elapsed clocks. Earlier wall-only launches are not used in this final comparison."
+    ],
+    "limits": "Simulator measurements with warm caches and the recorded workloads. Two launches per variant do not prove strict zero overhead on every device; small changes must be compared with control and launch variation."
+  },
+  "comparison": [
+    {
+      "workload": "display/plain/retain",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [68496,70549.5],
+        "afterRunMedians": [70958.666,69654],
+        "before": 69522.75,
+        "after": 70306.333,
+        "changePercent": 1.1270886148778692
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [68494.584,70485.25],
+        "afterRunMedians": [69959.834,69497.334],
+        "before": 69489.917,
+        "after": 69728.584,
+        "changePercent": 0.34345558363524376
+      }
+    },
+    {
+      "workload": "display/plain/release",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [69028.25,70414.832],
+        "afterRunMedians": [69673.666,68820.584],
+        "before": 69721.541,
+        "after": 69247.125,
+        "changePercent": -0.6804439391263517
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [69026.418,70375.75],
+        "afterRunMedians": [69520.834,68817.834],
+        "before": 69701.084,
+        "after": 69169.334,
+        "changePercent": -0.7629006171553931
+      }
+    },
+    {
+      "workload": "display/links/release",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [68388,70860.084],
+        "afterRunMedians": [70374.584,69394.918],
+        "before": 69624.042,
+        "after": 69884.751,
+        "changePercent": 0.3744525490203543
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [68365.416,70820.916],
+        "afterRunMedians": [70154.582,69316.5],
+        "before": 69593.166,
+        "after": 69735.541,
+        "changePercent": 0.20458186943241863
+      }
+    },
+    {
+      "workload": "relayout/mismatched-traits/links",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [18781.75,19788.666],
+        "afterRunMedians": [19717.584,19395.082],
+        "before": 19285.208,
+        "after": 19556.333,
+        "changePercent": 1.4058702400306045
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [18781,19787.666],
+        "afterRunMedians": [19685.082,19372],
+        "before": 19284.333,
+        "after": 19528.540999999997,
+        "changePercent": 1.2663544028201468
+      }
+    },
+    {
+      "workload": "async-layout-and-render/links",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [67756.672,69514.75],
+        "afterRunMedians": [69154.42,68675.5],
+        "before": 68635.71100000001,
+        "after": 68914.95999999999,
+        "changePercent": 0.4068567163236336
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [67333.07,69188.516],
+        "afterRunMedians": [68650.102,68291.5],
+        "before": 68260.793,
+        "after": 68470.801,
+        "changePercent": 0.3076553769306489
+      }
+    },
+    {
+      "workload": "cancelled-layout",
+      "nanosecondsToReleaseFinder": {
+        "beforeRunMedians": [91865292,93971958],
+        "afterRunMedians": [450417,455042],
+        "before": 92918625,
+        "after": 452729.5,
+        "changePercent": -99.51276775780958
+      }
+    },
+    {
+      "workload": "handoff/matching-traits/links/release",
+      "nanosecondsPerOperation": {
+        "beforeRunMedians": [734.30629,753.72495],
+        "afterRunMedians": [728.85794,711.32793],
+        "before": 744.01562,
+        "after": 720.092935,
+        "changePercent": -3.2153471455343863
+      },
+      "threadCpuNanosecondsPerOperation": {
+        "beforeRunMedians": [733.44118,752.78041],
+        "afterRunMedians": [727.16875,710.88663],
+        "before": 743.110795,
+        "after": 719.02769,
+        "changePercent": -3.24084983854932
+      }
+    }
+  ],
+  "cancellation": {
+    "beforeHyphenationCalls": 1999,
+    "afterHyphenationCalls": 1,
+    "extraCallbacksAfterCancellationBefore": 1998,
+    "extraCallbacksAfterCancellationAfter": 0
+  },
+  "runs": [
+    {
+      "name": "render-before-1",
+      "variant": "baseline",
+      "measurements": [
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [69533.918,66836.418,68496,69609.918,68867.332,67633.082,68978.834,66310.916,66911.918],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [69532.5,66815,68494.584,69608.5,68845.916,67631.832,68844.418,66180.25,66909.75],
+          "warmupIterations": 100,
+          "workload": "display/plain/retain"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [69766.084,67293.584,70120.668,69909.666,69028.25,67469,71085.834,66685.834,66077.332],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [69764.25,67292.416,69885.166,69891.25,69026.418,67466.584,70805.5,66563.668,66054.5],
+          "warmupIterations": 100,
+          "workload": "display/plain/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [68388,67907.5,68678.834,70051.334,68116.75,69526.084,71273.666,68066,67165.916],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [68365.416,67881.832,68654.334,70049.918,68079.25,69351.5,71089.666,67946.584,67164.084],
+          "warmupIterations": 100,
+          "workload": "display/links/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [19021.75,18847,18781.75,19468.666,18769.834,18729,18532.832,18961.334,18749.75],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [19020.834,18846.082,18781,19468,18769.084,18728.334,18532.084,18872.916,18749.334],
+          "warmupIterations": 100,
+          "workload": "relayout/mismatched-traits/links"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [65958.848,67107.844,67466.528,69633.668,68517.6,70331.83,69116.77,67756.672,66756.052],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [65676.338,66808.288,67180.59,69306.01,68255.804,69810.582,68741.08,67333.07,66492.348],
+          "warmupIterations": 100,
+          "workload": "async-layout-and-render/links"
+        },
+        {
+          "hyphenationCalls": [1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999],
+          "nanosecondsToReleaseFinder": [91424625,91257083,91315834,91865292,91611000,91550750,91568208,91906542,91600250,93471459,92965208,93447750,93283875,94822625,93681375],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "wordCount": 500,
+          "workload": "cancelled-layout"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-04-20+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-04-20-+1100.xcresult"
+      }
+    },
+    {
+      "name": "render-before-2",
+      "variant": "baseline",
+      "measurements": [
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [71235.666,70833.584,70100.834,70811.668,70549.5,71376.416,68970.5,69002.334,69753.416],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [70893.084,70759.332,70078.75,70762.25,70485.25,71351.584,68895.25,68957,69751.916],
+          "warmupIterations": 100,
+          "workload": "display/plain/retain"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [72106.918,70414.832,69439.832,72066.584,70787.334,71616.666,69440.5,68938.75,69887],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [71709.75,70375.75,69407.834,72003.334,70768.916,71511.334,69404.834,68899.75,69885.5],
+          "warmupIterations": 100,
+          "workload": "display/plain/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [71335.166,70062.584,71518.082,70860.084,70891,71327.916,70735.832,69758.834,70004.832],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [71333.25,70059.916,71441.25,70858.166,70820.916,71316.332,70690.832,69678,70002.666],
+          "warmupIterations": 100,
+          "workload": "display/links/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [19788.666,19624.666,20390.332,20357.916,19633.668,20275.666,20199.084,19279.75,19430.168],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [19787.666,19623.834,20388.584,20310.5,19632.25,20243,20164.332,19279,19429.334],
+          "warmupIterations": 100,
+          "workload": "relayout/mismatched-traits/links"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [71498.364,70081.984,69687.096,69351.148,69514.75,69757.732,69150.644,68868.394,68269.428],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [71154.864,69768.318,69314.18,69080.068,69188.516,69479.094,68890.002,68548.324,68020.152],
+          "warmupIterations": 100,
+          "workload": "async-layout-and-render/links"
+        },
+        {
+          "hyphenationCalls": [1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999],
+          "nanosecondsToReleaseFinder": [94013542,93650667,93914542,94530917,93971958,93691750,93804792,92960334,92672041,94183458,94574000,94552709,93566000,94508084,95636625],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "wordCount": 500,
+          "workload": "cancelled-layout"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-05-11+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-05-11-+1100.xcresult"
+      }
+    },
+    {
+      "name": "handoff-before-1",
+      "variant": "baseline",
+      "measurements": [
+        {
+          "checksum": 1400000,
+          "fixture": "reused layer, alternating resident matching-trait results; flush every 1000 handoffs outside timing",
+          "iterationsPerSample": 100000,
+          "nanosecondsPerOperation": [734.59702,742.5287,748.76335,739.2221,734.30629,729.66538,720.38998,728.6225,731.9783],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [733.76621,739.55664,745.42085,737.15878,733.44118,728.90836,719.03796,727.16539,730.76494],
+          "warmupIterations": 500000,
+          "workload": "handoff/matching-traits/links/release"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-02-32+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-02-32-+1100.xcresult"
+      }
+    },
+    {
+      "name": "handoff-before-2",
+      "variant": "baseline",
+      "measurements": [
+        {
+          "checksum": 1400000,
+          "fixture": "reused layer, alternating resident matching-trait results; flush every 1000 handoffs outside timing",
+          "iterationsPerSample": 100000,
+          "nanosecondsPerOperation": [735.76381,731.56209,742.69635,757.82459,751.67288,753.72495,760.42788,755.22166,760.23086],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [734.15414,730.26331,740.71213,752.99712,747.77085,752.78041,759.69797,754.05578,759.73368],
+          "warmupIterations": 500000,
+          "workload": "handoff/matching-traits/links/release"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-03-11+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-03-11-+1100.xcresult"
+      }
+    },
+    {
+      "name": "render-after-1",
+      "variant": "final",
+      "measurements": [
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [70958.666,71044.584,69667.584,71787.666,69600.168,71077.084,70980.582,68370.166,69725.166],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [69959.834,70625.418,69320.668,71339.334,69492.918,70901.918,70948.168,68309.668,69685.75],
+          "warmupIterations": 100,
+          "workload": "display/plain/retain"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [70407.416,70337.25,69798,69673.666,70245.5,69550.082,69649.25,69553.334,69277.832],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [70211.832,70224.082,69614.5,69402.168,69935.084,69494.75,69520.834,69470.084,69260.416],
+          "warmupIterations": 100,
+          "workload": "display/plain/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [70534.418,71583.418,70227.168,68682.416,71187.666,72649.5,70180.666,70374.584,68961.332],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [70154.582,71353.5,70076.666,68533.168,71090.084,72460.832,70043.668,70336.166,68928.416],
+          "warmupIterations": 100,
+          "workload": "display/links/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [19328.25,20517.416,20476.75,20207.666,19826.75,19717.584,19433.584,19637.832,19268.332],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [19300.418,20432.166,20428.084,20153.25,19807.334,19685.082,19415.834,19593,19244.918],
+          "warmupIterations": 100,
+          "workload": "relayout/mismatched-traits/links"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [70536.33,69154.42,67699.75,69267.096,67753.514,70291.766,70193.482,68508.824,68591.09],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [70233.576,68650.102,67247.172,68834.442,67420.678,69889.932,69831.26,68218.064,68259.588],
+          "warmupIterations": 100,
+          "workload": "async-layout-and-render/links"
+        },
+        {
+          "hyphenationCalls": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+          "nanosecondsToReleaseFinder": [446875,487375,451625,435375,440334,450417,444750,450334,465375,440625,439459,468959,488042,456041,468583],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "wordCount": 500,
+          "workload": "cancelled-layout"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-07-26+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-07-25-+1100.xcresult"
+      }
+    },
+    {
+      "name": "render-after-2",
+      "variant": "final",
+      "measurements": [
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [67068.168,69724.584,69654,71426.75,69713.416,69975.834,69654,66792.334,69164.332],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [67049.832,69358.416,69497.334,71245.916,69626.5,69973.334,69630.084,66747.584,69125.916],
+          "warmupIterations": 100,
+          "workload": "display/plain/retain"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [68820.584,68234.166,70388.166,73526.166,69971.75,69469.918,68192,68158.25,68741.166],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [68817.834,68178.916,70008.668,73249.084,69909.25,69452.834,68151.834,68116.584,68719],
+          "warmupIterations": 100,
+          "workload": "display/plain/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [67343.332,69598.5,72058.584,71765.168,70839.168,69301.666,68077.584,69332.332,69394.918],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [67306.5,69548.334,71932.916,71295.666,70828.25,69284.418,68013.832,69316.5,69270.666],
+          "warmupIterations": 100,
+          "workload": "display/links/release"
+        },
+        {
+          "checksum": 32200,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [19293.334,18643.416,19576,19307,19395.082,20097.75,19457.584,19115.416,19873.25],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [19291.25,18623.082,19574.166,19289.082,19372,19952.918,19437.168,19083.334,19871.75],
+          "warmupIterations": 100,
+          "workload": "relayout/mismatched-traits/links"
+        },
+        {
+          "checksum": 27600,
+          "iterationsPerSample": 500,
+          "nanosecondsPerOperation": [68378.074,69079.834,67214.85,71498.322,70392.246,70962.16,68238.6,65319.746,68675.5],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [67987.988,68688.756,66842.974,71128.802,69999.082,70446.908,67855.43,64944.668,68291.5],
+          "warmupIterations": 100,
+          "workload": "async-layout-and-render/links"
+        },
+        {
+          "hyphenationCalls": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+          "nanosecondsToReleaseFinder": [461959,448000,443000,463791,435500,465792,455042,464208,466833,436292,474750,452334,450250,450833,468208],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "wordCount": 500,
+          "workload": "cancelled-layout"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-08-10+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-08-09-+1100.xcresult"
+      }
+    },
+    {
+      "name": "handoff-after-1",
+      "variant": "final",
+      "measurements": [
+        {
+          "checksum": 1400000,
+          "fixture": "reused layer, alternating resident matching-trait results; flush every 1000 handoffs outside timing",
+          "iterationsPerSample": 100000,
+          "nanosecondsPerOperation": [729.67045,725.78077,728.85794,741.81992,723.63672,730.56168,737.67786,711.49408,727.58211],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [727.30209,725.2408,728.03288,740.90327,722.94582,729.19875,726.91415,711.0384,727.16875],
+          "warmupIterations": 500000,
+          "workload": "handoff/matching-traits/links/release"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-08-54+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-08-54-+1100.xcresult"
+      }
+    },
+    {
+      "name": "handoff-after-2",
+      "variant": "final",
+      "measurements": [
+        {
+          "checksum": 1400000,
+          "fixture": "reused layer, alternating resident matching-trait results; flush every 1000 handoffs outside timing",
+          "iterationsPerSample": 100000,
+          "nanosecondsPerOperation": [710.01171,708.00126,711.97459,723.77628,722.9,704.39755,699.38582,711.32793,712.31206],
+          "os": "Version 27.0 (Build 24A434)",
+          "thermalStateAtEnd": 0,
+          "thermalStateAtStart": 0,
+          "threadCpuNanosecondsPerOperation": [709.27503,707.64793,711.1029,722.00249,722.4408,703.99463,699.05625,710.88663,711.59877],
+          "warmupIterations": 500000,
+          "workload": "handoff/matching-traits/links/release"
+        }
+      ],
+      "result": {
+        "schemeName": "STULabel-Release",
+        "counts": {
+          "expectedFailures": 0,
+          "failed": 0,
+          "notRun": 0,
+          "passed": 1,
+          "skipped": 0,
+          "total": 1
+        },
+        "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-09-47+11-00.txt",
+        "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-09-47-+1100.xcresult"
+      }
+    }
+  ],
+  "validation": {
+    "releaseLifecycle": {
+      "schemeName": "STULabel-Release",
+      "counts": {
+        "expectedFailures": 0,
+        "failed": 0,
+        "notRun": 0,
+        "passed": 14,
+        "skipped": 0,
+        "total": 14
+      },
+      "fullSummaryPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/3C124F72-BE84-4913-A50F-01BAE51AFEEA.txt",
+      "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/test-console-log-2026-11-07T10-10-39+11-00.txt",
+      "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunSomeTests/Test-STULabel-Release-2026.11.07_10-10-38-+1100.xcresult"
+    },
+    "debugAllTests": {
+      "schemeName": "STULabel-Package",
+      "counts": {
+        "expectedFailures": 0,
+        "failed": 0,
+        "notRun": 0,
+        "passed": 316,
+        "skipped": 3,
+        "total": 319
+      },
+      "fullSummaryPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunAllTests/C3174499-8CCF-4729-8EF7-529BB7B4ED29.txt",
+      "fullConsoleLogsPath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunAllTests/test-console-log-2026-11-07T10-11-21+11-00.txt",
+      "xcresultBundlePath": "/var/folders/bq/pkfs0gjn1qz8mn678px902fh0000gp/T/ActionArtifacts/default/RunAllTests/Test-STULabel-Package-2026.11.07_10-11-21-+1100.xcresult"
+    },
+    "packageResolvedUnchanged": true
+  }
+}
