@@ -72,7 +72,7 @@ void LabelPrerenderer::layout()
       createShapedString(nullptr);
       hasShapedString_ = true;
     }
-    createTextFrame(); // Also calculates the layout info and links.
+    createTextFrame(nullptr); // Also calculates the layout info and links.
   } else {             // stringIsEmpty_
     textFrameInfo_ = LabelTextFrameInfo::empty;
     textFrameOriginInLayer_ = CGPoint{};
@@ -133,7 +133,7 @@ void detail::labelPrerendererObjCObjectWasDestroyed(LabelPrerenderer &prerendere
 }
 void LabelPrerenderer::objcObjectWasDestroyed()
 {
-  isCancelled_.setCancelled();
+  cancel();
   if (releaseReferenceAndReturnTrueIfItWasTheLast(Referers::layerOrPrerenderer)) {
     destroyAndDeallocate();
   }

@@ -28,8 +28,7 @@ void LabelRenderTask::abandonedByLabel(LabelLayer &label)
   if (type_ != Type::prerender) {
     STU_DEBUG_ASSERT(label_ == &label);
     label_ = nullptr;
-    isCancelled_.setCancelled();
-    renderingIsCancelled_.setCancelled();
+    cancel();
     if (releaseReferenceAndReturnTrueIfItWasTheLast(Referers::layerOrPrerenderer)) {
       destroyAndDeallocateNonPrerenderTask();
     }
@@ -54,20 +53,21 @@ void LabelTextShapingAndLayoutAndRenderTask ::createShapedString(const STUCancel
   }
 }
 
-void LabelLayoutAndRenderTask::createTextFrame()
+void LabelLayoutAndRenderTask::createTextFrame(const STUCancellationFlag *__nullable cancellationFlag)
 {
   const auto create = ^{
     STU_DEBUG_ASSERT(shapedString_ && !textFrame_ && !links_);
-    textFrame_ = STUTextFrameCreateWithShapedString(
-        nil, shapedString_, params_.maxTextFrameSize(), params_.displayScale(), textFrameOptions_);
+    textFrame_ = STUTextFrameCreateWithShapedStringRange(
+        nil, shapedString_, NSRange{0, sign_cast(shapedString_->shapedString->stringLength)},
+        params_.maxTextFrameSize(), params_.displayScale(), textFrameOptions_, cancellationFlag);
+    if (!textFrame_) return;
     const TextFrame &textFrame = textFrameRef(textFrame_);
     textFrameInfo_ = labelTextFrameInfo(textFrame, params_.verticalAlignment, params_.displayScale());
     if (sizeOptions_) {
       params_.shrinkSizeToFitTextBounds(textFrameInfo_.layoutBounds, sizeOptions_);
     }
     textFrameOriginInLayer_ = textFrameOriginInLayer(textFrameInfo_, params_);
-    if ((textFrameInfo_.flags & STUTextFrameHasLink) &&
-        (type_ == Type::prerender || params_.releasesTextFrameAfterRendering)) {
+    if ((textFrameInfo_.flags & STUTextFrameHasLink) && type_ == Type::prerender) {
       links_ = STUTextLinkArrayCreateWithTextFrameOriginAndDisplayScale(
           textFrame, textFrameOriginInLayer_, TextFrameScaleAndDisplayScale{textFrame, params_.displayScale()});
     }
@@ -120,7 +120,9 @@ void LabelLayoutAndRenderTask::run(void *taskPointer)
 {
   auto &task = *down_cast<LabelLayoutAndRenderTask *>(taskPointer);
   if (!task.isCancelled_) {
-    task.createTextFrame();
+    task.createTextFrame(&task.isCancelled_);
+  }
+  if (task.textFrame_) {
     task.completedLayout_.store(true, std::memory_order_release);
     LabelRenderTask::run(&task);
     return;

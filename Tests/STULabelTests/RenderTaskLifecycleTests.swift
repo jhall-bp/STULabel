@@ -34,6 +34,72 @@ private final class RenderDisplayDelegate: NSObject, STULabelLayerDelegate {
                   in contentBounds: CGRect) { displayCount += 1 }
 }
 
+
+nonisolated final class LayoutCancellationProbe: @unchecked Sendable {
+  let entered = DispatchSemaphore(value: 0)
+  let resume = DispatchSemaphore(value: 0)
+  private let finished = DispatchSemaphore(value: 0)
+  private let lock = NSLock()
+  private var calls = 0
+  private var cancellationStart: UInt64 = 0
+  private var cancellationDuration: UInt64 = 0
+
+  var callCount: Int { lock.withLock { calls } }
+  var cancellationNanoseconds: UInt64 { lock.withLock { cancellationDuration } }
+
+  func waitForEntry() -> DispatchTimeoutResult { entered.wait(timeout: .now() + 10) }
+  func waitForFinish() -> DispatchTimeoutResult { finished.wait(timeout: .now() + 10) }
+
+  func resumeAfterCancellation() {
+    lock.withLock { cancellationStart = DispatchTime.now().uptimeNanoseconds }
+    resume.signal()
+  }
+
+  // The old task is the last owner after the layer replaces its text and finder.
+  // Releasing the finder therefore observes completion without polling or a sleep.
+  private final class Lifetime {
+    let probe: LayoutCancellationProbe
+    init(_ probe: LayoutCancellationProbe) { self.probe = probe }
+    deinit {
+      probe.lock.withLock {
+        probe.cancellationDuration = DispatchTime.now().uptimeNanoseconds - probe.cancellationStart
+      }
+      probe.finished.signal()
+    }
+  }
+
+  func makeFinder() -> STULastHyphenationLocationInRangeFinder {
+    let lifetime = Lifetime(self)
+    return { _, range in
+      let probe = lifetime.probe
+      let first = probe.lock.withLock {
+        probe.calls += 1
+        return probe.calls == 1
+      }
+      if first {
+        probe.entered.signal()
+        probe.resume.wait()
+      }
+      return STUHyphenationLocation(index: range.location, hyphen: 45, options: [])
+    }
+  }
+}
+
+@MainActor
+func makeCancellableLayoutLayer(_ probe: LayoutCancellationProbe) -> STULabelLayer {
+  let paragraph = NSMutableParagraphStyle()
+  paragraph.hyphenationFactor = 1
+  let layer = STULabelLayer()
+  layer.bounds = CGRect(x: 0, y: 0, width: 80, height: 50_000)
+  layer.maximumNumberOfLines = 0
+  layer.attributedText = NSAttributedString(
+    string: String(repeating: "antidisestablishmentarianism ", count: 500),
+    attributes: [.font: UIFont(name: "HelveticaNeue", size: 18)!, .paragraphStyle: paragraph])
+  layer.lastHyphenationLocationInRangeFinder = probe.makeFinder()
+  layer.displaysAsynchronously = true
+  return layer
+}
+
 @MainActor
 struct RenderTaskLifecycleTests {
   @Test(arguments: [false, true])
@@ -75,18 +141,28 @@ struct RenderTaskLifecycleTests {
     #expect(layer.textFrame.originalAttributedString.string == "Redraw after release")
   }
 
-  @Test
-  func replacingTextCancelsInFlightDrawing() async throws {
-    let layer = STULabelLayer()
-    layer.bounds = CGRect(x: 0, y: 0, width: 240, height: 80)
-    layer.text = "Obsolete render"
-    layer.displaysAsynchronously = true
+  @Test(arguments: [false, true])
+  func abandoningWorkCancelsInFlightDrawing(usePrerenderer: Bool) async throws {
     let gate = RenderGate()
-    layer.drawingBlock = { @Sendable parameters in gate.draw(parameters) }
-    layer.display()
+    let layer = STULabelLayer()
+    var prerenderer: STULabelPrerenderer?
+    if usePrerenderer {
+      prerenderer = STULabelPrerenderer(traitCollection: UITraitCollection.current)
+      prerenderer!.setSize(CGSize(width: 240, height: 80), contentInsets: .zero)
+      prerenderer!.attributedText = NSAttributedString(string: "Obsolete render")
+      prerenderer!.drawingBlock = { @Sendable parameters in gate.draw(parameters) }
+      prerenderer!.renderAsync()
+    } else {
+      layer.bounds = CGRect(x: 0, y: 0, width: 240, height: 80)
+      layer.text = "Obsolete render"
+      layer.displaysAsynchronously = true
+      layer.drawingBlock = { @Sendable parameters in gate.draw(parameters) }
+      layer.display()
+    }
     let entered = await Task.detached { gate.waitForEntry() }.value
     defer { gate.resume.signal() }
     try #require(entered == .success)
+    prerenderer = nil
     layer.text = "Replacement"
     gate.resume.signal()
     let finished = await Task.detached { gate.waitForFinish() }.value
@@ -151,5 +227,26 @@ struct RenderTaskLifecycleTests {
     }
   }
 
+  @Test(arguments: [false, true])
+  func replacingTextStopsInFlightLayout(preShaped: Bool) async throws {
+    let probe = LayoutCancellationProbe()
+    let layer = makeCancellableLayoutLayer(probe)
+    if preShaped { _ = layer.shapedText }
+    defer {
+      layer.text = "Replacement"
+      layer.lastHyphenationLocationInRangeFinder = nil
+      probe.resume.signal()
+    }
+    layer.display()
+    let entered = await Task.detached { probe.waitForEntry() }.value
+    try #require(entered == .success)
+    layer.text = "Replacement"
+    layer.lastHyphenationLocationInRangeFinder = nil
+    probe.resumeAfterCancellation()
+    let finished = await Task.detached { probe.waitForFinish() }.value
+    try #require(finished == .success)
+    #expect(probe.callCount == 1)
+    #expect(layer.textFrame.originalAttributedString.string == "Replacement")
+  }
 
 }

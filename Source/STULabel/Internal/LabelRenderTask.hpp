@@ -78,8 +78,6 @@ protected:
     label_ = &label;
     traitCollection_ = traitCollection;
     params_ = params;
-    params_.releasesShapedStringAfterRendering = false;
-    params_.releasesTextFrameAfterRendering = false;
     referers_.store(Referers::layerOrPrerenderer | Referers::task, std::memory_order_relaxed);
     allowExtendedRGBBitmapFormat_ = allowExtendedRGBBitmapFormat;
   }
@@ -88,6 +86,11 @@ protected:
   void renderImageInCurrentTraitCollection(const STUCancellationFlag* __nullable);
 
   static void run(void* task);
+
+  void cancel() {
+    isCancelled_.setCancelled();
+    renderingIsCancelled_.setCancelled();
+  }
 
   void taskStoppedAfterBeingCancelled();
 
@@ -175,7 +178,7 @@ protected:
   static void run(void* task);
 
   /// \pre shapedString && !textFrame && !links
-  void createTextFrame();
+  void createTextFrame(const STUCancellationFlag* __nullable cancellationFlag);
 
 public:
   static auto dispatchAsync(__nonnull dispatch_queue_t queue,
