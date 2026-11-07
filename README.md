@@ -73,6 +73,21 @@ label.text = "Hello, SwiftPM"
 
 `STULabelSwift` re-exports `STULabel`, so the core types and the Swift overlay are available from that single import. SwiftPM automatically embeds the package's localized resource bundle; no separate resource target or copy-resources build phase is required for the default link actions.
 
+### Swift attributed strings
+
+Use the `stu` attribute scope when converting between Foundation's attributed-string types:
+
+```swift
+let text = try AttributedString(nsText, including: \.stu)
+let restored = try NSAttributedString(text, including: \.stu)
+label.attributedText = restored
+```
+
+The scope preserves STULabel backgrounds, paragraph styles, truncation scopes, attachments, and
+hyphenation locales together with UIKit and accessibility attributes. Attachment and truncation-scope
+identity is preserved. STULabel regenerates attachment run delegates during shaping; other Core Text
+consumers can call `stu_attributedStringByAddingCTRunDelegatesForSTUTextAttachments()`.
+
 ### Core module and Clang submodules
 
 For Objective-C compatibility or advanced use, add the `STULabel` product instead and import the core module directly:
