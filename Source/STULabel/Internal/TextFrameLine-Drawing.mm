@@ -35,11 +35,13 @@ static void drawRunGlyphsDirectly(GlyphSpan span, const TextStyle &style, Drawin
 
 static void drawRunGlyphs(GlyphSpan glyphSpan, const TextStyle &style, CGFloat ctLineXOffset, DrawingContext &context)
 {
-  CGAffineTransform matrix = glyphSpan.run().textMatrix();
+  const bool drawDirectly = context.needToDrawGlyphsDirectly(style);
+  // CTFontDrawGlyphs applies the font's matrix itself; supplying the run matrix applies it twice.
+  CGAffineTransform matrix = drawDirectly ? CGAffineTransformIdentity : glyphSpan.run().textMatrix();
   matrix.tx = context.lineOrigin().x + ctLineXOffset;
   matrix.ty = context.lineOrigin().y;
   CGContextSetTextMatrix(context.cgContext(), matrix);
-  if (!context.needToDrawGlyphsDirectly(style)) {
+  if (!drawDirectly) {
     glyphSpan.draw(context.cgContext());
     context.currentCGContextColorsMayHaveChanged();
   } else {
