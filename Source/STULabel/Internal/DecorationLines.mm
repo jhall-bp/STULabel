@@ -134,8 +134,6 @@ findXBoundsOfIntersectionsOfGlyphsWithHorizontalLine(CGFloat runXOffset,
     upperStripeMinY = maxY - h;
   }
   const CTFont *const font = span.run().font();
-  const CGAffineTransform textMatrix = span.run().textMatrix();
-  const bool hasNonIdentityMatrix = span.run().status() & kCTRunStatusHasNonIdentityMatrix;
   const FontFaceGlyphBoundsCache::Ref boundsCache = localGlyphBoundsCache.glyphBoundsCache(font);
   const GlyphsWithPositions gwp = span.getGlyphsWithPositions();
 
@@ -159,12 +157,9 @@ findXBoundsOfIntersectionsOfGlyphsWithHorizontalLine(CGFloat runXOffset,
     Rect<CGFloat> bounds = boundsCache.boundingRect(gwp.glyphs()[i], position);
     if (bounds.isEmpty())
       continue;
-    if (hasNonIdentityMatrix) {
-      bounds = CGRectApplyAffineTransform(bounds, textMatrix);
-    }
     if (!bounds.y.overlaps(Range{minY, maxY}))
       continue;
-    CGAffineTransform matrix = textMatrix;
+    CGAffineTransform matrix = CGAffineTransformIdentity;
     matrix.tx = position.x;
     matrix.ty = position.y;
     const RC<const CGPath> path{CTFontCreatePathForGlyph(font, gwp.glyphs()[i], &matrix),

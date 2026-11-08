@@ -332,6 +332,8 @@ public:
     CTRunGetGlyphs(run_.ctRun(), startIndex_ + glyphIndexRange, out.begin());
   }
 
+  /// Positions are in line coordinates, with the run matrix applied. CTFont drawing and glyph
+  /// bounds APIs apply the font matrix to glyph outlines themselves.
   STU_INLINE
   GlyphsWithPositions getGlyphsWithPositions() const {
     ensureCountIsCached();

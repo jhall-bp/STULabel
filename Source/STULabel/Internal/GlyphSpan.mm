@@ -24,15 +24,29 @@ GlyphsWithPositions GlyphSpan::getGlyphsWithPositionsImpl(GlyphRunRef run, CFRan
   if (positions) {
     positions += glyphRange.location;
   }
-  if (glyphs && positions) {
+  const bool transformPositions = run.status() & kCTRunStatusHasNonIdentityMatrix;
+  if (glyphs && positions && !transformPositions) {
     return GlyphsWithPositions{none, count, glyphs, positions};
   }
   static_assert(alignof(CGPoint) % alignof(CGGlyph) == 0);
-  const Int bufferSize = count * sign_cast((positions ? 0 : sizeof(CGPoint)) + (glyphs ? 0 : sizeof(CGGlyph)));
+  const bool needsPositionsBuffer = !positions || transformPositions;
+  const Int bufferSize = count * sign_cast((needsPositionsBuffer ? sizeof(CGPoint) : 0)
+                                          + (glyphs ? 0 : sizeof(CGGlyph)));
   TempArray<Byte> buffer{uninitialized, Count{bufferSize}};
-  if (!positions) {
-    positions = reinterpret_cast<CGPoint *>(buffer.begin());
-    CTRunGetPositions(ctRun, glyphRange, const_cast<CGPoint *>(positions));
+  if (needsPositionsBuffer) {
+    CGPoint *const bufferPositions = reinterpret_cast<CGPoint *>(buffer.begin());
+    if (!positions) {
+      CTRunGetPositions(ctRun, glyphRange, bufferPositions);
+      positions = bufferPositions;
+    }
+    if (transformPositions) {
+      CGAffineTransform matrix = run.textMatrix();
+      matrix.tx = matrix.ty = 0;
+      for (Int i = 0; i < count; ++i) {
+        bufferPositions[i] = CGPointApplyAffineTransform(positions[i], matrix);
+      }
+    }
+    positions = bufferPositions;
   }
   if (!glyphs) {
     glyphs = reinterpret_cast<CGGlyph *>(buffer.end()) - count;
@@ -45,11 +59,8 @@ STU_NO_INLINE
 Rect<CGFloat> GlyphSpan::imageBoundsImpl(GlyphRunRef run, CFRange glyphRange, LocalGlyphBoundsCache &glyphBoundsCache)
 {
   GlyphsWithPositions gwp = getGlyphsWithPositionsImpl(run, glyphRange);
-  Rect<CGFloat> bounds = glyphBoundsCache.boundingRect(run.font(), gwp);
-  if (run.status() & kCTRunStatusHasNonIdentityMatrix) {
-    bounds = CGRectApplyAffineTransform(bounds, run.textMatrix());
-  }
-  return bounds;
+  // Cached glyph bounds already include the font matrix; positions are in line coordinates.
+  return glyphBoundsCache.boundingRect(run.font(), gwp);
 }
 
 STU_NO_INLINE
